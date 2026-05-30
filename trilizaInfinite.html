@@ -1,0 +1,502 @@
+<!DOCTYPE html>
+<html lang="el">
+<head>
+<meta charset="UTF-8">
+<title>Άπειρη Τρίλιζα</title>
+<style>
+  * { box-sizing: border-box; }
+  body {
+    font-family: 'Segoe UI', Tahoma, sans-serif;
+    background: linear-gradient(135deg, #1e3c72, #2a5298);
+    color: #fff;
+    margin: 0;
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: 20px;
+  }
+  h1 { margin: 10px 0; text-align: center; font-size: 42px; }
+  .subtitle { opacity: 0.9; margin-bottom: 20px; text-align: center; max-width: 600px; font-size: 18px;}
+  .menu, .game { background: rgba(0,0,0,0.25); padding: 28px; border-radius: 18px; box-shadow: 0 8px 24px rgba(0,0,0,0.35); }
+  .menu { display: flex; flex-direction: column; gap: 16px; min-width: 360px;}
+  .mode-buttons { display: flex; gap: 14px; }
+  .mode-btn { flex: 1; padding: 26px 12px; font-size: 20px; background: #fff; color: #1e3c72; border: 4px solid transparent; }
+  .mode-btn.selected { border-color: #ffb347; background: #ffe9c4; }
+  .menu label { font-weight: bold; font-size: 18px; }
+  select, button {
+    padding: 14px 18px;
+    font-size: 18px;
+    border-radius: 10px;
+    border: none;
+    cursor: pointer;
+  }
+  button {
+    background: #ffb347;
+    color: #222;
+    font-weight: bold;
+    transition: transform 0.1s, background 0.2s;
+  }
+  button:hover { background: #ffcb70; transform: translateY(-1px); }
+
+  /* Turn indicator */
+  .turn-banner {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 16px;
+    font-size: 26px;
+    font-weight: bold;
+    padding: 14px 24px;
+    border-radius: 14px;
+    margin: 5px auto 15px;
+    background: rgba(255,255,255,0.1);
+    transition: all 0.3s;
+    min-height: 64px;
+  }
+  .turn-banner.X { background: rgba(214, 40, 40, 0.35); box-shadow: 0 0 24px rgba(214,40,40,0.6); }
+  .turn-banner.O { background: rgba(29, 53, 87, 0.55); box-shadow: 0 0 24px rgba(100,150,255,0.6); }
+  .turn-banner .symbol {
+    font-size: 48px;
+    display: inline-block;
+    animation: bounce 0.6s ease;
+  }
+  .turn-banner.X .symbol { color: #ff6b6b; text-shadow: 0 0 14px #ff0; }
+  .turn-banner.O .symbol { color: #a8d0ff; text-shadow: 0 0 14px #fff; }
+  @keyframes bounce {
+    0%   { transform: scale(0.3) rotate(-30deg); opacity: 0; }
+    60%  { transform: scale(1.3) rotate(10deg); opacity: 1; }
+    100% { transform: scale(1) rotate(0); }
+  }
+
+  .board {
+    display: grid;
+    grid-template-columns: repeat(3, 130px);
+    grid-template-rows: repeat(3, 130px);
+    gap: 10px;
+    margin: 15px auto;
+  }
+  .cell {
+    background: #fff;
+    color: #1e3c72;
+    border-radius: 12px;
+    font-size: 80px;
+    font-weight: bold;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    user-select: none;
+    transition: background 0.2s, transform 0.1s;
+    position: relative;
+  }
+  .cell:hover:not(.disabled) { background: #ffe9c4; transform: scale(1.04); }
+  .cell.X { color: #d62828; }
+  .cell.O { color: #1d3557; }
+  .cell.fading { opacity: 0.35; }
+  .cell.placed { animation: pop 0.3s ease; }
+  @keyframes pop {
+    0% { transform: scale(0.2); }
+    70% { transform: scale(1.2); }
+    100% { transform: scale(1); }
+  }
+  .cell.win {
+    background: #ffeb3b !important;
+    animation: winPulse 0.6s ease infinite alternate;
+  }
+  @keyframes winPulse {
+    from { transform: scale(1); box-shadow: 0 0 10px #fff700; }
+    to   { transform: scale(1.1); box-shadow: 0 0 30px #fff700; }
+  }
+  .cell.disabled { cursor: not-allowed; }
+  .controls { display: flex; gap: 12px; justify-content: center; margin-top: 14px;}
+  .scores { display: flex; gap: 24px; justify-content: center; margin-top: 14px; font-size: 22px; font-weight: bold; }
+  .scores div { background: rgba(255,255,255,0.15); padding: 10px 18px; border-radius: 10px;}
+  .rule {
+    background: rgba(255,255,255,0.1);
+    padding: 12px;
+    border-radius: 10px;
+    font-size: 16px;
+    max-width: 440px;
+    margin: 10px auto;
+    line-height: 1.5;
+    text-align: center;
+  }
+
+  /* Win overlay */
+  .win-overlay {
+    position: fixed;
+    inset: 0;
+    background: rgba(0,0,0,0.55);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 50;
+    animation: fadeIn 0.3s;
+  }
+  @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+  .win-card {
+    background: linear-gradient(135deg, #ffd54f, #ff9800);
+    color: #222;
+    padding: 40px 60px;
+    border-radius: 20px;
+    text-align: center;
+    box-shadow: 0 10px 50px rgba(0,0,0,0.5);
+    animation: zoomIn 0.5s ease;
+  }
+  @keyframes zoomIn {
+    0% { transform: scale(0.3) rotate(-15deg); opacity: 0; }
+    70% { transform: scale(1.1) rotate(3deg); }
+    100% { transform: scale(1) rotate(0); }
+  }
+  .win-card h2 { margin: 0 0 10px; font-size: 42px; }
+  .win-card .big-symbol { font-size: 100px; line-height: 1; margin: 10px 0; }
+  .win-card button { margin-top: 14px; }
+
+  /* Confetti */
+  .confetti {
+    position: fixed;
+    width: 12px;
+    height: 12px;
+    z-index: 60;
+    pointer-events: none;
+    animation: fall linear forwards;
+  }
+  @keyframes fall {
+    to { transform: translateY(110vh) rotate(720deg); opacity: 0; }
+  }
+</style>
+</head>
+<body>
+
+<h1>♾️ Άπειρη Τρίλιζα</h1>
+<p class="subtitle">Κάθε παίκτης μπορεί να έχει μόνο <b>3 σύμβολα</b> στο ταμπλό. Όταν βάλει το 4ο, το πρώτο του εξαφανίζεται!</p>
+
+<div id="menu" class="menu">
+  <label>Επίλεξε λειτουργία:</label>
+  <div class="mode-buttons">
+    <button class="mode-btn" data-mode="1">👤 1 Παίκτης</button>
+    <button class="mode-btn" data-mode="2">👥 2 Παίκτες</button>
+  </div>
+  <label id="diffLabel" style="display:none;">Δυσκολία:
+    <select id="difficulty">
+      <option value="easy">Εύκολο</option>
+      <option value="medium" selected>Μέτριο</option>
+      <option value="hard">Δύσκολο</option>
+    </select>
+  </label>
+  <button id="startBtn" style="display:none;">Έναρξη Παιχνιδιού</button>
+</div>
+
+<div id="game" class="game" style="display:none;">
+  <div class="turn-banner" id="turnBanner">
+    <span>Σειρά:</span>
+    <span class="symbol" id="turnSymbol">X</span>
+    <span id="turnLabel">Παίκτης 1</span>
+  </div>
+  <div class="board" id="board"></div>
+  <div class="rule">💡 Το επόμενο σύμβολο που θα εξαφανιστεί φαίνεται ξεθωριασμένο.</div>
+  <div class="scores">
+    <div>X: <span id="scoreX">0</span></div>
+    <div>O: <span id="scoreO">0</span></div>
+  </div>
+  <div class="controls">
+    <button id="resetBtn">Νέος Γύρος</button>
+    <button id="menuBtn">Μενού</button>
+  </div>
+</div>
+
+<script>
+const boardEl = document.getElementById('board');
+const turnBanner = document.getElementById('turnBanner');
+const turnSymbol = document.getElementById('turnSymbol');
+const turnLabel = document.getElementById('turnLabel');
+const menuEl = document.getElementById('menu');
+const gameEl = document.getElementById('game');
+const diffSel = document.getElementById('difficulty');
+const diffLabel = document.getElementById('diffLabel');
+const startBtn = document.getElementById('startBtn');
+
+let board, queues, current, mode, difficulty, gameOver;
+let scores = { X: 0, O: 0 };
+let nextFirst = 'X'; // alternates between rounds
+
+document.querySelectorAll('.mode-btn').forEach(btn => {
+  btn.addEventListener('click', () => {
+    document.querySelectorAll('.mode-btn').forEach(b => b.classList.remove('selected'));
+    btn.classList.add('selected');
+    mode = btn.dataset.mode;
+    diffLabel.style.display = mode === '1' ? 'block' : 'none';
+    startBtn.style.display = 'block';
+  });
+});
+
+startBtn.onclick = startGame;
+document.getElementById('resetBtn').onclick = resetRound;
+document.getElementById('menuBtn').onclick = () => {
+  menuEl.style.display = 'flex';
+  gameEl.style.display = 'none';
+};
+
+const WIN_LINES = [
+  [0,1,2],[3,4,5],[6,7,8],
+  [0,3,6],[1,4,7],[2,5,8],
+  [0,4,8],[2,4,6]
+];
+
+function startGame() {
+  difficulty = diffSel.value;
+  scores = { X: 0, O: 0 };
+  nextFirst = 'X';
+  updateScores();
+  menuEl.style.display = 'none';
+  gameEl.style.display = 'block';
+  resetRound();
+}
+
+function resetRound() {
+  board = Array(9).fill(null);
+  queues = { X: [], O: [] };
+  current = nextFirst;
+  // Alternate who goes first next round
+  nextFirst = nextFirst === 'X' ? 'O' : 'X';
+  gameOver = false;
+  renderBoard();
+  updateStatus();
+  if (mode === '1' && current === 'O') setTimeout(aiMove, 400);
+}
+
+let lastPlaced = -1;
+function renderBoard() {
+  boardEl.innerHTML = '';
+  for (let i = 0; i < 9; i++) {
+    const cell = document.createElement('div');
+    cell.className = 'cell';
+    if (board[i]) {
+      cell.classList.add(board[i]);
+      cell.textContent = board[i];
+      const q = queues[board[i]];
+      const hideFading = (mode === '1' && difficulty === 'hard');
+      if (q.length === 3 && q[0] === i && !hideFading) cell.classList.add('fading');
+      if (i === lastPlaced) cell.classList.add('placed');
+    }
+    if (gameOver || board[i]) cell.classList.add('disabled');
+    cell.addEventListener('click', () => onCellClick(i));
+    boardEl.appendChild(cell);
+  }
+}
+
+function onCellClick(i) {
+  if (gameOver || board[i]) return;
+  if (mode === '1' && current === 'O') return;
+  makeMove(i, current);
+}
+
+function makeMove(i, player) {
+  board[i] = player;
+  queues[player].push(i);
+  if (queues[player].length > 3) {
+    const removed = queues[player].shift();
+    board[removed] = null;
+  }
+  lastPlaced = i;
+  const winLine = checkWin(player);
+  renderBoard();
+  if (winLine) {
+    highlightWin(winLine);
+    scores[player]++;
+    updateScores();
+    gameOver = true;
+    showWinOverlay(player);
+    launchConfetti();
+    return;
+  }
+  current = player === 'X' ? 'O' : 'X';
+  updateStatus();
+  if (mode === '1' && current === 'O' && !gameOver) {
+    setTimeout(aiMove, 500);
+  }
+}
+
+function checkWin(player) {
+  for (const line of WIN_LINES) {
+    if (line.every(idx => board[idx] === player)) return line;
+  }
+  return null;
+}
+
+function highlightWin(line) {
+  const cells = boardEl.children;
+  line.forEach(i => cells[i].classList.add('win'));
+}
+
+function updateStatus() {
+  if (gameOver) return;
+  let who;
+  if (mode === '1') {
+    who = current === 'X' ? 'Εσύ' : 'Υπολογιστής';
+  } else {
+    who = current === 'X' ? 'Παίκτης 1' : 'Παίκτης 2';
+  }
+  turnBanner.classList.remove('X', 'O');
+  turnBanner.classList.add(current);
+  // restart bounce animation
+  turnSymbol.style.animation = 'none';
+  void turnSymbol.offsetWidth;
+  turnSymbol.style.animation = '';
+  turnSymbol.textContent = current;
+  turnLabel.textContent = who;
+}
+
+function showWinOverlay(player) {
+  let who;
+  if (mode === '1') who = player === 'X' ? 'Κέρδισες! 🎉' : 'Κέρδισε ο Υπολογιστής 🤖';
+  else who = `Κέρδισε ο Παίκτης ${player === 'X' ? '1' : '2'}!`;
+  const overlay = document.createElement('div');
+  overlay.className = 'win-overlay';
+  overlay.innerHTML = `
+    <div class="win-card">
+      <h2>${who}</h2>
+      <div class="big-symbol" style="color:${player==='X'?'#d62828':'#1d3557'}">${player}</div>
+      <button id="nextRoundBtn">Επόμενος Γύρος ▶️</button>
+    </div>`;
+  document.body.appendChild(overlay);
+  document.getElementById('nextRoundBtn').onclick = () => {
+    overlay.remove();
+    resetRound();
+  };
+}
+
+function launchConfetti() {
+  const colors = ['#ff6b6b','#ffd54f','#4dd0e1','#81c784','#ba68c8','#ffb347'];
+  for (let i = 0; i < 80; i++) {
+    const c = document.createElement('div');
+    c.className = 'confetti';
+    c.style.left = Math.random() * 100 + 'vw';
+    c.style.top = '-20px';
+    c.style.background = colors[Math.floor(Math.random()*colors.length)];
+    c.style.animationDuration = (2 + Math.random() * 2) + 's';
+    c.style.animationDelay = Math.random() * 0.5 + 's';
+    c.style.transform = `rotate(${Math.random()*360}deg)`;
+    if (Math.random() > 0.5) c.style.borderRadius = '50%';
+    document.body.appendChild(c);
+    setTimeout(() => c.remove(), 4500);
+  }
+}
+
+function updateScores() {
+  document.getElementById('scoreX').textContent = scores.X;
+  document.getElementById('scoreO').textContent = scores.O;
+}
+
+// ---------- AI ----------
+function aiMove() {
+  if (gameOver) return;
+  let move;
+  if (difficulty === 'easy') move = aiEasy();
+  else if (difficulty === 'medium') move = aiMedium();
+  else move = aiHard();
+  if (move == null) return;
+  makeMove(move, 'O');
+}
+
+function emptyCells(b = board) {
+  const arr = [];
+  for (let i = 0; i < 9; i++) if (!b[i]) arr.push(i);
+  return arr;
+}
+
+function aiEasy() {
+  const cells = emptyCells();
+  return cells[Math.floor(Math.random() * cells.length)];
+}
+
+// Simulate a move on a copy of state
+function simulate(state, player, idx) {
+  const b = state.board.slice();
+  const q = { X: state.queues.X.slice(), O: state.queues.O.slice() };
+  b[idx] = player;
+  q[player].push(idx);
+  if (q[player].length > 3) {
+    const removed = q[player].shift();
+    b[removed] = null;
+  }
+  return { board: b, queues: q };
+}
+
+function winsAfter(state, player, idx) {
+  const s = simulate(state, player, idx);
+  for (const line of WIN_LINES) {
+    if (line.every(i => s.board[i] === player)) return true;
+  }
+  return false;
+}
+
+function aiMedium() {
+  const state = { board, queues };
+  const cells = emptyCells();
+  // 1. Win if possible
+  for (const i of cells) if (winsAfter(state, 'O', i)) return i;
+  // 2. Block opponent
+  for (const i of cells) if (winsAfter(state, 'X', i)) return i;
+  // 3. Center
+  if (!board[4]) return 4;
+  // 4. Random corner else random
+  const corners = [0,2,6,8].filter(i => !board[i]);
+  if (corners.length) return corners[Math.floor(Math.random()*corners.length)];
+  return aiEasy();
+}
+
+function aiHard() {
+  const state = { board, queues };
+  const cells = emptyCells();
+  // 1. Win
+  for (const i of cells) if (winsAfter(state, 'O', i)) return i;
+  // 2. Block
+  for (const i of cells) if (winsAfter(state, 'X', i)) return i;
+  // 3. Look ahead: pick move that maximizes own threats minus opponent threats
+  let bestScore = -Infinity, bestMove = null;
+  for (const i of cells) {
+    const after = simulate(state, 'O', i);
+    let score = countThreats(after, 'O') * 10 - countThreats(after, 'X') * 12;
+    // Prefer not removing a piece that is part of a near-line
+    if (queues.O.length === 3) {
+      const willRemove = queues.O[0];
+      // Bonus if removed piece wasn't very useful (not in any 2-in-row)
+      if (!isInThreat(state.board, willRemove, 'O')) score += 2;
+      else score -= 3;
+    }
+    // Slight center/corner bias
+    if (i === 4) score += 2;
+    else if ([0,2,6,8].includes(i)) score += 1;
+    score += Math.random() * 0.5;
+    if (score > bestScore) { bestScore = score; bestMove = i; }
+  }
+  return bestMove != null ? bestMove : aiEasy();
+}
+
+function countThreats(state, player) {
+  let count = 0;
+  for (const line of WIN_LINES) {
+    const vals = line.map(i => state.board[i]);
+    const own = vals.filter(v => v === player).length;
+    const opp = vals.filter(v => v && v !== player).length;
+    if (own === 2 && opp === 0) count++;
+  }
+  return count;
+}
+
+function isInThreat(b, idx, player) {
+  for (const line of WIN_LINES) {
+    if (!line.includes(idx)) continue;
+    const vals = line.map(i => b[i]);
+    const own = vals.filter(v => v === player).length;
+    const opp = vals.filter(v => v && v !== player).length;
+    if (own >= 2 && opp === 0) return true;
+  }
+  return false;
+}
+</script>
+
+</body>
+</html>

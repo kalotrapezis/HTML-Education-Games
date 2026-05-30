@@ -1,0 +1,500 @@
+<!DOCTYPE html>
+<html lang="el">
+<head>
+<meta charset="UTF-8">
+<title>Breakout - Πολύχρωμα Τουβλάκια</title>
+<style>
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body {
+    font-family: 'Segoe UI', Tahoma, sans-serif;
+    background: linear-gradient(135deg, #2a1b6a, #6b2a8a);
+    color: #fff;
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: 20px;
+  }
+  h1 { font-size: 36px; margin: 10px 0; text-align: center; }
+  .info { opacity: 0.9; margin-bottom: 14px; font-size: 16px; text-align: center; }
+  .scoreboard {
+    display: flex;
+    gap: 24px;
+    margin-bottom: 10px;
+    font-size: 22px;
+    font-weight: bold;
+  }
+  .score-box {
+    background: rgba(0,0,0,0.35);
+    padding: 8px 18px;
+    border-radius: 10px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+  }
+  .score-box .num {
+    background: #ff9500;
+    color: #fff;
+    padding: 2px 12px;
+    border-radius: 6px;
+    min-width: 32px;
+    text-align: center;
+  }
+  .legend {
+    display: flex;
+    gap: 10px;
+    margin-bottom: 10px;
+    font-size: 13px;
+    background: rgba(0,0,0,0.25);
+    padding: 8px 14px;
+    border-radius: 10px;
+    align-items: center;
+    flex-wrap: wrap;
+    justify-content: center;
+  }
+  .legend-item { display: flex; align-items: center; gap: 5px; }
+  .legend-swatch {
+    width: 22px; height: 14px; border-radius: 3px;
+    border-top: 3px solid rgba(255,255,255,0.4);
+  }
+  canvas {
+    background: linear-gradient(180deg, #0a1b4a 0%, #2a1b6a 100%);
+    border: 4px solid #fff;
+    border-radius: 8px;
+    box-shadow: 0 0 30px rgba(0,0,0,0.5);
+    display: block;
+  }
+  .controls {
+    margin-top: 14px;
+    text-align: center;
+    background: rgba(0,0,0,0.25);
+    padding: 12px 20px;
+    border-radius: 10px;
+    font-size: 15px;
+    line-height: 1.6;
+  }
+  .controls b { color: #ffb347; }
+  button {
+    margin-top: 12px;
+    padding: 12px 28px;
+    font-size: 18px;
+    border: none;
+    border-radius: 10px;
+    background: #ff9500;
+    color: #fff;
+    font-weight: bold;
+    cursor: pointer;
+    box-shadow: 0 4px 0 #c46c00;
+  }
+  button:active { transform: translateY(2px); box-shadow: 0 2px 0 #c46c00; }
+  .back { position: absolute; top: 20px; left: 20px; }
+  .back a { color: #fff; text-decoration: none; background: rgba(0,0,0,0.3); padding: 8px 14px; border-radius: 8px; }
+</style>
+</head>
+<body>
+<div class="back"><a href="παιχνίδια.html">← Πίσω</a></div>
+
+<h1>🧱 BREAKOUT</h1>
+<div class="info">Σπάσε όλα τα τουβλάκια — κάθε χρώμα θέλει διπλάσια χτυπήματα!</div>
+
+<div class="scoreboard">
+  <div class="score-box">Σκορ <span class="num" id="score">0</span></div>
+  <div class="score-box">Level <span class="num" id="level">1</span></div>
+  <div class="score-box">Ζωές <span class="num" id="lives">3</span></div>
+</div>
+
+<div class="legend" id="legend"></div>
+
+<canvas id="game" width="800" height="540"></canvas>
+
+<div class="controls">
+  <b>Κίνηση:</b> ← → ή ποντίκι &nbsp;|&nbsp;
+  <b>Space:</b> ρίξε την μπάλα / νέο παιχνίδι
+</div>
+<button id="resetBtn">Νέο Παιχνίδι</button>
+
+<script>
+const canvas = document.getElementById('game');
+const ctx = canvas.getContext('2d');
+const W = canvas.width, H = canvas.height;
+
+const PADDLE_W = 150, PADDLE_H = 16;
+const BALL_R = 8;
+const BRICK_W = 60, BRICK_H = 22, BRICK_GAP = 5;
+
+// Ιεραρχία χρωμάτων: κάθε επόμενο διπλάσια χτυπήματα από το προηγούμενο
+// μωβ=1, πράσινο=2, κίτρινο=4, πορτοκαλί=8, κόκκινο=16, ασημί=32
+const TIERS = [
+  { name: 'Μωβ',       color: '#9b5de5', hp: 1,  points: 10 },
+  { name: 'Πράσινο',   color: '#3ec23e', hp: 2,  points: 25 },
+  { name: 'Κίτρινο',   color: '#ffd60a', hp: 4,  points: 60 },
+  { name: 'Πορτοκαλί', color: '#ff9500', hp: 8,  points: 150 },
+  { name: 'Κόκκινο',   color: '#e63946', hp: 16, points: 400 },
+  { name: 'Ασημί',     color: '#c0c8d8', hp: 32, points: 1000 }
+];
+
+// Σχεδιασμός πιστών — κάθε γράμμα = tier (P/G/Y/O/R/S), . = κενό
+// Πλάτος grid: 12 στήλες
+const LEVELS = [
+  // Level 1 — πολύ εύκολο, σχεδόν όλα μωβ
+  [
+    '.PPPPPPPPPP.',
+    '.PPPPPPPPPP.',
+    '.PPPPPPPPPP.',
+    '.PPPGGGGPPP.',
+    '.PPPPPPPPPP.',
+  ],
+  // Level 2 — πυραμίδα ήπια
+  [
+    '............',
+    '....PGGGP...',
+    '...PGYYYGP..',
+    '..PPGGGGGPP.',
+    '.PPPPPPPPPP.',
+  ],
+  // Level 3 — διαμάντι με δυνατό κέντρο
+  [
+    '.....OO.....',
+    '....YOOY....',
+    '...GYYYYG...',
+    '..PGGYYGGP..',
+    '...PPGGPP...',
+    '....PPPP....',
+  ],
+  // Level 4 — φρούριο
+  [
+    'RR........RR',
+    'RO........OR',
+    'OYYYYYYYYYYO',
+    '.GGGGGGGGGG.',
+    '.PPPPPPPPPP.',
+  ],
+  // Level 5 — boss με ασημί
+  [
+    '....SSSS....',
+    '..RRRRRRRR..',
+    '.OOOOOOOOOO.',
+    '.YYYYYYYYYY.',
+    '.GGGGGGGGGG.',
+    '.PPPPPPPPPP.',
+  ],
+];
+
+const TIER_MAP = { P: 0, G: 1, Y: 2, O: 3, R: 4, S: 5 };
+
+let state = {};
+
+function buildLegend() {
+  const el = document.getElementById('legend');
+  el.innerHTML = TIERS.map(t =>
+    `<div class="legend-item"><div class="legend-swatch" style="background:${t.color}"></div>${t.name} • ${t.hp} χτ • ${t.points}π</div>`
+  ).join('');
+}
+
+function loadLevel(idx) {
+  const layout = LEVELS[Math.min(idx, LEVELS.length - 1)];
+  const cols = layout[0].length;
+  const rows = layout.length;
+  const totalW = cols * (BRICK_W + BRICK_GAP) - BRICK_GAP;
+  const offsetLeft = (W - totalW) / 2;
+  const offsetTop = 50;
+  const bricks = [];
+  for (let r = 0; r < rows; r++) {
+    for (let c = 0; c < cols; c++) {
+      const ch = layout[r][c];
+      if (ch === '.') continue;
+      const tIdx = TIER_MAP[ch];
+      if (tIdx === undefined) continue;
+      const t = TIERS[tIdx];
+      bricks.push({
+        x: offsetLeft + c * (BRICK_W + BRICK_GAP),
+        y: offsetTop + r * (BRICK_H + BRICK_GAP),
+        tier: tIdx,
+        hp: t.hp,
+        maxHp: t.hp,
+        alive: true,
+        hiddenLife: false
+      });
+    }
+  }
+  // Κρύψε 2 ζωές σε τυχαία τουβλάκια
+  const indices = bricks.map((_, i) => i);
+  for (let i = indices.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1));
+    [indices[i], indices[j]] = [indices[j], indices[i]];
+  }
+  for (let i = 0; i < Math.min(2, indices.length); i++) {
+    bricks[indices[i]].hiddenLife = true;
+  }
+  return bricks;
+}
+
+function resetGame() {
+  state = {
+    paddleX: W/2 - PADDLE_W/2,
+    ball: { x: W/2, y: H - 60, vx: 0, vy: 0 },
+    bricks: loadLevel(0),
+    score: 0,
+    lives: 3,
+    level: 1,
+    running: false,
+    over: false,
+    won: false,
+    popups: []
+  };
+  updateUI();
+}
+
+function addPopup(x, y, text, color) {
+  state.popups.push({ x, y, text, color, life: 60 });
+}
+
+function launchBall() {
+  const speed = 5 + state.level * 0.6;
+  const angle = -Math.PI/2 + (Math.random() * 0.6 - 0.3);
+  state.ball.vx = Math.cos(angle) * speed;
+  state.ball.vy = Math.sin(angle) * speed;
+  state.running = true;
+}
+
+function nextLevel() {
+  if (state.level >= LEVELS.length) {
+    state.won = true;
+    state.running = false;
+    return;
+  }
+  state.level++;
+  state.bricks = loadLevel(state.level - 1);
+  state.ball.x = state.paddleX + PADDLE_W/2;
+  state.ball.y = H - 60;
+  state.ball.vx = 0; state.ball.vy = 0;
+  state.running = false;
+  updateUI();
+}
+
+function loseLife() {
+  state.lives--;
+  state.running = false;
+  state.ball.vx = 0; state.ball.vy = 0;
+  state.ball.x = state.paddleX + PADDLE_W/2;
+  state.ball.y = H - 60;
+  if (state.lives <= 0) state.over = true;
+  updateUI();
+}
+
+function updateUI() {
+  document.getElementById('score').textContent = state.score;
+  document.getElementById('level').textContent = state.level;
+  document.getElementById('lives').textContent = state.lives;
+}
+
+const keys = {};
+document.addEventListener('keydown', e => {
+  keys[e.key] = true;
+  if (e.key === ' ') {
+    e.preventDefault();
+    if (state.over || state.won) resetGame();
+    else if (!state.running) launchBall();
+  }
+});
+document.addEventListener('keyup', e => { keys[e.key] = false; });
+
+canvas.addEventListener('mousemove', e => {
+  const rect = canvas.getBoundingClientRect();
+  const x = (e.clientX - rect.left) * (W / rect.width);
+  state.paddleX = Math.max(0, Math.min(W - PADDLE_W, x - PADDLE_W/2));
+});
+
+document.getElementById('resetBtn').onclick = resetGame;
+
+function update() {
+  const speed = 8;
+  if (keys['ArrowLeft']) state.paddleX -= speed;
+  if (keys['ArrowRight']) state.paddleX += speed;
+  state.paddleX = Math.max(0, Math.min(W - PADDLE_W, state.paddleX));
+
+  if (!state.running) {
+    if (!state.over && !state.won) {
+      state.ball.x = state.paddleX + PADDLE_W/2;
+      state.ball.y = H - 40 - BALL_R;
+    }
+    return;
+  }
+
+  const b = state.ball;
+  b.x += b.vx;
+  b.y += b.vy;
+
+  if (b.x - BALL_R < 0) { b.x = BALL_R; b.vx *= -1; }
+  if (b.x + BALL_R > W) { b.x = W - BALL_R; b.vx *= -1; }
+  if (b.y - BALL_R < 0) { b.y = BALL_R; b.vy *= -1; }
+
+  // ρακέτα
+  const py = H - 30;
+  if (b.y + BALL_R > py && b.y - BALL_R < py + PADDLE_H &&
+      b.x > state.paddleX && b.x < state.paddleX + PADDLE_W && b.vy > 0) {
+    b.y = py - BALL_R;
+    b.vy *= -1;
+    const hit = (b.x - (state.paddleX + PADDLE_W/2)) / (PADDLE_W/2);
+    b.vx += hit * 3;
+    const sp = Math.hypot(b.vx, b.vy);
+    const maxSp = 13;
+    if (sp > maxSp) { b.vx *= maxSp/sp; b.vy *= maxSp/sp; }
+  }
+
+  // τουβλάκια
+  for (const br of state.bricks) {
+    if (!br.alive) continue;
+    if (b.x + BALL_R > br.x && b.x - BALL_R < br.x + BRICK_W &&
+        b.y + BALL_R > br.y && b.y - BALL_R < br.y + BRICK_H) {
+      br.hp--;
+      if (br.hp <= 0) {
+        br.alive = false;
+        state.score += TIERS[br.tier].points;
+        if (br.hiddenLife) {
+          state.lives++;
+          addPopup(br.x + BRICK_W/2, br.y, '+1 ❤️', '#ff6b9d');
+        }
+      } else {
+        state.score += 5;
+      }
+      const prevX = b.x - b.vx;
+      const wasOutsideX = prevX + BALL_R <= br.x || prevX - BALL_R >= br.x + BRICK_W;
+      if (wasOutsideX) b.vx *= -1; else b.vy *= -1;
+      updateUI();
+      break;
+    }
+  }
+
+  if (b.y - BALL_R > H) {
+    loseLife();
+  }
+
+  if (state.bricks.every(br => !br.alive)) {
+    nextLevel();
+  }
+}
+
+function shade(hex, percent) {
+  // σκουραίνει το χρώμα κατά percent (0..1)
+  const r = parseInt(hex.slice(1,3),16);
+  const g = parseInt(hex.slice(3,5),16);
+  const b = parseInt(hex.slice(5,7),16);
+  const f = 1 - percent;
+  return `rgb(${(r*f)|0},${(g*f)|0},${(b*f)|0})`;
+}
+
+function draw() {
+  ctx.clearRect(0, 0, W, H);
+
+  // αστέρια
+  ctx.fillStyle = 'rgba(255,255,255,0.5)';
+  for (let i = 0; i < 50; i++) {
+    const x = (i * 73) % W;
+    const y = (i * 131) % H;
+    ctx.fillRect(x, y, 2, 2);
+  }
+
+  // τουβλάκια
+  for (const br of state.bricks) {
+    if (!br.alive) continue;
+    const t = TIERS[br.tier];
+    const damage = 1 - (br.hp / br.maxHp); // 0 = γερό, ~1 = σχεδόν σπασμένο
+    ctx.fillStyle = shade(t.color, damage * 0.5);
+    ctx.fillRect(br.x, br.y, BRICK_W, BRICK_H);
+    ctx.fillStyle = 'rgba(255,255,255,0.25)';
+    ctx.fillRect(br.x, br.y, BRICK_W, 4);
+
+    // ένδειξη hp αν > 1
+    if (br.maxHp > 1) {
+      ctx.fillStyle = 'rgba(255,255,255,0.9)';
+      ctx.font = 'bold 12px Segoe UI';
+      ctx.textAlign = 'center';
+      ctx.textBaseline = 'middle';
+      ctx.fillText(br.hp, br.x + BRICK_W/2, br.y + BRICK_H/2 + 2);
+    }
+    // ρωγμές
+    if (damage > 0.3) {
+      ctx.strokeStyle = 'rgba(0,0,0,0.4)';
+      ctx.lineWidth = 1;
+      ctx.beginPath();
+      ctx.moveTo(br.x + 8, br.y + 6);
+      ctx.lineTo(br.x + BRICK_W - 10, br.y + BRICK_H - 6);
+      ctx.stroke();
+    }
+    if (damage > 0.6) {
+      ctx.beginPath();
+      ctx.moveTo(br.x + BRICK_W - 8, br.y + 4);
+      ctx.lineTo(br.x + 12, br.y + BRICK_H - 4);
+      ctx.stroke();
+    }
+  }
+
+  // ρακέτα
+  const py = H - 30;
+  const grad = ctx.createLinearGradient(0, py, 0, py + PADDLE_H);
+  grad.addColorStop(0, '#6fdc6f');
+  grad.addColorStop(1, '#2a8a2a');
+  ctx.fillStyle = grad;
+  ctx.fillRect(state.paddleX, py, PADDLE_W, PADDLE_H);
+
+  // μπάλα
+  ctx.fillStyle = '#ffb347';
+  ctx.beginPath();
+  ctx.arc(state.ball.x, state.ball.y, BALL_R, 0, Math.PI * 2);
+  ctx.fill();
+
+  // popups (κρυμμένες ζωές κλπ)
+  if (state.popups) {
+    for (let i = state.popups.length - 1; i >= 0; i--) {
+      const p = state.popups[i];
+      const alpha = p.life / 60;
+      const offset = (60 - p.life) * 0.8;
+      ctx.fillStyle = p.color;
+      ctx.globalAlpha = alpha;
+      ctx.font = 'bold 24px Segoe UI';
+      ctx.textAlign = 'center';
+      ctx.textBaseline = 'alphabetic';
+      ctx.fillText(p.text, p.x, p.y - offset);
+      ctx.globalAlpha = 1;
+      p.life--;
+      if (p.life <= 0) state.popups.splice(i, 1);
+    }
+  }
+
+  // μηνύματα
+  ctx.fillStyle = '#fff';
+  ctx.font = 'bold 24px Segoe UI';
+  ctx.textAlign = 'center';
+  ctx.textBaseline = 'alphabetic';
+  if (state.over) {
+    ctx.fillStyle = '#ff6b6b';
+    ctx.font = 'bold 44px Segoe UI';
+    ctx.fillText('💥 Game Over', W/2, H/2 - 20);
+    ctx.fillStyle = '#fff';
+    ctx.font = '20px Segoe UI';
+    ctx.fillText('Σκορ: ' + state.score + ' — Space για νέο παιχνίδι', W/2, H/2 + 20);
+  } else if (state.won) {
+    ctx.fillStyle = '#ffe066';
+    ctx.font = 'bold 44px Segoe UI';
+    ctx.fillText('🏆 Νίκησες όλες τις πίστες!', W/2, H/2 - 20);
+    ctx.fillStyle = '#fff';
+    ctx.font = '20px Segoe UI';
+    ctx.fillText('Σκορ: ' + state.score + ' — Space για νέο παιχνίδι', W/2, H/2 + 20);
+  } else if (!state.running) {
+    ctx.fillText('Πάτα Space για να ρίξεις την μπάλα', W/2, H/2);
+  }
+}
+
+function loop() {
+  update();
+  draw();
+  requestAnimationFrame(loop);
+}
+
+buildLegend();
+resetGame();
+loop();
+</script>
+</body>
+</html>

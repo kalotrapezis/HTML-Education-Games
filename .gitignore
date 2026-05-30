@@ -1,0 +1,21 @@
+# Source PDFs (large, not for distribution)
+Books/
+
+# Audio assets (copyright)
+Sounds/
+
+# Build artifacts / archives
+*.zip
+*.exe
+build-standalone.ps1
+
+# Working files
+AI.json
+ideas.md
+questions-istoria-d.json
+memory/
+.claude/
+
+# OS / editor
+.DS_Store
+Thumbs.db

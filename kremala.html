@@ -1,0 +1,665 @@
+<!DOCTYPE html>
+<html lang="el">
+<head>
+<meta charset="UTF-8">
+<title>Κρεμάλα</title>
+<style>
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body {
+    font-family: 'Segoe UI', Tahoma, sans-serif;
+    background: linear-gradient(135deg, #1e3c72, #2a5298 50%, #6b2a8a);
+    color: #fff;
+    min-height: 100vh;
+    padding: 20px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+  }
+  .back { position: absolute; top: 20px; left: 20px; }
+  .back a { color: #fff; text-decoration: none; background: rgba(0,0,0,0.3); padding: 8px 14px; border-radius: 8px; }
+  h1 { font-size: 44px; margin: 10px 0 6px; }
+  .info { opacity: 0.85; margin-bottom: 16px; font-size: 16px; text-align: center; max-width: 700px; }
+
+  .screen { display: none; flex-direction: column; align-items: center; }
+  .screen.active { display: flex; }
+
+  .menu-card {
+    background: rgba(0,0,0,0.4); padding: 28px 36px; border-radius: 16px;
+    min-width: 440px; max-width: 600px;
+    display: flex; flex-direction: column; gap: 16px; align-items: stretch;
+  }
+  .menu-card h2 { color: #ffb347; font-size: 24px; text-align: center; }
+  .menu-card label { font-size: 14px; opacity: 0.9; }
+  .menu-card input, .menu-card select {
+    padding: 10px 14px; font-size: 16px; border-radius: 8px;
+    border: 2px solid rgba(255,255,255,0.3); background: rgba(0,0,0,0.3);
+    color: #fff; width: 100%; color-scheme: dark;
+  }
+  .menu-card input:focus, .menu-card select:focus { outline: none; border-color: #ff9500; }
+  .menu-card select option {
+    background: #1e3c72; color: #fff;
+  }
+
+  .level-cards { display: grid; grid-template-columns: repeat(2, 1fr); gap: 12px; }
+  .level-card {
+    background: rgba(0,0,0,0.3); padding: 14px; border-radius: 10px;
+    border: 2px solid transparent; cursor: pointer; text-align: center;
+    transition: all 0.15s;
+  }
+  .level-card:hover { border-color: #ffb347; transform: translateY(-2px); }
+  .level-card.selected { border-color: #ffb347; background: rgba(255,179,71,0.15); }
+  .level-card .title { font-weight: bold; color: #ffb347; font-size: 16px; margin-bottom: 4px; }
+  .level-card .desc { font-size: 12px; opacity: 0.85; line-height: 1.4; }
+
+  button {
+    padding: 12px 28px; font-size: 18px; border: none; border-radius: 10px;
+    background: #ff9500; color: #fff; font-weight: bold; cursor: pointer;
+    box-shadow: 0 4px 0 #c46c00;
+  }
+  button:active { transform: translateY(2px); box-shadow: 0 2px 0 #c46c00; }
+  button.secondary { background: #5a6890; box-shadow: 0 4px 0 #3a4670; }
+  .start-btn { font-size: 22px; padding: 14px 36px; align-self: center; }
+
+  .scoreboard {
+    display: flex; gap: 14px; margin-bottom: 14px; font-size: 16px; font-weight: bold;
+  }
+  .scoreboard .box {
+    background: rgba(0,0,0,0.4); padding: 6px 14px; border-radius: 8px;
+    display: flex; align-items: center; gap: 8px;
+  }
+  .scoreboard .num {
+    background: #ff9500; color: #fff; padding: 2px 10px; border-radius: 5px; min-width: 28px; text-align: center;
+  }
+
+  .game-area {
+    display: flex; gap: 30px; align-items: flex-start;
+    background: rgba(0,0,0,0.3); padding: 24px 28px; border-radius: 14px;
+    margin-bottom: 14px;
+  }
+  canvas.gallows { background: rgba(255,255,255,0.05); border-radius: 8px; }
+
+  .word-area { flex: 1; display: flex; flex-direction: column; gap: 16px; min-width: 300px; }
+  .category-tag {
+    align-self: flex-start; background: rgba(255,179,71,0.2); color: #ffb347;
+    padding: 4px 12px; border-radius: 12px; font-size: 13px; font-weight: bold;
+  }
+  .word {
+    display: flex; flex-wrap: wrap; gap: 8px; justify-content: center;
+    font-family: 'Consolas', monospace; font-size: 36px;
+    letter-spacing: 2px; min-height: 60px; align-items: center;
+  }
+  .letter-slot {
+    width: 36px; border-bottom: 4px solid #fff;
+    text-align: center; font-weight: bold;
+    transition: color 0.2s;
+  }
+  .letter-slot.found { color: #ffe066; border-color: #ffe066; }
+  .letter-slot.space { border-bottom: none; width: 20px; }
+
+  .wrong-letters {
+    text-align: center; font-size: 15px; opacity: 0.85; min-height: 24px;
+  }
+  .wrong-letters .wrong {
+    color: #ff6b6b; text-decoration: line-through; margin: 0 4px; font-weight: bold;
+  }
+
+  .keyboard {
+    display: grid;
+    grid-template-columns: repeat(8, 1fr);
+    gap: 6px; max-width: 700px; margin-top: 10px;
+  }
+  .key {
+    background: rgba(255,255,255,0.12); color: #fff;
+    padding: 12px 0; border-radius: 6px; border: none;
+    font-size: 18px; font-weight: bold; cursor: pointer;
+    box-shadow: 0 3px 0 rgba(0,0,0,0.3);
+    transition: all 0.1s;
+  }
+  .key:hover:not(:disabled) { background: rgba(255,255,255,0.22); }
+  .key:active:not(:disabled) { transform: translateY(2px); box-shadow: 0 1px 0 rgba(0,0,0,0.3); }
+  .key.correct { background: #3ec23e; opacity: 0.6; }
+  .key.wrong { background: #e63946; opacity: 0.6; }
+  .key:disabled { cursor: default; }
+
+  .controls {
+    margin-top: 12px; text-align: center; background: rgba(0,0,0,0.25);
+    padding: 10px 18px; border-radius: 10px; font-size: 14px;
+  }
+  .controls b { color: #ffb347; }
+  .button-row { display: flex; gap: 10px; margin-top: 14px; }
+
+  .result-card {
+    background: rgba(0,0,0,0.45); padding: 36px 44px; border-radius: 18px;
+    display: flex; flex-direction: column; align-items: center; gap: 14px;
+    min-width: 420px;
+  }
+  .result-card .emoji { font-size: 64px; }
+  .result-card h2 { font-size: 30px; text-align: center; }
+  .result-card.win h2 { color: #ffe066; }
+  .result-card.lose h2 { color: #ff6b6b; }
+  .result-card .word-reveal {
+    font-family: 'Consolas', monospace; font-size: 28px; color: #ffb347;
+    letter-spacing: 4px;
+  }
+  .result-card .stats { font-size: 16px; opacity: 0.9; text-align: center; line-height: 1.6; }
+  .result-card .actions { display: flex; gap: 12px; margin-top: 8px; }
+
+  .leaderboard {
+    margin-top: 24px; background: rgba(0,0,0,0.35); padding: 18px 24px;
+    border-radius: 12px; min-width: 500px; max-width: 700px; width: 100%;
+  }
+  .leaderboard h2 { font-size: 22px; margin-bottom: 12px; text-align: center; color: #ffb347; }
+  .leaderboard table { width: 100%; border-collapse: collapse; font-size: 15px; }
+  .leaderboard th, .leaderboard td {
+    padding: 8px 10px; text-align: left; border-bottom: 1px solid rgba(255,255,255,0.15);
+  }
+  .leaderboard th { color: #ffb347; font-size: 13px; text-transform: uppercase; }
+  .leaderboard td.num { text-align: right; font-variant-numeric: tabular-nums; }
+  .leaderboard tr.empty td { text-align: center; opacity: 0.6; padding: 20px; }
+  .leaderboard .rank { color: #ffb347; font-weight: bold; width: 30px; }
+  .leaderboard .clear-btn {
+    margin-top: 10px; padding: 6px 14px; font-size: 13px;
+    background: rgba(255,255,255,0.1); box-shadow: none; color: #fff;
+  }
+</style>
+</head>
+<body>
+<div class="back"><a href="παιχνίδια.html">← Πίσω στα παιχνίδια</a></div>
+
+<h1>🎗️ ΚΡΕΜΑΛΑ</h1>
+
+<!-- ΜΕΝΟΥ -->
+<div id="menuScreen" class="screen active">
+  <div class="info">Μάντεψε τη λέξη γράμμα-γράμμα πριν τελειώσει η ζωγραφιά! Έχεις <b>6 λάθη</b> διαθέσιμα.</div>
+  <div class="menu-card">
+    <h2>Νέο Παιχνίδι</h2>
+    <div>
+      <label>Όνομα παίχτη</label>
+      <input id="playerName" maxlength="14" value="Παίχτης" style="margin-top:6px;">
+    </div>
+    <div>
+      <label style="margin-bottom:6px; display:block;">Διάλεξε επίπεδο</label>
+      <div class="level-cards" id="levelCards"></div>
+    </div>
+    <div>
+      <label>Κατηγορία</label>
+      <select id="categorySelect" style="margin-top:6px;"></select>
+    </div>
+    <button class="start-btn" id="startBtn">▶ Έναρξη</button>
+  </div>
+
+  <div class="leaderboard">
+    <h2>🏆 Leaderboard</h2>
+    <table>
+      <thead>
+        <tr>
+          <th class="rank">#</th>
+          <th>Παίχτης</th>
+          <th>Επίπεδο</th>
+          <th class="num">Νίκες</th>
+          <th class="num">Παιχνίδια</th>
+          <th class="num">Win %</th>
+        </tr>
+      </thead>
+      <tbody id="lbBody"></tbody>
+    </table>
+    <div style="text-align:center;">
+      <button class="clear-btn" id="clearLb">Καθαρισμός Leaderboard</button>
+    </div>
+  </div>
+</div>
+
+<!-- ΠΑΙΧΝΙΔΙ -->
+<div id="gameScreen" class="screen">
+  <div class="scoreboard">
+    <div class="box">Νίκες <span class="num" id="wins">0</span></div>
+    <div class="box">Ήττες <span class="num" id="losses">0</span></div>
+    <div class="box">Λάθη <span class="num" id="mistakes">0</span>/6</div>
+  </div>
+
+  <div class="game-area">
+    <canvas class="gallows" id="gallows" width="240" height="280"></canvas>
+    <div class="word-area">
+      <div class="category-tag" id="categoryTag">Κατηγορία</div>
+      <div class="word" id="wordDisplay"></div>
+      <div class="wrong-letters" id="wrongLetters"></div>
+      <div class="keyboard" id="keyboard"></div>
+    </div>
+  </div>
+
+  <div class="controls">
+    Πάτησε <b>γράμμα</b> στο πληκτρολόγιο ή κλικ στα κουμπιά &nbsp;|&nbsp; <b>Enter</b> για επόμενη λέξη
+  </div>
+  <div class="button-row">
+    <button class="secondary" id="backToMenuBtn">← Πίσω στο Μενού</button>
+    <button id="nextWordBtn" style="display:none">Επόμενη λέξη →</button>
+  </div>
+</div>
+
+<!-- (το result εμφανίζεται inline στο game) -->
+
+<script>
+const LEVELS = {
+  easy: {
+    title: '🐶 Α΄-Β΄ Δημοτικού',
+    desc: 'Εύκολες λέξεις: ζώα, φρούτα, αντικείμενα τάξης',
+    categories: {
+      'Ζώα':         ['ΣΚΥΛΟΣ','ΓΑΤΑ','ΨΑΡΙ','ΛΙΟΝΤΑΡΙ','ΠΑΠΑΓΑΛΟΣ','ΑΛΟΓΟ','ΠΡΟΒΑΤΟ','ΚΟΥΝΕΛΙ','ΧΕΛΩΝΑ','ΕΛΕΦΑΝΤΑΣ'],
+      'Φρούτα':      ['ΜΗΛΟ','ΚΕΡΑΣΙ','ΝΤΟΜΑΤΑ','ΜΠΑΝΑΝΑ','ΑΧΛΑΔΙ','ΠΟΡΤΟΚΑΛΙ','ΛΕΜΟΝΙ','ΦΡΑΟΥΛΑ','ΣΤΑΦΥΛΙ','ΚΑΡΠΟΥΖΙ'],
+      'Αντικείμενα': ['ΜΟΛΥΒΙ','ΤΣΑΝΤΑ','ΒΙΒΛΙΟ','ΘΡΑΝΙΟ','ΤΕΤΡΑΔΙΟ','ΓΟΜΑ','ΞΥΣΤΡΑ','ΣΤΥΛΟ','ΚΟΛΛΑ','ΨΑΛΙΔΙ']
+    }
+  },
+  medium: {
+    title: '🌍 Γ΄-Δ΄ Δημοτικού',
+    desc: 'Σύνθετες λέξεις, ορθογραφία (αι/ει/οι), γεωγραφία',
+    categories: {
+      'Σύνθετες':    ['ΟΥΡΑΝΟΞΥΣΤΗΣ','ΑΝΕΜΟΜΥΛΟΣ','ΦΩΤΟΓΡΑΦΙΑ','ΠΟΔΟΣΦΑΙΡΙΣΤΗΣ','ΤΗΛΕΟΡΑΣΗ','ΥΠΟΛΟΓΙΣΤΗΣ','ΑΕΡΟΠΛΑΝΟ'],
+      'Ορθογραφία':  ['ΠΑΙΧΝΙΔΙ','ΕΙΣΟΔΟΣ','ΟΙΚΟΓΕΝΕΙΑ','ΥΠΟΜΟΝΗ','ΦΙΛΟΣ','ΕΙΡΗΝΗ','ΑΓΡΟΙΚΟΣ','ΥΓΕΙΑ'],
+      'Γεωγραφία':   ['ΕΛΛΑΔΑ','ΘΑΛΑΣΣΑ','ΠΟΤΑΜΙ','ΒΟΥΝΟ','ΑΘΗΝΑ','ΘΕΣΣΑΛΟΝΙΚΗ','ΚΡΗΤΗ','ΚΥΠΡΟΣ','ΕΥΡΩΠΗ']
+    }
+  },
+  hard: {
+    title: '📚 Ε΄-ΣΤ΄ Δημοτικού',
+    desc: 'Δύσκολη ορθογραφία, λόγιες, σύνθετες αρχαίες',
+    categories: {
+      'Δύσκολες':    ['ΒΑΡΙΕΜΑΙ','ΒΕΡΙΚΟΚΟ','ΒΙΟΛΟΝΤΣΕΛΟ','ΒΙΟΠΟΙΚΙΛΟΤΗΤΑ','ΚΕΦΑΛΑΙΟ','ΑΝΘΡΩΠΟΣ'],
+      'Λόγιες':      ['ΦΑΝΤΑΣΜΑΓΟΡΙΑ','ΙΔΙΟΣΥΓΚΡΑΣΙΑ','ΑΝΘΡΩΠΟΓΕΩΓΡΑΦΙΑ','ΦΙΛΟΣΟΦΙΑ','ΜΑΘΗΜΑΤΙΚΑ'],
+      'Ειδικές':     ['ΒΔΕΛΥΡΟΣ','ΒΕΒΑΡΗΜΕΝΟΣ','ΒΙΩΜΑ','ΑΥΘΑΙΡΕΤΟΣ','ΕΥΕΞΗΓΗΤΟΣ']
+    }
+  },
+  themed: {
+    title: '🎨 Θεματικές',
+    desc: 'Εποχές, καιρός, σχολείο, καθημερινότητα',
+    categories: {
+      'Εποχές/Καιρός': ['ΚΑΛΟΚΑΙΡΙ','ΦΘΙΝΟΠΩΡΟ','ΧΕΙΜΩΝΑΣ','ΑΝΟΙΞΗ','ΒΡΟΧΗ','ΧΙΟΝΙ','ΑΝΕΜΟΣ','ΗΛΙΟΣ','ΣΥΝΝΕΦΟ','ΚΑΤΑΙΓΙΔΑ'],
+      'Σχολείο':       ['ΔΙΑΛΕΙΜΜΑ','ΔΑΣΚΑΛΟΣ','ΜΑΘΗΤΗΣ','ΓΥΜΝΑΣΤΗΡΙΟ','ΑΥΛΗ','ΑΙΘΟΥΣΑ','ΒΙΒΛΙΟΘΗΚΗ','ΜΑΘΗΜΑ']
+    }
+  },
+  geo: {
+    title: '🗺️ Γεωγραφία Ελλάδας',
+    desc: 'Πόλεις, νομοί, βουνά, ποτάμια, λίμνες',
+    categories: {
+      'Πόλεις':   ['ΑΘΗΝΑ','ΘΕΣΣΑΛΟΝΙΚΗ','ΠΑΤΡΑ','ΗΡΑΚΛΕΙΟ','ΛΑΡΙΣΑ','ΒΟΛΟΣ','ΙΩΑΝΝΙΝΑ','ΚΑΒΑΛΑ','ΚΑΛΑΜΑΤΑ','ΧΑΝΙΑ','ΡΟΔΟΣ','ΞΑΝΘΗ','ΣΕΡΡΕΣ','ΤΡΙΚΑΛΑ','ΛΑΜΙΑ','ΑΛΕΞΑΝΔΡΟΥΠΟΛΗ','ΚΟΖΑΝΗ','ΚΕΡΚΥΡΑ','ΧΑΛΚΙΔΑ','ΑΓΡΙΝΙΟ'],
+      'Νομοί':    ['ΑΤΤΙΚΗ','ΕΥΒΟΙΑ','ΒΟΙΩΤΙΑ','ΦΘΙΩΤΙΔΑ','ΦΩΚΙΔΑ','ΑΧΑΙΑ','ΑΡΚΑΔΙΑ','ΛΑΚΩΝΙΑ','ΜΕΣΣΗΝΙΑ','ΗΛΕΙΑ','ΚΟΡΙΝΘΙΑ','ΑΡΓΟΛΙΔΑ','ΛΑΣΙΘΙ','ΡΕΘΥΜΝΟ','ΘΕΣΣΑΛΙΑ','ΗΠΕΙΡΟΣ','ΧΑΛΚΙΔΙΚΗ','ΠΕΛΛΑ','ΗΜΑΘΙΑ','ΔΡΑΜΑ','ΕΒΡΟΣ'],
+      'Βουνά':    ['ΟΛΥΜΠΟΣ','ΠΑΡΝΑΣΣΟΣ','ΤΑΫΓΕΤΟΣ','ΠΗΛΙΟ','ΠΙΝΔΟΣ','ΒΕΡΜΙΟ','ΦΑΛΑΚΡΟ','ΨΗΛΟΡΕΙΤΗΣ','ΛΕΥΚΑ ΟΡΗ','ΓΡΑΜΜΟΣ','ΣΜΟΛΙΚΑΣ','ΒΟΡΑΣ','ΟΣΣΑ','ΟΘΡΥΣ','ΚΙΣΣΑΒΟΣ','ΥΜΗΤΤΟΣ','ΠΑΡΝΗΘΑ'],
+      'Ποτάμια':  ['ΑΞΙΟΣ','ΑΛΙΑΚΜΟΝΑΣ','ΑΧΕΛΩΟΣ','ΕΒΡΟΣ','ΝΕΣΤΟΣ','ΣΤΡΥΜΟΝΑΣ','ΠΗΝΕΙΟΣ','ΑΡΑΧΘΟΣ','ΘΥΑΜΙΣ','ΕΥΡΩΤΑΣ','ΑΛΦΕΙΟΣ','ΣΠΕΡΧΕΙΟΣ'],
+      'Λίμνες':   ['ΤΡΙΧΩΝΙΔΑ','ΒΟΛΒΗ','ΒΕΓΟΡΙΤΙΔΑ','ΚΟΡΩΝΕΙΑ','ΠΛΑΣΤΗΡΑ','ΚΕΡΚΙΝΗ','ΔΟΪΡΑΝΗ','ΠΑΜΒΩΤΙΔΑ','ΠΟΛΥΦΥΤΟ','ΣΜΟΚΟΒΟ','ΣΤΥΜΦΑΛΙΑ']
+    }
+  },
+  countries: {
+    title: '🌍 Χώρες ανά Ήπειρο',
+    desc: 'Χώρες από όλες τις ηπείρους',
+    categories: {
+      'Ευρώπη':      ['ΑΛΒΑΝΙΑ','ΑΥΣΤΡΙΑ','ΒΕΛΓΙΟ','ΒΟΥΛΓΑΡΙΑ','ΓΑΛΛΙΑ','ΓΕΡΜΑΝΙΑ','ΔΑΝΙΑ','ΕΛΒΕΤΙΑ','ΕΛΛΑΔΑ','ΕΣΘΟΝΙΑ','ΙΡΛΑΝΔΙΑ','ΙΣΛΑΝΔΙΑ','ΙΣΠΑΝΙΑ','ΙΤΑΛΙΑ','ΟΛΛΑΝΔΙΑ','ΚΡΟΑΤΙΑ','ΚΥΠΡΟΣ','ΛΕΤΟΝΙΑ','ΛΕΥΚΟΡΩΣΙΑ','ΛΙΘΟΥΑΝΙΑ','ΛΟΥΞΕΜΒΟΥΡΓΟ','ΜΑΛΤΑ','ΜΟΛΔΑΒΙΑ','ΝΟΡΒΗΓΙΑ','ΟΥΓΓΑΡΙΑ','ΟΥΚΡΑΝΙΑ','ΠΟΛΩΝΙΑ','ΠΟΡΤΟΓΑΛΙΑ','ΡΟΥΜΑΝΙΑ','ΡΩΣΙΑ','ΣΕΡΒΙΑ','ΣΛΟΒΑΚΙΑ','ΣΛΟΒΕΝΙΑ','ΣΟΥΗΔΙΑ','ΤΣΕΧΙΑ','ΦΙΝΛΑΝΔΙΑ','ΑΓΓΛΙΑ'],
+      'Ασία':        ['ΑΦΓΑΝΙΣΤΑΝ','ΑΡΜΕΝΙΑ','ΑΖΕΡΜΠΑΪΤΖΑΝ','ΜΠΑΓΚΛΑΝΤΕΣ','ΚΑΜΠΟΤΖΗ','ΚΙΝΑ','ΙΝΔΙΑ','ΙΝΔΟΝΗΣΙΑ','ΙΡΑΚ','ΙΡΑΝ','ΙΣΡΑΗΛ','ΙΑΠΩΝΙΑ','ΙΟΡΔΑΝΙΑ','ΚΑΖΑΚΣΤΑΝ','ΚΟΥΒΕΪΤ','ΛΑΟΣ','ΛΙΒΑΝΟΣ','ΜΑΛΑΙΣΙΑ','ΜΟΓΓΟΛΙΑ','ΝΕΠΑΛ','ΟΜΑΝ','ΠΑΚΙΣΤΑΝ','ΦΙΛΙΠΠΙΝΕΣ','ΚΑΤΑΡ','ΣΙΓΚΑΠΟΥΡΗ','ΣΥΡΙΑ','ΤΑΪΒΑΝ','ΤΑΪΛΑΝΔΗ','ΒΙΕΤΝΑΜ','ΥΕΜΕΝΗ','ΤΟΥΡΚΙΑ','ΓΕΩΡΓΙΑ','ΚΟΡΕΑ','ΜΙΑΝΜΑΡ'],
+      'Αφρική':      ['ΑΛΓΕΡΙΑ','ΑΓΚΟΛΑ','ΜΠΕΝΙΝ','ΜΠΟΤΣΟΥΑΝΑ','ΚΑΜΕΡΟΥΝ','ΤΣΑΝΤ','ΚΟΝΓΚΟ','ΑΙΓΥΠΤΟΣ','ΕΡΥΘΡΑΙΑ','ΑΙΘΙΟΠΙΑ','ΓΚΑΜΠΟΝ','ΓΚΑΝΑ','ΓΟΥΙΝΕΑ','ΚΕΝΥΑ','ΛΕΣΟΤΟ','ΛΙΒΕΡΙΑ','ΛΙΒΥΗ','ΜΑΔΑΓΑΣΚΑΡΗ','ΜΑΛΑΟΥΙ','ΜΑΛΙ','ΜΑΡΟΚΟ','ΜΟΖΑΜΒΙΚΗ','ΝΑΜΙΜΠΙΑ','ΝΙΓΗΡΙΑ','ΣΕΝΕΓΑΛΗ','ΣΟΜΑΛΙΑ','ΣΟΥΔΑΝ','ΤΑΝΖΑΝΙΑ','ΤΟΓΚΟ','ΤΥΝΗΣΙΑ','ΟΥΓΚΑΝΤΑ','ΖΑΜΠΙΑ','ΖΙΜΠΑΜΠΟΥΕ','ΡΟΥΑΝΤΑ'],
+      'Β. Αμερική':  ['ΜΠΑΧΑΜΕΣ','ΜΠΑΡΜΠΑΝΤΟΣ','ΜΠΕΛΙΖ','ΚΑΝΑΔΑΣ','ΚΟΣΤΑ ΡΙΚΑ','ΚΟΥΒΑ','ΓΡΕΝΑΔΑ','ΓΟΥΑΤΕΜΑΛΑ','ΑΪΤΗ','ΟΝΔΟΥΡΑ','ΤΖΑΜΑΪΚΑ','ΜΕΞΙΚΟ','ΝΙΚΑΡΑΓΟΥΑ','ΠΑΝΑΜΑΣ','ΑΜΕΡΙΚΗ'],
+      'Ν. Αμερική':  ['ΑΡΓΕΝΤΙΝΗ','ΒΟΛΙΒΙΑ','ΒΡΑΖΙΛΙΑ','ΧΙΛΗ','ΚΟΛΟΜΒΙΑ','ΙΣΗΜΕΡΙΝΟΣ','ΓΟΥΙΑΝΑ','ΠΑΡΑΓΟΥΑΗ','ΠΕΡΟΥ','ΣΟΥΡΙΝΑΜ','ΟΥΡΟΥΓΟΥΑΗ','ΒΕΝΕΖΟΥΕΛΑ'],
+      'Ωκεανία':     ['ΑΥΣΤΡΑΛΙΑ','ΦΙΤΖΙ','ΚΙΡΙΜΠΑΤΙ','ΜΙΚΡΟΝΗΣΙΑ','ΝΑΟΥΡΟΥ','ΝΕΑ ΖΗΛΑΝΔΙΑ','ΠΑΛΑΟΥ','ΣΑΜΟΑ','ΤΟΝΓΚΑ','ΤΟΥΒΑΛΟΥ','ΒΑΝΟΥΑΤΟΥ']
+    }
+  }
+};
+
+const GREEK_LETTERS = ['Α','Β','Γ','Δ','Ε','Ζ','Η','Θ','Ι','Κ','Λ','Μ','Ν','Ξ','Ο','Π','Ρ','Σ','Τ','Υ','Φ','Χ','Ψ','Ω'];
+
+// τονισμένα/ειδικά → βασικά
+function normalize(ch) {
+  const map = {
+    'Ά':'Α','ά':'Α','Έ':'Ε','έ':'Ε','Ή':'Η','ή':'Η',
+    'Ί':'Ι','ί':'Ι','Ϊ':'Ι','ϊ':'Ι','ΐ':'Ι',
+    'Ό':'Ο','ό':'Ο','Ύ':'Υ','ύ':'Υ','Ϋ':'Υ','ϋ':'Υ','ΰ':'Υ',
+    'Ώ':'Ω','ώ':'Ω','ς':'Σ'
+  };
+  const u = ch.toUpperCase();
+  return map[ch] || map[u] || u;
+}
+
+let state = null;
+let selectedLevel = 'easy';
+let selectedCategory = 'all';
+
+function buildLevelCards() {
+  const grid = document.getElementById('levelCards');
+  grid.innerHTML = '';
+  for (const [key, lvl] of Object.entries(LEVELS)) {
+    const card = document.createElement('div');
+    card.className = 'level-card' + (key === selectedLevel ? ' selected' : '');
+    card.innerHTML = `<div class="title">${lvl.title}</div><div class="desc">${lvl.desc}</div>`;
+    card.onclick = () => {
+      selectedLevel = key;
+      selectedCategory = 'all';
+      buildLevelCards();
+      buildCategorySelect();
+    };
+    grid.appendChild(card);
+  }
+}
+
+function buildCategorySelect() {
+  const sel = document.getElementById('categorySelect');
+  const lvl = LEVELS[selectedLevel];
+  const cats = Object.keys(lvl.categories);
+  sel.innerHTML = '<option value="all">Όλες οι κατηγορίες (τυχαία)</option>' +
+    cats.map(c => `<option value="${c}">${c} (${lvl.categories[c].length} λέξεις)</option>`).join('');
+  sel.value = selectedCategory;
+  sel.onchange = () => { selectedCategory = sel.value; };
+}
+
+function pickWord(levelKey) {
+  const lvl = LEVELS[levelKey];
+  let cat;
+  if (selectedCategory && selectedCategory !== 'all' && lvl.categories[selectedCategory]) {
+    cat = selectedCategory;
+  } else {
+    const cats = Object.keys(lvl.categories);
+    cat = cats[Math.floor(Math.random() * cats.length)];
+  }
+  const words = lvl.categories[cat];
+  const word = words[Math.floor(Math.random() * words.length)];
+  return { word, category: cat };
+}
+
+function startGame() {
+  state = {
+    level: selectedLevel,
+    wins: 0,
+    losses: 0,
+    current: null,
+    guessed: new Set(),
+    wrong: [],
+    finished: false
+  };
+  nextWord();
+  showScreen('gameScreen');
+}
+
+function nextWord() {
+  state.current = pickWord(state.level);
+  state.guessed = new Set();
+  state.wrong = [];
+  state.finished = false;
+  document.getElementById('nextWordBtn').style.display = 'none';
+  renderAll();
+}
+
+function renderAll() {
+  document.getElementById('wins').textContent = state.wins;
+  document.getElementById('losses').textContent = state.losses;
+  document.getElementById('mistakes').textContent = state.wrong.length;
+  document.getElementById('categoryTag').textContent = state.current.category;
+
+  // word display
+  const wd = document.getElementById('wordDisplay');
+  wd.innerHTML = '';
+  const word = state.current.word;
+  for (const ch of word) {
+    const slot = document.createElement('div');
+    if (ch === ' ') {
+      slot.className = 'letter-slot space';
+    } else {
+      const n = normalize(ch);
+      const found = state.guessed.has(n);
+      slot.className = 'letter-slot' + (found || state.finished ? ' found' : '');
+      slot.textContent = (found || state.finished) ? ch : '';
+    }
+    wd.appendChild(slot);
+  }
+
+  // wrong letters
+  const wl = document.getElementById('wrongLetters');
+  wl.innerHTML = state.wrong.length
+    ? 'Λάθη: ' + state.wrong.map(l => `<span class="wrong">${l}</span>`).join('')
+    : '';
+
+  // keyboard
+  renderKeyboard();
+  // gallows
+  drawGallows();
+}
+
+function renderKeyboard() {
+  const kb = document.getElementById('keyboard');
+  kb.innerHTML = '';
+  for (const L of GREEK_LETTERS) {
+    const btn = document.createElement('button');
+    btn.className = 'key';
+    btn.textContent = L;
+    if (state.guessed.has(L) || state.wrong.includes(L)) {
+      btn.disabled = true;
+      if (wordHasLetter(L)) btn.classList.add('correct');
+      else btn.classList.add('wrong');
+    } else if (state.finished) {
+      btn.disabled = true;
+    }
+    btn.onclick = () => guess(L);
+    kb.appendChild(btn);
+  }
+}
+
+function wordHasLetter(L) {
+  for (const ch of state.current.word) {
+    if (normalize(ch) === L) return true;
+  }
+  return false;
+}
+
+function guess(L) {
+  if (state.finished) return;
+  if (state.guessed.has(L) || state.wrong.includes(L)) return;
+  if (wordHasLetter(L)) {
+    state.guessed.add(L);
+  } else {
+    state.wrong.push(L);
+  }
+  checkEnd();
+  renderAll();
+}
+
+function checkEnd() {
+  // win?
+  let allFound = true;
+  for (const ch of state.current.word) {
+    if (ch === ' ') continue;
+    if (!state.guessed.has(normalize(ch))) { allFound = false; break; }
+  }
+  if (allFound) {
+    state.finished = 'win';
+    state.wins++;
+    recordResult(true);
+    showInlineResult();
+  } else if (state.wrong.length >= 6) {
+    state.finished = 'lose';
+    state.losses++;
+    recordResult(false);
+    showInlineResult();
+  }
+}
+
+function showInlineResult() {
+  document.getElementById('nextWordBtn').style.display = '';
+  const wl = document.getElementById('wrongLetters');
+  if (state.finished === 'win') {
+    wl.innerHTML = '<span style="color:#ffe066;font-size:18px;font-weight:bold;">🎉 Μπράβο! Βρήκες τη λέξη!</span>';
+  } else {
+    wl.innerHTML = '<span style="color:#ff6b6b;font-size:18px;font-weight:bold;">💀 Έχασες! Η λέξη ήταν <b style="color:#ffe066;">' + state.current.word + '</b></span>';
+  }
+}
+
+function drawGallows() {
+  const c = document.getElementById('gallows');
+  const ctx = c.getContext('2d');
+  const W = c.width, H = c.height;
+  ctx.clearRect(0, 0, W, H);
+
+  // βάση & στύλοι
+  ctx.strokeStyle = '#a87842';
+  ctx.lineWidth = 6;
+  ctx.lineCap = 'round';
+
+  // έδαφος
+  ctx.beginPath();
+  ctx.moveTo(20, H - 15);
+  ctx.lineTo(W - 20, H - 15);
+  ctx.stroke();
+
+  // κάθετος στύλος
+  ctx.beginPath();
+  ctx.moveTo(50, H - 15);
+  ctx.lineTo(50, 30);
+  ctx.stroke();
+
+  // οριζόντιος
+  ctx.beginPath();
+  ctx.moveTo(50, 30);
+  ctx.lineTo(160, 30);
+  ctx.stroke();
+
+  // ενίσχυση (διαγώνια)
+  ctx.beginPath();
+  ctx.moveTo(50, 60);
+  ctx.lineTo(80, 30);
+  ctx.stroke();
+
+  // σκοινί
+  ctx.strokeStyle = '#d4a567';
+  ctx.lineWidth = 3;
+  ctx.beginPath();
+  ctx.moveTo(160, 30);
+  ctx.lineTo(160, 70);
+  ctx.stroke();
+
+  // 6 βήματα κρεμάλας ανάλογα με τα λάθη
+  const mistakes = state ? state.wrong.length : 0;
+  ctx.strokeStyle = '#fff';
+  ctx.fillStyle = '#fff';
+  ctx.lineWidth = 4;
+
+  // 1. κεφάλι
+  if (mistakes >= 1) {
+    ctx.beginPath();
+    ctx.arc(160, 90, 18, 0, Math.PI * 2);
+    ctx.stroke();
+    // μάτια & στόμα όταν χάσει
+    if (state && state.finished === 'lose') {
+      ctx.fillStyle = '#ff6b6b';
+      ctx.font = 'bold 16px Segoe UI';
+      ctx.textAlign = 'center';
+      ctx.fillText('×', 154, 92);
+      ctx.fillText('×', 166, 92);
+      ctx.fillStyle = '#fff';
+    } else {
+      // μάτια
+      ctx.fillStyle = '#fff';
+      ctx.beginPath(); ctx.arc(155, 86, 2, 0, Math.PI * 2); ctx.fill();
+      ctx.beginPath(); ctx.arc(165, 86, 2, 0, Math.PI * 2); ctx.fill();
+    }
+  }
+  // 2. κορμός
+  if (mistakes >= 2) {
+    ctx.beginPath();
+    ctx.moveTo(160, 108);
+    ctx.lineTo(160, 180);
+    ctx.stroke();
+  }
+  // 3. αριστερό χέρι
+  if (mistakes >= 3) {
+    ctx.beginPath();
+    ctx.moveTo(160, 125);
+    ctx.lineTo(130, 155);
+    ctx.stroke();
+  }
+  // 4. δεξί χέρι
+  if (mistakes >= 4) {
+    ctx.beginPath();
+    ctx.moveTo(160, 125);
+    ctx.lineTo(190, 155);
+    ctx.stroke();
+  }
+  // 5. αριστερό πόδι
+  if (mistakes >= 5) {
+    ctx.beginPath();
+    ctx.moveTo(160, 180);
+    ctx.lineTo(135, 220);
+    ctx.stroke();
+  }
+  // 6. δεξί πόδι
+  if (mistakes >= 6) {
+    ctx.beginPath();
+    ctx.moveTo(160, 180);
+    ctx.lineTo(185, 220);
+    ctx.stroke();
+  }
+}
+
+function showScreen(id) {
+  for (const el of document.querySelectorAll('.screen')) el.classList.remove('active');
+  document.getElementById(id).classList.add('active');
+}
+
+// keyboard
+document.addEventListener('keydown', e => {
+  if (!document.getElementById('gameScreen').classList.contains('active')) return;
+  if (e.key === 'Enter') {
+    if (state.finished) nextWord();
+    return;
+  }
+  if (e.key.length === 1) {
+    const L = normalize(e.key);
+    if (GREEK_LETTERS.includes(L)) guess(L);
+  }
+});
+
+// leaderboard
+const LB_KEY = 'kremala_leaderboard_v1';
+function loadLb() {
+  try { return JSON.parse(localStorage.getItem(LB_KEY)) || {}; }
+  catch { return {}; }
+}
+function saveLb(lb) { localStorage.setItem(LB_KEY, JSON.stringify(lb)); }
+
+function recordResult(won) {
+  const name = document.getElementById('playerName').value.trim() || 'Παίχτης';
+  const lb = loadLb();
+  const key = name + '|' + state.level;
+  if (!lb[key]) lb[key] = { name, level: state.level, wins: 0, total: 0 };
+  lb[key].total++;
+  if (won) lb[key].wins++;
+  saveLb(lb);
+  renderLb();
+}
+
+function renderLb() {
+  const lb = loadLb();
+  const tbody = document.getElementById('lbBody');
+  const rows = Object.values(lb);
+  rows.sort((a,b) => b.wins - a.wins || (b.wins/b.total) - (a.wins/a.total));
+  if (rows.length === 0) {
+    tbody.innerHTML = '<tr class="empty"><td colspan="6">Δεν έχει παιχτεί ακόμα τίποτα</td></tr>';
+    return;
+  }
+  tbody.innerHTML = rows.slice(0, 10).map((r, i) => {
+    const pct = r.total ? Math.round(r.wins / r.total * 100) : 0;
+    const lvlName = LEVELS[r.level] ? LEVELS[r.level].title : r.level;
+    return `<tr><td class="rank">${i+1}</td><td>${escapeHtml(r.name)}</td><td>${lvlName}</td><td class="num">${r.wins}</td><td class="num">${r.total}</td><td class="num">${pct}%</td></tr>`;
+  }).join('');
+}
+function escapeHtml(s) {
+  return s.replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+}
+
+document.getElementById('startBtn').onclick = startGame;
+document.getElementById('backToMenuBtn').onclick = () => { renderLb(); showScreen('menuScreen'); };
+document.getElementById('nextWordBtn').onclick = nextWord;
+document.getElementById('clearLb').onclick = () => {
+  if (confirm('Σίγουρα θες να καθαρίσεις το leaderboard;')) {
+    localStorage.removeItem(LB_KEY); renderLb();
+  }
+};
+
+buildLevelCards();
+buildCategorySelect();
+renderLb();
+drawGallows();
+</script>
+</body>
+</html>

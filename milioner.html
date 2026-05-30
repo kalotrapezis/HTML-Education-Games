@@ -1,0 +1,1375 @@
+<!DOCTYPE html>
+<html lang="el">
+<head>
+<meta charset="UTF-8">
+<title>Ποιος Θέλει να Γίνει Παντογνώστης;</title>
+<style>
+  * { box-sizing: border-box; margin: 0; padding: 0; user-select: none; }
+  html, body { height: 100%; overflow: hidden; }
+  body {
+    font-family: 'Segoe UI', Tahoma, sans-serif;
+    background: radial-gradient(ellipse at center, #1a3a8a 0%, #0a1942 60%, #050a20 100%);
+    color: #fff;
+    display: flex;
+    flex-direction: column;
+    height: 100vh;
+  }
+  header {
+    padding: 14px;
+    text-align: center;
+    background: rgba(0,0,0,0.4);
+    font-size: 22px;
+    color: #ffd700;
+    font-weight: bold;
+    letter-spacing: 2px;
+    flex-shrink: 0;
+    border-bottom: 2px solid rgba(255,215,0,0.4);
+  }
+  #subtitle { font-size: 14px; color: #aaa; font-weight: normal; letter-spacing: 0; margin-top: 4px; }
+  #main {
+    flex: 1;
+    display: grid;
+    grid-template-columns: 1fr 270px;
+    gap: 20px;
+    padding: 20px;
+    overflow: hidden;
+    min-height: 0;
+  }
+  #play {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 18px;
+    min-height: 0;
+    overflow: auto;
+  }
+  #lifelines {
+    display: flex;
+    gap: 14px;
+  }
+  .lifeline {
+    background: rgba(0,0,0,0.5);
+    border: 2px solid #ffd700;
+    color: #ffd700;
+    width: 64px; height: 64px;
+    border-radius: 50%;
+    font-size: 15px;
+    font-weight: bold;
+    cursor: pointer;
+    font-family: inherit;
+    transition: all 0.15s;
+  }
+  .lifeline:hover:not(.used) { background: #ffd700; color: #000; transform: scale(1.05); }
+  .lifeline.used { opacity: 0.25; cursor: not-allowed; }
+  #qTimer {
+    background: rgba(0,0,0,0.5);
+    border: 3px solid #ffd700;
+    color: #ffd700;
+    border-radius: 40px;
+    padding: 6px 22px;
+    font-size: 26px;
+    font-weight: bold;
+    min-width: 110px;
+    text-align: center;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+  #qTimer.urgent {
+    color: #fff;
+    background: #ff3030;
+    border-color: #ff8080;
+    animation: tick 0.5s infinite alternate;
+  }
+  #qTimer.hidden { display: none; }
+  #question {
+    background: linear-gradient(180deg, #0a1942, #1a3a8a);
+    border: 3px solid #ffd700;
+    border-radius: 16px;
+    padding: 26px 36px;
+    font-size: 24px;
+    text-align: center;
+    min-height: 110px;
+    max-width: 900px;
+    width: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    box-shadow: 0 0 30px rgba(255,215,0,0.25);
+    line-height: 1.4;
+  }
+  #answers {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 14px;
+    width: 100%;
+    max-width: 900px;
+  }
+  .ans {
+    background: linear-gradient(180deg, #0a1942, #1a3a8a);
+    border: 2px solid #4477cc;
+    color: #fff;
+    font-size: 19px;
+    padding: 14px 22px;
+    border-radius: 30px;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    font-family: inherit;
+    transition: all 0.2s;
+    text-align: left;
+  }
+  .ans:hover:not(.disabled):not(.locked) {
+    background: linear-gradient(180deg, #aa6600, #ffaa00);
+    border-color: #ffd700;
+  }
+  .ans .letter {
+    color: #ffd700;
+    font-weight: bold;
+    flex-shrink: 0;
+  }
+  .ans { position: relative; }
+  .ans .vote-badge {
+    margin-left: auto;
+    background: rgba(0,0,0,0.6);
+    color: #ffd700;
+    padding: 4px 12px;
+    border-radius: 12px;
+    font-size: 16px;
+    font-weight: bold;
+    flex-shrink: 0;
+  }
+  #teacherMsg {
+    background: linear-gradient(180deg, #1a3a8a, #0a1942);
+    border: 2px solid #ffd700;
+    border-radius: 16px;
+    padding: 14px 22px;
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    max-width: 800px;
+    width: 100%;
+    font-size: 17px;
+    font-style: italic;
+    box-shadow: 0 0 20px rgba(255,215,0,0.25);
+  }
+  #teacherMsg .teacher-emoji { font-size: 32px; flex-shrink: 0; }
+  #teacherMsg .teacher-text { flex: 1; }
+  #teacherMsg b { color: #ffd700; font-style: normal; }
+  #teacherMsg.hidden { display: none; }
+  .teacher-timer {
+    background: #ffd700; color: #000;
+    padding: 6px 14px;
+    border-radius: 14px;
+    font-weight: bold;
+    font-style: normal;
+    font-size: 22px;
+    flex-shrink: 0;
+    min-width: 70px;
+    text-align: center;
+  }
+  .teacher-timer.urgent {
+    background: #ff5722; color: #fff;
+    animation: tick 0.5s infinite alternate;
+  }
+  @keyframes tick {
+    from { transform: scale(1); }
+    to { transform: scale(1.08); }
+  }
+  .ans.selected {
+    background: linear-gradient(180deg, #aa6600, #ffaa00);
+    border-color: #ffd700;
+    animation: pulse 0.5s infinite alternate;
+  }
+  @keyframes pulse {
+    from { box-shadow: 0 0 6px #ffaa00; }
+    to { box-shadow: 0 0 18px #ffd700; }
+  }
+  .ans.correct {
+    background: linear-gradient(180deg, #115500, #33aa33);
+    border-color: #66ff66;
+    animation: none;
+  }
+  .ans.wrong {
+    background: linear-gradient(180deg, #550011, #aa1133);
+    border-color: #ff6666;
+    animation: none;
+  }
+  .ans.disabled {
+    opacity: 0.2;
+    cursor: not-allowed;
+    pointer-events: none;
+  }
+  #walkBtn {
+    background: linear-gradient(180deg, #884400, #cc8800);
+    color: #fff;
+    border: 2px solid #ffd700;
+    padding: 8px 24px;
+    border-radius: 20px;
+    cursor: pointer;
+    font-size: 16px;
+    font-family: inherit;
+    font-weight: bold;
+  }
+  #walkBtn:hover { background: linear-gradient(180deg, #aa6600, #ffaa00); }
+  #ladder {
+    background: rgba(0,0,0,0.5);
+    border: 2px solid rgba(255,215,0,0.4);
+    border-radius: 12px;
+    padding: 10px;
+    display: flex;
+    flex-direction: column-reverse;
+    gap: 2px;
+    overflow-y: auto;
+  }
+  .rung {
+    padding: 7px 12px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    font-size: 15px;
+    border-radius: 6px;
+    color: #ffaa00;
+  }
+  .rung .num { color: #888; font-weight: bold; min-width: 24px; }
+  .rung.active { background: linear-gradient(90deg, #aa6600, #ffaa00); color: #000; }
+  .rung.active .num { color: #000; }
+  .rung.safe { color: #ffd700; font-weight: bold; }
+  .rung.safe::after { content: ' 🔒'; }
+  .rung.done { color: #66aa66; }
+  .rung.done .num { color: #66aa66; }
+  #overlay {
+    position: fixed;
+    inset: 0;
+    background: rgba(0,0,0,0.88);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-direction: column;
+    z-index: 100;
+    text-align: center;
+    gap: 16px;
+    padding: 30px;
+  }
+  #overlay.hidden { display: none; }
+  #overlay h1 { font-size: 44px; color: #ffd700; margin-bottom: 6px; }
+  #overlay p { font-size: 20px; max-width: 700px; line-height: 1.5; }
+  #overlay button {
+    background: linear-gradient(180deg, #aa6600, #ffaa00);
+    color: #000; border: 2px solid #ffd700;
+    padding: 13px 28px; font-size: 19px; font-weight: bold;
+    border-radius: 10px; cursor: pointer; font-family: inherit;
+    transition: all 0.15s;
+  }
+  #overlay button:hover { background: linear-gradient(180deg, #cc8800, #ffd700); transform: scale(1.03); }
+  #overlay .btn-secondary {
+    background: transparent;
+    color: #ffd700;
+    border: 2px solid #ffd700;
+  }
+  #overlay .btn-secondary:hover { background: rgba(255,215,0,0.2); }
+  .file-input { display: none; }
+  #helpBtn {
+    position: fixed; top: 14px; right: 18px;
+    width: 36px; height: 36px;
+    background: rgba(0,0,0,0.5); color: #ffd700;
+    border: 2px solid #ffd700; border-radius: 50%;
+    font-size: 18px; font-weight: bold;
+    cursor: pointer; font-family: inherit;
+    z-index: 50;
+  }
+  #helpBtn:hover { background: #ffd700; color: #000; }
+  #help {
+    position: fixed; inset: 0;
+    background: rgba(0,0,0,0.92);
+    z-index: 200;
+    overflow-y: auto;
+    padding: 30px;
+    display: flex; justify-content: center;
+  }
+  #help.hidden { display: none; }
+  #help .panel {
+    max-width: 800px; width: 100%;
+    background: linear-gradient(180deg, #0a1942, #1a3a8a);
+    border: 2px solid #ffd700;
+    border-radius: 14px;
+    padding: 30px;
+    box-shadow: 0 0 30px rgba(255,215,0,0.3);
+  }
+  #help h2 { color: #ffd700; font-size: 28px; margin-bottom: 8px; border-bottom: 1px solid rgba(255,215,0,0.3); padding-bottom: 6px; }
+  #help h3 { color: #ffaa00; font-size: 19px; margin: 18px 0 6px; }
+  #help p, #help li { font-size: 16px; line-height: 1.55; }
+  #help ul, #help ol { padding-left: 24px; margin: 6px 0; }
+  #help li { margin: 4px 0; }
+  #help b { color: #ffd700; }
+  #help code, #help pre {
+    background: rgba(0,0,0,0.5); padding: 2px 6px; border-radius: 4px;
+    font-family: 'Courier New', monospace; font-size: 14px;
+    color: #66ff66;
+  }
+  #help pre { padding: 12px; overflow-x: auto; white-space: pre-wrap; }
+  #help .close {
+    float: right; background: transparent; color: #ffd700;
+    border: 2px solid #ffd700; border-radius: 50%;
+    width: 36px; height: 36px; font-size: 18px; cursor: pointer;
+    font-family: inherit; font-weight: bold;
+  }
+  #help .close:hover { background: #ffd700; color: #000; }
+  #help .ai-box {
+    background: rgba(255,215,0,0.08);
+    border-left: 3px solid #ffd700;
+    padding: 12px 16px;
+    margin: 12px 0;
+    border-radius: 6px;
+  }
+  #guide {
+    max-width: 700px; width: 100%; margin-top: 22px;
+    background: rgba(0,0,0,0.45);
+    border: 2px solid rgba(255,215,0,0.4);
+    border-radius: 12px;
+    padding: 22px;
+    text-align: left;
+  }
+  #guide.hidden { display: none; }
+  #guide .steps { list-style: none; padding: 0; counter-reset: step; }
+  #guide .steps li {
+    counter-increment: step;
+    display: flex; align-items: center; gap: 14px;
+    padding: 12px 0;
+    border-bottom: 1px solid rgba(255,215,0,0.15);
+  }
+  #guide .steps li:last-child { border-bottom: none; }
+  #guide .steps li::before {
+    content: counter(step);
+    flex-shrink: 0;
+    width: 36px; height: 36px;
+    background: #ffd700; color: #000;
+    border-radius: 50%;
+    display: flex; align-items: center; justify-content: center;
+    font-weight: bold; font-size: 18px;
+  }
+  #guide .step-text { flex: 1; font-size: 16px; line-height: 1.45; }
+  #guide .step-btn {
+    background: linear-gradient(180deg, #aa6600, #ffaa00);
+    color: #000; border: 2px solid #ffd700;
+    padding: 8px 16px; font-size: 14px; font-weight: bold;
+    border-radius: 8px; cursor: pointer; font-family: inherit;
+    flex-shrink: 0;
+  }
+  #guide .step-btn:hover { background: linear-gradient(180deg, #cc8800, #ffd700); }
+  #guide code {
+    background: rgba(0,0,0,0.5); padding: 2px 6px; border-radius: 4px;
+    font-family: 'Courier New', monospace; font-size: 13px; color: #66ff66;
+  }
+  .hint {
+    font-size: 13px; opacity: 0.7; max-width: 700px;
+    margin-top: 24px; line-height: 1.5;
+    background: rgba(0,0,0,0.4); padding: 12px; border-radius: 8px;
+    font-family: 'Courier New', monospace;
+    text-align: left;
+  }
+  .btn-row { display: flex; gap: 14px; flex-wrap: wrap; justify-content: center; margin-top: 14px; }
+
+  /* ---- Κουμπί ήχου ---- */
+  #soundBtn {
+    position: fixed; top: 14px; right: 62px;
+    width: 36px; height: 36px;
+    background: rgba(0,0,0,0.5); color: #ffd700;
+    border: 2px solid #ffd700; border-radius: 50%;
+    font-size: 16px; cursor: pointer; font-family: inherit;
+    z-index: 50;
+  }
+  #soundBtn:hover { background: #ffd700; color: #000; }
+
+  /* ---- Οδηγός επιλογής (wizard) ---- */
+  #wizard {
+    position: fixed; inset: 0;
+    background: rgba(0,0,0,0.92);
+    z-index: 150;
+    display: flex; align-items: center; justify-content: center;
+    padding: 24px;
+  }
+  #wizard.hidden { display: none; }
+  #wizard .wpanel {
+    max-width: 880px; width: 100%;
+    max-height: 90vh;
+    display: flex; flex-direction: column;
+    background: linear-gradient(180deg, #0a1942, #1a3a8a);
+    border: 2px solid #ffd700; border-radius: 16px;
+    box-shadow: 0 0 40px rgba(255,215,0,0.3);
+    padding: 24px 26px;
+  }
+  #wizard h2 { color: #ffd700; font-size: 26px; margin-bottom: 4px; }
+  #wizard .wsub { color: #cdd6f0; font-size: 15px; margin-bottom: 6px; line-height: 1.4; }
+  .wsteps { display: flex; gap: 8px; margin: 10px 0 16px; }
+  .wstep-dot {
+    flex: 1; text-align: center; font-size: 13px; padding: 6px 4px;
+    border-radius: 8px; background: rgba(255,255,255,0.06);
+    color: #8da2c0; border: 1px solid rgba(255,215,0,0.15);
+  }
+  .wstep-dot.active { background: #ffd700; color: #000; font-weight: bold; border-color: #ffd700; }
+  .wstep-dot.done { color: #66cc88; border-color: rgba(102,204,136,0.4); }
+  #wizardBody { overflow-y: auto; flex: 1; min-height: 80px; }
+  .opt-grid {
+    display: grid; grid-template-columns: repeat(auto-fill, minmax(190px, 1fr));
+    gap: 10px;
+  }
+  .opt {
+    display: flex; align-items: center; gap: 10px;
+    background: rgba(0,0,0,0.35);
+    border: 2px solid #4477cc; border-radius: 12px;
+    padding: 12px 14px; cursor: pointer; font-size: 17px;
+    transition: all 0.15s;
+  }
+  .opt:hover { border-color: #ffd700; background: rgba(255,215,0,0.08); }
+  .opt.checked { border-color: #ffd700; background: linear-gradient(180deg, #aa6600, #ffaa00); color: #000; }
+  .opt .box {
+    width: 22px; height: 22px; flex-shrink: 0;
+    border: 2px solid #ffd700; border-radius: 6px;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 15px; font-weight: bold; background: rgba(0,0,0,0.3);
+  }
+  .opt.checked .box { background: #fff; color: #000; border-color: #000; }
+  .opt .ic { font-size: 22px; flex-shrink: 0; }
+  .opt .lbl { flex: 1; }
+  .opt .cnt { font-size: 12px; opacity: 0.75; }
+  .wfoot { display: flex; justify-content: space-between; align-items: center; gap: 12px; margin-top: 18px; }
+  .wfoot .left { display: flex; gap: 10px; }
+  .wbtn {
+    background: linear-gradient(180deg, #aa6600, #ffaa00);
+    color: #000; border: 2px solid #ffd700;
+    padding: 11px 24px; font-size: 17px; font-weight: bold;
+    border-radius: 10px; cursor: pointer; font-family: inherit;
+    transition: all 0.15s;
+  }
+  .wbtn:hover:not(:disabled) { background: linear-gradient(180deg, #cc8800, #ffd700); transform: scale(1.03); }
+  .wbtn:disabled { opacity: 0.35; cursor: not-allowed; }
+  .wbtn.ghost { background: transparent; color: #ffd700; }
+  .wbtn.ghost:hover { background: rgba(255,215,0,0.15); transform: none; }
+  .wpick-row { display: flex; gap: 10px; margin-bottom: 12px; flex-wrap: wrap; }
+  .wpick-row .mini {
+    background: rgba(255,215,0,0.1); color: #ffd700;
+    border: 1px solid rgba(255,215,0,0.4); border-radius: 8px;
+    padding: 6px 12px; font-size: 13px; cursor: pointer; font-family: inherit;
+  }
+  .wpick-row .mini:hover { background: rgba(255,215,0,0.25); }
+  .wempty { color: #ffaa88; font-size: 16px; line-height: 1.5; padding: 20px; text-align: center; }
+  .wpoolinfo { color: #cdd6f0; font-size: 14px; margin-top: 8px; }
+</style>
+</head>
+<body>
+
+<header>
+  🧠 ΠΟΙΟΣ ΘΕΛΕΙ ΝΑ ΓΙΝΕΙ ΠΑΝΤΟΓΝΩΣΤΗΣ; 🧠
+  <div id="subtitle">—</div>
+</header>
+<button id="soundBtn" title="Ήχος on/off">🔊</button>
+<button id="helpBtn" title="Βοήθεια">?</button>
+
+<div id="help" class="hidden">
+  <div class="panel">
+    <button class="close" id="helpClose">×</button>
+    <h2>📖 Βοήθεια</h2>
+
+    <h3>🎯 Πώς παίζεις</h3>
+    <ul>
+      <li>15 ερωτήσεις με <b>αυξανόμενη δυσκολία</b>.</li>
+      <li>Κάθε σωστή απάντηση σε ανεβάζει στη σκάλα του επάθλου (€500 → €1.000.000).</li>
+      <li>Πατάς ένα από τα τέσσερα κουμπιά <b>A/B/C/D</b>.</li>
+      <li>Στις <b>ασφαλείς ζώνες</b> 🔒 (€5.000 και €25.000), αν χάσεις από εκεί και πάνω κρατάς αυτό το ποσό.</li>
+      <li>Με το κουμπί <b>«Πάρε τα λεφτά»</b> σταματάς και κρατάς ό,τι έχεις κερδίσει.</li>
+    </ul>
+
+    <h3>🎯 Παίξε με την ύλη του σχολείου</h3>
+    <p>Στην αρχική οθόνη πάτα <b>«Παίξε με την ύλη του σχολείου»</b>. Διαλέγεις με τα κουτάκια <b>μία ή πολλές τάξεις</b>, μετά <b>μάθημα/μαθήματα</b> και — αν διαλέξεις ακριβώς μία τάξη κι ένα μάθημα — συγκεκριμένα <b>κεφάλαια</b>. Οι ερωτήσεις μπαίνουν τυχαία ανά δυσκολία (εύκολες πρώτα, δύσκολες στο τέλος), οπότε κάθε παιχνίδι είναι διαφορετικό.</p>
+
+    <h3>🔊 Ήχος</h3>
+    <p>Με το κουμπί <b>🔊</b> πάνω δεξιά ανοίγεις/κλείνεις τα ηχητικά εφέ (σωστό, λάθος, αναμονή, νίκη).</p>
+
+    <h3>🆘 Lifeline 50:50</h3>
+    <p>Μία χρήση ανά παιχνίδι — αφαιρεί 2 από τις 3 λάθος απαντήσεις. Πάτα το κουμπί <b>50:50</b> πάνω από την ερώτηση.</p>
+
+    <h3>📂 Φόρτωση δικών σου ερωτήσεων</h3>
+    <p>Στην οθόνη έναρξης, πάτα <b>«Φόρτωσε δικό σου JSON»</b> και επίλεξε ένα αρχείο <code>.json</code> με τη σωστή μορφή.</p>
+    <p>Μορφή αρχείου:</p>
+<pre>{
+  "title": "Όνομα διαγωνίσματος",
+  "questions": [
+    {
+      "q": "Η ερώτηση;",
+      "answers": ["A", "B", "C", "D"],
+      "correct": 0
+    },
+    ...
+  ]
+}</pre>
+    <p>Όπου <code>correct</code> = δείκτης σωστής απάντησης (0 = πρώτη, 1 = δεύτερη, 2 = τρίτη, 3 = τέταρτη).</p>
+
+    <h3>🤖 Με τη βοήθεια AI</h3>
+    <div class="ai-box">
+      <p>Μπορείς να φτιάξεις γρήγορα ένα quiz πάνω σε <b>οποιαδήποτε ύλη</b> με τη βοήθεια ενός AI (ChatGPT, Claude, Gemini, κλπ).</p>
+    </div>
+    <ol>
+      <li>Άνοιξε το αρχείο <code>AI.json</code> (βρίσκεται δίπλα στο <code>milioner.html</code>) με σημειωματάριο και αντίγραψε όλο το περιεχόμενο.</li>
+      <li>Πήγαινε σε ένα AI εργαλείο και επικόλλησε το <code>AI.json</code> ως πρώτο μήνυμα.</li>
+      <li>Στείλε αμέσως μετά την ύλη του μαθήματος — μπορείς να γράψεις/αντιγράψεις το κείμενο, ή να ανεβάσεις φωτογραφία/PDF σημειώσεων.</li>
+      <li>Το AI θα διαβάσει την ύλη και θα σου επιστρέψει ένα έγκυρο JSON 15 ερωτήσεων με κλιμακούμενη δυσκολία.</li>
+      <li>Αντίγραψε το JSON, αποθήκευσέ το σε αρχείο <code>.json</code> (π.χ. <code>diagonisma-istoria.json</code>), και φόρτωσέ το στο παιχνίδι.</li>
+    </ol>
+    <p style="opacity:0.8; font-size:14px; margin-top:10px;"><i>💡 Συμβουλή:</i> Αν στείλεις μόνο το <code>AI.json</code> χωρίς ύλη, το AI θα σου ζητήσει την ύλη στα Ελληνικά πριν φτιάξει τις ερωτήσεις.</p>
+
+    <h3>📏 Πώς δουλεύει η δυσκολία</h3>
+    <p>Το <code>AI.json</code> καθοδηγεί το AI να φτιάξει:</p>
+    <ul>
+      <li><b>Ερωτήσεις 1–3:</b> Πολύ εύκολες — βασικά ονόματα, χρονολογίες, κεντρικές έννοιες.</li>
+      <li><b>Ερωτήσεις 4–6:</b> Εύκολες — συγκεκριμένα γεγονότα από την ύλη.</li>
+      <li><b>Ερωτήσεις 7–9:</b> Μέσης δυσκολίας — σύνδεση εννοιών, αιτίες-αποτελέσματα.</li>
+      <li><b>Ερωτήσεις 10–12:</b> Δύσκολες — λεπτομέρειες, λιγότερο γνωστά στοιχεία.</li>
+      <li><b>Ερωτήσεις 13–15:</b> Πολύ δύσκολες — σύνθεση, λεπτές διαφοροποιήσεις, παγίδες.</li>
+    </ul>
+    <p>Οι λάθος απαντήσεις γίνονται όλο και πιο κοντινές στη σωστή όσο ανεβαίνει η δυσκολία.</p>
+
+    <p style="margin-top:20px; text-align:center; opacity:0.7; font-size:13px;">Καλή τύχη! 🍀</p>
+  </div>
+</div>
+
+<div id="main">
+  <div id="play">
+    <div id="lifelines">
+      <button class="lifeline" id="ll-5050" title="50:50 — αφαιρεί 2 λάθος απαντήσεις">50:50</button>
+      <button class="lifeline" id="ll-class" title="Ρώτα την τάξη σου με ψηφοφορία">👥</button>
+      <button class="lifeline" id="ll-teacher" title="Ρώτα τον δάσκαλό σου">👨‍🏫</button>
+      <div id="qTimer" class="hidden">⏱️ 50</div>
+    </div>
+    <div id="teacherMsg" class="hidden"></div>
+    <div id="question">Πάτα «Έναρξη» για να ξεκινήσει το παιχνίδι.</div>
+    <div id="answers"></div>
+    <button id="walkBtn" style="display:none">💼 Πάρε τα λεφτά</button>
+  </div>
+  <div id="ladder"></div>
+</div>
+
+<div id="overlay">
+  <h1 id="oTitle">Ποιος Θέλει να Γίνει Παντογνώστης;</h1>
+  <p id="oSubtitle">15 ερωτήσεις. Κάθε σωστή απάντηση σε πάει πιο ψηλά στη σκάλα του χρηματικού επάθλου. Στα €5.000 και €25.000 είναι «ασφαλείς ζώνες» — αν χάσεις από εκεί και πάνω, κρατάς το ποσό.</p>
+  <div class="btn-row">
+    <button id="startBank">🎯 Παίξε με την ύλη του σχολείου<br><small style="font-weight:normal; opacity:0.8;">Διάλεξε Τάξη → Μάθημα → Κεφάλαιο</small></button>
+    <button class="btn-secondary" id="startSample">▶ Δείγμα ερωτήσεων<br><small style="font-weight:normal; opacity:0.8;">Τα 7 Θαύματα</small></button>
+    <button class="btn-secondary" id="ownBtn">✏️ Κάνε τις δικές σου ερωτήσεις</button>
+    <input type="file" id="fileInput" accept=".json,application/json" class="file-input">
+  </div>
+  <div id="guide" class="hidden">
+    <h3 style="color:#ffd700; margin-bottom:10px;">📋 Οδηγός σε 5 βήματα</h3>
+    <ol class="steps">
+      <li>
+        <div class="step-text">Κατέβασε το <code>AI.json</code></div>
+        <button class="step-btn" id="downloadAi">⬇ Κατέβασε AI.json</button>
+      </li>
+      <li>
+        <div class="step-text">Ανέβασε το σε ένα AI (ChatGPT, Claude, Gemini...) μαζί με το υλικό που έχεις για διάβασμα (κείμενο, φωτογραφία σημειώσεων, PDF).</div>
+      </li>
+      <li>
+        <div class="step-text">Περίμενε το AI να σου φτιάξει το καινούριο αρχείο <code>.json</code>. Αντίγραψε την απάντηση και αποθήκευσέ τη ως αρχείο (π.χ. <code>diagonisma.json</code>).</div>
+      </li>
+      <li>
+        <div class="step-text">Φόρτωσε το στον Παντογνώστη.</div>
+        <button class="step-btn" id="uploadJson">📂 Φόρτωσε το αρχείο σου</button>
+      </li>
+      <li>
+        <div class="step-text">Παίξε με τις ερωτήσεις από το μάθημά σου! 🎉</div>
+      </li>
+    </ol>
+  </div>
+</div>
+
+<script type="application/json" id="ai-json-embed">
+{
+  "role": "Δημιουργός quiz για το παιχνίδι «Ποιος Θέλει να Γίνει Παντογνώστης»",
+  "language": "Ελληνικά (όλες οι ερωτήσεις και απαντήσεις στα Ελληνικά)",
+  "purpose": "Δημιουργείς ένα JSON αρχείο 15 ερωτήσεων πολλαπλής επιλογής βασισμένο σε εκπαιδευτική ύλη που σου δίνει ο χρήστης (π.χ. κεφάλαιο σχολικού βιβλίου, σημειώσεις διαγωνίσματος, εκπαιδευτικό υλικό). Το αρχείο θα φορτωθεί σε ένα διαδραστικό παιχνίδι και θα παιχτεί από μαθητές.",
+  "workflow": [
+    "ΒΗΜΑ 1: Αν δεν σου έχει δοθεί η ύλη μαζί με αυτό το JSON, ΖΗΤΑ ευγενικά στα Ελληνικά να σου την στείλει ο χρήστης.",
+    "ΒΗΜΑ 2: Όταν λάβεις την ύλη, διάβασέ τη προσεκτικά και εντόπισε 15 κομβικά σημεία.",
+    "ΒΗΜΑ 3: Δημιούργησε 15 ερωτήσεις με ΑΥΞΑΝΟΜΕΝΗ δυσκολία (βλ. difficulty_progression).",
+    "ΒΗΜΑ 4: Σχεδίασε λάθος απαντήσεις (distractors) σύμφωνα με τους κανόνες answer_design_rules.",
+    "ΒΗΜΑ 5: Διέσπειρε τις σωστές απαντήσεις τυχαία στις θέσεις 0, 1, 2, 3.",
+    "ΒΗΜΑ 6: Επαλήθευσε ότι κάθε σωστή απάντηση προκύπτει ΑΠΟΚΛΕΙΣΤΙΚΑ από την ύλη.",
+    "ΒΗΜΑ 7: Επέστρεψε ΜΟΝΟ καθαρό JSON, χωρίς εξήγηση, χωρίς markdown code fences."
+  ],
+  "output_format": {
+    "schema": {
+      "title": "string — τίτλος του quiz",
+      "questions": "πίνακας με 15 αντικείμενα ερωτήσεων (ή τουλάχιστον 5 αν η ύλη είναι λίγη)",
+      "question_object": {
+        "q": "string — η ερώτηση στα Ελληνικά",
+        "answers": "πίνακας με ακριβώς 4 strings",
+        "correct": "ακέραιος 0-3 (δείκτης σωστής απάντησης)"
+      }
+    }
+  },
+  "difficulty_progression": {
+    "ερωτήσεις_1_έως_3": "Πολύ εύκολες — βασικά ονόματα, χρονολογίες, κεντρικές έννοιες",
+    "ερωτήσεις_4_έως_6": "Εύκολες — συγκεκριμένα γεγονότα από την ύλη",
+    "ερωτήσεις_7_έως_9": "Μέσης δυσκολίας — σύνδεση εννοιών, αιτίες-αποτελέσματα",
+    "ερωτήσεις_10_έως_12": "Δύσκολες — λεπτομέρειες, λιγότερο γνωστά στοιχεία",
+    "ερωτήσεις_13_έως_15": "Πολύ δύσκολες — σύνθεση, λεπτές διαφοροποιήσεις, παγίδες"
+  },
+  "answer_design_rules": {
+    "universal": [
+      "ΠΑΝΤΑ ακριβώς 4 απαντήσεις",
+      "Όλες πιθανές, καμία αστεία ή προφανώς ψεύτικη",
+      "Όχι «όλα τα παραπάνω» / «κανένα από τα παραπάνω»",
+      "Συνέπεια στη γραμματική (αν η ερώτηση ζητά πόλη, όλες πόλεις)",
+      "Παρόμοιο μήκος σε όλες"
+    ],
+    "για_εύκολες_1_έως_6": [
+      "Distractors σαφώς διαφορετικές από τη σωστή",
+      "Όχι trick questions"
+    ],
+    "για_μεσαίες_7_έως_9": [
+      "Distractors σχετικές αλλά διακριτές με προσοχή",
+      "Επιτρέπονται ερωτήσεις τύπου «Ποιο ΔΕΝ ισχύει για...»"
+    ],
+    "για_δύσκολες_10_έως_15": [
+      "Distractors πολύ κοντινές στη σωστή — λεπτές διαφορές",
+      "Σκοπός: να «παγιδεύουν» τον μαθητή που δεν διάβασε προσεκτικά"
+    ]
+  },
+  "quality_checks": [
+    "Κάθε σωστή απάντηση επαληθεύεται από την ύλη.",
+    "Καμία ερώτηση δεν έχει δύο σωστές απαντήσεις.",
+    "Καμία ερώτηση δεν είναι διφορούμενη ή υποκειμενική.",
+    "Οι σωστές είναι μοιρασμένες σε όλες τις θέσεις 0-3.",
+    "Έγκυρο JSON — διπλά εισαγωγικά, χωρίς trailing κόμματα."
+  ],
+  "example_output": {
+    "title": "Ιστορία Δ' Δημοτικού — Τα 7 Θαύματα",
+    "questions": [
+      { "q": "Πόσα ήταν τα θαύματα του αρχαίου κόσμου;", "answers": ["5", "6", "7", "8"], "correct": 2 },
+      { "q": "Σε ποια χώρα βρίσκονται οι πυραμίδες της Γκίζας;", "answers": ["Ελλάδα", "Ιταλία", "Αίγυπτο", "Τουρκία"], "correct": 2 }
+    ]
+  },
+  "important_notes": [
+    "Επιστρέφεις ΜΟΝΟ καθαρό JSON.",
+    "ΠΑΝΤΑ στα Ελληνικά.",
+    "Αν η ύλη είναι λίγη, καλύτερα 5-10 ποιοτικές ερωτήσεις από 15 παραγεμισμένες.",
+    "Σε περίπτωση αμφιβολίας για κάποιο στοιχείο, μην το χρησιμοποιήσεις."
+  ]
+}
+</script>
+
+<div id="wizard" class="hidden">
+  <div class="wpanel">
+    <h2 id="wizTitle">🎯 Φτιάξε το παιχνίδι σου</h2>
+    <div class="wsub" id="wizSub">Διάλεξε από ποια ύλη θες να βγουν οι ερωτήσεις.</div>
+    <div class="wsteps">
+      <div class="wstep-dot" data-step="1">1. Τάξη</div>
+      <div class="wstep-dot" data-step="2">2. Μάθημα</div>
+      <div class="wstep-dot" data-step="3">3. Κεφάλαιο</div>
+    </div>
+    <div class="wpick-row" id="wizQuick"></div>
+    <div id="wizardBody"></div>
+    <div class="wpoolinfo" id="wizPool"></div>
+    <div class="wfoot">
+      <div class="left">
+        <button class="wbtn ghost" id="wizClose">✕ Κλείσιμο</button>
+        <button class="wbtn ghost" id="wizBack" style="display:none">← Πίσω</button>
+      </div>
+      <button class="wbtn" id="wizNext">Επόμενο →</button>
+    </div>
+  </div>
+</div>
+
+<script src="bank/manifest.js"></script>
+<script>
+const PRIZES = [500, 1000, 2000, 3000, 5000, 7500, 10000, 12500, 15000, 25000, 50000, 100000, 250000, 500000, 1000000];
+const SAFE_LEVELS = [4, 9]; // €5.000 και €25.000
+
+const SAMPLE = {
+  title: "Ιστορία Δ' Δημοτικού — Τα 7 Θαύματα",
+  questions: [
+    { q: "Πόσα ήταν τα θαύματα του αρχαίου κόσμου;", answers: ["5", "6", "7", "8"], correct: 2 },
+    { q: "Σε ποια χώρα βρίσκονται οι πυραμίδες της Γκίζας;", answers: ["Ελλάδα", "Ιταλία", "Αίγυπτο", "Τουρκία"], correct: 2 },
+    { q: "Σε ποιο νησί στήθηκε ο Κολοσσός;", answers: ["Κρήτη", "Ρόδο", "Σαντορίνη", "Λέσβο"], correct: 1 },
+    { q: "Σε ποια πόλη βρισκόταν το χρυσελεφάντινο άγαλμα του Δία;", answers: ["Αθήνα", "Δελφούς", "Ολυμπία", "Σπάρτη"], correct: 2 },
+    { q: "Από ποια υλικά ήταν φτιαγμένο το άγαλμα του Δία;", answers: ["Μάρμαρο", "Χρυσός και ελεφαντόδοντο", "Πέτρα", "Μπρούτζος"], correct: 1 },
+    { q: "Πού βρισκόταν ο Ναός της Άρτεμης;", answers: ["Αθήνα", "Έφεσο", "Δελφούς", "Ρώμη"], correct: 1 },
+    { q: "Σε ποια αρχαία πόλη βρίσκονταν οι Κρεμαστοί Κήποι;", answers: ["Αλεξάνδρεια", "Βαβυλώνα", "Τροία", "Θήβα"], correct: 1 },
+    { q: "Σε ποια πόλη βρισκόταν ο Φάρος, ένα από τα 7 θαύματα;", answers: ["Αλεξάνδρεια", "Καρθαγένη", "Ρώμη", "Κωνσταντινούπολη"], correct: 0 },
+    { q: "Πού βρισκόταν το Μαυσωλείο, ένα από τα 7 θαύματα;", answers: ["Πέλλα", "Αλικαρνασσό", "Μίλητο", "Νάξο"], correct: 1 },
+    { q: "Πόσα από τα 7 θαύματα του αρχαίου κόσμου σώζονται σήμερα;", answers: ["Κανένα", "Ένα — οι πυραμίδες", "Τρία", "Πέντε"], correct: 1 },
+    { q: "Ποιος γλύπτης δημιούργησε το άγαλμα του Δία στην Ολυμπία;", answers: ["Πραξιτέλης", "Φειδίας", "Μύρωνας", "Πολύκλειτος"], correct: 1 },
+    { q: "Ποιος Φαραώ έχει τη μεγαλύτερη πυραμίδα στη Γκίζα;", answers: ["Τουταγχαμών", "Ραμσής Β'", "Χέοπας", "Νεφερτίτη"], correct: 2 },
+    { q: "Σε ποια ήπειρο βρισκόταν η αρχαία Βαβυλώνα;", answers: ["Ευρώπη", "Ασία", "Αφρική", "Αμερική"], correct: 1 },
+    { q: "Ποιος βασιλιάς της Μακεδονίας ίδρυσε την Αλεξάνδρεια;", answers: ["Φίλιππος Β'", "Μέγας Αλέξανδρος", "Πτολεμαίος", "Αντίγονος"], correct: 1 },
+    { q: "Σε ποιο ποτάμι βρισκόταν χτισμένη η αρχαία Βαβυλώνα;", answers: ["Νείλο", "Ευφράτη", "Τίγρη", "Ιορδάνη"], correct: 1 }
+  ]
+};
+
+/* ============================================================
+   ΗΧΗΤΙΚΑ ΕΦΕ — πραγματικοί ήχοι του «Εκατομμυριούχου» από τα
+   MP3 αρχεία στον φάκελο Sounds/.
+   ============================================================ */
+let soundOn = true;
+let sndUnlocked = false;
+const SND = {};
+function loadSnd(key, file, loop, vol){
+  const a = new Audio('Sounds/' + file);
+  a.loop = !!loop;
+  a.volume = vol == null ? 1 : vol;
+  a.preload = 'auto';
+  SND[key] = a;
+}
+loadSnd('back',     'BackMusic.mp3',               true,  0.45);
+loadSnd('question', 'PillowQuestion.mp3',          true,  0.5);
+loadSnd('suspense', 'Final Answer-flash-wait.mp3', false, 0.7);
+loadSnd('correct',  'BasicWin.mp3',                false, 0.85);
+loadSnd('bigwin',   'Pillow--Big-Win.mp3',         false, 0.9);
+loadSnd('wrong',    'wrong-awncer-pillow.mp3',     false, 0.85);
+loadSnd('lose',     'wrong-Awncer-small.mp3',      false, 0.85);
+
+function playSnd(key){
+  if(!soundOn) return;
+  const a = SND[key];
+  if(!a) return;
+  try { a.currentTime = 0; const p = a.play(); if(p && p.catch) p.catch(()=>{}); } catch(e){}
+}
+function startSnd(key){ /* ξεκινά loop μόνο αν δεν παίζει ήδη */
+  if(!soundOn) return;
+  const a = SND[key];
+  if(a && a.paused){ try { const p = a.play(); if(p && p.catch) p.catch(()=>{}); } catch(e){} }
+}
+function stopSnd(key){
+  const a = SND[key];
+  if(!a) return;
+  try { a.pause(); a.currentTime = 0; } catch(e){}
+}
+function stopAllSnd(){ for(const k in SND) stopSnd(k); }
+
+/* «Ξεκλείδωμα» ήχου μετά το πρώτο user gesture (autoplay policy) */
+function ac(){
+  if(sndUnlocked) return;
+  sndUnlocked = true;
+  for(const k in SND){
+    const a = SND[k];
+    a.muted = true;
+    try {
+      const p = a.play();
+      if(p && p.then){ p.then(()=>{ a.pause(); a.currentTime = 0; a.muted = false; }).catch(()=>{ a.muted = false; }); }
+      else { a.pause(); a.muted = false; }
+    } catch(e){ a.muted = false; }
+  }
+}
+
+/* Τα «μαξιλάρια» (safe-haven) επίπεδα + ο τελικός έχουν τους δικούς τους ήχους */
+function isPillowLevel(lvl){
+  if(lvl >= questions.length - 1) return true;   /* ο τελικός = μεγάλο μαξιλάρι */
+  return effectiveSafeLevels().includes(lvl);    /* τα κλειδωμένα επίπεδα */
+}
+function startBed(){ /* μουσική υπόκρουση: pillow vs κανονική ερώτηση */
+  if(!soundOn) return;
+  const pillow = isPillowLevel(currentLevel);
+  stopSnd(pillow ? 'back' : 'question');
+  startSnd(pillow ? 'question' : 'back');
+}
+
+/* Ονόματα συμβάντων του παιχνιδιού -> πραγματικοί ήχοι */
+function sndSelect(){}                            /* κλείδωμα απάντησης — βλ. startSuspense */
+function sndNavigate(){}                          /* πλοήγηση UI — χωρίς ήχο */
+function sndCheck(){}                             /* κλικ UI — χωρίς ήχο */
+function sndCorrect(){ playSnd(isPillowLevel(currentLevel) ? 'bigwin' : 'correct'); }
+function sndWrong(){ playSnd(isPillowLevel(currentLevel) ? 'wrong' : 'lose'); }
+function sndLifeline(){}                          /* βοήθεια — χωρίς ήχο */
+function startSuspense(){ stopSnd('back'); stopSnd('question'); playSnd('suspense'); }
+function stopSuspense(){ stopSnd('suspense'); }
+
+let questions = [];
+let currentLevel = 0;
+let lifelineUsed = false;
+let classUsed = false;
+let teacherUsed = false;
+let isAnswering = false;
+
+const qEl = document.getElementById('question');
+const ansEl = document.getElementById('answers');
+const ladderEl = document.getElementById('ladder');
+const llEl = document.getElementById('ll-5050');
+const walkBtn = document.getElementById('walkBtn');
+const overlay = document.getElementById('overlay');
+const oTitle = document.getElementById('oTitle');
+const oSubtitle = document.getElementById('oSubtitle');
+const subEl = document.getElementById('subtitle');
+const startBtn = document.getElementById('startSample');
+const fileInput = document.getElementById('fileInput');
+
+function formatPrize(n){
+  return '€' + n.toLocaleString('el-GR');
+}
+
+function effectivePrizes(){
+  // Use last N prizes when fewer than 15 questions
+  if(questions.length >= PRIZES.length) return PRIZES;
+  return PRIZES.slice(0, questions.length);
+}
+
+function effectiveSafeLevels(){
+  const p = effectivePrizes();
+  return SAFE_LEVELS.filter(i => i < p.length);
+}
+
+function renderLadder(){
+  const prizes = effectivePrizes();
+  const safes = effectiveSafeLevels();
+  ladderEl.innerHTML = '';
+  for(let i = 0; i < prizes.length; i++){
+    const div = document.createElement('div');
+    div.className = 'rung';
+    if(i === currentLevel) div.classList.add('active');
+    else if(i < currentLevel) div.classList.add('done');
+    if(safes.includes(i)) div.classList.add('safe');
+    div.innerHTML = '<span class="num">' + (i+1) + '</span><span>' + formatPrize(prizes[i]) + '</span>';
+    ladderEl.appendChild(div);
+  }
+}
+
+function showQuestion(){
+  if(currentLevel >= questions.length){
+    endGame('won');
+    return;
+  }
+  isAnswering = false;
+  walkBtn.style.display = currentLevel > 0 ? 'inline-block' : 'none';
+  stopLifelineTimer();
+  startBed();
+  startQuestionTimer();
+  const q = questions[currentLevel];
+  qEl.textContent = q.q;
+  ansEl.innerHTML = '';
+  const letters = ['A', 'B', 'C', 'D'];
+  q.answers.forEach((a, i) => {
+    const btn = document.createElement('button');
+    btn.className = 'ans';
+    btn.innerHTML = '<span class="letter">' + letters[i] + ':</span> <span>' + a + '</span>';
+    btn.onclick = () => answerClicked(i, btn);
+    ansEl.appendChild(btn);
+  });
+  renderLadder();
+}
+
+function answerClicked(idx, btn){
+  if(isAnswering) return;
+  isAnswering = true;
+  stopLifelineTimer();
+  stopQuestionTimer();
+  walkBtn.style.display = 'none';
+  btn.classList.add('selected');
+  sndSelect();
+  startSuspense();
+  const q = questions[currentLevel];
+  setTimeout(() => {
+    stopSuspense();
+    const buttons = ansEl.querySelectorAll('.ans');
+    btn.classList.remove('selected');
+    buttons[q.correct].classList.add('correct');
+    if(idx === q.correct){
+      sndCorrect();
+      setTimeout(() => {
+        currentLevel++;
+        if(currentLevel >= questions.length){
+          endGame('won');
+        } else {
+          showQuestion();
+        }
+      }, 1400);
+    } else {
+      btn.classList.add('wrong');
+      sndWrong();
+      setTimeout(() => endGame('lost', q.correct), 2200);
+    }
+  }, 1500);
+}
+
+function useFiftyFifty(){
+  if(lifelineUsed || isAnswering) return;
+  lifelineUsed = true;
+  sndLifeline();
+  llEl.classList.add('used');
+  const q = questions[currentLevel];
+  const wrongIndices = [0,1,2,3].filter(i => i !== q.correct && i < q.answers.length);
+  wrongIndices.sort(() => Math.random() - 0.5);
+  const hide = wrongIndices.slice(0, 2);
+  const buttons = ansEl.querySelectorAll('.ans');
+  hide.forEach(i => buttons[i].classList.add('disabled'));
+}
+
+llEl.onclick = useFiftyFifty;
+
+let lifelineTimer = null;
+let questionTimer = null;
+let questionRemaining = 0;
+const QUESTION_TIME = 50;
+
+function renderQuestionTimer(){
+  const tEl = document.getElementById('qTimer');
+  tEl.textContent = '⏱️ ' + questionRemaining;
+  tEl.classList.toggle('urgent', questionRemaining <= 10);
+}
+
+function stopQuestionTimer(){
+  if(questionTimer){ clearInterval(questionTimer); questionTimer = null; }
+  questionRemaining = 0;
+  document.getElementById('qTimer').classList.add('hidden');
+}
+
+function pauseQuestionTimer(){
+  if(questionTimer){ clearInterval(questionTimer); questionTimer = null; }
+  // keep questionRemaining and qTimer visible — just stop counting
+}
+
+function resumeQuestionTimer(){
+  if(questionRemaining > 0 && !questionTimer){
+    questionTimer = setInterval(tickQuestion, 1000);
+  }
+}
+
+function tickQuestion(){
+  questionRemaining--;
+  if(questionRemaining <= 0){
+    stopQuestionTimer();
+    timeUp();
+  } else {
+    renderQuestionTimer();
+  }
+}
+
+function startQuestionTimer(){
+  stopQuestionTimer();
+  questionRemaining = QUESTION_TIME;
+  renderQuestionTimer();
+  document.getElementById('qTimer').classList.remove('hidden');
+  questionTimer = setInterval(tickQuestion, 1000);
+}
+
+function timeUp(){
+  if(isAnswering) return;
+  isAnswering = true;
+  stopSuspense();
+  sndWrong();
+  stopLifelineTimer();
+  walkBtn.style.display = 'none';
+  const q = questions[currentLevel];
+  const buttons = ansEl.querySelectorAll('.ans');
+  buttons[q.correct].classList.add('correct');
+  setTimeout(() => endGame('timeup', q.correct), 2000);
+}
+
+function stopLifelineTimer(){
+  if(lifelineTimer){ clearInterval(lifelineTimer); lifelineTimer = null; }
+  document.getElementById('teacherMsg').classList.add('hidden');
+}
+
+function showLifelineMessage(emoji, html, seconds){
+  sndLifeline();
+  stopLifelineTimer();
+  pauseQuestionTimer();
+  const tm = document.getElementById('teacherMsg');
+  let remaining = seconds;
+  const render = () => {
+    const urgent = remaining <= 10 ? ' urgent' : '';
+    tm.innerHTML = `<span class="teacher-emoji">${emoji}</span><span class="teacher-text">${html}</span><span class="teacher-timer${urgent}">⏱️ ${remaining}s</span>`;
+  };
+  render();
+  tm.classList.remove('hidden');
+  lifelineTimer = setInterval(() => {
+    remaining--;
+    if(remaining <= 0){
+      stopLifelineTimer();
+      resumeQuestionTimer();
+    } else {
+      render();
+    }
+  }, 1000);
+}
+
+function useClassLifeline(){
+  if(classUsed || isAnswering) return;
+  classUsed = true;
+  document.getElementById('ll-class').classList.add('used');
+  showLifelineMessage(
+    '🗳️',
+    '<b>Ρώτα την τάξη σου με ψηφοφορία!</b><br>Πες στα παιδιά να σηκώσουν τα χέρια τους για κάθε απάντηση (A, B, Γ, Δ) και διάλεξε αυτή που πήρε τις περισσότερες ψήφους. <i>Έχεις 60 δευτερόλεπτα.</i>',
+    60
+  );
+}
+
+function useTeacherLifeline(){
+  if(teacherUsed || isAnswering) return;
+  teacherUsed = true;
+  document.getElementById('ll-teacher').classList.add('used');
+  showLifelineMessage(
+    '👨‍🏫',
+    '<b>Ρώτα τον δάσκαλό σου!</b><br>Γύρνα στον/στην δάσκαλο/δασκάλα σου και ζήτα του/της μια συμβουλή. <i>Έχεις 30 δευτερόλεπτα.</i>',
+    30
+  );
+}
+
+document.getElementById('ll-class').onclick = useClassLifeline;
+document.getElementById('ll-teacher').onclick = useTeacherLifeline;
+
+walkBtn.onclick = () => endGame('walked');
+
+function endGame(outcome, correctIdx){
+  const prizes = effectivePrizes();
+  const safes = effectiveSafeLevels();
+  let prize = 0;
+  stopSuspense();
+  stopSnd('back');
+  stopSnd('question');
+  if(outcome === 'won'){
+    /* ο ήχος μεγάλης νίκης (bigwin) έπαιξε ήδη στην αποκάλυψη της τελευταίας σωστής */
+    prize = prizes[prizes.length - 1];
+    oTitle.textContent = '🏆 ΠΑΝΤΟΓΝΩΣΤΗΣ!';
+    oSubtitle.innerHTML = 'Απάντησες σωστά σε όλες τις ' + questions.length + ' ερωτήσεις!<br><div style="color:#66ff66; font-size:54px; margin-top:14px;">' + formatPrize(prize) + '</div>';
+  } else if(outcome === 'walked'){
+    playSnd('correct');
+    prize = currentLevel > 0 ? prizes[currentLevel - 1] : 0;
+    oTitle.textContent = '💼 Πήρες τα λεφτά';
+    oSubtitle.innerHTML = 'Σταμάτησες με ασφάλεια.<br><div style="color:#66ff66; font-size:54px; margin-top:14px;">' + formatPrize(prize) + '</div>';
+  } else {
+    /* ο ήχος λάθους (pillow/small) έπαιξε ήδη στην αποκάλυψη */
+    // lost or timed out — fall back to safe level
+    let safePrize = 0;
+    for(const s of safes){
+      if(currentLevel > s) safePrize = prizes[s];
+    }
+    prize = safePrize;
+    oTitle.textContent = outcome === 'timeup' ? '⏰ Τελείωσε ο χρόνος!' : '❌ Λάθος απάντηση';
+    let html = 'Η σωστή ήταν: <b style="color:#66ff66;">' + questions[currentLevel].answers[correctIdx] + '</b>';
+    if(prize > 0) html += '<br><br>Σου μένουν: <span style="color:#66ff66; font-size:42px;">' + formatPrize(prize) + '</span>';
+    else html += '<br><br><span style="color:#ff6666; font-size:24px;">Δεν κέρδισες χρήματα.</span>';
+    oSubtitle.innerHTML = html;
+  }
+  startBtn.innerHTML = '▶ Παίξε ξανά';
+  overlay.classList.remove('hidden');
+}
+
+function startGame(data){
+  questions = data.questions.slice(0, PRIZES.length);
+  subEl.textContent = data.title || 'Δείγμα ερωτήσεων';
+  currentLevel = 0;
+  lifelineUsed = false;
+  classUsed = false;
+  teacherUsed = false;
+  llEl.classList.remove('used');
+  document.getElementById('ll-class').classList.remove('used');
+  document.getElementById('ll-teacher').classList.remove('used');
+  stopLifelineTimer();
+  stopQuestionTimer();
+  stopAllSnd();
+  overlay.classList.add('hidden');
+  showQuestion();
+}
+
+let lastPlay = () => startGame(SAMPLE);
+startBtn.onclick = () => { ac(); lastPlay(); };
+
+document.getElementById('ownBtn').onclick = () => {
+  document.getElementById('guide').classList.toggle('hidden');
+};
+
+document.getElementById('downloadAi').onclick = () => {
+  const content = document.getElementById('ai-json-embed').textContent.trim();
+  const blob = new Blob([content], { type: 'application/json;charset=utf-8' });
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.href = url;
+  a.download = 'AI.json';
+  document.body.appendChild(a);
+  a.click();
+  document.body.removeChild(a);
+  setTimeout(() => URL.revokeObjectURL(url), 1000);
+};
+
+document.getElementById('uploadJson').onclick = () => fileInput.click();
+
+fileInput.onchange = (e) => {
+  const file = e.target.files[0];
+  if(!file) return;
+  const reader = new FileReader();
+  reader.onload = ev => {
+    try {
+      const data = JSON.parse(ev.target.result);
+      if(!Array.isArray(data.questions) || data.questions.length === 0){
+        alert('Λάθος μορφή. Το JSON πρέπει να έχει πεδίο "questions" με τουλάχιστον μία ερώτηση.');
+        return;
+      }
+      for(const [i, q] of data.questions.entries()){
+        if(!q.q || !Array.isArray(q.answers) || q.answers.length < 2 || typeof q.correct !== 'number'){
+          alert('Ερώτηση ' + (i+1) + ': λάθος μορφή. Χρειάζεται "q" (κείμενο), "answers" (πίνακας ≥2), "correct" (αριθμός).');
+          return;
+        }
+        if(q.correct < 0 || q.correct >= q.answers.length){
+          alert('Ερώτηση ' + (i+1) + ': το "correct"=' + q.correct + ' δεν αντιστοιχεί σε καμία απάντηση.');
+          return;
+        }
+      }
+      lastPlay = () => startGame(data);
+      startGame(data);
+    } catch(err) {
+      alert('Σφάλμα στην ανάγνωση του αρχείου: ' + err.message);
+    }
+  };
+  reader.readAsText(file);
+  fileInput.value = '';
+};
+
+questions = SAMPLE.questions;
+renderLadder();
+
+/* ============================================================
+   ΤΡΑΠΕΖΑ ΕΡΩΤΗΣΕΩΝ + ΟΔΗΓΟΣ ΕΠΙΛΟΓΗΣ (Τάξη → Μάθημα → Κεφάλαιο)
+   ============================================================ */
+window.QUIZ_BANK = window.QUIZ_BANK || [];
+window.registerQuiz = function(o){ window.QUIZ_BANK.push(o); };
+
+let bankLoaded = false, bankLoading = false;
+function loadBank(cb){
+  if(bankLoaded) return cb(true);
+  const M = window.QUIZ_MANIFEST;
+  if(!M || !Array.isArray(M.files) || M.files.length === 0){ return cb(false); }
+  if(bankLoading) return; // απλό guard
+  bankLoading = true;
+  let pending = M.files.length;
+  let ok = false;
+  M.files.forEach(fn => {
+    const s = document.createElement('script');
+    s.src = 'bank/' + fn;
+    s.onload = () => { ok = true; if(--pending === 0){ bankLoaded = true; bankLoading = false; cb(true); } };
+    s.onerror = () => { if(--pending === 0){ bankLoaded = ok; bankLoading = false; cb(ok); } };
+    document.body.appendChild(s);
+  });
+}
+
+const MAN = () => window.QUIZ_MANIFEST || { grades: [], subjects: [] };
+function gradeMeta(id){ return MAN().grades.find(g => g.id === id); }
+function subjMeta(id){ return MAN().subjects.find(s => s.id === id); }
+function gradeOrder(id){ const m = gradeMeta(id); return m ? m.order : 99; }
+function entryFor(g, s){ return window.QUIZ_BANK.find(e => e.grade === g && e.subject === s); }
+function qcount(entry){ return entry.chapters.reduce((n, c) => n + c.questions.length, 0); }
+
+function availableGrades(){
+  const ids = [...new Set(window.QUIZ_BANK.map(e => e.grade))];
+  return ids.sort((a, b) => gradeOrder(a) - gradeOrder(b));
+}
+function availableSubjects(gradeIds){
+  const ids = [...new Set(window.QUIZ_BANK.filter(e => gradeIds.includes(e.grade)).map(e => e.subject))];
+  const order = MAN().subjects.map(s => s.id);
+  return ids.sort((a, b) => order.indexOf(a) - order.indexOf(b));
+}
+
+function shuffle(arr){ for(let i = arr.length - 1; i > 0; i--){ const j = Math.floor(Math.random() * (i + 1)); [arr[i], arr[j]] = [arr[j], arr[i]]; } return arr; }
+function shuffleAnswers(q){
+  const idx = q.answers.map((_, i) => i);
+  shuffle(idx);
+  return { q: q.q, answers: idx.map(i => q.answers[i]), correct: idx.indexOf(q.correct), d: q.d };
+}
+
+const wizard = document.getElementById('wizard');
+const wizBody = document.getElementById('wizardBody');
+const wizQuick = document.getElementById('wizQuick');
+const wizPool = document.getElementById('wizPool');
+const wizNext = document.getElementById('wizNext');
+const wizBack = document.getElementById('wizBack');
+const wizSubEl = document.getElementById('wizSub');
+
+let wz = { step: 1, grades: [], subjects: [], chapters: [] };
+
+function hasChapterStep(){
+  if(wz.grades.length !== 1 || wz.subjects.length !== 1) return false;
+  const e = entryFor(wz.grades[0], wz.subjects[0]);
+  return !!(e && e.chapters.length > 0);
+}
+
+function openWizard(){
+  loadBank(success => {
+    wizard.classList.remove('hidden');
+    if(!success || window.QUIZ_BANK.length === 0){
+      wizQuick.innerHTML = ''; wizPool.textContent = '';
+      wizBack.style.display = 'none'; wizNext.style.display = 'none';
+      document.querySelectorAll('.wstep-dot').forEach(d => d.className = 'wstep-dot');
+      wizSubEl.textContent = '';
+      wizBody.innerHTML = '<div class="wempty">Δεν βρέθηκαν αρχεία ερωτήσεων στον φάκελο <b>bank/</b>.<br><br>Βεβαιώσου ότι ο φάκελος <b>bank</b> βρίσκεται δίπλα στο αρχείο του παιχνιδιού και περιέχει το <b>manifest.js</b> μαζί με τα αρχεία των μαθημάτων.</div>';
+      return;
+    }
+    wz = { step: 1, grades: [], subjects: [], chapters: [] };
+    wizNext.style.display = '';
+    renderStep();
+  });
+}
+
+function toggle(arr, val){
+  const i = arr.indexOf(val);
+  if(i >= 0) arr.splice(i, 1); else arr.push(val);
+  sndCheck();
+}
+
+function optEl(checked, icon, label, sub, onClick){
+  const d = document.createElement('div');
+  d.className = 'opt' + (checked ? ' checked' : '');
+  d.innerHTML = '<span class="box">' + (checked ? '✓' : '') + '</span>'
+    + (icon ? '<span class="ic">' + icon + '</span>' : '')
+    + '<span class="lbl">' + label + (sub ? '<br><span class="cnt">' + sub + '</span>' : '') + '</span>';
+  d.onclick = onClick;
+  return d;
+}
+
+function renderStep(){
+  // dots
+  document.querySelectorAll('.wstep-dot').forEach(d => {
+    const n = +d.dataset.step;
+    d.className = 'wstep-dot' + (n === wz.step ? ' active' : (n < wz.step ? ' done' : ''));
+  });
+  wizQuick.innerHTML = '';
+  wizPool.textContent = '';
+  wizBack.style.display = wz.step > 1 ? '' : 'none';
+  wizBody.innerHTML = '';
+
+  if(wz.step === 1){
+    wizSubEl.textContent = 'Διάλεξε μία ή περισσότερες τάξεις (πάτησε στα κουτάκια).';
+    const grid = document.createElement('div'); grid.className = 'opt-grid';
+    availableGrades().forEach(g => {
+      const m = gradeMeta(g);
+      const subs = availableSubjects([g]).length;
+      grid.appendChild(optEl(wz.grades.includes(g), '🎓', m ? m.name : g, subs + ' μαθήματα', () => {
+        toggle(wz.grades, g); renderStep();
+      }));
+    });
+    wizBody.appendChild(grid);
+    addAllNone(() => availableGrades(), wz.grades);
+    wizNext.disabled = wz.grades.length === 0;
+    wizNext.textContent = 'Επόμενο →';
+  }
+
+  else if(wz.step === 2){
+    wizSubEl.textContent = 'Διάλεξε ένα ή περισσότερα μαθήματα.';
+    const subs = availableSubjects(wz.grades);
+    wz.subjects = wz.subjects.filter(s => subs.includes(s));
+    const grid = document.createElement('div'); grid.className = 'opt-grid';
+    subs.forEach(s => {
+      const m = subjMeta(s);
+      let qn = 0; wz.grades.forEach(g => { const e = entryFor(g, s); if(e) qn += qcount(e); });
+      grid.appendChild(optEl(wz.subjects.includes(s), m ? m.icon : '📚', m ? m.name : s, qn + ' ερωτήσεις', () => {
+        toggle(wz.subjects, s); renderStep();
+      }));
+    });
+    wizBody.appendChild(grid);
+    addAllNone(() => availableSubjects(wz.grades), wz.subjects);
+    wizNext.disabled = wz.subjects.length === 0;
+    wizNext.textContent = hasChapterStepAfter() ? 'Επόμενο →' : '▶ Έναρξη';
+  }
+
+  else if(wz.step === 3){
+    const e = entryFor(wz.grades[0], wz.subjects[0]);
+    wizSubEl.textContent = 'Διάλεξε κεφάλαια (ή άφησε «Όλα τα κεφάλαια»).';
+    const grid = document.createElement('div'); grid.className = 'opt-grid';
+    const allOn = wz.chapters.length === 0 || wz.chapters.includes('__all__');
+    grid.appendChild(optEl(allOn, '📚', 'Όλα τα κεφάλαια', e.chapters.length + ' κεφάλαια', () => {
+      wz.chapters = []; sndCheck(); renderStep();
+    }));
+    e.chapters.forEach(c => {
+      const on = !allOn && wz.chapters.includes(c.id);
+      grid.appendChild(optEl(on, '', c.name, c.questions.length + ' ερωτήσεις', () => {
+        if(wz.chapters.includes('__all__')) wz.chapters = [];
+        toggle(wz.chapters, c.id); renderStep();
+      }));
+    });
+    wizBody.appendChild(grid);
+    wizNext.disabled = false;
+    wizNext.textContent = '▶ Έναρξη';
+    updatePoolInfo();
+  }
+}
+
+function hasChapterStepAfter(){
+  return wz.grades.length === 1 && wz.subjects.length === 1 &&
+    (entryFor(wz.grades[0], wz.subjects[0]) || { chapters: [] }).chapters.length > 0;
+}
+
+function addAllNone(getAll, target){
+  const all = document.createElement('button'); all.className = 'mini'; all.textContent = '✓ Όλα';
+  all.onclick = () => { const a = getAll(); target.length = 0; a.forEach(x => target.push(x)); sndCheck(); renderStep(); };
+  const none = document.createElement('button'); none.className = 'mini'; none.textContent = '✕ Κανένα';
+  none.onclick = () => { target.length = 0; sndCheck(); renderStep(); };
+  wizQuick.appendChild(all); wizQuick.appendChild(none);
+}
+
+function updatePoolInfo(){
+  const n = collectPool().length;
+  wizPool.textContent = '🎲 Διαθέσιμες ερωτήσεις σε αυτή την επιλογή: ' + n + (n > 15 ? ' — θα μπουν 15 τυχαίες κάθε φορά.' : '');
+}
+
+function collectPool(){
+  const pool = [];
+  wz.grades.forEach(g => wz.subjects.forEach(s => {
+    const e = entryFor(g, s); if(!e) return;
+    let chaps = e.chapters;
+    if(hasChapterStep() && wz.chapters.length && !wz.chapters.includes('__all__')){
+      chaps = e.chapters.filter(c => wz.chapters.includes(c.id));
+    }
+    chaps.forEach(c => c.questions.forEach(q => pool.push(q)));
+  }));
+  return pool;
+}
+
+function buildAndStart(){
+  const pool = collectPool();
+  if(pool.length === 0){ alert('Δεν βρέθηκαν ερωτήσεις για την επιλογή σου.'); return; }
+  const lv = { easy: [], medium: [], hard: [] };
+  pool.forEach(q => { (lv[q.d] || lv.medium).push(q); });
+  shuffle(lv.easy); shuffle(lv.medium); shuffle(lv.hard);
+  let picked = [].concat(lv.easy.slice(0, 5), lv.medium.slice(0, 5), lv.hard.slice(0, 5));
+  if(picked.length < 15){
+    const left = shuffle([].concat(lv.easy.slice(5), lv.medium.slice(5), lv.hard.slice(5)));
+    picked = picked.concat(left.slice(0, 15 - picked.length));
+  }
+  const rank = { easy: 0, medium: 1, hard: 2 };
+  picked.sort((a, b) => (rank[a.d] ?? 1) - (rank[b.d] ?? 1));
+  picked = picked.map(shuffleAnswers);
+  const gs = wz.grades.map(g => (gradeMeta(g) || {}).name || g).join(', ');
+  const ss = wz.subjects.map(s => (subjMeta(s) || {}).name || s).join(', ');
+  lastPlay = buildAndStart;
+  wizard.classList.add('hidden');
+  startGame({ questions: picked, title: ss + ' — ' + gs });
+}
+
+wizNext.onclick = () => {
+  sndNavigate();
+  if(wz.step === 1){ wz.step = 2; renderStep(); }
+  else if(wz.step === 2){ if(hasChapterStepAfter()){ wz.chapters = []; wz.step = 3; renderStep(); } else buildAndStart(); }
+  else if(wz.step === 3){ buildAndStart(); }
+};
+wizBack.onclick = () => { sndNavigate(); if(wz.step > 1){ wz.step--; renderStep(); } };
+document.getElementById('wizClose').onclick = () => { sndNavigate(); wizard.classList.add('hidden'); };
+document.getElementById('startBank').onclick = () => { ac(); openWizard(); };
+
+/* Κουμπί ήχου on/off */
+document.getElementById('soundBtn').onclick = () => {
+  soundOn = !soundOn;
+  document.getElementById('soundBtn').textContent = soundOn ? '🔊' : '🔇';
+  if(!soundOn){
+    stopAllSnd();
+  } else if(overlay.classList.contains('hidden') && !isAnswering){
+    /* μέσα στο παιχνίδι (όχι σε αναμονή απάντησης): ξανάρχισε το σωστό bed */
+    startBed();
+  }
+};
+
+const helpEl = document.getElementById('help');
+document.getElementById('helpBtn').onclick = () => helpEl.classList.remove('hidden');
+document.getElementById('helpClose').onclick = () => helpEl.classList.add('hidden');
+helpEl.onclick = (e) => { if(e.target === helpEl) helpEl.classList.add('hidden'); };
+</script>
+</body>
+</html>

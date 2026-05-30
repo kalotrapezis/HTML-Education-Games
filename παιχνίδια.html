@@ -1,0 +1,221 @@
+<!DOCTYPE html>
+<html lang="el">
+<head>
+<meta charset="UTF-8">
+<title>Διαδραστικά Παιχνίδια</title>
+<style>
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body {
+    font-family: 'Segoe UI', Tahoma, sans-serif;
+    background: linear-gradient(135deg, #1e3c72, #2a5298 50%, #6b2a8a);
+    color: #fff;
+    min-height: 100vh;
+    padding: 60px 30px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+  }
+  h1 { font-size: 60px; margin-bottom: 16px; text-align: center; }
+  .subtitle { font-size: 22px; opacity: 0.85; margin-bottom: 60px; text-align: center; }
+  .category {
+    font-size: 36px;
+    color: #ffb347;
+    margin: 50px 0 30px;
+    text-align: center;
+    width: 100%;
+    max-width: 1100px;
+    padding-bottom: 14px;
+    border-bottom: 2px solid rgba(255,179,71,0.3);
+  }
+  .category:first-of-type { margin-top: 10px; }
+  .grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+    gap: 32px;
+    max-width: 1100px;
+    width: 100%;
+  }
+  .card {
+    background: rgba(0,0,0,0.35);
+    border-radius: 18px;
+    padding: 40px 32px;
+    text-decoration: none;
+    color: #fff;
+    display: flex;
+    flex-direction: column;
+    gap: 14px;
+    box-shadow: 0 6px 18px rgba(0,0,0,0.3);
+    transition: transform 0.15s, box-shadow 0.15s;
+    border: 2px solid transparent;
+  }
+  .card:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 10px 24px rgba(0,0,0,0.4);
+    border-color: #ffb347;
+  }
+  .card .header { display: flex; align-items: center; gap: 16px; }
+  .card .emoji { font-size: 56px; }
+  .card .name { font-size: 26px; font-weight: bold; color: #ffb347; }
+  .card .year {
+    display: inline-block; font-size: 13px; padding: 3px 10px;
+    background: rgba(255,179,71,0.2); color: #ffb347; border-radius: 12px;
+    margin-top: 4px; font-weight: bold;
+  }
+  .card .desc { font-size: 16px; opacity: 0.9; line-height: 1.55; }
+  .card .fact {
+    font-size: 14px; opacity: 0.75; line-height: 1.5; margin-top: 6px;
+    border-left: 3px solid #ffb347; padding-left: 12px; font-style: italic;
+  }
+</style>
+</head>
+<body>
+<h1>🎮 Διαδραστικά Παιχνίδια</h1>
+<div class="subtitle">Διάλεξε ένα παιχνίδι για να παίξεις</div>
+
+<h2 class="category">📚 Για το μάθημα</h2>
+<div class="grid">
+  <a class="card" href="MathGame.html">
+    <div class="header">
+      <div class="emoji">🔢</div>
+      <div>
+        <div class="name">Math Game</div>
+      </div>
+    </div>
+    <div class="desc">Παιχνίδι με μαθηματικές πράξεις για εξάσκηση.</div>
+  </a>
+  <a class="card" href="tugofwar.html">
+    <div class="header">
+      <div class="emoji">🪢</div>
+      <div>
+        <div class="name">Tug of War: Μαθηματικά</div>
+      </div>
+    </div>
+    <div class="desc">2 παίχτες σε σχοινί — ταυτόχρονα ή εναλλάξ. Πληκτρολόγιο/touch input με πράξεις (+, −, ×, ÷).</div>
+    <div class="fact">Ιδανικό για διαδραστικό πίνακα στην τάξη — οι δύο μαθητές παίζουν δίπλα-δίπλα τραβώντας το σχοινί με σωστές απαντήσεις.</div>
+  </a>
+  <a class="card" href="kremala.html">
+    <div class="header">
+      <div class="emoji">🎗️</div>
+      <div>
+        <div class="name">Κρεμάλα</div>
+        <div class="year">~1850</div>
+      </div>
+    </div>
+    <div class="desc">Μάντεψε τη λέξη γράμμα-γράμμα — γλώσσα & γεωγραφία Ελλάδας σε 5 επίπεδα.</div>
+    <div class="fact">Πρωτοεμφανίστηκε στη Βικτωριανή Αγγλία γύρω στο 1850. Αρχικά κάθε λάθος αντιστοιχούσε σε ένα μέρος του «κρεμασμένου» στη φουρκάλα — από τότε έγινε κλασικό παιχνίδι όλων των γλωσσών.</div>
+  </a>
+  <a class="card" href="pixelart.html">
+    <div class="header">
+      <div class="emoji">🎨</div>
+      <div>
+        <div class="name">Pixel Art</div>
+      </div>
+    </div>
+    <div class="desc">Ζωγραφική σε τετράγωνα — με έτοιμα σχέδια, φόρτωση εικόνας ως αχνό overlay και βοήθεια χρωμάτων.</div>
+    <div class="fact">Ιδανικό για παιδιά που δυσκολεύονται να ακολουθήσουν pixel art σχέδια — φορτώνεις εικόνα από πάνω και το παιδί την ακολουθεί τετράγωνο-τετράγωνο.</div>
+  </a>
+  <a class="card" href="milioner.html">
+    <div class="header">
+      <div class="emoji">🧠</div>
+      <div>
+        <div class="name">Παντογνώστης</div>
+      </div>
+    </div>
+    <div class="desc">Quiz πολλαπλής επιλογής 15 ερωτήσεων με λάιφλαϊνς (50:50, ψηφοφορία τάξης, βοήθεια δασκάλου). Φτιάξε δικά σου διαγωνίσματα με τη βοήθεια AI.</div>
+    <div class="fact">Φτιαγμένο πάνω στο μοτίβο του «Who Wants to Be a Millionaire?» (Βρετανία, 1998) — αλλά με σκοπό την εκπαίδευση: ο δάσκαλος φορτώνει την ύλη μέσω JSON και η τάξη παίζει.</div>
+  </a>
+  <a class="card" href="kaisaras_kryptografia.html">
+    <div class="header">
+      <div class="emoji">🔐</div>
+      <div>
+        <div class="name">Κρυπτογραφία Καίσαρα</div>
+        <div class="year">~58 π.Χ.</div>
+      </div>
+    </div>
+    <div class="desc">Κρυπτογράφηση μηνυμάτων με ολίσθηση γραμμάτων.</div>
+    <div class="fact">Ο Ιούλιος Καίσαρας τη χρησιμοποιούσε για να στέλνει κρυφά στρατιωτικά μηνύματα — κάθε γράμμα μετακινούνταν 3 θέσεις στο αλφάβητο.</div>
+  </a>
+</div>
+
+<h2 class="category">🎉 Για διασκέδαση</h2>
+<div class="grid">
+  <a class="card" href="pong.html">
+    <div class="header">
+      <div class="emoji">🏓</div>
+      <div>
+        <div class="name">Pong</div>
+        <div class="year">1972</div>
+      </div>
+    </div>
+    <div class="desc">1 ή 2 παίχτες, best-of-3 sets με leaderboard.</div>
+    <div class="fact">Το πρώτο εμπορικό βιντεοπαιχνίδι στην ιστορία, από την Atari (Nolan Bushnell). Ξεκίνησε όλη τη βιομηχανία των videogames!</div>
+  </a>
+  <a class="card" href="tetris.html">
+    <div class="header">
+      <div class="emoji">🧩</div>
+      <div>
+        <div class="name">Tetris</div>
+        <div class="year">1984</div>
+      </div>
+    </div>
+    <div class="desc">Κλασικό puzzle με τετρομινό — Next, Hold, ghost piece, leaderboard.</div>
+    <div class="fact">Φτιαγμένο από τον Ρώσο μηχανικό Alexey Pajitnov στην Ακαδημία Επιστημών της Μόσχας σε υπολογιστή Elektronika 60. Το όνομα έρχεται από το «tetra» (4) + «tennis». Πάνω από 520 εκατομμύρια αντίτυπα — από τα πιο πολυπαιγμένα παιχνίδια όλων των εποχών!</div>
+  </a>
+  <a class="card" href="breakout.html">
+    <div class="header">
+      <div class="emoji">🧱</div>
+      <div>
+        <div class="name">Breakout</div>
+        <div class="year">1976</div>
+      </div>
+    </div>
+    <div class="desc">Σπάσε τουβλάκια με ιεραρχία χτυπημάτων — 5 πίστες.</div>
+    <div class="fact">Atari ξανά — το πρωτότυπο το έφτιαξαν οι Steve Wozniak & Steve Jobs (πριν την Apple!). Η οθόνη ήταν ασπρόμαυρη — τα χρώματα ήταν κολλημένες ζελατίνες πάνω της!</div>
+  </a>
+  <a class="card" href="invaders.html">
+    <div class="header">
+      <div class="emoji">👾</div>
+      <div>
+        <div class="name">Space Invaders</div>
+        <div class="year">1978</div>
+      </div>
+    </div>
+    <div class="desc">Σκάφος vs εξωγήινοι με power-ups, ασπίδες, βόμβες και waves.</div>
+    <div class="fact">Το πρώτο μεγάλο arcade hit — φτιαγμένο από τον Ιάπωνα Tomohiro Nishikado για την Taito. Στην Ιαπωνία προκάλεσε έλλειψη των κερμάτων 100 yen! Η έκδοσή μου ενσωματώνει στοιχεία και από το 1942 (1984) και το Galaga (1981) με power-ups.</div>
+  </a>
+  <a class="card" href="trilizaInfinite.html">
+    <div class="header">
+      <div class="emoji">⭕</div>
+      <div>
+        <div class="name">Άπειρη Τρίλιζα</div>
+        <div class="year">1952</div>
+      </div>
+    </div>
+    <div class="desc">Παραλλαγή της κλασικής τρίλιζας — απείρων κινήσεων.</div>
+    <div class="fact">Η τρίλιζα σε υπολογιστή (OXO) ήταν ένα από τα πρώτα βιντεοπαιχνίδια ever — έτρεχε στον EDSAC του Πανεπιστημίου Cambridge.</div>
+  </a>
+  <a class="card" href="soccer.htm">
+    <div class="header">
+      <div class="emoji">⚽</div>
+      <div>
+        <div class="name">Soccer Heads</div>
+        <div class="year">~2010</div>
+      </div>
+    </div>
+    <div class="desc">2 παίχτες (ή vs CPU), κεφάλια-με-ένα-πόδι, σουτ-lob με καμπύλη και powerups (🔥 ⚡ 🏀 🎳 💨 🧲). 60 δευτερόλεπτα ανά παιχνίδι.</div>
+    <div class="fact">Παραλλαγή του «Head Soccer» που έγινε viral στα browser games γύρω στο 2010 — απλή φυσική, αλλά τόσο εθιστική που έγινε σειρά mobile εφαρμογών με εκατομμύρια downloads.</div>
+  </a>
+  <a class="card" href="blobby.htm">
+    <div class="header">
+      <div class="emoji">🏐</div>
+      <div>
+        <div class="name">SlimeVolley</div>
+        <div class="year">2000</div>
+      </div>
+    </div>
+    <div class="desc">Βόλεϊ με slime χαρακτήρες — απλό αλλά εθιστικό.</div>
+    <div class="fact">Προέρχεται από το Blobby Volley (~2000) του Γερμανού Daniel Skoraszewsky — ένα από τα πρώτα viral δωρεάν παιχνίδια στο διαδίκτυο. Από τότε έχουν φτιαχτεί δεκάδες κλώνοι (SlimeVolleyball κ.ά.).</div>
+  </a>
+</div>
+</body>
+</html>

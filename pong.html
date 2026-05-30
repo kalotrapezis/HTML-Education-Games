@@ -1,0 +1,649 @@
+<!DOCTYPE html>
+<html lang="el">
+<head>
+<meta charset="UTF-8">
+<title>Pong - Το πρώτο βιντεοπαιχνίδι</title>
+<style>
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body {
+    font-family: 'Segoe UI', Tahoma, sans-serif;
+    background: linear-gradient(135deg, #1e3c72, #2a5298);
+    color: #fff;
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: 20px;
+  }
+  h1 { margin: 10px 0; font-size: 36px; text-align: center; }
+  .info { opacity: 0.9; margin-bottom: 14px; font-size: 16px; text-align: center; }
+  .scoreboard {
+    display: flex;
+    gap: 24px;
+    margin-bottom: 12px;
+    font-size: 22px;
+    font-weight: bold;
+  }
+  .score-box {
+    background: rgba(0,0,0,0.35);
+    padding: 8px 18px;
+    border-radius: 10px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+  }
+  .score-box .num {
+    background: #ff9500;
+    color: #fff;
+    padding: 2px 12px;
+    border-radius: 6px;
+    min-width: 32px;
+    text-align: center;
+  }
+  canvas {
+    background: #0a4d7a;
+    border: 12px solid #6b3410;
+    border-radius: 6px;
+    box-shadow: 0 0 30px rgba(0,0,0,0.5), inset 0 0 0 4px #8b4818;
+    display: block;
+  }
+  .controls {
+    margin-top: 16px;
+    text-align: center;
+    background: rgba(0,0,0,0.25);
+    padding: 12px 20px;
+    border-radius: 10px;
+    font-size: 15px;
+    line-height: 1.6;
+  }
+  .controls b { color: #ffb347; }
+  button {
+    margin-top: 14px;
+    padding: 12px 28px;
+    font-size: 18px;
+    border: none;
+    border-radius: 10px;
+    background: #ff9500;
+    color: #fff;
+    font-weight: bold;
+    cursor: pointer;
+    box-shadow: 0 4px 0 #c46c00;
+  }
+  button:active { transform: translateY(2px); box-shadow: 0 2px 0 #c46c00; }
+  .back { position: absolute; top: 20px; left: 20px; }
+  .back a { color: #fff; text-decoration: none; background: rgba(0,0,0,0.3); padding: 8px 14px; border-radius: 8px; }
+
+  .name-inputs { display: flex; gap: 20px; margin-bottom: 14px; }
+  .name-inputs label { display: flex; flex-direction: column; gap: 4px; font-size: 14px; }
+  .name-inputs input {
+    padding: 8px 12px; font-size: 16px; border-radius: 8px;
+    border: 2px solid rgba(255,255,255,0.3); background: rgba(0,0,0,0.3);
+    color: #fff; width: 160px;
+  }
+  .name-inputs input:focus { outline: none; border-color: #ff9500; }
+  .button-row { display: flex; gap: 10px; }
+  button.secondary { background: #5a6890; box-shadow: 0 4px 0 #3a4670; }
+
+  .leaderboard {
+    margin-top: 24px;
+    background: rgba(0,0,0,0.35);
+    padding: 18px 24px;
+    border-radius: 12px;
+    min-width: 500px;
+    max-width: 700px;
+    width: 100%;
+  }
+  .leaderboard h2 { font-size: 22px; margin-bottom: 12px; text-align: center; color: #ffb347; }
+  .leaderboard table { width: 100%; border-collapse: collapse; font-size: 15px; }
+  .leaderboard th, .leaderboard td {
+    padding: 8px 10px; text-align: left; border-bottom: 1px solid rgba(255,255,255,0.15);
+  }
+  .leaderboard th { color: #ffb347; font-size: 13px; text-transform: uppercase; }
+  .leaderboard td.num { text-align: right; font-variant-numeric: tabular-nums; }
+  .leaderboard tr.empty td { text-align: center; opacity: 0.6; padding: 20px; }
+  .leaderboard .rank { color: #ffb347; font-weight: bold; width: 30px; }
+  .leaderboard .clear-btn {
+    margin-top: 10px; padding: 6px 14px; font-size: 13px;
+    background: rgba(255,255,255,0.1); box-shadow: none; color: #fff;
+  }
+
+  .screen { display: none; flex-direction: column; align-items: center; }
+  .screen.active { display: flex; }
+
+  .menu-card {
+    background: rgba(0,0,0,0.4); padding: 32px 40px; border-radius: 16px;
+    box-shadow: 0 8px 24px rgba(0,0,0,0.4); min-width: 420px;
+    display: flex; flex-direction: column; gap: 18px; align-items: center;
+  }
+  .menu-card h2 { color: #ffb347; font-size: 22px; }
+  .menu-card .field { display: flex; flex-direction: column; gap: 6px; width: 100%; }
+  .menu-card label { font-size: 14px; opacity: 0.9; }
+  .menu-card input, .menu-card select {
+    padding: 10px 14px; font-size: 16px; border-radius: 8px;
+    border: 2px solid rgba(255,255,255,0.3); background: rgba(0,0,0,0.3);
+    color: #fff; width: 100%;
+  }
+  .menu-card input:focus, .menu-card select:focus { outline: none; border-color: #ff9500; }
+  .menu-card .two-col { display: flex; gap: 14px; width: 100%; }
+  .menu-card .two-col .field { flex: 1; }
+  .start-btn { font-size: 22px !important; padding: 14px 36px !important; }
+
+  .result-card {
+    background: rgba(0,0,0,0.45); padding: 36px 44px; border-radius: 18px;
+    box-shadow: 0 8px 32px rgba(0,0,0,0.5);
+    display: flex; flex-direction: column; align-items: center; gap: 16px;
+    min-width: 420px;
+  }
+  .result-card .trophy { font-size: 64px; }
+  .result-card h2 { font-size: 32px; color: #ffe066; text-align: center; }
+  .result-card .setsline { font-size: 22px; opacity: 0.95; }
+  .result-card .pointsline { font-size: 16px; opacity: 0.7; }
+  .result-card .actions { display: flex; gap: 12px; margin-top: 8px; }
+</style>
+</head>
+<body>
+<div class="back"><a href="παιχνίδια.html">← Πίσω στα παιχνίδια</a></div>
+
+<h1>🏓 PONG</h1>
+
+<!-- ΟΘΟΝΗ ΜΕΝΟΥ -->
+<div id="menuScreen" class="screen active">
+  <div class="info" style="margin-bottom:20px;">Το πρώτο βιντεοπαιχνίδι που φτιάχτηκε ποτέ (1972)</div>
+  <div class="menu-card">
+    <h2>Νέο Παιχνίδι</h2>
+    <div class="field">
+      <label>Τρόπος παιχνιδιού</label>
+      <select id="mode">
+        <option value="2p">2 παίχτες</option>
+        <option value="1p">1 παίχτης vs CPU</option>
+      </select>
+    </div>
+    <div class="two-col">
+      <div class="field">
+        <label>Όνομα Παίχτη 1</label>
+        <input id="name1" maxlength="14" value="Παίχτης 1">
+      </div>
+      <div class="field" id="name2Field">
+        <label>Όνομα Παίχτη 2</label>
+        <input id="name2" maxlength="14" value="Παίχτης 2">
+      </div>
+    </div>
+    <div class="field" id="cpuField" style="display:none">
+      <label>Δυσκολία CPU</label>
+      <select id="cpuDiff">
+        <option value="easy">Εύκολο</option>
+        <option value="normal" selected>Κανονικό</option>
+        <option value="hard">Δύσκολο</option>
+      </select>
+    </div>
+    <div style="font-size:14px;opacity:0.7;text-align:center;margin-top:4px;">
+      Best of 3 sets • Κάθε set στους 11 (νίκη με 2 πόντους διαφορά)
+    </div>
+    <button class="start-btn" id="startBtn">▶ Έναρξη</button>
+  </div>
+
+  <div class="leaderboard">
+    <h2>🏆 Leaderboard</h2>
+    <table>
+      <thead>
+        <tr>
+          <th class="rank">#</th>
+          <th>Παίχτης</th>
+          <th class="num">Ματς</th>
+          <th class="num">Νίκες</th>
+          <th class="num">Sets</th>
+          <th class="num">Πόντοι</th>
+          <th class="num">Win %</th>
+        </tr>
+      </thead>
+      <tbody id="lbBody"></tbody>
+    </table>
+    <div style="text-align:center;">
+      <button class="clear-btn" id="clearLb">Καθαρισμός Leaderboard</button>
+    </div>
+  </div>
+</div>
+
+<!-- ΟΘΟΝΗ ΠΑΙΧΝΙΔΙΟΥ -->
+<div id="gameScreen" class="screen">
+  <div class="scoreboard">
+    <div class="score-box"><span id="label1">Παίχτης 1</span> <span class="num" id="score1">0</span></div>
+    <div class="score-box">Set <span class="num" id="setInfo">1</span></div>
+    <div class="score-box"><span id="label2">Παίχτης 2</span> <span class="num" id="score2">0</span></div>
+  </div>
+  <div class="scoreboard" style="font-size:16px;">
+    <div class="score-box">Sets P1 <span class="num" id="sets1">0</span></div>
+    <div class="score-box" style="opacity:0.7">Best of 3 • Game to 11 (win by 2)</div>
+    <div class="score-box">Sets P2 <span class="num" id="sets2">0</span></div>
+  </div>
+
+  <canvas id="game" width="800" height="500"></canvas>
+
+  <div class="controls" id="controls">
+    <b>Παίχτης 1 (αριστερά):</b> W ↑ &nbsp; / &nbsp; S ↓ &nbsp;&nbsp;|&nbsp;&nbsp;
+    <b>Παίχτης 2 (δεξιά):</b> ↑ πάνω &nbsp; / &nbsp; ↓ κάτω<br>
+    Πάτα <b>Space</b> για να ρίξεις την μπάλα
+  </div>
+  <div class="button-row">
+    <button class="secondary" id="backToMenuBtn">← Πίσω στο Μενού</button>
+  </div>
+</div>
+
+<!-- ΟΘΟΝΗ ΝΙΚΗΣ -->
+<div id="resultScreen" class="screen">
+  <div class="result-card">
+    <div class="trophy">🏆</div>
+    <h2 id="winnerName">Νικητής</h2>
+    <div class="setsline" id="finalSets">2 – 0 σε sets</div>
+    <div class="pointsline" id="finalPoints"></div>
+    <div class="actions">
+      <button id="rematchBtn">🔄 Ρεβάνς</button>
+      <button class="secondary" id="newMatchBtn">← Πίσω στο Μενού</button>
+    </div>
+  </div>
+</div>
+
+<script>
+const canvas = document.getElementById('game');
+const ctx = canvas.getContext('2d');
+const W = canvas.width, H = canvas.height;
+
+const PADDLE_W = 14, PADDLE_H = 90;
+const BALL_R = 14;
+
+const POINTS_TO_WIN = 11;
+const SETS_TO_WIN = 2; // best of 3
+
+let state = {
+  p1: { y: H/2 - PADDLE_H/2, score: 0, sets: 0, totalPoints: 0 },
+  p2: { y: H/2 - PADDLE_H/2, score: 0, sets: 0, totalPoints: 0 },
+  ball: { x: W/2, y: H/2, vx: 0, vy: 0 },
+  setNum: 1,
+  running: false,
+  setOver: false,
+  setWinner: null,
+  winner: null,
+  recorded: false
+};
+
+const keys = {};
+document.addEventListener('keydown', e => {
+  keys[e.key.toLowerCase()] = true;
+  if (!document.getElementById('gameScreen').classList.contains('active')) return;
+  if (['ArrowUp', 'ArrowDown', 'ArrowLeft', 'ArrowRight', ' '].includes(e.key)) {
+    e.preventDefault();
+  }
+  if (e.key === ' ') {
+    if (state.winner) { /* ignore — must click button */ }
+    else if (state.setOver) { nextSet(); }
+    else if (!state.running) { launchBall(); }
+  }
+});
+document.addEventListener('keyup', e => { keys[e.key.toLowerCase()] = false; });
+
+function launchBall() {
+  const speed = 6;
+  const angle = (Math.random() * 0.6 - 0.3) + (Math.random() < 0.5 ? Math.PI : 0);
+  state.ball.x = W/2;
+  state.ball.y = H/2;
+  state.ball.vx = Math.cos(angle) * speed;
+  state.ball.vy = Math.sin(angle) * speed;
+  state.running = true;
+}
+
+function resetGame() {
+  state.p1.score = 0;
+  state.p2.score = 0;
+  state.p1.sets = 0;
+  state.p2.sets = 0;
+  state.p1.totalPoints = 0;
+  state.p2.totalPoints = 0;
+  state.p1.y = H/2 - PADDLE_H/2;
+  state.p2.y = H/2 - PADDLE_H/2;
+  state.setNum = 1;
+  state.winner = null;
+  state.setOver = false;
+  state.setWinner = null;
+  state.running = false;
+  state.recorded = false;
+  state.ball.x = W/2; state.ball.y = H/2;
+  state.ball.vx = 0; state.ball.vy = 0;
+  updateUI();
+}
+
+function nextSet() {
+  state.p1.score = 0;
+  state.p2.score = 0;
+  state.setNum++;
+  state.setOver = false;
+  state.setWinner = null;
+  state.running = false;
+  state.ball.x = W/2; state.ball.y = H/2;
+  state.ball.vx = 0; state.ball.vy = 0;
+  updateUI();
+}
+
+function updateUI() {
+  document.getElementById('score1').textContent = state.p1.score;
+  document.getElementById('score2').textContent = state.p2.score;
+  document.getElementById('setInfo').textContent = state.setNum;
+  document.getElementById('sets1').textContent = state.p1.sets;
+  document.getElementById('sets2').textContent = state.p2.sets;
+  document.getElementById('label1').textContent = getName(1);
+  document.getElementById('label2').textContent = getName(2);
+}
+
+const LB_KEY = 'pong_leaderboard_v1';
+
+function getName(n) {
+  const v = document.getElementById('name' + n).value.trim();
+  return v || ('Παίχτης ' + n);
+}
+
+function loadLb() {
+  try { return JSON.parse(localStorage.getItem(LB_KEY)) || {}; }
+  catch { return {}; }
+}
+function saveLb(lb) { localStorage.setItem(LB_KEY, JSON.stringify(lb)); }
+
+function ensurePlayer(lb, name) {
+  if (!lb[name]) lb[name] = { matches: 0, wins: 0, sets: 0, points: 0 };
+  return lb[name];
+}
+
+function recordMatch(winnerIdx) {
+  const lb = loadLb();
+  const n1 = getName(1), n2 = getName(2);
+  const p1 = ensurePlayer(lb, n1);
+  const p2 = ensurePlayer(lb, n2);
+  p1.matches++; p2.matches++;
+  p1.sets += state.p1.sets; p2.sets += state.p2.sets;
+  p1.points += state.p1.totalPoints || 0;
+  p2.points += state.p2.totalPoints || 0;
+  if (winnerIdx === 1) p1.wins++; else p2.wins++;
+  saveLb(lb);
+  renderLb();
+}
+
+function renderLb() {
+  const lb = loadLb();
+  const tbody = document.getElementById('lbBody');
+  const rows = Object.entries(lb).map(([name, s]) => ({ name, ...s }));
+  rows.sort((a, b) => b.wins - a.wins || b.sets - a.sets || b.points - a.points);
+  if (rows.length === 0) {
+    tbody.innerHTML = '<tr class="empty"><td colspan="7">Δεν έχει παιχτεί ακόμα κανένα ματς</td></tr>';
+    return;
+  }
+  tbody.innerHTML = rows.map((r, i) => {
+    const pct = r.matches ? Math.round(r.wins / r.matches * 100) : 0;
+    return `<tr>
+      <td class="rank">${i+1}</td>
+      <td>${escapeHtml(r.name)}</td>
+      <td class="num">${r.matches}</td>
+      <td class="num">${r.wins}</td>
+      <td class="num">${r.sets}</td>
+      <td class="num">${r.points}</td>
+      <td class="num">${pct}%</td>
+    </tr>`;
+  }).join('');
+}
+
+function escapeHtml(s) {
+  return s.replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+}
+
+document.getElementById('clearLb').onclick = () => {
+  if (confirm('Σίγουρα θες να καθαρίσεις το leaderboard;')) {
+    localStorage.removeItem(LB_KEY);
+    renderLb();
+  }
+};
+document.getElementById('name1').addEventListener('input', updateUI);
+document.getElementById('name2').addEventListener('input', updateUI);
+
+function applyModeUI() {
+  const is1p = document.getElementById('mode').value === '1p';
+  document.getElementById('cpuField').style.display = is1p ? '' : 'none';
+  const n2 = document.getElementById('name2');
+  if (is1p) { n2.value = 'CPU'; n2.disabled = true; }
+  else { if (n2.value === 'CPU') n2.value = 'Παίχτης 2'; n2.disabled = false; }
+  document.getElementById('controls').innerHTML = is1p
+    ? '<b>Παίχτης (αριστερά):</b> W ↑ / S ↓<br>Πάτα <b>Space</b> για να ρίξεις την μπάλα'
+    : '<b>Παίχτης 1 (αριστερά):</b> W ↑ &nbsp; / &nbsp; S ↓ &nbsp;&nbsp;|&nbsp;&nbsp;<b>Παίχτης 2 (δεξιά):</b> ↑ πάνω &nbsp; / &nbsp; ↓ κάτω<br>Πάτα <b>Space</b> για να ρίξεις την μπάλα';
+}
+document.getElementById('mode').addEventListener('change', applyModeUI);
+
+function showScreen(id) {
+  for (const el of document.querySelectorAll('.screen')) el.classList.remove('active');
+  document.getElementById(id).classList.add('active');
+}
+
+function startMatch() {
+  applyModeUI();
+  resetGame();
+  showScreen('gameScreen');
+}
+
+function showResultScreen() {
+  document.getElementById('winnerName').textContent = '🏆 ' + state.winner + ' κέρδισε το ματς!';
+  document.getElementById('finalSets').textContent =
+    state.p1.sets + ' – ' + state.p2.sets + ' σε sets';
+  document.getElementById('finalPoints').textContent =
+    'Συνολικοί πόντοι: ' + getName(1) + ' ' + state.p1.totalPoints +
+    ' • ' + getName(2) + ' ' + state.p2.totalPoints;
+  showScreen('resultScreen');
+}
+
+document.getElementById('startBtn').onclick = startMatch;
+document.getElementById('rematchBtn').onclick = () => { resetGame(); showScreen('gameScreen'); };
+document.getElementById('newMatchBtn').onclick = () => { renderLb(); showScreen('menuScreen'); };
+document.getElementById('backToMenuBtn').onclick = () => { renderLb(); showScreen('menuScreen'); };
+
+function update() {
+  const ballSpeed = Math.hypot(state.ball.vx, state.ball.vy);
+  const speed = Math.max(8, ballSpeed * 0.9);
+  if (keys['w']) state.p1.y -= speed;
+  if (keys['s']) state.p1.y += speed;
+
+  const mode = document.getElementById('mode').value;
+  if (mode === '1p') {
+    // CPU controls P2
+    const diff = document.getElementById('cpuDiff').value;
+    const cpuConfig = {
+      easy:   { speed: 0.65, reactZone: 0.3, miss: 40 },
+      normal: { speed: 0.85, reactZone: 0.55, miss: 18 },
+      hard:   { speed: 1.0,  reactZone: 0.9,  miss: 6 }
+    }[diff];
+    const cpuSpeed = speed * cpuConfig.speed;
+    if (state.ball.vx > 0 && state.ball.x > W * (1 - cpuConfig.reactZone)) {
+      const target = state.ball.y - PADDLE_H/2 + (state._cpuOffset || 0);
+      const center = state.p2.y + PADDLE_H/2;
+      if (Math.abs(center - (target + PADDLE_H/2)) > 8) {
+        if (state.p2.y < target) state.p2.y += cpuSpeed;
+        else state.p2.y -= cpuSpeed;
+      }
+    } else {
+      // drift toward center
+      const center = state.p2.y + PADDLE_H/2;
+      if (Math.abs(center - H/2) > 12) {
+        if (center > H/2) state.p2.y -= cpuSpeed * 0.5;
+        else state.p2.y += cpuSpeed * 0.5;
+      }
+      // recompute miss offset for next rally
+      state._cpuOffset = (Math.random() - 0.5) * 2 * cpuConfig.miss;
+    }
+  } else {
+    if (keys['arrowup']) state.p2.y -= speed;
+    if (keys['arrowdown']) state.p2.y += speed;
+  }
+
+  state.p1.y = Math.max(0, Math.min(H - PADDLE_H, state.p1.y));
+  state.p2.y = Math.max(0, Math.min(H - PADDLE_H, state.p2.y));
+
+  if (!state.running || state.setOver || state.winner) return;
+
+  const b = state.ball;
+  b.x += b.vx;
+  b.y += b.vy;
+
+  if (b.y - BALL_R < 0) { b.y = BALL_R; b.vy *= -1; }
+  if (b.y + BALL_R > H) { b.y = H - BALL_R; b.vy *= -1; }
+
+  const maxSpeed = 22;
+  const accel = 1.12;
+  // Παίχτης 1
+  if (b.x - BALL_R < 20 + PADDLE_W && b.x > 20 &&
+      b.y > state.p1.y && b.y < state.p1.y + PADDLE_H && b.vx < 0) {
+    b.vx *= -accel;
+    b.vy *= accel;
+    const hit = (b.y - (state.p1.y + PADDLE_H/2)) / (PADDLE_H/2);
+    b.vy += hit * 2;
+    const sp = Math.hypot(b.vx, b.vy);
+    if (sp > maxSpeed) { b.vx *= maxSpeed/sp; b.vy *= maxSpeed/sp; }
+  }
+  // Παίχτης 2
+  if (b.x + BALL_R > W - 20 - PADDLE_W && b.x < W - 20 &&
+      b.y > state.p2.y && b.y < state.p2.y + PADDLE_H && b.vx > 0) {
+    b.vx *= -accel;
+    b.vy *= accel;
+    const hit = (b.y - (state.p2.y + PADDLE_H/2)) / (PADDLE_H/2);
+    b.vy += hit * 2;
+    const sp = Math.hypot(b.vx, b.vy);
+    if (sp > maxSpeed) { b.vx *= maxSpeed/sp; b.vy *= maxSpeed/sp; }
+  }
+
+  if (b.x < -BALL_R) {
+    state.p2.score++;
+    state.p2.totalPoints++;
+    pointEnd();
+  } else if (b.x > W + BALL_R) {
+    state.p1.score++;
+    state.p1.totalPoints++;
+    pointEnd();
+  }
+}
+
+function pointEnd() {
+  state.running = false;
+  state.ball.x = W/2; state.ball.y = H/2;
+  state.ball.vx = 0; state.ball.vy = 0;
+
+  const s1 = state.p1.score, s2 = state.p2.score;
+  const leader = Math.max(s1, s2);
+  const diff = Math.abs(s1 - s2);
+  if (leader >= POINTS_TO_WIN && diff >= 2) {
+    const setWinnerIdx = s1 > s2 ? 1 : 2;
+    state.setWinner = getName(setWinnerIdx);
+    if (setWinnerIdx === 1) state.p1.sets++; else state.p2.sets++;
+    state.setOver = true;
+    if (state.p1.sets >= SETS_TO_WIN) state.winner = getName(1);
+    else if (state.p2.sets >= SETS_TO_WIN) state.winner = getName(2);
+    if (state.winner && !state.recorded) {
+      const winnerIdx = state.p1.sets >= SETS_TO_WIN ? 1 : 2;
+      recordMatch(winnerIdx);
+      state.recorded = true;
+      setTimeout(showResultScreen, 800);
+    }
+  }
+  updateUI();
+}
+
+function draw() {
+  // background already via CSS
+  ctx.clearRect(0, 0, W, H);
+
+  // υφή τραπεζιού (διαβαθμίσεις φωτός)
+  const tableGrad = ctx.createRadialGradient(W/2, H/2, 50, W/2, H/2, W);
+  tableGrad.addColorStop(0, 'rgba(255,255,255,0.06)');
+  tableGrad.addColorStop(1, 'rgba(0,0,0,0.25)');
+  ctx.fillStyle = tableGrad;
+  ctx.fillRect(0, 0, W, H);
+
+  // λευκές γραμμές περιγράμματος (όπως πραγματικό τραπέζι ping pong)
+  ctx.strokeStyle = '#ffffff';
+  ctx.lineWidth = 4;
+  ctx.strokeRect(8, 8, W - 16, H - 16);
+
+  // οριζόντια λευκή γραμμή στη μέση (sidelines split — όπως στο διπλό)
+  ctx.lineWidth = 2;
+  ctx.beginPath();
+  ctx.moveTo(8, H/2); ctx.lineTo(W - 8, H/2);
+  ctx.stroke();
+
+  // ΦΙΛΕ — λευκή κάθετη γραμμή στο κέντρο
+  ctx.fillStyle = '#ffffff';
+  ctx.fillRect(W/2 - 2, 8, 4, H - 16);
+  // πλέγμα φιλέ
+  ctx.strokeStyle = 'rgba(255,255,255,0.45)';
+  ctx.lineWidth = 1;
+  for (let y = 12; y < H - 12; y += 6) {
+    ctx.beginPath();
+    ctx.moveTo(W/2 - 8, y); ctx.lineTo(W/2 + 8, y);
+    ctx.stroke();
+  }
+  // πάνω/κάτω άκρα φιλέ
+  ctx.fillStyle = '#dddddd';
+  ctx.fillRect(W/2 - 10, 6, 20, 6);
+  ctx.fillRect(W/2 - 10, H - 12, 20, 6);
+
+  // ρακέτες — κόκκινη/μπλε για να ταιριάζουν με τις πλευρές
+  ctx.fillStyle = '#ff4d6d';
+  ctx.fillRect(20, state.p1.y, PADDLE_W, PADDLE_H);
+  ctx.fillStyle = 'rgba(255,255,255,0.35)';
+  ctx.fillRect(20, state.p1.y, PADDLE_W, 4);
+
+  ctx.fillStyle = '#4dabff';
+  ctx.fillRect(W - 20 - PADDLE_W, state.p2.y, PADDLE_W, PADDLE_H);
+  ctx.fillStyle = 'rgba(255,255,255,0.35)';
+  ctx.fillRect(W - 20 - PADDLE_W, state.p2.y, PADDLE_W, 4);
+
+  // μπάλα ping pong — πορτοκαλί με highlight
+  const ballGrad = ctx.createRadialGradient(
+    state.ball.x - BALL_R/3, state.ball.y - BALL_R/3, 1,
+    state.ball.x, state.ball.y, BALL_R
+  );
+  ballGrad.addColorStop(0, '#ffe5b0');
+  ballGrad.addColorStop(0.4, '#ffb347');
+  ballGrad.addColorStop(1, '#cc7a1f');
+  ctx.fillStyle = ballGrad;
+  ctx.beginPath();
+  ctx.arc(state.ball.x, state.ball.y, BALL_R, 0, Math.PI * 2);
+  ctx.fill();
+
+  // μηνύματα
+  ctx.fillStyle = '#fff';
+  ctx.font = 'bold 28px Segoe UI';
+  ctx.textAlign = 'center';
+  if (state.winner) {
+    ctx.fillStyle = '#ffe066';
+    ctx.font = 'bold 44px Segoe UI';
+    ctx.fillText('🏆 ' + state.winner + ' κέρδισε το ματς!', W/2, H/2 - 30);
+    ctx.font = '22px Segoe UI';
+    ctx.fillStyle = '#fff';
+    ctx.fillText(state.p1.sets + ' – ' + state.p2.sets + ' σε sets', W/2, H/2 + 5);
+    ctx.font = '18px Segoe UI';
+    ctx.fillText('Πάτα Space για νέο ματς', W/2, H/2 + 35);
+  } else if (state.setOver) {
+    ctx.fillStyle = '#ffe066';
+    ctx.font = 'bold 36px Segoe UI';
+    ctx.fillText('Set ' + state.setNum + ': ' + state.setWinner, W/2, H/2 - 20);
+    ctx.font = '18px Segoe UI';
+    ctx.fillStyle = '#fff';
+    ctx.fillText('Πάτα Space για το επόμενο set', W/2, H/2 + 15);
+  } else if (!state.running) {
+    ctx.fillText('Πάτα Space για να ξεκινήσεις', W/2, H/2 - 30);
+  }
+}
+
+function loop() {
+  update();
+  draw();
+  requestAnimationFrame(loop);
+}
+
+updateUI();
+renderLb();
+loop();
+</script>
+</body>
+</html>
