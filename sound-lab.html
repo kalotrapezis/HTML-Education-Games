@@ -1,0 +1,251 @@
+<!DOCTYPE html>
+<html lang="el">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Εργαστήριο Ήχων — Εκατομμυριούχος</title>
+<style>
+  :root{ --bg:#0a1738; --card:#13245a; --line:#2a4593; --gold:#ffd34d; --txt:#eaf0ff; }
+  *{ box-sizing:border-box; }
+  body{ margin:0; font-family:system-ui,Segoe UI,Roboto,Arial,sans-serif;
+        background:radial-gradient(circle at 50% -10%, #1c3a8a, var(--bg)); color:var(--txt); padding:20px; }
+  h1{ text-align:center; color:var(--gold); margin:6px 0 2px; font-size:26px; }
+  .sub{ text-align:center; opacity:.85; max-width:780px; margin:0 auto 16px; font-size:14px; line-height:1.55; }
+  .grid{ display:grid; grid-template-columns:repeat(auto-fill,minmax(300px,1fr)); gap:16px; max-width:1100px; margin:0 auto; }
+  .card{ background:var(--card); border:1px solid var(--line); border-radius:12px; padding:14px 16px; }
+  .card h2{ margin:0 0 2px; font-size:17px; color:var(--gold); }
+  .card .when{ font-size:12px; opacity:.7; margin-bottom:10px; }
+  .row{ display:flex; flex-wrap:wrap; gap:8px; }
+  button{ flex:1 1 auto; min-width:120px; cursor:pointer; border:1px solid var(--line);
+          background:#1a3170; color:var(--txt); border-radius:8px; padding:10px 12px; font-size:14px; transition:.12s; }
+  button:hover{ background:#244094; border-color:var(--gold); }
+  button:active{ transform:translateY(1px); }
+  .stopbar{ text-align:center; margin:14px 0; }
+  .stopbar button{ flex:0 0 auto; min-width:200px; background:#5a1530; border-color:#8a2348; font-weight:bold; }
+  .ok{ color:#7fe0a0; font-size:11px; }
+  .new{ display:inline-block; font-size:10px; background:#235a3a; padding:1px 6px; border-radius:6px; margin-left:6px; vertical-align:middle; }
+  .legend{ max-width:1100px; margin:18px auto 0; font-size:13px; opacity:.75; text-align:center; }
+</style>
+</head>
+<body>
+  <h1>🎵 Εργαστήριο Ήχων — «Εκατομμυριούχος» <span class="new">v2</span></h1>
+  <p class="sub">
+    Διορθωμένο με βάση τα σχόλιά σου: <b>ένα</b> πλούσιο υπόβαθρο για όλες τις ερωτήσεις, η αναμονή κάνει
+    <b>τικ-τακ-τοκ</b> (3 νότες) και μετά κρατάει έναν χαμηλό σταθερό τόνο μέχρι την απάντηση, και η πλούσια
+    φανφάρα (η αγαπημένη σου 6.2) μπαίνει σε <b>όλα</b> τα μαξιλαράκια. Τα beep αφαιρέθηκαν.
+    Πάτα ⏹ για να σταματήσεις ό,τι παίζει σε loop.
+  </p>
+
+  <div class="stopbar">
+    <button onclick="stopAll()">⏹ Σταμάτα (loop υπόβαθρου & αναμονής)</button>
+  </div>
+
+  <div class="grid">
+
+    <div class="card">
+      <h2>1. Μουσική υπόβαθρου — ΟΛΕΣ οι ερωτήσεις</h2>
+      <div class="when">Παίζει σε loop · πλέον ένα κομμάτι παντού, πιο πλούσιο</div>
+      <div class="row">
+        <button onclick="bgMain()">▶ Πλούσιο</button>
+        <button onclick="bgRich()">▶ Ακόμη πιο γεμάτο</button>
+      </div>
+    </div>
+
+    <div class="card">
+      <h2>2. Αναμονή / «Τελική απάντηση;»</h2>
+      <div class="when">Τικ-τακ-τοκ (3 νότες) → χαμηλός σταθερός τόνος μέχρι την απάντηση</div>
+      <div class="row">
+        <button onclick="suspense()">▶ Παίξε</button>
+      </div>
+    </div>
+
+    <div class="card">
+      <h2>3. Σωστή απάντηση — απλή <span class="ok">(εγκεκριμένο)</span></h2>
+      <div class="when">Ερωτήσεις 1–4 · σύντομη άνοδος</div>
+      <div class="row">
+        <button onclick="correctSimple()">▶ Παίξε</button>
+      </div>
+    </div>
+
+    <div class="card">
+      <h2>4. Σωστή — ΟΛΑ τα μαξιλαράκια / ασφαλή σημεία</h2>
+      <div class="when">Η φανφάρα 6.2, ίδια παντού (πλούσια)</div>
+      <div class="row">
+        <button onclick="pillowWin()">▶ Παίξε</button>
+      </div>
+    </div>
+
+    <div class="card">
+      <h2>5. Λάθος απάντηση — απλή <span class="ok">(εγκεκριμένο)</span></h2>
+      <div class="when">Σύντομη κάθοδος</div>
+      <div class="row">
+        <button onclick="wrong()">▶ Παίξε</button>
+      </div>
+    </div>
+
+    <div class="card">
+      <h2>6. Λάθος — σε ασφαλές σημείο <span class="ok">(εγκεκριμένο)</span></h2>
+      <div class="when">Βαρύ, δραματικό «μπουμ»</div>
+      <div class="row">
+        <button onclick="wrongBig()">▶ Παίξε</button>
+      </div>
+    </div>
+
+  </div>
+
+  <p class="legend">
+    Αν κάτι θέλει διόρθωση (πιο γρήγορο/αργό, πιο ψηλά/χαμηλά, πιο γεμάτο/λιτό) πες μου και το αλλάζω.
+    Όταν κλειδώσουμε τις επιλογές, τα περνάω στο <i>milioner.html</i>.
+  </p>
+
+<script>
+// ---- Web Audio engine ----
+let actx = null;
+const live = new Set();   // stoppable handles: loops + sustained drones
+function ac(){
+  if(!actx) actx = new (window.AudioContext||window.webkitAudioContext)();
+  if(actx.state === 'suspended') actx.resume();
+  return actx;
+}
+function master(){
+  const c = ac();
+  if(!c._m){ const g=c.createGain(); g.gain.value=0.9; g.connect(c.destination); c._m=g; }
+  return c._m;
+}
+const N = n => 440 * Math.pow(2, (n-69)/12);  // MIDI note -> Hz (A4=440 -> 69)
+
+// one shaped note
+function note(freq, when, dur, {type='sine', vol=0.25, attack=0.01, release=0.06, glideTo=null, vibrato=0}={}){
+  const c = ac(); const t = c.currentTime + when;
+  const o = c.createOscillator(); const g = c.createGain();
+  o.type = type; o.frequency.setValueAtTime(freq, t);
+  if(glideTo) o.frequency.exponentialRampToValueAtTime(glideTo, t+dur);
+  if(vibrato){ const lfo=c.createOscillator(), lg=c.createGain();
+    lfo.frequency.value=vibrato; lg.gain.value=freq*0.012;
+    lfo.connect(lg).connect(o.frequency); lfo.start(t); lfo.stop(t+dur+0.05); }
+  g.gain.setValueAtTime(0, t);
+  g.gain.linearRampToValueAtTime(vol, t+attack);
+  g.gain.setValueAtTime(vol, Math.max(t+attack, t+dur-release));
+  g.gain.linearRampToValueAtTime(0.0001, t+dur);
+  o.connect(g).connect(master());
+  o.start(t); o.stop(t+dur+0.03);
+}
+
+// decaying noise burst
+function noise(when, dur, {vol=0.18, hp=600}={}){
+  const c = ac(); const t = c.currentTime + when;
+  const n = Math.floor(c.sampleRate*dur);
+  const buf = c.createBuffer(1, n, c.sampleRate); const d = buf.getChannelData(0);
+  for(let i=0;i<n;i++) d[i] = (Math.random()*2-1)*(1-i/n);
+  const s = c.createBufferSource(); s.buffer = buf;
+  const f = c.createBiquadFilter(); f.type='highpass'; f.frequency.value=hp;
+  const g = c.createGain(); g.gain.value=vol;
+  s.connect(f).connect(g).connect(master()); s.start(t);
+}
+
+// repeating pattern
+function loop(intervalSec, fn){
+  fn();
+  const id = setInterval(fn, intervalSec*1000);
+  const h = { stop(){ clearInterval(id); live.delete(h); } };
+  live.add(h); return h;
+}
+
+// sustained tone that holds until stopAll(); starts after `when` seconds
+function drone(freq, when, {type='sine', vol=0.12, vibrato=0}={}){
+  const c = ac(); const t = c.currentTime + when;
+  const o = c.createOscillator(), g = c.createGain();
+  o.type = type; o.frequency.value = freq;
+  g.gain.setValueAtTime(0, t); g.gain.linearRampToValueAtTime(vol, t+0.3);
+  let lfo=null;
+  if(vibrato){ lfo=c.createOscillator(); const lg=c.createGain();
+    lfo.frequency.value=vibrato; lg.gain.value=freq*0.01;
+    lfo.connect(lg).connect(o.frequency); lfo.start(t); }
+  o.connect(g).connect(master()); o.start(t);
+  const h={ stop(){ const now=c.currentTime;
+      g.gain.cancelScheduledValues(now); g.gain.setValueAtTime(g.gain.value, now);
+      g.gain.linearRampToValueAtTime(0.0001, now+0.15);
+      o.stop(now+0.2); if(lfo) lfo.stop(now+0.2); live.delete(h); } };
+  live.add(h); return h;
+}
+
+function stopAll(){ Array.from(live).forEach(h=>h.stop()); }
+
+// ===== 1. Background — one track, all questions =====
+// minor progression: Am - F - C - G  (bass + soft triad pad + twinkle)
+const PROG = [
+  [45,[57,60,64]],  // Am
+  [41,[53,57,60]],  // F
+  [48,[60,64,67]],  // C
+  [43,[55,59,62]],  // G
+];
+function bgMain(){ stopAll(); let i=0;
+  loop(1.6, ()=>{
+    const [b,tr] = PROG[i%4];
+    note(N(b), 0, 1.55, {type:'sine', vol:0.11});
+    tr.forEach(m=> note(N(m), 0, 1.5, {type:'triangle', vol:0.035, release:0.7}));
+    note(N(tr[0]+12), 0.1, 0.6, {type:'sine', vol:0.05, release:0.4});  // twinkle
+    i++;
+  });
+}
+function bgRich(){ stopAll(); let i=0;
+  loop(1.5, ()=>{
+    const [b,tr] = PROG[i%4];
+    note(N(b),    0,    1.45, {type:'sine', vol:0.11});           // bass sustain
+    note(N(b),    0,    0.22, {type:'sine', vol:0.06});           // pulse
+    note(N(b),    0.78, 0.22, {type:'sine', vol:0.05});           // mid pulse
+    tr.forEach(m=> note(N(m), 0, 1.45, {type:'triangle', vol:0.03, release:0.7}));   // pad
+    tr.forEach((m,k)=> note(N(m+12), 0.12+k*0.34, 0.4, {type:'sine', vol:0.045, release:0.25})); // arpeggio
+    i++;
+  });
+}
+
+// ===== 2. Suspense: tik-tak-tok then the 3rd tone held softly (no buzz) =====
+function suspense(){ stopAll();
+  note(N(74), 0.00, 0.13, {type:'triangle', vol:0.22});  // tik (D5)
+  note(N(69), 0.34, 0.13, {type:'triangle', vol:0.22});  // tak (A4)
+  note(N(62), 0.68, 0.18, {type:'triangle', vol:0.22});  // tok (D4)
+  // hold the THIRD tone, same timbre, lower volume — sustained until the answer takes over
+  drone(N(62), 0.86, {type:'triangle', vol:0.06});
+  drone(N(50), 0.86, {type:'triangle', vol:0.03});  // soft octave-lower warmth
+}
+
+// ===== 3. Correct simple — four ascending notes, last higher (tu-ru-ru-ru) =====
+function correctSimple(){ stopAll();
+  const seq = [60,64,67,72];          // +12 => C5 E5 G5 C6
+  seq.forEach((m,i)=>{
+    const last = i === seq.length-1;
+    note(N(m+12), i*0.11, last?0.34:0.18, {type:'triangle', vol:0.22, release:last?0.22:0.1});
+  });
+  note(N(72), 3*0.11, 0.34, {type:'sine', vol:0.06, release:0.22});  // soft octave under final = richer
+}
+
+// ===== 4. Pillow / safe-point win = the 6.2 fanfare, everywhere =====
+function pillowWin(){ stopAll();
+  [60,64,67,72,76].forEach((m,i)=> note(N(m), i*0.09, 0.16, {type:'sawtooth', vol:0.16}));
+  [72,76,79,84].forEach(m=> note(N(m), 0.5, 0.9, {type:'sawtooth', vol:0.12, release:0.6, vibrato:6}));
+  noise(0.5, 0.3, {vol:0.12});
+}
+
+// ===== 5. Wrong simple (approved) =====
+function wrong(){ stopAll();
+  note(N(57), 0,   0.18, {type:'sawtooth', vol:0.2});
+  note(N(53), 0.2, 0.45, {type:'sawtooth', vol:0.2, glideTo:N(48)});
+}
+
+// ===== 6. Wrong big = #5 extended: tu-tuu-tuuu-crash =====
+function wrongBig(){ stopAll();
+  // same descending voice as the simple wrong, with a third lower note
+  note(N(57), 0.00, 0.18, {type:'sawtooth', vol:0.2});                   // tu
+  note(N(53), 0.20, 0.40, {type:'sawtooth', vol:0.2, glideTo:N(48)});    // tuu
+  note(N(48), 0.60, 0.50, {type:'sawtooth', vol:0.2, glideTo:N(43)});    // tuuu
+  // then the crash (the heavy boom + dissonance, as before)
+  const c = 1.15;
+  note(N(36), c, 1.4, {type:'sine', vol:0.34});                          // boom
+  note(N(50), c, 0.9, {type:'sawtooth', vol:0.16, glideTo:N(38), vibrato:7});
+  note(N(51), c, 0.9, {type:'sawtooth', vol:0.10, glideTo:N(39)});       // clash
+  noise(c, 0.5, {vol:0.10, hp:300});
+}
+</script>
+</body>
+</html>

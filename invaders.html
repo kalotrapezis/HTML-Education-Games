@@ -17,8 +17,8 @@
   }
   .back { position: absolute; top: 20px; left: 20px; }
   .back a { color: #fff; text-decoration: none; background: rgba(0,0,0,0.3); padding: 8px 14px; border-radius: 8px; }
-  h1 { font-size: 44px; margin: 10px 0 6px; }
-  .info { opacity: 0.85; margin-bottom: 16px; font-size: 16px; text-align: center; }
+  h1 { font-size: 32px; margin: 6px 0 4px; }
+  .info { opacity: 0.85; margin-bottom: 10px; font-size: 15px; text-align: center; }
 
   .screen { display: none; flex-direction: column; align-items: center; }
   .screen.active { display: flex; }
@@ -64,6 +64,12 @@
     border: 4px solid #fff;
     border-radius: 8px;
     box-shadow: 0 0 30px rgba(155, 93, 229, 0.4);
+    /* Σμίκρυνση ώστε σκορ + power-ups + παιχνίδι να χωρούν σε μικρές οθόνες.
+       Διατηρεί τις αναλογίες 560:700 (width:auto) και δεν ξεπερνά το ύψος του παραθύρου. */
+    display: block;
+    width: auto;
+    height: min(700px, calc(100dvh - 345px));
+    max-width: 96vw;
   }
   .controls {
     margin-top: 16px; text-align: center; background: rgba(0,0,0,0.25);
@@ -114,7 +120,7 @@
 </style>
 </head>
 <body>
-<div class="back"><a href="παιχνίδια.html">← Πίσω στα παιχνίδια</a></div>
+<div class="back"><a href="index.html">← Πίσω στα παιχνίδια</a></div>
 
 <h1>👾 SPACE INVADERS</h1>
 
@@ -870,8 +876,16 @@ function draw() {
   ctx.restore();
 }
 
-function loop() {
-  update();
+// Σταθερό βήμα προσομοίωσης 60 φορές/δευτ — ανεξάρτητο από τη συχνότητα οθόνης
+// (διορθώνει tablet/οθόνες 120Hz που έτρεχαν το παιχνίδι διπλάσια γρήγορα)
+const STEP_MS = 1000 / 60;
+let _lastTime = 0, _acc = 0;
+function loop(now) {
+  if (!_lastTime) _lastTime = now;
+  _acc += now - _lastTime;
+  _lastTime = now;
+  if (_acc > 250) _acc = 250; // απόφυγε "spiral of death" μετά από lag/tab switch
+  while (_acc >= STEP_MS) { update(); _acc -= STEP_MS; }
   draw();
   requestAnimationFrame(loop);
 }
@@ -954,7 +968,7 @@ document.getElementById('clearLb').onclick = () => {
 };
 
 renderLb();
-loop();
+requestAnimationFrame(loop);
 </script>
 </body>
 </html>

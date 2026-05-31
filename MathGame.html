@@ -407,7 +407,7 @@
 </style>
 </head>
 <body>
-<a href="παιχνίδια.html" style="position:fixed;top:18px;left:18px;z-index:100;color:#fff;text-decoration:none;background:rgba(0,0,0,0.55);padding:8px 14px;border-radius:8px;font-family:'Segoe UI',Tahoma,sans-serif;font-size:14px;font-weight:bold;">← Πίσω στα παιχνίδια</a>
+<a href="index.html" style="position:fixed;top:18px;left:18px;z-index:100;color:#fff;text-decoration:none;background:rgba(0,0,0,0.55);padding:8px 14px;border-radius:8px;font-family:'Segoe UI',Tahoma,sans-serif;font-size:14px;font-weight:bold;">← Πίσω στα παιχνίδια</a>
 <div id="game">
 
   <div class="bg menu" id="background"></div>
@@ -533,6 +533,7 @@
 
 </div>
 
+<script src="sounds.js"></script>
 <script>
 // ============================================================
 // SVG CREATURES — child-friendly, with numbered countable parts
@@ -882,7 +883,12 @@ function show(id) {
   });
   const target = document.getElementById(id);
   target.classList.remove('hidden');
-  if (id === 'game-screen') target.classList.add('active');
+  if (id === 'game-screen') {
+    target.classList.add('active');
+    if (window.GameSounds) { GameSounds.unlock(); GameSounds.background(); }
+  } else if (window.GameSounds) {
+    GameSounds.stopAll();   // σταματά τη μουσική φεύγοντας από το παιχνίδι
+  }
 }
 
 function setBg(theme) {
@@ -1271,6 +1277,8 @@ function handleAnswer(bubble, chosen) {
   stopCountdown();
 
   const correct = (chosen === state.currentQ.answer);
+
+  if (window.GameSounds) (correct ? GameSounds.bigCorrect() : GameSounds.bigWrong());
 
   if (state.mode === '2p') {
     handleAnswer2P(bubble, correct);

@@ -115,13 +115,13 @@
     <label>Σχήμα:</label>
     <select id="sizeSel">
       <option value="12,12">12 × 12 (τετράγωνο, πολύ εύκολο)</option>
-      <option value="16,16" selected>16 × 16 (τετράγωνο, εύκολο)</option>
+      <option value="16,16">16 × 16 (τετράγωνο, εύκολο)</option>
       <option value="24,24">24 × 24 (τετράγωνο)</option>
       <option value="32,32">32 × 32 (τετράγωνο)</option>
       <option value="48,48">48 × 48 (τετράγωνο, δύσκολο)</option>
       <option value="32,18">32 × 18 (widescreen 16:9)</option>
       <option value="48,27">48 × 27 (widescreen HD)</option>
-      <option value="64,36">64 × 36 (widescreen 4K)</option>
+      <option value="64,36" selected>64 × 36 (widescreen 4K)</option>
       <option value="42,18">42 × 18 (ultrawide 21:9)</option>
       <option value="56,24">56 × 24 (ultrawide HD)</option>
       <option value="84,36">84 × 36 (ultrawide 4K)</option>
@@ -218,7 +218,7 @@ const ctxOverlay = cOverlay.getContext('2d');
 const ctxHint = cHint.getContext('2d');
 const ctxGrid = cGrid.getContext('2d');
 
-let gridW = 16, gridH = 16;
+let gridW = 64, gridH = 36;
 let cellPx = 32; // internal logical px per cell (fixed)
 let pixels = [];
 let history = [];

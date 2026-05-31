@@ -218,20 +218,26 @@
     background: rgba(0,0,0,0.5);
     border: 2px solid rgba(255,215,0,0.4);
     border-radius: 12px;
-    padding: 10px;
+    padding: 8px;
     display: flex;
     flex-direction: column-reverse;
     gap: 2px;
-    overflow-y: auto;
+    min-height: 0;
+    overflow: hidden;
   }
+  /* Κάθε σκαλί μοιράζεται ίσα το ύψος της σκάλας ώστε να χωρούν πάντα
+     όλα τα ποσά — χωρίς κενό πάνω ή κόψιμο κάτω σε μικρές οθόνες. */
   .rung {
-    padding: 7px 12px;
+    flex: 1 1 0;
+    min-height: 0;
+    padding: 2px 12px;
     display: flex;
     justify-content: space-between;
     align-items: center;
-    font-size: 15px;
+    font-size: clamp(11px, 1.7vh, 15px);
     border-radius: 6px;
     color: #ffaa00;
+    white-space: nowrap;
   }
   .rung .num { color: #888; font-weight: bold; min-width: 24px; }
   .rung.active { background: linear-gradient(90deg, #aa6600, #ffaa00); color: #000; }
@@ -683,6 +689,7 @@
 </div>
 
 <script src="bank/manifest.js"></script>
+<script src="sounds.js"></script>
 <script>
 const PRIZES = [500, 1000, 2000, 3000, 5000, 7500, 10000, 12500, 15000, 25000, 50000, 100000, 250000, 500000, 1000000];
 const SAFE_LEVELS = [4, 9]; // €5.000 και €25.000
@@ -713,66 +720,46 @@ const SAMPLE = {
    MP3 αρχεία στον φάκελο Sounds/.
    ============================================================ */
 let soundOn = true;
-let sndUnlocked = false;
-const SND = {};
-function loadSnd(key, file, loop, vol){
-  const a = new Audio('Sounds/' + file);
-  a.loop = !!loop;
-  a.volume = vol == null ? 1 : vol;
-  a.preload = 'auto';
-  SND[key] = a;
-}
-loadSnd('back',     'BackMusic.mp3',               true,  0.45);
-loadSnd('question', 'PillowQuestion.mp3',          true,  0.5);
-loadSnd('suspense', 'Final Answer-flash-wait.mp3', false, 0.7);
-loadSnd('correct',  'BasicWin.mp3',                false, 0.85);
-loadSnd('bigwin',   'Pillow--Big-Win.mp3',         false, 0.9);
-loadSnd('wrong',    'wrong-awncer-pillow.mp3',     false, 0.85);
-loadSnd('lose',     'wrong-Awncer-small.mp3',      false, 0.85);
 
+/* Συνθετικοί ήχοι μέσω sounds.js (GameSounds) — χωρίς αρχεία MP3.
+   Κλειδιά συμβάντων -> κλήσεις GameSounds:
+     back / question = μουσική υπόβαθρου (ένα κομμάτι για όλες τις ερωτήσεις)
+     suspense        = τικ-τακ-τοκ + κρατημένος τόνος
+     correct         = απλή σωστή (tu-ru-ru-ru)
+     bigwin          = πλούσια φανφάρα (μαξιλαράκι)
+     lose            = απλή λάθος (tu-tuu)
+     wrong           = μεγάλη λάθος σε μαξιλαράκι (tu-tuu-tuuu-crash) */
 function playSnd(key){
-  if(!soundOn) return;
-  const a = SND[key];
-  if(!a) return;
-  try { a.currentTime = 0; const p = a.play(); if(p && p.catch) p.catch(()=>{}); } catch(e){}
-}
-function startSnd(key){ /* ξεκινά loop μόνο αν δεν παίζει ήδη */
-  if(!soundOn) return;
-  const a = SND[key];
-  if(a && a.paused){ try { const p = a.play(); if(p && p.catch) p.catch(()=>{}); } catch(e){} }
-}
-function stopSnd(key){
-  const a = SND[key];
-  if(!a) return;
-  try { a.pause(); a.currentTime = 0; } catch(e){}
-}
-function stopAllSnd(){ for(const k in SND) stopSnd(k); }
-
-/* «Ξεκλείδωμα» ήχου μετά το πρώτο user gesture (autoplay policy) */
-function ac(){
-  if(sndUnlocked) return;
-  sndUnlocked = true;
-  for(const k in SND){
-    const a = SND[k];
-    a.muted = true;
-    try {
-      const p = a.play();
-      if(p && p.then){ p.then(()=>{ a.pause(); a.currentTime = 0; a.muted = false; }).catch(()=>{ a.muted = false; }); }
-      else { a.pause(); a.muted = false; }
-    } catch(e){ a.muted = false; }
+  if(!soundOn || !window.GameSounds) return;
+  switch(key){
+    case 'suspense': GameSounds.suspense();   break;
+    case 'correct':  GameSounds.correct();    break;
+    case 'bigwin':   GameSounds.bigCorrect(); break;
+    case 'wrong':    GameSounds.bigWrong();   break;
+    case 'lose':     GameSounds.wrong();      break;
   }
 }
+function startSnd(key){
+  if(!soundOn || !window.GameSounds) return;
+  if(key === 'back' || key === 'question') GameSounds.background();
+}
+function stopSnd(key){
+  if(!window.GameSounds) return;
+  if(key === 'back' || key === 'question') GameSounds.backgroundStop();
+  else if(key === 'suspense') GameSounds.suspenseStop();
+}
+function stopAllSnd(){ if(window.GameSounds) GameSounds.stopAll(); }
+
+/* «Ξεκλείδωμα» ήχου μετά το πρώτο user gesture (autoplay policy) */
+function ac(){ if(window.GameSounds) GameSounds.unlock(); }
 
 /* Τα «μαξιλάρια» (safe-haven) επίπεδα + ο τελικός έχουν τους δικούς τους ήχους */
 function isPillowLevel(lvl){
   if(lvl >= questions.length - 1) return true;   /* ο τελικός = μεγάλο μαξιλάρι */
   return effectiveSafeLevels().includes(lvl);    /* τα κλειδωμένα επίπεδα */
 }
-function startBed(){ /* μουσική υπόκρουση: pillow vs κανονική ερώτηση */
-  if(!soundOn) return;
-  const pillow = isPillowLevel(currentLevel);
-  stopSnd(pillow ? 'back' : 'question');
-  startSnd(pillow ? 'question' : 'back');
+function startBed(){ /* μουσική υπόκρουση: ένα κομμάτι για όλες τις ερωτήσεις */
+  if(soundOn) startSnd('back');
 }
 
 /* Ονόματα συμβάντων του παιχνιδιού -> πραγματικοί ήχοι */

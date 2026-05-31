@@ -92,7 +92,7 @@
 </style>
 </head>
 <body>
-<div class="back"><a href="παιχνίδια.html">← Πίσω</a></div>
+<div class="back"><a href="index.html">← Πίσω</a></div>
 
 <h1>🧱 BREAKOUT</h1>
 <div class="info">Σπάσε όλα τα τουβλάκια — κάθε χρώμα θέλει διπλάσια χτυπήματα!</div>
@@ -486,15 +486,23 @@ function draw() {
   }
 }
 
-function loop() {
-  update();
+// Σταθερό βήμα προσομοίωσης 60 φορές/δευτ — ανεξάρτητο από τη συχνότητα οθόνης
+// (διορθώνει tablet/οθόνες 120Hz που έτρεχαν το παιχνίδι διπλάσια γρήγορα)
+const STEP_MS = 1000 / 60;
+let _lastTime = 0, _acc = 0;
+function loop(now) {
+  if (!_lastTime) _lastTime = now;
+  _acc += now - _lastTime;
+  _lastTime = now;
+  if (_acc > 250) _acc = 250; // απόφυγε "spiral of death" μετά από lag/tab switch
+  while (_acc >= STEP_MS) { update(); _acc -= STEP_MS; }
   draw();
   requestAnimationFrame(loop);
 }
 
 buildLegend();
 resetGame();
-loop();
+requestAnimationFrame(loop);
 </script>
 </body>
 </html>

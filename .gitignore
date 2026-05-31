@@ -1,12 +1,8 @@
 # Source PDFs (large, not for distribution)
 Books/
 
-# Third-party media (copyright) — audio + bundled pixel-art template images
+# Third-party audio (copyright) — game sounds are synthesized at runtime instead
 Sounds/
-presets/*.png
-presets/*.jpg
-presets/*.jpeg
-presets/*.gif
 
 # Build artifacts / archives
 *.zip
