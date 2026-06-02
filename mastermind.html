@@ -1,0 +1,409 @@
+<!DOCTYPE html>
+<html lang="el">
+<head>
+<link rel="icon" type="image/svg+xml" href="favicon.svg">
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
+<title>Mastermind — Σπαστός Κώδικας</title>
+<style>
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body {
+    font-family: 'Segoe UI', Tahoma, sans-serif;
+    background: linear-gradient(135deg, #1e3c72, #2a5298 50%, #6b2a8a);
+    color: #fff; min-height: 100vh; padding: 20px;
+    display: flex; flex-direction: column; align-items: center;
+    -webkit-tap-highlight-color: transparent;
+  }
+  .back { position: absolute; top: 20px; left: 20px; z-index: 5; }
+  .back a { color: #fff; text-decoration: none; background: rgba(0,0,0,0.3); padding: 8px 14px; border-radius: 8px; }
+  h1 { font-size: 38px; margin: 6px 0 4px; text-align: center; }
+  .info { opacity: 0.85; margin-bottom: 14px; font-size: 15px; text-align: center; max-width: 720px; }
+
+  .screen { display: none; flex-direction: column; align-items: center; width: 100%; }
+  .screen.active { display: flex; }
+
+  .menu-card {
+    background: rgba(0,0,0,0.4); padding: 24px 30px; border-radius: 16px;
+    min-width: 320px; max-width: 560px; width: 100%;
+    display: flex; flex-direction: column; gap: 16px;
+  }
+  .menu-card h2 { color: #ffb347; font-size: 22px; text-align: center; }
+  .diff-cards { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; }
+  .diff-card {
+    background: rgba(0,0,0,0.3); padding: 14px 8px; border-radius: 10px;
+    border: 2px solid transparent; cursor: pointer; text-align: center; transition: all 0.15s;
+  }
+  .diff-card:hover { border-color: #ffb347; }
+  .diff-card.selected { border-color: #ffb347; background: rgba(255,179,71,0.15); }
+  .diff-card .t { font-weight: bold; color: #ffb347; font-size: 16px; }
+  .diff-card .d { font-size: 12px; opacity: 0.8; margin-top: 4px; }
+
+  button {
+    padding: 12px 28px; font-size: 18px; border: none; border-radius: 10px;
+    background: #ff9500; color: #fff; font-weight: bold; cursor: pointer;
+    box-shadow: 0 4px 0 #c46c00;
+  }
+  button:active { transform: translateY(2px); box-shadow: 0 2px 0 #c46c00; }
+  button:disabled { opacity: 0.5; cursor: not-allowed; box-shadow: 0 4px 0 #7a4400; }
+  button.ghost { background: rgba(0,0,0,0.3); box-shadow: none; font-size: 15px; padding: 8px 18px; }
+
+  .topbar { display: flex; gap: 12px; align-items: center; margin-bottom: 10px; flex-wrap: wrap; justify-content: center; }
+  .tag { background: rgba(0,0,0,0.35); padding: 6px 14px; border-radius: 20px; font-size: 14px; }
+
+  .board {
+    background: rgba(0,0,0,0.28); border-radius: 14px; padding: 12px 14px;
+    display: flex; flex-direction: column-reverse; gap: 8px; margin-bottom: 14px;
+  }
+  .grow {
+    display: flex; align-items: center; gap: 12px; padding: 4px 8px; border-radius: 10px;
+  }
+  .grow.active { background: rgba(255,179,71,0.12); }
+  .num { width: 22px; text-align: right; opacity: 0.6; font-size: 14px; }
+  .pegs { display: flex; gap: 8px; }
+  .peg {
+    width: 38px; height: 38px; border-radius: 50%;
+    background: rgba(255,255,255,0.10);
+    border: 2px solid rgba(255,255,255,0.25); cursor: default;
+  }
+  .grow.active .peg { cursor: pointer; }
+  .peg.filled { border-color: rgba(255,255,255,0.7); }
+
+  .fb { display: flex; gap: 4px; align-items: center; }
+  .fb i {
+    width: 14px; height: 14px; border-radius: 50%; background: rgba(255,255,255,0.10);
+    display: inline-block;
+  }
+  .fb i.black { background: #111; border: 1px solid #555; }
+  .fb i.white { background: #fff; }
+
+  .palette { display: flex; gap: 10px; flex-wrap: wrap; justify-content: center; margin-bottom: 10px; }
+  .swatch {
+    width: 46px; height: 46px; border-radius: 50%; cursor: pointer;
+    border: 3px solid rgba(255,255,255,0.4); box-shadow: 0 3px 6px rgba(0,0,0,0.3);
+    transition: transform 0.1s; padding: 0; display: flex; align-items: center; justify-content: center;
+    font-size: 18px;
+  }
+  .swatch:active { transform: scale(0.92); }
+  .controls { display: flex; gap: 12px; justify-content: center; margin-bottom: 8px; }
+
+  .secret { display: flex; gap: 8px; margin: 6px 0; }
+  .secret .peg { cursor: default; }
+
+  .msg { min-height: 26px; font-size: 20px; font-weight: bold; margin: 8px 0; text-align: center; }
+  .end { display: flex; gap: 12px; margin-top: 4px; }
+
+  .overlay {
+    position: fixed; inset: 0; background: rgba(0,0,0,0.65); z-index: 20;
+    display: none; align-items: center; justify-content: center; padding: 20px;
+  }
+  .overlay.open { display: flex; }
+  .howto-card {
+    background: linear-gradient(135deg, #243b66, #3a2a66); border: 2px solid #ffb347;
+    border-radius: 16px; padding: 24px 26px; max-width: 460px; width: 100%;
+    box-shadow: 0 12px 40px rgba(0,0,0,0.5); max-height: 90vh; overflow-y: auto;
+  }
+  .howto-card h3 { color: #ffb347; font-size: 22px; margin-bottom: 12px; text-align: center; }
+  .howto-card p { font-size: 15px; line-height: 1.55; margin-bottom: 10px; opacity: 0.95; }
+  .howto-card ul { list-style: none; display: flex; flex-direction: column; gap: 10px; margin: 12px 0; }
+  .howto-card li { display: flex; align-items: center; gap: 12px; font-size: 15px; line-height: 1.4; }
+  .howto-card .dot { width: 20px; height: 20px; border-radius: 50%; flex: none; }
+  .howto-card .dot.black { background: #111; border: 1px solid #555; }
+  .howto-card .dot.white { background: #fff; }
+  .howto-card .warn {
+    background: rgba(255,179,71,0.15); border-left: 3px solid #ffb347;
+    padding: 10px 12px; border-radius: 8px; font-size: 14px; line-height: 1.5;
+  }
+  .howto-card button { width: 100%; margin-top: 16px; }
+
+  @media (max-width: 480px) {
+    .peg { width: 32px; height: 32px; }
+    .swatch { width: 40px; height: 40px; }
+    h1 { font-size: 30px; }
+  }
+</style>
+</head>
+<body>
+<div class="back"><a href="index.html">← Πίσω</a></div>
+
+<h1>🎯 Σπαστός Κώδικας</h1>
+<div class="info">Μάντεψε τον κρυφό κωδικό χρωμάτων! ⚫ = σωστό χρώμα &amp; θέση · ⚪ = σωστό χρώμα, λάθος θέση.</div>
+
+<!-- ΕΠΙΛΟΓΗ -->
+<div id="setup" class="screen active">
+  <div class="menu-card">
+    <h2>Διάλεξε δυσκολία</h2>
+    <div class="diff-cards" id="diffCards">
+      <div class="diff-card selected" data-pegs="3" data-colors="6" data-rows="10"><div class="t">Εύκολο</div><div class="d">3 θέσεις<br>6 χρώματα</div></div>
+      <div class="diff-card" data-pegs="4" data-colors="6" data-rows="10"><div class="t">Μέτριο</div><div class="d">4 θέσεις<br>6 χρώματα</div></div>
+      <div class="diff-card" data-pegs="5" data-colors="8" data-rows="12"><div class="t">Δύσκολο</div><div class="d">5 θέσεις<br>8 χρώματα</div></div>
+    </div>
+    <button id="startBtn">▶ Παίξε</button>
+  </div>
+</div>
+
+<!-- ΠΑΙΧΝΙΔΙ -->
+<div id="game" class="screen">
+  <div class="topbar">
+    <span class="tag" id="diffTag">—</span>
+    <span class="tag" id="rowTag">Γύρος 1</span>
+    <button class="ghost" id="helpBtn">💡 Πώς παίζεται</button>
+  </div>
+  <div class="board" id="board"></div>
+  <div class="palette" id="palette"></div>
+  <div class="controls">
+    <button id="submitBtn" disabled>✓ Έλεγξε</button>
+    <button class="ghost" id="clearBtn">✗ Καθάρισε</button>
+  </div>
+  <div class="msg" id="msg"></div>
+  <div class="secret" id="secret" style="display:none;"></div>
+  <div class="end" id="endBox" style="display:none;">
+    <button id="againBtn">▶ Νέο παιχνίδι</button>
+    <button class="ghost" id="backSetupBtn">⚙ Αλλαγή δυσκολίας</button>
+  </div>
+</div>
+
+<div class="overlay" id="howto">
+  <div class="howto-card">
+    <h3>💡 Πώς παίζεται</h3>
+    <p>Ο υπολογιστής διάλεξε έναν <b>κρυφό κωδικό</b> από χρωματιστά πιόνια. Σκοπός σου: να τον μαντέψεις!</p>
+    <p>Διάλεξε χρώματα από την παλέτα για να γεμίσεις τη σειρά σου και πάτα <b>«✓ Έλεγξε»</b>. Δίπλα στη σειρά παίρνεις ενδείξεις:</p>
+    <ul>
+      <li><span class="dot black"></span> Μαύρη: ένα πιόνι έχει <b>σωστό χρώμα &amp; σωστή θέση</b></li>
+      <li><span class="dot white"></span> Λευκή: ένα πιόνι έχει <b>σωστό χρώμα, αλλά σε λάθος θέση</b></li>
+    </ul>
+    <div class="warn">⚠️ Οι ενδείξεις δείχνουν μόνο <b>πόσα</b> βρήκες — όχι <b>ποιο</b> πιόνι. Δοκίμασε με λογική &amp; αποκλεισμό μέχρι να σπάσεις τον κωδικό!</div>
+    <button id="closeHow">Κατάλαβα 👍</button>
+  </div>
+</div>
+
+<script src="sounds.js"></script>
+<script>
+// χρώματα + σύμβολο (για ευκολία σε όσους ξεχωρίζουν δύσκολα χρώματα)
+const COLORS = [
+  { c: '#e53935', s: '●' }, // κόκκινο
+  { c: '#1e88e5', s: '■' }, // μπλε
+  { c: '#43a047', s: '▲' }, // πράσινο
+  { c: '#fdd835', s: '★' }, // κίτρινο
+  { c: '#fb8c00', s: '◆' }, // πορτοκαλί
+  { c: '#8e24aa', s: '♥' }, // μωβ
+  { c: '#00acc1', s: '✚' }, // γαλάζιο
+  { c: '#ec407a', s: '✦' }  // ροζ
+];
+
+let cfg = { pegs: 3, colors: 6, rows: 10 };
+let code = [];        // πίνακας δεικτών χρώματος
+let guesses = [];     // υποβληθέντα: [{guess:[], black, white}]
+let current = [];     // τρέχουσα σειρά (δείκτες ή null)
+let over = false;
+let howShown = false;
+const $ = id => document.getElementById(id);
+
+/* ---- setup ---- */
+$('diffCards').addEventListener('click', e => {
+  const c = e.target.closest('.diff-card'); if (!c) return;
+  document.querySelectorAll('.diff-card').forEach(x => x.classList.remove('selected'));
+  c.classList.add('selected');
+  cfg = { pegs: +c.dataset.pegs, colors: +c.dataset.colors, rows: +c.dataset.rows };
+});
+
+function startGame() {
+  $('diffTag').textContent = `${cfg.pegs} θέσεις · ${cfg.colors} χρώματα`;
+  $('setup').classList.remove('active');
+  $('game').classList.add('active');
+  buildPalette();
+  newGame();
+  if (!howShown) { $('howto').classList.add('open'); howShown = true; }
+}
+
+function newGame() {
+  code = [];
+  for (let i = 0; i < cfg.pegs; i++) code.push(Math.floor(Math.random() * cfg.colors));
+  guesses = [];
+  current = new Array(cfg.pegs).fill(null);
+  over = false;
+  $('msg').textContent = '';
+  $('secret').style.display = 'none';
+  $('secret').innerHTML = '';
+  $('endBox').style.display = 'none';
+  renderBoard();
+  updateControls();
+}
+
+function buildPalette() {
+  const p = $('palette'); p.innerHTML = '';
+  for (let i = 0; i < cfg.colors; i++) {
+    const b = document.createElement('button');
+    b.className = 'swatch';
+    b.style.background = COLORS[i].c;
+    b.textContent = COLORS[i].s;
+    b.style.color = 'rgba(0,0,0,0.45)';
+    b.addEventListener('click', () => placeColor(i));
+    p.appendChild(b);
+  }
+}
+
+function placeColor(ci) {
+  if (over) return;
+  const idx = current.indexOf(null);
+  if (idx === -1) return;
+  current[idx] = ci;
+  try { GameSounds.unlock(); } catch (e) {}
+  renderActiveRow();
+  updateControls();
+}
+
+function clearSlot(i) {
+  if (over) return;
+  current[i] = null;
+  renderActiveRow();
+  updateControls();
+}
+
+function renderBoard() {
+  const b = $('board'); b.innerHTML = '';
+  for (let r = 0; r < cfg.rows; r++) {
+    const row = document.createElement('div');
+    row.className = 'grow';
+    row.id = 'row-' + r;
+    const num = document.createElement('div'); num.className = 'num'; num.textContent = (r + 1);
+    const pegs = document.createElement('div'); pegs.className = 'pegs'; pegs.id = 'pegs-' + r;
+    const fb = document.createElement('div'); fb.className = 'fb'; fb.id = 'fb-' + r;
+    row.appendChild(num); row.appendChild(pegs); row.appendChild(fb);
+    b.appendChild(row);
+    drawRowPegs(r);
+    drawRowFb(r);
+  }
+  markActive();
+}
+
+function drawRowPegs(r) {
+  const el = $('pegs-' + r); el.innerHTML = '';
+  const submitted = guesses[r];
+  for (let i = 0; i < cfg.pegs; i++) {
+    const peg = document.createElement('div');
+    peg.className = 'peg';
+    let ci = null;
+    if (submitted) ci = submitted.guess[i];
+    else if (r === guesses.length) ci = current[i];
+    if (ci != null) {
+      peg.classList.add('filled');
+      peg.style.background = COLORS[ci].c;
+      peg.textContent = '';
+      if (!submitted) peg.addEventListener('click', () => clearSlot(i));
+    }
+    el.appendChild(peg);
+  }
+}
+
+function drawRowFb(r) {
+  const el = $('fb-' + r); el.innerHTML = '';
+  const g = guesses[r];
+  const pips = [];
+  if (g) {
+    for (let i = 0; i < g.black; i++) pips.push('black');
+    for (let i = 0; i < g.white; i++) pips.push('white');
+  }
+  for (let i = 0; i < cfg.pegs; i++) {
+    const pip = document.createElement('i');
+    if (pips[i]) pip.classList.add(pips[i]);
+    el.appendChild(pip);
+  }
+}
+
+function renderActiveRow() { drawRowPegs(guesses.length); }
+function markActive() {
+  document.querySelectorAll('.grow').forEach(x => x.classList.remove('active'));
+  const a = $('row-' + guesses.length);
+  if (a) a.classList.add('active');
+}
+
+function updateControls() {
+  $('submitBtn').disabled = over || current.indexOf(null) !== -1;
+  $('rowTag').textContent = `Γύρος ${Math.min(guesses.length + 1, cfg.rows)}`;
+}
+
+function score(guess) {
+  let black = 0, white = 0;
+  const cg = guess.slice(), cc = code.slice();
+  for (let i = 0; i < cc.length; i++) if (cg[i] === cc[i]) { black++; cg[i] = -1; cc[i] = -2; }
+  for (let i = 0; i < cg.length; i++) {
+    if (cg[i] === -1) continue;
+    const j = cc.indexOf(cg[i]);
+    if (j !== -1) { white++; cc[j] = -2; }
+  }
+  return { black, white };
+}
+
+function submit() {
+  if (over || current.indexOf(null) !== -1) return;
+  const guess = current.slice();
+  const res = score(guess);
+  guesses.push({ guess, black: res.black, white: res.white });
+  drawRowPegs(guesses.length - 1);
+  drawRowFb(guesses.length - 1);
+
+  if (res.black === cfg.pegs) {
+    over = true;
+    $('msg').textContent = `🎉 Μπράβο! Το έσπασες σε ${guesses.length} γύρους!`;
+    try { GameSounds.bigCorrect(); } catch (e) {}
+    finishUI();
+    return;
+  }
+  if (guesses.length >= cfg.rows) {
+    over = true;
+    $('msg').textContent = '😕 Τέλος! Ο κωδικός ήταν:';
+    revealCode();
+    try { GameSounds.wrong(); } catch (e) {}
+    finishUI();
+    return;
+  }
+  current = new Array(cfg.pegs).fill(null);
+  try { GameSounds.correct(); } catch (e) {}
+  drawRowPegs(guesses.length);
+  markActive();
+  updateControls();
+}
+
+function revealCode() {
+  const s = $('secret'); s.style.display = 'flex'; s.innerHTML = '';
+  code.forEach(ci => {
+    const peg = document.createElement('div');
+    peg.className = 'peg filled';
+    peg.style.background = COLORS[ci].c;
+    peg.textContent = COLORS[ci].s;
+    peg.style.color = 'rgba(0,0,0,0.45)';
+    peg.style.display = 'flex'; peg.style.alignItems = 'center'; peg.style.justifyContent = 'center';
+    s.appendChild(peg);
+  });
+}
+
+function finishUI() {
+  $('submitBtn').disabled = true;
+  $('endBox').style.display = 'flex';
+  document.querySelectorAll('.grow').forEach(x => x.classList.remove('active'));
+}
+
+/* ---- wiring ---- */
+$('startBtn').addEventListener('click', () => { try { GameSounds.unlock(); } catch (e) {} startGame(); });
+$('submitBtn').addEventListener('click', submit);
+$('clearBtn').addEventListener('click', () => { if (!over) { current = new Array(cfg.pegs).fill(null); renderActiveRow(); updateControls(); } });
+$('helpBtn').addEventListener('click', () => $('howto').classList.add('open'));
+$('closeHow').addEventListener('click', () => $('howto').classList.remove('open'));
+$('howto').addEventListener('click', e => { if (e.target === $('howto')) $('howto').classList.remove('open'); });
+$('againBtn').addEventListener('click', newGame);
+$('backSetupBtn').addEventListener('click', () => { $('game').classList.remove('active'); $('setup').classList.add('active'); });
+
+document.addEventListener('keydown', e => {
+  if (!$('game').classList.contains('active') || over) return;
+  if (e.key === 'Enter') submit();
+  else if (e.key === 'Backspace') {
+    // αφαίρεσε το τελευταίο γεμάτο
+    for (let i = current.length - 1; i >= 0; i--) if (current[i] != null) { current[i] = null; break; }
+    renderActiveRow(); updateControls();
+  } else if (/^[1-8]$/.test(e.key)) {
+    const ci = +e.key - 1; if (ci < cfg.colors) placeColor(ci);
+  }
+});
+</script>
+</body>
+</html>
