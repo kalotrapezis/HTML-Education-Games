@@ -380,6 +380,17 @@
   .btn-row { display: flex; gap: 14px; flex-wrap: wrap; justify-content: center; margin-top: 14px; }
 
   /* ---- Κουμπί ήχου ---- */
+  #backBtn {
+    position: fixed; top: 14px; left: 18px;
+    height: 36px; padding: 0 14px;
+    display: inline-flex; align-items: center; gap: 6px;
+    background: rgba(0,0,0,0.5); color: #ffd700;
+    border: 2px solid #ffd700; border-radius: 18px;
+    font-size: 14px; font-weight: bold; cursor: pointer;
+    text-decoration: none; font-family: inherit;
+    z-index: 150;
+  }
+  #backBtn:hover { background: #ffd700; color: #000; }
   #soundBtn {
     position: fixed; top: 14px; right: 62px;
     width: 36px; height: 36px;
@@ -472,6 +483,7 @@
   🧠 ΠΟΙΟΣ ΘΕΛΕΙ ΝΑ ΓΙΝΕΙ ΠΑΝΤΟΓΝΩΣΤΗΣ; 🧠
   <div id="subtitle">—</div>
 </header>
+<a id="backBtn" href="index.html" title="Πίσω στα παιχνίδια">← Πίσω</a>
 <button id="soundBtn" title="Ήχος on/off">🔊</button>
 <button id="helpBtn" title="Βοήθεια">?</button>
 

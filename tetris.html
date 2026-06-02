@@ -109,6 +109,7 @@
 </head>
 <body>
 <div class="back"><a href="index.html">← Πίσω στα παιχνίδια</a></div>
+<button id="soundToggle" title="Μουσική on/off" style="position:fixed;top:18px;right:18px;z-index:100;height:46px;padding:0 18px;display:inline-flex;align-items:center;gap:8px;border:2px solid #fff;border-radius:23px;background:rgba(0,0,0,0.5);color:#fff;font-size:17px;font-weight:bold;font-family:inherit;cursor:pointer;box-shadow:none;"><span id="soundToggleIc">🔊</span><span id="soundToggleTxt">Μουσική</span></button>
 
 <h1>🧩 TETRIS</h1>
 
@@ -208,6 +209,7 @@
   </div>
 </div>
 
+<script src="tetris-music.js"></script>
 <script>
 const COLS = 10, ROWS = 20, CELL = 30;
 const boardCanvas = document.getElementById('board');
@@ -324,6 +326,7 @@ function clearLines() {
     const newLevel = Math.floor(state.lines / 10) + state.startLevel;
     if (newLevel > state.level) {
       state.level = newLevel;
+      if (window.TetrisMusic) TetrisMusic.setLevel(state.level);
     }
     updateUI();
   } else {
@@ -549,10 +552,12 @@ function startGame() {
   drawPreview(holdCtx, null);
   updateUI();
   showScreen('gameScreen');
+  if (window.TetrisMusic && soundOn) { TetrisMusic.setLevel(state.level); TetrisMusic.start(); }
 }
 
 function endGame() {
   state.playing = false;
+  if (window.TetrisMusic) TetrisMusic.stop();
   recordScore();
   setTimeout(showResultScreen, 600);
 }
@@ -579,7 +584,11 @@ document.addEventListener('keydown', e => {
   if (['ArrowLeft','ArrowRight','ArrowUp','ArrowDown',' '].includes(e.key)) e.preventDefault();
   if (!state || !state.playing) return;
 
-  if (e.key === 'p' || e.key === 'P') { state.paused = !state.paused; return; }
+  if (e.key === 'p' || e.key === 'P') {
+    state.paused = !state.paused;
+    if (window.TetrisMusic) state.paused ? TetrisMusic.stop() : (soundOn && TetrisMusic.start());
+    return;
+  }
   if (state.paused) return;
 
   if (e.repeat) return;
@@ -640,13 +649,34 @@ function escapeHtml(s) {
 
 document.getElementById('startBtn').onclick = startGame;
 document.getElementById('rematchBtn').onclick = () => { renderLb(); startGame(); };
-document.getElementById('newMatchBtn').onclick = () => { renderLb(); showScreen('menuScreen'); };
-document.getElementById('backToMenuBtn').onclick = () => { renderLb(); showScreen('menuScreen'); };
+document.getElementById('newMatchBtn').onclick = () => { if (window.TetrisMusic) TetrisMusic.stop(); renderLb(); showScreen('menuScreen'); };
+document.getElementById('backToMenuBtn').onclick = () => { if (state) state.playing = false; if (window.TetrisMusic) TetrisMusic.stop(); renderLb(); showScreen('menuScreen'); };
 document.getElementById('clearLb').onclick = () => {
   if (confirm('Σίγουρα θες να καθαρίσεις το leaderboard;')) {
     localStorage.removeItem(LB_KEY); renderLb();
   }
 };
+
+// ---- μουσική on/off (αποθηκεύεται) ----
+let soundOn = localStorage.getItem('tetris_sound') !== 'off';
+(function () {
+  const btn = document.getElementById('soundToggle');
+  const ic = document.getElementById('soundToggleIc');
+  const txt = document.getElementById('soundToggleTxt');
+  const sync = () => { ic.textContent = soundOn ? '🔊' : '🔇'; txt.textContent = soundOn ? 'Μουσική' : 'Σίγαση'; };
+  sync();
+  if (window.TetrisMusic) TetrisMusic.setEnabled(soundOn);
+  btn.onclick = () => {
+    soundOn = !soundOn;
+    localStorage.setItem('tetris_sound', soundOn ? 'on' : 'off');
+    sync();
+    if (!window.TetrisMusic) return;
+    TetrisMusic.setEnabled(soundOn);
+    if (soundOn && state && state.playing && !state.paused && document.getElementById('gameScreen').classList.contains('active')) {
+      TetrisMusic.setLevel(state.level); TetrisMusic.start();
+    }
+  };
+})();
 
 renderLb();
 requestAnimationFrame(loop);
