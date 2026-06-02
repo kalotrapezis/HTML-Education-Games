@@ -177,6 +177,14 @@
         <option value="hard">Δύσκολο</option>
       </select>
     </div>
+    <div class="field">
+      <label>Ταχύτητα μπάλας</label>
+      <select id="ballSpeed">
+        <option value="slow">🐢 Αργό (για αρχάριους)</option>
+        <option value="normal" selected>Κανονικό</option>
+        <option value="fast">🐇 Γρήγορο</option>
+      </select>
+    </div>
     <div style="font-size:14px;opacity:0.7;text-align:center;margin-top:4px;">
       Best of 3 sets • Κάθε set στους 11 (νίκη με 2 πόντους διαφορά)
     </div>
@@ -223,7 +231,7 @@
   <div class="controls" id="controls">
     <b>Παίχτης 1 (αριστερά):</b> W ↑ &nbsp; / &nbsp; S ↓ &nbsp;&nbsp;|&nbsp;&nbsp;
     <b>Παίχτης 2 (δεξιά):</b> ↑ πάνω &nbsp; / &nbsp; ↓ κάτω<br>
-    Πάτα <b>Space</b> για να ρίξεις την μπάλα
+    Η μπάλα ξεκινά μόνη της μετά την αντίστροφη μέτρηση
   </div>
   <div class="button-row">
     <button class="secondary" id="backToMenuBtn">← Πίσω στο Μενού</button>
@@ -255,6 +263,15 @@ const BALL_R = 14;
 const POINTS_TO_WIN = 11;
 const SETS_TO_WIN = 2; // best of 3
 
+// Όπως το αυθεντικό Pong: κάθε χτύπημα ανεβάζει λίγο την ταχύτητα (σταδιακά) μέχρι ένα
+// μέγιστο, και μετά μένει σταθερή — αλλάζει μόνο η γωνία (από το πού χτυπά στη ρακέτα).
+// launch = αρχική ταχύτητα, inc = αύξηση ανά χτύπημα, max = ταβάνι.
+const SPEED = {
+  slow:   { launch: 4.0, inc: 0.40, max: 7.5  },
+  normal: { launch: 5.5, inc: 0.60, max: 10.5 },
+  fast:   { launch: 7.5, inc: 0.85, max: 15   }
+};
+
 let state = {
   p1: { y: H/2 - PADDLE_H/2, score: 0, sets: 0, totalPoints: 0 },
   p2: { y: H/2 - PADDLE_H/2, score: 0, sets: 0, totalPoints: 0 },
@@ -264,7 +281,11 @@ let state = {
   setOver: false,
   setWinner: null,
   winner: null,
-  recorded: false
+  recorded: false,
+  speedCfg: SPEED.normal,
+  rallyHits: 0,      // πόσες φορές χτυπήθηκε η μπάλα στο τρέχον ράλι
+  countdown: null,   // frames που απομένουν στην αντίστροφη μέτρηση
+  setOverTimer: null // frames αναμονής μετά το τέλος ενός set
 };
 
 const keys = {};
@@ -274,16 +295,17 @@ document.addEventListener('keydown', e => {
   if (['ArrowUp', 'ArrowDown', 'ArrowLeft', 'ArrowRight', ' '].includes(e.key)) {
     e.preventDefault();
   }
-  if (e.key === ' ') {
-    if (state.winner) { /* ignore — must click button */ }
-    else if (state.setOver) { nextSet(); }
-    else if (!state.running) { launchBall(); }
-  }
+  // Η μπάλα ξεκινά πλέον αυτόματα με αντίστροφη μέτρηση — δεν χρειάζεται το Space.
 });
+
+function startCountdown(frames) {
+  state.countdown = frames;
+}
 document.addEventListener('keyup', e => { keys[e.key.toLowerCase()] = false; });
 
 function launchBall() {
-  const speed = 6;
+  state.rallyHits = 0;
+  const speed = state.speedCfg.launch;
   const angle = (Math.random() * 0.6 - 0.3) + (Math.random() < 0.5 ? Math.PI : 0);
   state.ball.x = W/2;
   state.ball.y = H/2;
@@ -307,6 +329,8 @@ function resetGame() {
   state.setWinner = null;
   state.running = false;
   state.recorded = false;
+  state.countdown = null;
+  state.setOverTimer = null;
   state.ball.x = W/2; state.ball.y = H/2;
   state.ball.vx = 0; state.ball.vy = 0;
   updateUI();
@@ -319,6 +343,8 @@ function nextSet() {
   state.setOver = false;
   state.setWinner = null;
   state.running = false;
+  state.countdown = null;
+  state.setOverTimer = null;
   state.ball.x = W/2; state.ball.y = H/2;
   state.ball.vx = 0; state.ball.vy = 0;
   updateUI();
@@ -409,8 +435,8 @@ function applyModeUI() {
   if (is1p) { n2.value = 'CPU'; n2.disabled = true; }
   else { if (n2.value === 'CPU') n2.value = 'Παίχτης 2'; n2.disabled = false; }
   document.getElementById('controls').innerHTML = is1p
-    ? '<b>Παίχτης (αριστερά):</b> W ↑ / S ↓<br>Πάτα <b>Space</b> για να ρίξεις την μπάλα'
-    : '<b>Παίχτης 1 (αριστερά):</b> W ↑ &nbsp; / &nbsp; S ↓ &nbsp;&nbsp;|&nbsp;&nbsp;<b>Παίχτης 2 (δεξιά):</b> ↑ πάνω &nbsp; / &nbsp; ↓ κάτω<br>Πάτα <b>Space</b> για να ρίξεις την μπάλα';
+    ? '<b>Παίχτης (αριστερά):</b> W ↑ / S ↓<br>Η μπάλα ξεκινά μόνη της μετά την αντίστροφη μέτρηση'
+    : '<b>Παίχτης 1 (αριστερά):</b> W ↑ &nbsp; / &nbsp; S ↓ &nbsp;&nbsp;|&nbsp;&nbsp;<b>Παίχτης 2 (δεξιά):</b> ↑ πάνω &nbsp; / &nbsp; ↓ κάτω<br>Η μπάλα ξεκινά μόνη της μετά την αντίστροφη μέτρηση';
 }
 document.getElementById('mode').addEventListener('change', applyModeUI);
 
@@ -421,8 +447,10 @@ function showScreen(id) {
 
 function startMatch() {
   applyModeUI();
+  state.speedCfg = SPEED[document.getElementById('ballSpeed').value] || SPEED.normal;
   resetGame();
   showScreen('gameScreen');
+  startCountdown(180); // 3..2..1..GO
 }
 
 function showResultScreen() {
@@ -436,7 +464,7 @@ function showResultScreen() {
 }
 
 document.getElementById('startBtn').onclick = startMatch;
-document.getElementById('rematchBtn').onclick = () => { resetGame(); showScreen('gameScreen'); };
+document.getElementById('rematchBtn').onclick = () => { state.speedCfg = SPEED[document.getElementById('ballSpeed').value] || SPEED.normal; resetGame(); showScreen('gameScreen'); startCountdown(180); };
 document.getElementById('newMatchBtn').onclick = () => { renderLb(); showScreen('menuScreen'); };
 document.getElementById('backToMenuBtn').onclick = () => { renderLb(); showScreen('menuScreen'); };
 
@@ -481,6 +509,21 @@ function update() {
   state.p1.y = Math.max(0, Math.min(H - PADDLE_H, state.p1.y));
   state.p2.y = Math.max(0, Math.min(H - PADDLE_H, state.p2.y));
 
+  // Μετά το τέλος ενός set: μικρή παύση, μετά αυτόματα το επόμενο set με αντίστροφη μέτρηση
+  if (state.setOver && !state.winner) {
+    if (state.setOverTimer === null) state.setOverTimer = 150;
+    state.setOverTimer--;
+    if (state.setOverTimer <= 0) { state.setOverTimer = null; nextSet(); startCountdown(180); }
+    return;
+  }
+
+  // Αντίστροφη μέτρηση πριν το σερβίς (3..2..1..GO)
+  if (state.countdown !== null && !state.winner) {
+    state.countdown--;
+    if (state.countdown <= -30) { state.countdown = null; launchBall(); }
+    return;
+  }
+
   if (!state.running || state.setOver || state.winner) return;
 
   const b = state.ball;
@@ -490,27 +533,28 @@ function update() {
   if (b.y - BALL_R < 0) { b.y = BALL_R; b.vy *= -1; }
   if (b.y + BALL_R > H) { b.y = H - BALL_R; b.vy *= -1; }
 
-  const maxSpeed = 22;
-  const accel = 1.12;
+  const cfg = state.speedCfg;
+  const MAX_ANGLE = 0.6; // ~34° — όσο πιο μακριά απ' το κέντρο της μπάρας, τόσο πιο λοξά
+  // Σταδιακή αύξηση: λίγο σε κάθε χτύπημα μέχρι το cfg.max (όπως στο original Pong)
+  function bounce(dir, paddleY) {
+    state.rallyHits++;
+    const target = Math.min(cfg.max, cfg.launch + state.rallyHits * cfg.inc);
+    const rel = Math.max(-1, Math.min(1, (b.y - (paddleY + PADDLE_H/2)) / (PADDLE_H/2)));
+    const angle = rel * MAX_ANGLE;
+    b.vx = dir * target * Math.cos(angle);
+    b.vy = target * Math.sin(angle);
+  }
   // Παίχτης 1
   if (b.x - BALL_R < 20 + PADDLE_W && b.x > 20 &&
       b.y > state.p1.y && b.y < state.p1.y + PADDLE_H && b.vx < 0) {
-    b.vx *= -accel;
-    b.vy *= accel;
-    const hit = (b.y - (state.p1.y + PADDLE_H/2)) / (PADDLE_H/2);
-    b.vy += hit * 2;
-    const sp = Math.hypot(b.vx, b.vy);
-    if (sp > maxSpeed) { b.vx *= maxSpeed/sp; b.vy *= maxSpeed/sp; }
+    b.x = 20 + PADDLE_W + BALL_R;
+    bounce(1, state.p1.y);
   }
   // Παίχτης 2
   if (b.x + BALL_R > W - 20 - PADDLE_W && b.x < W - 20 &&
       b.y > state.p2.y && b.y < state.p2.y + PADDLE_H && b.vx > 0) {
-    b.vx *= -accel;
-    b.vy *= accel;
-    const hit = (b.y - (state.p2.y + PADDLE_H/2)) / (PADDLE_H/2);
-    b.vy += hit * 2;
-    const sp = Math.hypot(b.vx, b.vy);
-    if (sp > maxSpeed) { b.vx *= maxSpeed/sp; b.vy *= maxSpeed/sp; }
+    b.x = W - 20 - PADDLE_W - BALL_R;
+    bounce(-1, state.p2.y);
   }
 
   if (b.x < -BALL_R) {
@@ -545,6 +589,9 @@ function pointEnd() {
       state.recorded = true;
       setTimeout(showResultScreen, 800);
     }
+  } else {
+    // Συνεχίζεται το set — αντίστροφη μέτρηση πριν το επόμενο σερβίς
+    startCountdown(120); // ~2 δευτ.
   }
   updateUI();
 }
@@ -622,17 +669,21 @@ function draw() {
     ctx.font = '22px Segoe UI';
     ctx.fillStyle = '#fff';
     ctx.fillText(state.p1.sets + ' – ' + state.p2.sets + ' σε sets', W/2, H/2 + 5);
-    ctx.font = '18px Segoe UI';
-    ctx.fillText('Πάτα Space για νέο ματς', W/2, H/2 + 35);
   } else if (state.setOver) {
     ctx.fillStyle = '#ffe066';
     ctx.font = 'bold 36px Segoe UI';
     ctx.fillText('Set ' + state.setNum + ': ' + state.setWinner, W/2, H/2 - 20);
     ctx.font = '18px Segoe UI';
     ctx.fillStyle = '#fff';
-    ctx.fillText('Πάτα Space για το επόμενο set', W/2, H/2 + 15);
-  } else if (!state.running) {
-    ctx.fillText('Πάτα Space για να ξεκινήσεις', W/2, H/2 - 30);
+    ctx.fillText('Επόμενο set σε λίγο…', W/2, H/2 + 15);
+  } else if (state.countdown !== null) {
+    const n = Math.ceil(state.countdown / 60);
+    ctx.fillStyle = '#fff';
+    ctx.font = '22px Segoe UI';
+    ctx.fillText('Ετοιμάσου!', W/2, H/2 - 70);
+    ctx.fillStyle = '#ffe066';
+    ctx.font = 'bold 96px Segoe UI';
+    ctx.fillText(n > 0 ? String(n) : 'GO!', W/2, H/2 + 30);
   }
 }
 

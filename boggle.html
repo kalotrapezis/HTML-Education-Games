@@ -37,6 +37,26 @@
   select:focus { outline: none; border-color: #ff9500; }
   select option { background: #1e3c72; color: #fff; }
 
+  .lang-cards { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+  .lang-card { background: rgba(0,0,0,0.3); padding: 12px 8px; border-radius: 10px; border: 2px solid transparent; cursor: pointer; text-align: center; font-size: 16px; font-weight: bold; transition: all 0.15s; }
+  .lang-card:hover { border-color: #ffb347; }
+  .lang-card.selected { border-color: #ffb347; background: rgba(255,179,71,0.15); }
+  .pack-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; }
+  .pack-head { grid-column: 1 / -1; color: #ffb347; font-size: 13px; font-weight: bold; opacity: 0.9; margin: 6px 0 0; padding-left: 2px; }
+  .pack-card { display: flex; align-items: center; gap: 8px; background: rgba(0,0,0,0.3); padding: 10px 10px; border-radius: 10px; border: 2px solid transparent; cursor: pointer; transition: all 0.15s; }
+  .pack-card:hover { border-color: #ffb347; }
+  .pack-card.selected { border-color: #ffb347; background: rgba(255,179,71,0.15); }
+  .pack-card .ic { font-size: 22px; flex: none; }
+  .pack-card .nm { font-size: 14px; line-height: 1.2; }
+  .pack-card .cnt { font-size: 11px; opacity: 0.7; }
+  .pack-card.all { grid-column: 1 / -1; justify-content: center; font-weight: bold; }
+  .mode-cards { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+  .mode-card { background: rgba(0,0,0,0.3); padding: 12px 10px; border-radius: 10px; border: 2px solid transparent; cursor: pointer; transition: all 0.15s; }
+  .mode-card:hover { border-color: #ffb347; }
+  .mode-card.selected { border-color: #ffb347; background: rgba(255,179,71,0.15); }
+  .mode-card .t { font-weight: bold; font-size: 15px; }
+  .mode-card .d { font-size: 12px; opacity: 0.75; margin-top: 3px; }
+
   button {
     padding: 12px 28px; font-size: 18px; border: none; border-radius: 10px;
     background: #ff9500; color: #fff; font-weight: bold; cursor: pointer;
@@ -104,17 +124,24 @@
 <!-- ΕΠΙΛΟΓΗ -->
 <div id="setup" class="screen active">
   <div class="menu-card">
-    <h2>Διάλεξε λέξεις</h2>
+    <h2 id="setupTitle">Διάλεξε λέξεις</h2>
     <div>
-      <label for="packSel">Τάξη &amp; μάθημα / θέμα</label>
-      <select id="packSel"></select>
+      <label id="langLabel">Γλώσσα</label>
+      <div class="lang-cards" id="langCards">
+        <div class="lang-card selected" data-lang="el">🇬🇷 Ελληνικά</div>
+        <div class="lang-card" data-lang="en">🇬🇧 English</div>
+      </div>
     </div>
     <div>
-      <label for="modeSel">Τρόπος παιχνιδιού</label>
-      <select id="modeSel">
-        <option value="guided">🧭 Καθοδηγούμενο — λέξεις σε ίσιες γραμμές (πιο εύκολο)</option>
-        <option value="free">🎲 Ελεύθερο — λέξεις με στροφές (πιο δύσκολο)</option>
-      </select>
+      <label id="packLabel">Τάξη &amp; μάθημα / θέμα</label>
+      <div class="pack-grid" id="packGrid"></div>
+    </div>
+    <div>
+      <label id="modeLabel">Τρόπος παιχνιδιού</label>
+      <div class="mode-cards" id="modeCards">
+        <div class="mode-card selected" data-mode="guided"><div class="t">🧭 Καθοδηγούμενο</div><div class="d">λέξεις σε ίσιες γραμμές (πιο εύκολο)</div></div>
+        <div class="mode-card" data-mode="free"><div class="t">🎲 Ελεύθερο</div><div class="d">λέξεις με στροφές (πιο δύσκολο)</div></div>
+      </div>
     </div>
     <button id="startBtn">▶ Παίξε</button>
   </div>
@@ -151,6 +178,24 @@
 const GREEK = 'ΑΒΓΔΕΖΗΘΙΚΛΜΝΞΟΠΡΣΤΥΦΧΨΩ';
 // συχνότερα γράμματα για το «γέμισμα» (να μοιάζει φυσικό)
 const FILL = 'ΑΑΑΑΟΟΟΕΕΕΙΙΙΤΤΤΣΣΣΝΝΝΡΡΠΠΚΚΛΛΜΜΥΥΗΗΔΩΓΘΧΦΒΞΖΨ';
+// αγγλικά «γεμίσματα» κατά συχνότητα
+const FILL_EN = 'EEEEAAAARRRTTTOOONNNIIISSSHHLLDDCCUUMMWWFFGGYYPPBBVKJXQZ';
+
+let lang = 'el';
+let selectedPack = '__all__';
+
+const T = {
+  el: { title: 'Διάλεξε λέξεις', lang: 'Γλώσσα', pack: 'Τάξη & μάθημα / θέμα', modeL: 'Τρόπος παιχνιδιού',
+        all: '🎲 Όλα (τυχαία)', start: '▶ Παίξε', loading: '… φόρτωση λέξεων', words: 'λέξεις',
+        findTitle: 'Βρες τις λέξεις', guided: '🧭 Καθοδηγούμενο', free: '🎲 Ελεύθερο',
+        newGrid: '🔄 Νέο πλέγμα', changeTheme: '⚙ Αλλαγή θέματος', again: '▶ Νέο πλέγμα',
+        wonAll: '🎉 Τις βρήκες όλες!', noWords: 'Δεν βρέθηκαν λέξεις — δοκίμασε άλλο θέμα' },
+  en: { title: 'Choose words', lang: 'Language', pack: 'Grade & subject / theme', modeL: 'Game mode',
+        all: '🎲 All (random)', start: '▶ Play', loading: '… loading words', words: 'words',
+        findTitle: 'Find the words', guided: '🧭 Guided', free: '🎲 Free',
+        newGrid: '🔄 New grid', changeTheme: '⚙ Change theme', again: '▶ New grid',
+        wonAll: '🎉 You found them all!', noWords: 'No words found — try another theme' }
+};
 
 let pool = [];
 let targets = [];     // {word, found}
@@ -169,24 +214,87 @@ function rnd(n) { return Math.floor(Math.random() * n); }
 function pick(a) { return a[rnd(a.length)]; }
 
 /* ---- setup ---- */
-function buildSetup() {
-  const sel = $('packSel');
+function renderPackGrid() {
+  const grid = $('packGrid');
+  const en = lang === 'en';
   const packs = WordSource.packs();
-  const groups = {};
-  packs.forEach(p => { (groups[p.gradeName] = groups[p.gradeName] || []).push(p); });
-  let html = '<option value="__all__">🎲 Όλα (τυχαία)</option>';
-  Object.keys(groups).forEach(g => {
-    html += `<optgroup label="${g}">`;
-    groups[g].forEach(p => { html += `<option value="${p.id}">${p.icon} ${p.subjectName} (${p.count})</option>`; });
-    html += '</optgroup>';
+  const groups = {}; const order = [];
+  packs.forEach(p => {
+    const g = en ? (p.gradeNameEn || p.gradeName) : p.gradeName;
+    if (!groups[g]) { groups[g] = []; order.push(g); }
+    groups[g].push(p);
   });
-  sel.innerHTML = html;
+  const card = (p, nm) => {
+    const cnt = en ? p.countEn : p.count;
+    const on = selectedPack === p.id ? ' selected' : '';
+    return `<div class="pack-card${on}" data-id="${p.id}"><span class="ic">${p.icon}</span><span><span class="nm">${nm}</span><br><span class="cnt">${cnt} ${T[lang].words}</span></span></div>`;
+  };
+  let html = `<div class="pack-card all${selectedPack === '__all__' ? ' selected' : ''}" data-id="__all__">${T[lang].all}</div>`;
+  // μονές ομάδες (π.χ. τάξεις με 1 μάθημα) → κάρτες με τίτλο την ομάδα, ρέουν 3-ανά-γραμμή
+  order.filter(g => groups[g].length === 1).forEach(g => { html += card(groups[g][0], g); });
+  // πολλαπλές ομάδες (θεματικά) → επικεφαλίδα + κάρτες ανά μάθημα
+  order.filter(g => groups[g].length > 1).forEach(g => {
+    html += `<div class="pack-head">${g}</div>`;
+    groups[g].forEach(p => { html += card(p, en ? (p.subjectNameEn || p.subjectName) : p.subjectName); });
+  });
+  grid.innerHTML = html;
+}
+
+function applyLang() {
+  const t = T[lang];
+  $('setupTitle').textContent = t.title;
+  $('langLabel').textContent = t.lang;
+  $('packLabel').textContent = t.pack;
+  $('modeLabel').textContent = t.modeL;
+  $('startBtn').textContent = t.start;
+  document.querySelectorAll('.lang-card').forEach(c => c.classList.toggle('selected', c.dataset.lang === lang));
+  document.querySelector('.mode-card[data-mode="guided"] .t').textContent = t.guided;
+  document.querySelector('.mode-card[data-mode="free"] .t').textContent = t.free;
+  if (lang === 'en') {
+    document.querySelector('.mode-card[data-mode="guided"] .d').textContent = 'words in straight lines (easier)';
+    document.querySelector('.mode-card[data-mode="free"] .d').textContent = 'words with turns (harder)';
+  } else {
+    document.querySelector('.mode-card[data-mode="guided"] .d').textContent = 'λέξεις σε ίσιες γραμμές (πιο εύκολο)';
+    document.querySelector('.mode-card[data-mode="free"] .d').textContent = 'λέξεις με στροφές (πιο δύσκολο)';
+  }
+  renderPackGrid();
+}
+
+function buildSetup() {
+  applyLang();
+
+  $('langCards').addEventListener('click', e => {
+    const c = e.target.closest('.lang-card'); if (!c) return;
+    lang = c.dataset.lang;
+    selectedPack = '__all__';
+    applyLang();
+  });
+  $('packGrid').addEventListener('click', e => {
+    const c = e.target.closest('.pack-card'); if (!c) return;
+    selectedPack = c.dataset.id;
+    document.querySelectorAll('.pack-card').forEach(x => x.classList.remove('selected'));
+    c.classList.add('selected');
+  });
+  $('modeCards').addEventListener('click', e => {
+    const c = e.target.closest('.mode-card'); if (!c) return;
+    document.querySelectorAll('.mode-card').forEach(x => x.classList.remove('selected'));
+    c.classList.add('selected');
+    mode = c.dataset.mode;
+  });
+}
+
+function packLabel() {
+  if (selectedPack === '__all__') return T[lang].all.replace(/^🎲\s*/, '');
+  const en = lang === 'en';
+  const p = WordSource.packs().find(x => x.id === selectedPack);
+  if (!p) return '';
+  return `${p.icon} ${en ? (p.subjectNameEn || p.subjectName) : p.subjectName}`;
 }
 
 /* ---- διάλεξε στόχους & χτίσε πλέγμα ---- */
 function chooseTargets() {
-  const v = $('packSel').value;
-  const opts = { minLen: 3, maxLen: 8 };
+  const v = selectedPack;
+  const opts = { minLen: 3, maxLen: 8, lang };
   if (v !== '__all__') opts.packId = v;
   let words = WordSource.words(opts);
   // ανακάτεμα
@@ -297,7 +405,7 @@ function buildGrid() {
   }
   // γέμισμα κενών
   for (let r = 0; r < size; r++) for (let c = 0; c < size; c++)
-    if (grid[r][c] === '') grid[r][c] = pick(FILL);
+    if (grid[r][c] === '') grid[r][c] = pick(lang === 'en' ? FILL_EN : FILL);
 
   renderGrid();
   renderWords();
@@ -385,7 +493,7 @@ function endDrag() {
     $('foundTag').textContent = `${n}/${targets.length}`;
     try { GameSounds.correct(); } catch (er) {}
     if (n === targets.length) {
-      $('msg').textContent = '🎉 Τις βρήκες όλες!';
+      $('msg').textContent = T[lang].wonAll;
       try { GameSounds.bigCorrect(); } catch (er) {}
       $('endBox').style.display = 'flex';
     }
@@ -397,12 +505,20 @@ function endDrag() {
   $('current').textContent = ' ';
 }
 
+function applyGameLang() {
+  const t = T[lang];
+  $('newGridBtn').textContent = t.newGrid;
+  $('againBtn').textContent = t.again;
+  $('backSetupBtn').textContent = t.changeTheme;
+  document.querySelector('.words h3').textContent = t.findTitle;
+}
+
 function startGame() {
-  pool = WordSource.words({ minLen: 3, maxLen: 8 });
-  mode = $('modeSel').value;
-  const label = $('packSel').selectedOptions[0].text.replace(/\s*\(\d+\)$/, '');
-  $('packTag').textContent = label;
-  $('modeTag').textContent = mode === 'free' ? '🎲 Ελεύθερο' : '🧭 Καθοδηγούμενο';
+  if (!chooseTargets().length) { toast(T[lang].noWords); return; }
+  pool = WordSource.words({ minLen: 3, maxLen: 8, lang });
+  $('packTag').textContent = packLabel();
+  $('modeTag').textContent = mode === 'free' ? T[lang].free : T[lang].guided;
+  applyGameLang();
   $('setup').classList.remove('active');
   $('game').classList.add('active');
   buildGrid();
@@ -425,12 +541,12 @@ $('backSetupBtn').addEventListener('click', () => {
 });
 
 $('startBtn').disabled = true;
-$('startBtn').textContent = '… φόρτωση λέξεων';
+$('startBtn').textContent = T[lang].loading;
 wireGrid();
 WordSource.load(() => {
   buildSetup();
   $('startBtn').disabled = false;
-  $('startBtn').textContent = '▶ Παίξε';
+  $('startBtn').textContent = T[lang].start;
 });
 </script>
 </body>

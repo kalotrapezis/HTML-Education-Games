@@ -17,12 +17,18 @@
      <script src="bank/manifest.js"></script>
      <script> WordSource.load(function(){ ... }); </script>
 
+   ΓΛΩΣΣΑ: τα παιχνίδια μπορούν να ζητήσουν Αγγλικά (lang:'en'). Κάθε
+   ελληνική λέξη έχει αντιστοίχιση στο λεξικό GR2EN· τα πακέτα κρατούν
+   και αγγλικές λίστες (wordsEn) + αγγλικές ετικέτες (gradeNameEn/subjectNameEn).
+
    API:
      WordSource.load(cb)        φορτώνει την τράπεζα, καλεί cb() όταν είναι έτοιμη
-     WordSource.packs()         -> [{id, grade, gradeName, subject, subjectName, icon, count}]
-     WordSource.words(opts)     opts = {packId} ή {grade, subject, minLen, maxLen}
-                                -> πίνακας λέξεων ΚΕΦΑΛΑΙΑ χωρίς τόνους
+     WordSource.packs()         -> [{id, grade, gradeName, gradeNameEn, subject,
+                                      subjectName, subjectNameEn, icon, count, countEn}]
+     WordSource.words(opts)     opts = {packId} ή {grades, subjects, minLen, maxLen, lang}
+                                lang:'en' -> αγγλικές λέξεις, αλλιώς ελληνικές (ΚΕΦΑΛΑΙΑ)
      WordSource.normalize(str)  τόνοι/τελικό σίγμα -> βασικά ΚΕΦΑΛΑΙΑ
+     WordSource.category(w,lang) σημασιολογική κατηγορία (για τη βοήθεια 💡)
    ============================================================ */
 (function () {
   /* --- η τράπεζα ερωτήσεων γράφεται εδώ (όπως στον Εκατομμυριούχο) --- */
@@ -50,6 +56,140 @@
     if (w.length < 3 || w.length > 16) return null;
     return w;
   }
+
+  /* ---- Αγγλικά ---- */
+  var VALID_EN = /^[A-Z]+$/;
+  function cleanEn(raw) {
+    if (!raw) return null;
+    var w = String(raw).trim().toUpperCase();
+    if (!VALID_EN.test(w)) return null;
+    if (w.length < 3 || w.length > 16) return null;
+    return w;
+  }
+  /* λεξικό μετάφρασης: ελληνική λέξη (ΚΕΦΑΛΑΙΑ χωρίς τόνους) -> αγγλική (ΚΕΦΑΛΑΙΑ).
+     '' = δεν αντιστοιχεί σε μονολεκτική αγγλική λέξη (παραλείπεται στα Αγγλικά). */
+  var GR2EN = {
+    'ΑΓΑΛΜΑ':'STATUE','ΑΓΓΕΙΟ':'VASE','ΑΓΓΟΥΡΙ':'CUCUMBER','ΑΓΕΛΑΔΑ':'COW','ΑΓΙΑ':'SAINT',
+    'ΑΓΙΑΣΟΦΙΑ':'HAGIASOPHIA','ΑΓΙΟΣ':'SAINT','ΑΓΡΙΝΙΟ':'AGRINIO','ΑΕΤΟΣ':'EAGLE','ΑΘΗΝΑ':'ATHENS',
+    'ΑΙΓΑΙΟ':'AEGEAN','ΑΙΓΥΠΤΟΣ':'EGYPT','ΑΙΘΟΥΣΑ':'HALL','ΑΚΟΥΑΡΕΛΑ':'WATERCOLOR','ΑΚΡΩΤΗΡΙΟ':'CAPE',
+    'ΑΛΒΑΝΙΑ':'ALBANIA','ΑΛΕΞΑΝΔΡΟΣ':'ALEXANDER','ΑΛΕΠΟΥ':'FOX','ΑΛΙΑΚΜΟΝΑΣ':'ALIAKMON','ΑΛΟΓΟ':'HORSE',
+    'ΑΛΦΑΒΗΤΟ':'ALPHABET','ΑΛΦΕΙΟΣ':'ALFEIOS','ΑΜΑΖΟΝΙΟΣ':'AMAZON','ΑΜΕΡΙΚΗ':'AMERICA','ΑΝΑΓΕΝΝΗΣΗ':'RENAISSANCE',
+    'ΑΝΑΠΝΟΗ':'BREATHING','ΑΝΕΜΟΣ':'WIND','ΑΝΟΙΞΗ':'SPRING','ΑΝΤΙΚΕΙΜΕΝΟ':'OBJECT','ΑΝΤΩΝΥΜΙΑ':'PRONOUN',
+    'ΑΝΤΩΝΥΜΟ':'ANTONYM','ΑΞΙΟΣ':'WORTHY','ΑΠΟΣΤΟΛΟΣ':'APOSTLE','ΑΡΓΕΝΤΙΝΗ':'ARGENTINA','ΑΡΓΟΛΙΔΑ':'ARGOLIS',
+    'ΑΡΓΟΝΑΥΤΗΣ':'ARGONAUT','ΑΡΘΡΟ':'ARTICLE','ΑΡΙΘΜΟΣ':'NUMBER','ΑΡΚΑΔΙΑ':'ARCADIA','ΑΡΚΟΥΔΑ':'BEAR',
+    'ΑΡΧΙΤΕΚΤΟΝΑΣ':'ARCHITECT','ΑΡΧΙΤΕΚΤΟΝΙΚΗ':'ARCHITECTURE','ΑΣΙΑ':'ASIA','ΑΣΤΕΡΙ':'STAR','ΑΣΤΡΑΠΗ':'LIGHTNING',
+    'ΑΤΤΙΚΗ':'ATTICA','ΑΥΛΗ':'YARD','ΑΥΣΤΡΑΛΙΑ':'AUSTRALIA','ΑΥΣΤΡΙΑ':'AUSTRIA','ΑΥΤΟΚΙΝΗΤΑΚΙ':'CAR',
+    'ΑΥΤΟΚΙΝΗΤΟ':'CAR','ΑΦΡΙΚΗ':'AFRICA','ΑΧΑΙΑ':'ACHAEA','ΑΧΕΛΩΟΣ':'ACHELOOS','ΑΧΙΛΛΕΑΣ':'ACHILLES',
+    'ΑΧΛΑΔΙ':'PEAR','ΒΑΠΤΙΣΜΑ':'BAPTISM','ΒΑΤΡΑΧΟΣ':'FROG','ΒΕΛΓΙΟ':'BELGIUM','ΒΕΡΙΚΟΚΟ':'APRICOT',
+    'ΒΕΡΜΙΟ':'VERMIO','ΒΗΘΛΕΕΜ':'BETHLEHEM','ΒΙΒΛΙΟ':'BOOK','ΒΙΒΛΙΟΘΗΚΗ':'LIBRARY','ΒΟΙΩΤΙΑ':'BOEOTIA',
+    'ΒΟΛΟΣ':'VOLOS','ΒΟΥΛΓΑΡΙΑ':'BULGARIA','ΒΟΥΛΗ':'PARLIAMENT','ΒΟΥΝΟ':'MOUNTAIN','ΒΡΑΖΙΛΙΑ':'BRAZIL',
+    'ΒΡΟΧΗ':'RAIN','ΒΥΖΑΝΤΙΟ':'BYZANTIUM','ΓΑΙΑΝΘΡΑΚΑΣ':'COAL','ΓΑΛΑ':'MILK','ΓΑΛΛΙΑ':'FRANCE','ΓΑΛΛΙΚΗ':'FRENCH',
+    'ΓΑΤΑ':'CAT','ΓΕΛΟΙΟΓΡΑΦΙΑ':'CARTOON','ΓΕΡΜΑΝΙΑ':'GERMANY','ΓΕΩΓΡΑΦΙΑ':'GEOGRAPHY','ΓΕΩΘΕΡΜΙΑ':'GEOTHERMAL',
+    'ΓΕΩΜΕΤΡΙΑ':'GEOMETRY','ΓΛΥΠΤΗΣ':'SCULPTOR','ΓΛΥΠΤΙΚΗ':'SCULPTURE','ΓΛΩΣΣΑ':'TONGUE','ΓΟΜΑ':'ERASER',
+    'ΓΟΝΙΟΣ':'PARENT','ΓΡΑΜΜΑ':'LETTER','ΓΡΑΜΜΑΤΑ':'LETTERS','ΓΡΑΜΜΗ':'LINE','ΓΡΑΜΜΟΣ':'GRAMMOS',
+    'ΓΥΜΝΑΣΤΗΡΙΟ':'GYM','ΓΩΝΙΑ':'ANGLE','ΔΑΝΙΑ':'DENMARK','ΔΑΣΚΑΛΟΣ':'TEACHER','ΔΑΧΤΥΛΟ':'FINGER',
+    'ΔΑΧΤΥΛΟΜΠΟΓΙΑ':'FINGERPAINT','ΔΕΚΑΔΙΚΟΣ':'DECIMAL','ΔΕΛΦΙΝΙ':'DOLPHIN','ΔΕΝΤΡΟ':'TREE','ΔΗΜΑΡΧΟΣ':'MAYOR',
+    'ΔΗΜΟΚΡΑΤΙΑ':'DEMOCRACY','ΔΗΜΟΣ':'MUNICIPALITY','ΔΙΑΙΡΕΣΗ':'DIVISION','ΔΙΑΛΕΙΜΜΑ':'BREAK',
+    'ΔΙΑΛΥΜΑ':'SOLUTION','ΔΙΑΦΩΤΙΣΜΟΣ':'ENLIGHTENMENT','ΔΙΚΑΙΟΣΥΝΗ':'JUSTICE','ΔΙΚΑΙΩΜΑ':'RIGHT',
+    'ΔΙΚΑΣΤΗΡΙΟ':'COURT','ΔΙΚΤΑΤΟΡΙΑ':'DICTATORSHIP','ΔΡΑΜΑ':'DRAMA','ΔΥΝΑΜΗ':'POWER','ΔΩΡΙΕΙΣ':'DORIANS',
+    'ΕΒΡΟΣ':'EVROS','ΕΓΚΛΙΣΗ':'MOOD','ΕΘΝΟΣ':'NATION','ΕΙΚΟΝΟΜΑΧΙΑ':'ICONOCLASM','ΕΚΚΛΗΣΙΑ':'CHURCH',
+    'ΕΚΠΑΙΔΕΥΣΗ':'EDUCATION','ΕΛΒΕΤΙΑ':'SWITZERLAND','ΕΛΕΝΗ':'HELEN','ΕΛΕΥΘΕΡΙΑ':'FREEDOM','ΕΛΕΦΑΝΤΑΣ':'ELEPHANT',
+    'ΕΛΛΑΔΑ':'GREECE','ΕΛΛΗΝΙΚΑ':'GREEK','ΕΜΒΑΔΟΝ':'AREA','ΕΝΕΡΓΕΙΑ':'ENERGY','ΕΝΩΣΗ':'UNION','ΕΞΑΓΩΝΟ':'HEXAGON',
+    'ΕΞΟΜΟΛΟΓΗΣΗ':'CONFESSION','ΕΠΑΝΑΣΤΑΣΗ':'REVOLUTION','ΕΠΙΘΕΤΟ':'ADJECTIVE','ΕΠΙΡΡΗΜΑ':'ADVERB',
+    'ΕΠΟΧΗ':'SEASON','ΕΤΑΙΡΕΙΑ':'COMPANY','ΕΥΑΓΓΕΛΙΟ':'GOSPEL','ΕΥΒΟΙΑ':'EVIA','ΕΥΚΡΑΤΗ':'TEMPERATE',
+    'ΕΥΡΩ':'EURO','ΕΥΡΩΠΗ':'EUROPE','ΕΥΡΩΤΑΣ':'EUROTAS','ΖΕΒΡΑ':'ZEBRA','ΖΕΣΤΗ':'HEAT','ΖΩΑ':'ANIMALS',
+    'ΖΩΓΡΑΦΙΚΗ':'PAINTING','ΖΩΓΡΑΦΟΣ':'PAINTER','ΖΩΟ':'ANIMAL','ΗΛΕΙΑ':'ELIS','ΗΛΕΚΤΡΙΣΜΟΣ':'ELECTRICITY',
+    'ΗΛΙΟΣ':'SUN','ΗΜΑΘΙΑ':'IMATHIA','ΗΠΕΙΡΟΣ':'EPIRUS','ΗΡΑΚΛΕΙΟ':'HERAKLION','ΗΡΑΚΛΗΣ':'HERACLES',
+    'ΗΧΟΣ':'SOUND','ΘΑΛΑΣΣΑ':'SEA','ΘΕΙΑ':'AUNT','ΘΕΜΑΤΙΚΑ':'THEMATIC','ΘΕΟΔΩΡΑ':'THEODORA','ΘΕΟΣ':'GOD',
+    'ΘΕΡΜΟΤΗΤΑ':'HEAT','ΘΕΣΣΑΛΙΑ':'THESSALY','ΘΕΣΣΑΛΟΝΙΚΗ':'THESSALONIKI','ΘΗΣΕΑΣ':'THESEUS','ΘΙΒΕΤ':'TIBET',
+    'ΘΡΑΝΙΟ':'DESK','ΘΡΗΣΚΕΥΤΙΚΑ':'RELIGION','ΙΑΠΩΝΙΑ':'JAPAN','ΙΔΕΑ':'IDEA','ΙΕΡΟΥΣΑΛΗΜ':'JERUSALEM',
+    'ΙΘΑΓΕΝΕΙΑ':'CITIZENSHIP','ΙΘΑΚΗ':'ITHACA','ΙΝΔΙΑ':'INDIA','ΙΟΝΙΟ':'IONIAN','ΙΟΥΣΤΙΝΙΑΝΟΣ':'JUSTINIAN',
+    'ΙΡΑΚ':'IRAQ','ΙΡΑΝ':'IRAN','ΙΡΛΑΝΔΙΑ':'IRELAND','ΙΣΗΜΕΡΙΝΟΣ':'EQUATOR','ΙΣΛΑΝΔΙΑ':'ICELAND',
+    'ΙΣΟΤΗΤΑ':'EQUALITY','ΙΣΠΑΝΙΑ':'SPAIN','ΙΣΤΟΡΙΑ':'HISTORY','ΙΤΑΛΙΑ':'ITALY','ΙΩΑΝΝΙΝΑ':'IOANNINA',
+    'ΙΩΝΕΣ':'IONIANS','ΚΑΒΑΛΑ':'KAVALA','ΚΑΛΑΜΑΤΑ':'KALAMATA','ΚΑΛΛΙΤΕΧΝΗΣ':'ARTIST','ΚΑΛΟΚΑΙΡΙ':'SUMMER',
+    'ΚΑΜΗΛΑ':'CAMEL','ΚΑΝΑΔΑΣ':'CANADA','ΚΑΠΟΔΙΣΤΡΙΑΣ':'KAPODISTRIAS','ΚΑΡΑΜΕΛΑ':'CANDY','ΚΑΡΟΤΟ':'CARROT',
+    'ΚΑΡΠΟΥΖΙ':'WATERMELON','ΚΑΤΑΙΓΙΔΑ':'STORM','ΚΕΝΥΑ':'KENYA','ΚΕΡΑΣΙ':'CHERRY','ΚΕΡΚΥΡΑ':'CORFU',
+    'ΚΕΡΜΑ':'COIN','ΚΙΝΑ':'CHINA','ΚΙΤΡΙΝΟ':'YELLOW','ΚΛΑΣΜΑ':'FRACTION','ΚΛΙΜΑ':'CLIMATE','ΚΟΖΑΝΗ':'KOZANI',
+    'ΚΟΙΝΩΝΙΑ':'SOCIETY','ΚΟΛΑΖ':'COLLAGE','ΚΟΛΛΑ':'GLUE','ΚΟΛΟΚΟΤΡΩΝΗΣ':'KOLOKOTRONIS','ΚΟΛΟΚΥΘΑ':'PUMPKIN',
+    'ΚΟΛΟΜΒΙΑ':'COLOMBIA','ΚΟΛΟΜΒΟΣ':'COLUMBUS','ΚΟΛΠΟΣ':'GULF','ΚΟΜΙΚ':'COMIC','ΚΟΜΜΑ':'COMMA',
+    'ΚΟΜΝΗΝΟΣ':'KOMNENOS','ΚΟΜΟΤΗΝΗ':'KOMOTINI','ΚΟΡΙΝΘΙΑ':'CORINTHIA','ΚΟΥΒΑ':'CUBA','ΚΟΥΝΕΛΙ':'RABBIT',
+    'ΚΡΑΤΟΣ':'STATE','ΚΡΕΜΜΥΔΙ':'ONION','ΚΡΗΤΗ':'CRETE','ΚΡΟΑΤΙΑ':'CROATIA','ΚΡΟΚΟΔΕΙΛΟΣ':'CROCODILE',
+    'ΚΥΒΕΡΝΗΣΗ':'GOVERNMENT','ΚΥΚΛΑΔΕΣ':'CYCLADES','ΚΥΚΛΟΣ':'CIRCLE','ΚΥΠΕΛΛΟ':'CUP','ΚΥΠΡΟΣ':'CYPRUS',
+    'ΚΥΤΤΑΡΟ':'CELL','ΚΩΝΣΤΑΝΤΙΝΟΥΠΟΛΗ':'CONSTANTINOPLE','ΛΑΒΥΡΙΝΘΟΣ':'LABYRINTH','ΛΑΚΩΝΙΑ':'LACONIA',
+    'ΛΑΜΙΑ':'LAMIA','ΛΑΡΙΣΑ':'LARISSA','ΛΑΣΙΘΙ':'LASITHI','ΛΕΜΟΝΙ':'LEMON','ΛΙΜΝΗ':'LAKE','ΛΙΟΝΤΑΡΙ':'LION',
+    'ΛΟΥΛΟΥΔΙ':'FLOWER','ΜΑΓΟΣ':'WIZARD','ΜΑΖΑ':'MASS','ΜΑΘΗΜΑ':'LESSON','ΜΑΘΗΜΑΤΙΚΑ':'MATHEMATICS',
+    'ΜΑΘΗΤΗΣ':'STUDENT','ΜΑΚΕΤΑ':'MODEL','ΜΑΜΑ':'MOM','ΜΑΡΚΑΔΟΡΟΣ':'MARKER','ΜΑΡΜΑΡΟ':'MARBLE','ΜΑΡΟΚΟ':'MOROCCO',
+    'ΜΑΡΟΥΛΙ':'LETTUCE','ΜΑΣΚΑ':'MASK','ΜΕΓΑΛΗ':'BIG','ΜΕΛΙΣΣΑ':'BEE','ΜΕΛΙΤΖΑΝΑ':'EGGPLANT','ΜΕΞΙΚΟ':'MEXICO',
+    'ΜΕΣΟΓΕΙΟΣ':'MEDITERRANEAN','ΜΕΣΣΗΝΙΑ':'MESSENIA','ΜΕΤΑΡΡΥΘΜΙΣΗ':'REFORM','ΜΕΤΑΦΟΡΑ':'TRANSPORT',
+    'ΜΕΤΟΧΗ':'SHARE','ΜΕΤΡΗΣΗ':'MEASUREMENT','ΜΕΤΡΟ':'METER','ΜΗΛΟ':'APPLE','ΜΙΓΜΑ':'MIXTURE',
+    'ΜΙΝΩΤΑΥΡΟΣ':'MINOTAUR','ΜΟΛΥΒΙ':'PENCIL','ΜΟΝΑΧΟΣ':'MONK','ΜΟΥΣΕΙΟ':'MUSEUM','ΜΠΑΛΑ':'BALL',
+    'ΜΠΑΛΟΝΙ':'BALLOON','ΜΠΑΜΠΑΣ':'DAD','ΜΠΑΝΑΝΑ':'BANANA','ΜΥΚΗΝΕΣ':'MYCENAE','ΜΥΣΤΗΡΙΟ':'MYSTERY',
+    'ΝΑΟΣ':'TEMPLE','ΝΕΙΛΟΣ':'NILE','ΝΕΠΑΛ':'NEPAL','ΝΕΡΟ':'WATER','ΝΕΡΟΜΠΟΓΙΑ':'WATERCOLOR','ΝΕΣΤΟΣ':'NESTOS',
+    'ΝΗΣΙ':'ISLAND','ΝΙΓΗΡΙΑ':'NIGERIA','ΝΟΜΙΣΜΑ':'COIN','ΝΟΜΟΙ':'LAWS','ΝΟΜΟΣ':'LAW','ΝΟΡΒΗΓΙΑ':'NORWAY',
+    'ΝΤΟΜΑΤΑ':'TOMATO','ΞΑΝΘΗ':'XANTHI','ΞΥΛΟΜΠΟΓΙΑ':'CRAYON','ΞΥΣΤΡΑ':'SHARPENER','ΟΓΚΟΣ':'VOLUME',
+    'ΟΔΥΣΣΕΑΣ':'ODYSSEUS','ΟΙΚΟΓΕΝΕΙΑ':'FAMILY','ΟΛΛΑΝΔΙΑ':'HOLLAND','ΟΛΥΜΠΟΣ':'OLYMPUS','ΟΜΗΡΟΣ':'HOMER',
+    'ΟΜΙΧΛΗ':'FOG','ΟΡΘΟΓΡΑΦΙΑ':'SPELLING','ΟΡΘΟΓΩΝΙΟ':'RECTANGLE','ΟΥΓΓΑΡΙΑ':'HUNGARY','ΟΥΡΑΝΙΟ':'RAINBOW',
+    'ΟΥΡΑΝΟΣ':'SKY','ΟΥΣΙΑΣΤΙΚΟ':'NOUN','ΠΑΓΕΤΟΣ':'FROST','ΠΑΓΚΟΣΜΙΟ':'GLOBAL','ΠΑΙΔΙ':'CHILD',
+    'ΠΑΛΑΙΟΛΟΓΟΣ':'PALAEOLOGUS','ΠΑΝΑΓΙΑ':'MADONNA','ΠΑΠΑΓΑΛΟΣ':'PARROT','ΠΑΡΑΓΩΓΗ':'PRODUCTION','ΠΑΡΑΘΕΤΙΚΑ':'',
+    'ΠΑΡΑΘΥΡΟ':'WINDOW','ΠΑΡΘΕΝΩΝ':'PARTHENON','ΠΑΡΘΕΝΩΝΑΣ':'PARTHENON','ΠΑΡΝΑΣΣΟΣ':'PARNASSUS',
+    'ΠΑΡΝΗΘΑ':'PARNITHA','ΠΑΣΤΕΛ':'PASTEL','ΠΑΣΧΑ':'EASTER','ΠΑΤΑΤΑ':'POTATO','ΠΑΤΡΑ':'PATRAS','ΠΑΥΛΟΣ':'PAUL',
+    'ΠΕΛΛΑ':'PELLA','ΠΕΛΟΠΟΝΝΗΣΙΑΚΟΣ':'PELOPONNESIAN','ΠΕΝΤΗΚΟΣΤΗ':'PENTECOST','ΠΕΡΙΜΕΤΡΟΣ':'PERIMETER',
+    'ΠΕΡΟΥ':'PERU','ΠΕΡΣΙΑ':'PERSIA','ΠΕΤΑΛΟΥΔΑ':'BUTTERFLY','ΠΕΤΡΑ':'STONE','ΠΕΤΡΕΛΑΙΟ':'PETROLEUM',
+    'ΠΗΛΙΟ':'PELION','ΠΗΛΟΣ':'CLAY','ΠΗΝΕΙΟΣ':'PINEIOS','ΠΗΝΕΛΟΠΗ':'PENELOPE','ΠΙΓΚΟΥΙΝΟΣ':'PENGUIN',
+    'ΠΙΚΑΣΟ':'PICASSO','ΠΙΝΑΚΑΣ':'BOARD','ΠΙΝΑΚΟΘΗΚΗ':'GALLERY','ΠΙΝΔΟΣ':'PINDUS','ΠΙΝΕΛΟ':'BRUSH',
+    'ΠΛΑΣΤΕΛΙΝΗ':'PLASTICINE','ΠΟΔΟΣΦΑΙΡΟ':'FOOTBALL','ΠΟΛΕΜΟΣ':'WAR','ΠΟΛΗ':'CITY','ΠΟΛΙΤΗΣ':'CITIZEN',
+    'ΠΟΛΛΑΠΛΑΣΙΑΣΜΟΣ':'MULTIPLICATION','ΠΟΛΥΦΗΜΟΣ':'POLYPHEMUS','ΠΟΛΩΝΙΑ':'POLAND','ΠΟΡΤΑ':'DOOR',
+    'ΠΟΡΤΟΚΑΛΙ':'ORANGE','ΠΟΣΟΣΤΟ':'PERCENTAGE','ΠΟΤΑΜΙ':'RIVER','ΠΟΥΛΙ':'BIRD','ΠΡΟΒΑΤΟ':'SHEEP',
+    'ΠΡΟΕΔΡΟΣ':'PRESIDENT','ΠΡΟΟΠΤΙΚΗ':'PERSPECTIVE','ΠΡΟΣΕΥΧΗ':'PRAYER','ΠΡΟΤΑΣΗ':'SENTENCE',
+    'ΠΡΩΘΥΠΟΥΡΓΟΣ':'PRIMEMINISTER','ΠΤΩΣΗ':'FALL','ΠΥΚΝΟΤΗΤΑ':'DENSITY','ΠΥΞΙΔΑ':'COMPASS','ΡΕΘΥΜΝΟ':'RETHYMNO',
+    'ΡΗΜΑ':'VERB','ΡΟΔΑΚΙΝΟ':'PEACH','ΡΟΔΟΣ':'RHODES','ΡΟΛΟΙ':'CLOCK','ΡΟΥΜΑΝΙΑ':'ROMANIA','ΡΩΣΙΑ':'RUSSIA',
+    'ΣΑΚΙ':'SACK','ΣΕΛΗΝΗ':'MOON','ΣΕΡΒΙΑ':'SERBIA','ΣΕΡΡΕΣ':'SERRES','ΣΗΜΕΙΟ':'POINT','ΣΙΔΗΡΟ':'IRON',
+    'ΣΚΟΡΔΟ':'GARLIC','ΣΚΥΛΟΣ':'DOG','ΣΜΟΛΙΚΑΣ':'SMOLIKAS','ΣΟΥΗΔΙΑ':'SWEDEN','ΣΠΑΡΤΗ':'SPARTA','ΣΠΙΤΙ':'HOUSE',
+    'ΣΤΑΥΡΟΣ':'CROSS','ΣΤΑΥΡΟΦΟΡΟΣ':'CRUSADER','ΣΤΑΦΥΛΙ':'GRAPE','ΣΤΙΞΗ':'PUNCTUATION','ΣΤΡΥΜΟΝΑΣ':'STRYMON',
+    'ΣΤΥΛΟ':'PEN','ΣΥΛΛΑΒΕΣ':'SYLLABLES','ΣΥΛΛΑΒΗ':'SYLLABLE','ΣΥΜΦΩΝΑ':'CONSONANTS','ΣΥΜΦΩΝΟ':'CONSONANT',
+    'ΣΥΝΘΕΣΗ':'COMPOSITION','ΣΥΝΘΕΤΗ':'COMPOUND','ΣΥΝΝΕΦΟ':'CLOUD','ΣΥΝΤΑΓΜΑ':'CONSTITUTION','ΣΥΝΩΝΥΜΟ':'SYNONYM',
+    'ΣΥΡΙΑ':'SYRIA','ΣΧΗΜΑ':'SHAPE','ΣΧΟΛΕΙΟ':'SCHOOL','ΣΩΜΑ':'BODY','ΤΑΥΓΕΤΟΣ':'TAYGETUS','ΤΕΛΕΙΑ':'PERIOD',
+    'ΤΕΤΡΑΓΩΝΟ':'SQUARE','ΤΕΤΡΑΔΙΟ':'NOTEBOOK','ΤΕΧΝΗ':'ART','ΤΙΓΡΗ':'TIGER','ΤΙΤΑΝΑΣ':'TITAN',
+    'ΤΟΝΙΣΜΟΣ':'ACCENT','ΤΟΥΡΚΙΑ':'TURKEY','ΤΡΑΠΕΖΙ':'TABLE','ΤΡΙΒΗ':'FRICTION','ΤΡΙΓΩΝΟ':'TRIANGLE',
+    'ΤΡΙΚΑΛΑ':'TRIKALA','ΤΡΩΙΑ':'TROY','ΤΣΑΝΤΑ':'BAG','ΤΣΕΧΙΑ':'CZECHIA','ΥΜΗΤΤΟΣ':'HYMETTUS',
+    'ΥΠΟΚΕΙΜΕΝΟ':'SUBJECT','ΥΠΟΧΡΕΩΣΗ':'OBLIGATION','ΥΨΗΛΑΝΤΗΣ':'YPSILANTIS','ΦΑΛΑΚΡΟ':'BALD','ΦΕΓΓΑΡΙ':'MOON',
+    'ΦΘΙΝΟΠΩΡΟ':'AUTUMN','ΦΘΙΩΤΙΔΑ':'PHTHIOTIS','ΦΙΛΙΚΗ':'FRIENDLY','ΦΙΝΛΑΝΔΙΑ':'FINLAND','ΦΡΑΟΥΛΑ':'STRAWBERRY',
+    'ΦΥΛΛΟ':'LEAF','ΦΥΣΗ':'NATURE','ΦΥΣΙΚΗ':'PHYSICS','ΦΥΤΟ':'PLANT','ΦΩΚΙΔΑ':'PHOCIS','ΦΩΝΗ':'VOICE',
+    'ΦΩΝΗΕΝ':'VOWEL','ΦΩΝΗΕΝΤΑ':'VOWELS','ΦΩΣ':'LIGHT','ΦΩΤΟΓΡΑΦΙΑ':'PHOTOGRAPH','ΦΩΤΟΣΥΝΘΕΣΗ':'PHOTOSYNTHESIS',
+    'ΧΑΛΚΙΔΑ':'CHALCIS','ΧΑΛΚΙΔΙΚΗ':'CHALKIDIKI','ΧΑΝΙΑ':'CHANIA','ΧΑΡΑΚΑΣ':'RULER','ΧΑΡΤΗΣ':'MAP',
+    'ΧΕΙΜΩΝΑΣ':'WINTER','ΧΕΛΩΝΑ':'TURTLE','ΧΕΡΙ':'HAND','ΧΙΛΗ':'CHILE','ΧΙΟΝΙ':'SNOW','ΧΟΡΤΑΡΙ':'GRASS',
+    'ΧΡΗΜΑΤΑ':'MONEY','ΧΡΙΣΤΟΣ':'CHRIST','ΧΡΙΣΤΟΥΓΕΝΝΑ':'CHRISTMAS','ΧΡΩΜΑ':'COLOR','ΧΩΡΑ':'COUNTRY',
+    'ΧΩΡΕΣ':'COUNTRIES','ΨΑΛΙΔΙ':'SCISSORS','ΨΑΡΙ':'FISH','ΨΗΦΙΔΑ':'TESSERA','ΨΗΦΙΔΩΤΟ':'MOSAIC',
+    'ΩΚΕΑΝΟΣ':'OCEAN'
+  };
+  function translate(grWord) {
+    var t = GR2EN[grWord];
+    return (t == null) ? null : cleanEn(t);
+  }
+
+  /* αγγλικές ετικέτες τάξης/μαθήματος για το μενού */
+  var GRADE_EN = {
+    "Α' Δημοτικού":'Grade 1', "Β' Δημοτικού":'Grade 2', "Γ' Δημοτικού":'Grade 3',
+    "Δ' Δημοτικού":'Grade 4', "Ε' Δημοτικού":'Grade 5', "ΣΤ' Δημοτικού":'Grade 6',
+    'Θεματικά':'Themes', 'Γεωγραφία':'Geography', 'Χώρες':'Countries'
+  };
+  var SUBJ_EN = {
+    'Λέξεις-κλειδιά':'Key words', 'Ζώα':'Animals', 'Φρούτα & Λαχανικά':'Fruit & Veg',
+    'Σχολείο':'School', 'Εποχές & Καιρός':'Seasons & Weather', 'Πόλεις Ελλάδας':'Greek Cities',
+    'Νομοί':'Regions', 'Βουνά & Ποτάμια':'Mountains & Rivers', 'Ευρώπη':'Europe',
+    'Υπόλοιπος κόσμος':'Rest of the World'
+  };
+  /* αγγλικές ετικέτες σημασιολογικών κατηγοριών (για τη βοήθεια 💡) */
+  var CAT_EN = {
+    'Ζώο':'Animal', 'Φρούτο ή λαχανικό':'Fruit or vegetable', 'Φρούτο ή φαγητό':'Fruit or food',
+    'Σχολικό αντικείμενο':'School item', 'Εποχή ή καιρός':'Season or weather', 'Φύση & καιρός':'Nature & weather',
+    'Πόλη':'City', 'Νομός':'Region', 'Βουνό ή ποτάμι':'Mountain or river', 'Χώρα':'Country',
+    'Σπίτι & καθημερινά':'Home & everyday', 'Οικογένεια & άνθρωποι':'Family & people', 'Σώμα':'Body',
+    'Χρώμα':'Color', 'Σχήμα':'Shape', 'Χρήματα':'Money', 'Γλώσσα':'Language', 'Μαθηματικά':'Mathematics',
+    'Τέχνη':'Art', 'Ιστορία & μυθολογία':'History & mythology', 'Θρησκευτικά':'Religion',
+    'Γεωγραφία':'Geography', 'Φυσική':'Physics', 'Πολιτική & κοινωνία':'Politics & society'
+  };
+  /* καθαρίζει & ελέγχει μια υποψήφια λέξη -> ΚΕΦΑΛΑΙΑ ή null */
 
   /* ============================================================
      ΛΕΞΕΙΣ-ΚΛΕΙΔΙΑ ΑΝΑ ΤΑΞΗ — βγαλμένες από τις ερωτήσεις του
@@ -126,7 +266,8 @@
     'Φυσική': ['ΠΥΚΝΟΤΗΤΑ','ΟΓΚΟΣ','ΜΑΖΑ','ΜΙΓΜΑ','ΔΙΑΛΥΜΑ','ΕΝΕΡΓΕΙΑ','ΘΕΡΜΟΤΗΤΑ','ΗΛΕΚΤΡΙΣΜΟΣ','ΗΧΟΣ','ΔΥΝΑΜΗ','ΤΡΙΒΗ','ΦΩΣ','ΚΥΤΤΑΡΟ','ΦΩΤΟΣΥΝΘΕΣΗ','ΑΝΑΠΝΟΗ','ΜΕΤΑΦΟΡΑ','ΠΕΤΡΕΛΑΙΟ','ΓΑΙΑΝΘΡΑΚΑΣ','ΓΕΩΘΕΡΜΙΑ'],
     'Πολιτική & κοινωνία': ['ΠΟΛΙΤΗΣ','ΙΘΑΓΕΝΕΙΑ','ΚΡΑΤΟΣ','ΕΘΝΟΣ','ΔΗΜΟΣ','ΔΗΜΑΡΧΟΣ','ΔΙΚΑΙΩΜΑ','ΥΠΟΧΡΕΩΣΗ','ΣΧΟΛΕΙΟ','ΕΚΠΑΙΔΕΥΣΗ','ΚΟΙΝΩΝΙΑ','ΝΟΜΟΣ','ΕΛΕΥΘΕΡΙΑ','ΙΣΟΤΗΤΑ','ΔΙΚΑΙΟΣΥΝΗ','ΕΝΩΣΗ','ΣΥΝΤΑΓΜΑ','ΒΟΥΛΗ','ΚΥΒΕΡΝΗΣΗ','ΠΡΟΕΔΡΟΣ','ΠΡΩΘΥΠΟΥΡΓΟΣ','ΔΙΚΑΣΤΗΡΙΟ','ΜΕΓΑΛΗ','ΙΔΕΑ','ΠΑΓΚΟΣΜΙΟ','ΓΑΛΛΙΚΗ']
   };
-  var CAT_INDEX = null; // λέξη -> κατηγορία (χτίζεται μία φορά)
+  var CAT_INDEX = null;     // ελληνική λέξη -> ελληνική κατηγορία
+  var CAT_INDEX_EN = null;  // αγγλική λέξη -> αγγλική κατηγορία
   function buildCatIndex() {
     CAT_INDEX = {};
     THEMED.forEach(function (t) {
@@ -135,6 +276,12 @@
     });
     Object.keys(WORD_CATS).forEach(function (cat) {
       WORD_CATS[cat].forEach(function (w) { var c = clean(w); if (c) CAT_INDEX[c] = cat; });
+    });
+    // αγγλικό ευρετήριο: μεταφράζουμε λέξη + κατηγορία
+    CAT_INDEX_EN = {};
+    Object.keys(CAT_INDEX).forEach(function (grWord) {
+      var en = translate(grWord); if (!en) return;
+      if (!CAT_INDEX_EN[en]) CAT_INDEX_EN[en] = CAT_EN[CAT_INDEX[grWord]] || CAT_INDEX[grWord];
     });
   }
 
@@ -149,6 +296,13 @@
     PACKS = [];
     buildCatIndex();
 
+    /* μεταφράζει & ξεδιπλώνει μια λίστα ελληνικών λέξεων σε αγγλικές */
+    function toEn(grWords) {
+      var s = {};
+      grWords.forEach(function (gw) { var e = translate(gw); if (e) s[e] = true; });
+      return Object.keys(s);
+    }
+
     /* λέξεις-κλειδιά ανά τάξη (από τις ερωτήσεις, όλα τα μαθήματα μαζί) */
     CURATED.forEach(function (c) {
       var set = {};
@@ -159,10 +313,13 @@
         id: c.id,
         grade: c.grade,
         gradeName: c.gradeName,
+        gradeNameEn: GRADE_EN[c.gradeName] || c.gradeName,
         subject: 'Λέξεις-κλειδιά',
         subjectName: 'Λέξεις-κλειδιά',
+        subjectNameEn: SUBJ_EN['Λέξεις-κλειδιά'],
         icon: c.icon,
-        words: words
+        words: words,
+        wordsEn: toEn(words)
       });
     });
 
@@ -176,10 +333,13 @@
         id: t.id,
         grade: null,
         gradeName: t.gradeName,
+        gradeNameEn: GRADE_EN[t.gradeName] || t.gradeName,
         subject: t.subjectName,
         subjectName: t.subjectName,
+        subjectNameEn: SUBJ_EN[t.subjectName] || t.subjectName,
         icon: t.icon,
-        words: words
+        words: words,
+        wordsEn: toEn(words)
       });
     });
   }
@@ -190,9 +350,11 @@
   var WordSource = {
     normalize: normalize,
 
-    /* κατηγορία μιας λέξης για τη βοήθεια (💡) ή null αν δεν ξέρουμε */
-    category: function (word) {
+    /* κατηγορία μιας λέξης για τη βοήθεια (💡) ή null αν δεν ξέρουμε.
+       lang:'en' -> αγγλική λέξη & αγγλική ετικέτα κατηγορίας */
+    category: function (word, lang) {
       if (!CAT_INDEX) buildCatIndex();
+      if (lang === 'en') return CAT_INDEX_EN[String(word || '').toUpperCase()] || null;
       return CAT_INDEX[normalize(word)] || null;
     },
 
@@ -210,9 +372,10 @@
     packs: function () {
       return PACKS.map(function (p) {
         return {
-          id: p.id, grade: p.grade, gradeName: p.gradeName,
-          subject: p.subject, subjectName: p.subjectName,
-          icon: p.icon, count: p.words.length
+          id: p.id, grade: p.grade,
+          gradeName: p.gradeName, gradeNameEn: p.gradeNameEn,
+          subject: p.subject, subjectName: p.subjectName, subjectNameEn: p.subjectNameEn,
+          icon: p.icon, count: p.words.length, countEn: p.wordsEn.length
         };
       });
     },
@@ -220,9 +383,10 @@
     /* λέξεις φιλτραρισμένες. opts:
        {packId}                          -> λέξεις ενός πακέτου
        {grades:[..], subjects:[..]}      -> ένωση πακέτων (κενό = όλα)
-       + minLen, maxLen (προαιρετικά)                                  */
+       + minLen, maxLen, lang ('en'|'el') (προαιρετικά)                 */
     words: function (opts) {
       opts = opts || {};
+      var en = opts.lang === 'en';
       var sel = PACKS;
       if (opts.packId) {
         sel = PACKS.filter(function (p) { return p.id === opts.packId; });
@@ -235,7 +399,7 @@
         }
       }
       var set = {};
-      sel.forEach(function (p) { p.words.forEach(function (w) { set[w] = true; }); });
+      sel.forEach(function (p) { (en ? p.wordsEn : p.words).forEach(function (w) { set[w] = true; }); });
       var out = Object.keys(set);
       var lo = opts.minLen || 0, hi = opts.maxLen || 999;
       out = out.filter(function (w) { return w.length >= lo && w.length <= hi; });

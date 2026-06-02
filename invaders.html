@@ -122,6 +122,7 @@
 </head>
 <body>
 <div class="back"><a href="index.html">← Πίσω στα παιχνίδια</a></div>
+<button id="soundToggle" title="Ήχος on/off" style="position:fixed;top:18px;right:18px;z-index:100;height:46px;padding:0 18px;display:inline-flex;align-items:center;gap:8px;border:2px solid #fff;border-radius:23px;background:rgba(0,0,0,0.5);color:#fff;font-size:17px;font-weight:bold;font-family:inherit;cursor:pointer;box-shadow:none;"><span id="soundToggleIc">🔊</span><span id="soundToggleTxt">Ήχος</span></button>
 
 <h1>👾 SPACE INVADERS</h1>
 
@@ -172,6 +173,7 @@
     <div class="box">Wave <span class="num" id="wave">1</span></div>
     <div class="box">Kills <span class="num" id="kills">0</span></div>
     <div class="box">❤️ <span class="num" id="lives">3</span></div>
+    <div class="box">🛡️ <span class="num" id="shield">0</span></div>
     <div class="box">🔫 <span class="num" id="weapon">1</span></div>
   </div>
 
@@ -180,14 +182,14 @@
     <div class="item"><div class="sw" style="background:#ff9500;color:#000">3</div>Όπλο +2</div>
     <div class="item"><div class="sw" style="background:#3a6bff">S</div>Ασπίδα</div>
     <div class="item"><div class="sw" style="background:#e63946">+</div>Ζωή</div>
-    <div class="item"><div class="sw" style="background:#ff3a3a">🔴</div>Laser (B)</div>
+    <div class="item"><div class="sw" style="background:#ff3a3a">🔴</div>Laser (B/E/L)</div>
     <div class="item" style="opacity:0.85">Όπλα: 1-3 <span style="color:#ffe066">●</span> κίτρινο &rarr; 4-6 <span style="color:#ff3a3a">●</span> κόκκινο γρήγορο &rarr; 7-9 <span style="color:#c45dff">●</span> μωβ δυνατό</div>
   </div>
 
   <canvas class="game" id="canvas" width="560" height="700"></canvas>
 
   <div class="controls">
-    <b>← → ↑ ↓</b> κίνηση &nbsp;|&nbsp; <b>Space</b> πυρά &nbsp;|&nbsp; <b>B</b> laser &nbsp;|&nbsp; <b>P</b> pause
+    <b>← → ↑ ↓</b> κίνηση &nbsp;|&nbsp; <b>Space</b> πυρά &nbsp;|&nbsp; <b>B / E / L</b> laser &nbsp;|&nbsp; <b>P</b> pause
   </div>
   <div class="button-row">
     <button class="secondary" id="backToMenuBtn">← Πίσω στο Μενού</button>
@@ -207,6 +209,7 @@
   </div>
 </div>
 
+<script src="invaders-sounds.js"></script>
 <script>
 const canvas = document.getElementById('canvas');
 const ctx = canvas.getContext('2d');
@@ -324,6 +327,7 @@ function updateUI() {
   document.getElementById('wave').textContent = state.wave;
   document.getElementById('kills').textContent = state.kills;
   document.getElementById('lives').textContent = state.lives;
+  document.getElementById('shield').textContent = state.player.shield;
   document.getElementById('weapon').textContent = state.player.weapon;
 }
 
@@ -369,6 +373,7 @@ function spawnPowerup(x, y) {
 }
 
 function applyPowerup(p) {
+  if (window.InvSounds) InvSounds.powerup();
   switch (p.kind) {
     case 'double': {
       if (state.player.weapon >= MAX_WEAPON) {
@@ -407,6 +412,7 @@ function fire() {
   const now = Date.now();
   if (now - lastShot < 140) return;
   lastShot = now;
+  if (window.InvSounds) InvSounds.shoot();
   const px = state.player.x, py = state.player.y;
   const t = weaponTier(state.player.weapon);
   const shots = weaponShots(state.player.weapon);
@@ -437,6 +443,7 @@ function activateLaser() {
   } else {
     state.laser.dur += 90; // κάθε επιπλέον charge προσθέτει 1.5 sec
   }
+  if (window.InvSounds) InvSounds.laser();
   flash('🔴 LASER!', '#ff3a3a');
   updateUI();
 }
@@ -488,14 +495,23 @@ function update() {
   if (state.enemies.length === 0) {
     if (state.wave >= TOTAL_WAVES) {
       state.playing = false;
+      if (window.InvSounds) { InvSounds.marchStop(); InvSounds.victory(); }
       flash('🏆 ΝΙΚΗΣΕΣ!', '#ffe066');
       setTimeout(() => { recordScore(); showResultScreen(true); }, 1500);
       return;
     }
     state.wave++;
     buildFormation(state.wave);
+    if (window.InvSounds) InvSounds.waveClear();
     flash('WAVE ' + state.wave, '#ffe066');
     updateUI();
+  }
+
+  // ένταση μαρς: όσο πιο χαμηλά (κοντά) φτάνει το κύμα, τόσο πιο γρήγορο
+  if (window.InvSounds) {
+    let lowest = 0;
+    for (const e of state.enemies) if (e.y > lowest) lowest = e.y;
+    InvSounds.setMarchIntensity((lowest - 60) / (H - 140 - 60));
   }
 
   // formation step — οι εχθροί κινούνται όλοι μαζί δεξιά-αριστερά μεθοδικά
@@ -552,6 +568,7 @@ function update() {
         e.hp -= (b.damage || 1);
         if (e.hp <= 0) {
           addExplosion(e.x, e.y, e.color);
+          if (window.InvSounds) InvSounds.explode(e.maxHp >= 3);
           state.score += Math.round(e.points * state.cfg.scoreMult);
           state.kills++;
           if (Math.random() < 0.12) spawnPowerup(e.x, e.y);
@@ -623,17 +640,20 @@ function hitPlayer() {
   if (state.player.iframes > 0) return; // ήδη σε mercy period
   if (state.player.shield > 0) {
     state.player.shield--;
+    if (window.InvSounds) InvSounds.shield();
     if (state.player.shield > 0) {
       flash('Ασπίδα έσπασε — η επόμενη ενεργοποιήθηκε!', '#3a6bff');
     } else {
       flash('Ασπίδα έσπασε!', '#3a6bff');
     }
     state.player.iframes = 30; // μικρό mercy ώστε να μη σπάσουν 2 ασπίδες σε ένα frame
+    updateUI();
     return;
   }
   state.lives--;
   state.player.weapon = Math.max(1, state.player.weapon - 1);
   state.player.iframes = 120; // βραχυχρόνια προστασία μετά από hit
+  if (window.InvSounds) InvSounds.playerHit();
   addExplosion(state.player.x, state.player.y, '#ff6b6b');
   flash('Χτυπήθηκες!', '#ff6b6b');
   updateUI();
@@ -894,10 +914,12 @@ function loop(now) {
 function startGame() {
   newGame();
   showScreen('gameScreen');
+  if (window.InvSounds && soundOn) { InvSounds.unlock(); InvSounds.marchStart(); }
 }
 
 function endGame() {
   state.playing = false;
+  if (window.InvSounds) { InvSounds.marchStop(); InvSounds.gameOver(); }
   recordScore();
   setTimeout(showResultScreen, 700);
 }
@@ -921,8 +943,13 @@ document.addEventListener('keydown', e => {
   keys[e.key] = true;
   if (!document.getElementById('gameScreen').classList.contains('active')) return;
   if (['ArrowLeft','ArrowRight','ArrowUp','ArrowDown',' '].includes(e.key)) e.preventDefault();
-  if (e.key === 'p' || e.key === 'P') { if (state) state.paused = !state.paused; }
-  if (e.key === 'b' || e.key === 'B') activateLaser();
+  if (e.key === 'p' || e.key === 'P') {
+    if (state) {
+      state.paused = !state.paused;
+      if (window.InvSounds) state.paused ? InvSounds.marchStop() : (soundOn && InvSounds.marchStart());
+    }
+  }
+  if (['b','B','β','Β','e','E','ε','Ε','l','L','λ','Λ'].includes(e.key)) activateLaser();
 });
 document.addEventListener('keyup', e => { keys[e.key] = false; });
 
@@ -960,13 +987,34 @@ function escapeHtml(s) {
 
 document.getElementById('startBtn').onclick = startGame;
 document.getElementById('rematchBtn').onclick = () => { renderLb(); startGame(); };
-document.getElementById('newMatchBtn').onclick = () => { renderLb(); showScreen('menuScreen'); };
-document.getElementById('backToMenuBtn').onclick = () => { renderLb(); showScreen('menuScreen'); };
+document.getElementById('newMatchBtn').onclick = () => { if (window.InvSounds) InvSounds.marchStop(); renderLb(); showScreen('menuScreen'); };
+document.getElementById('backToMenuBtn').onclick = () => { if (state) state.playing = false; if (window.InvSounds) InvSounds.marchStop(); renderLb(); showScreen('menuScreen'); };
 document.getElementById('clearLb').onclick = () => {
   if (confirm('Σίγουρα θες να καθαρίσεις το leaderboard;')) {
     localStorage.removeItem(LB_KEY); renderLb();
   }
 };
+
+// ---- ήχος on/off (αποθηκεύεται) ----
+let soundOn = localStorage.getItem('invaders_sound') !== 'off';
+(function () {
+  const btn = document.getElementById('soundToggle');
+  const ic = document.getElementById('soundToggleIc');
+  const txt = document.getElementById('soundToggleTxt');
+  const sync = () => { ic.textContent = soundOn ? '🔊' : '🔇'; txt.textContent = soundOn ? 'Ήχος' : 'Σίγαση'; };
+  sync();
+  if (window.InvSounds) InvSounds.setEnabled(soundOn);
+  btn.onclick = () => {
+    soundOn = !soundOn;
+    localStorage.setItem('invaders_sound', soundOn ? 'on' : 'off');
+    sync();
+    if (!window.InvSounds) return;
+    InvSounds.setEnabled(soundOn);
+    if (soundOn && state && state.playing && document.getElementById('gameScreen').classList.contains('active')) {
+      InvSounds.unlock(); InvSounds.marchStart();
+    }
+  };
+})();
 
 renderLb();
 requestAnimationFrame(loop);
