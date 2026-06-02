@@ -1,0 +1,82 @@
+<!DOCTYPE html>
+<html lang="el">
+<head>
+<link rel="icon" type="image/svg+xml" href="favicon.svg">
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Wordwall — ανά τάξη</title>
+<style>
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body {
+    font-family: 'Segoe UI', Tahoma, sans-serif;
+    background: linear-gradient(135deg, #1e3c72, #2a5298 50%, #6b2a8a);
+    color: #fff; min-height: 100vh; padding: 60px 24px 80px;
+    display: flex; flex-direction: column; align-items: center;
+  }
+  .back { position: fixed; top: 18px; left: 18px; z-index: 5; }
+  .back a { color: #fff; text-decoration: none; background: rgba(0,0,0,0.35); padding: 8px 14px; border-radius: 8px; }
+  h1 { font-size: 46px; margin-bottom: 10px; text-align: center; }
+  .subtitle { font-size: 18px; opacity: 0.85; margin-bottom: 12px; text-align: center; max-width: 760px; }
+  .note { font-size: 14px; opacity: 0.7; margin-bottom: 44px; text-align: center; max-width: 720px; }
+
+  .grid {
+    display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+    gap: 24px; width: 100%; max-width: 900px;
+  }
+  .grade {
+    text-decoration: none; color: #fff;
+    background: rgba(0,0,0,0.32); border: 2px solid rgba(255,255,255,0.16);
+    border-radius: 18px; padding: 34px 24px;
+    display: flex; flex-direction: column; align-items: center; gap: 12px;
+    box-shadow: 0 6px 18px rgba(0,0,0,0.3);
+    transition: transform 0.14s, background 0.14s, border-color 0.14s, box-shadow 0.14s;
+  }
+  .grade:hover {
+    transform: translateY(-4px); background: rgba(255,149,0,0.22);
+    border-color: #ffb347; box-shadow: 0 10px 24px rgba(0,0,0,0.4);
+  }
+  .grade .num { font-size: 54px; line-height: 1; }
+  .grade .label { font-size: 24px; font-weight: bold; color: #ffb347; }
+  .grade .ext { font-size: 13px; opacity: 0.7; }
+
+  @media (max-width: 560px) {
+    h1 { font-size: 34px; }
+    .grade { padding: 26px 16px; }
+  }
+</style>
+</head>
+<body>
+<div class="back"><a href="index.html">← Πίσω</a></div>
+
+<h1>🌐 Wordwall</h1>
+<div class="subtitle">Διάλεξε τάξη — ανοίγει η σελίδα δραστηριοτήτων του Wordwall για όλη την τάξη σε νέα καρτέλα.</div>
+<div class="note">Το Wordwall είναι εξωτερικός ιστότοπος με διαδραστικές δραστηριότητες της κοινότητας.</div>
+
+<div class="grid">
+  <a class="grade" target="_blank" rel="noopener noreferrer"
+     href="https://wordwall.net/el-gr/community/%CE%B1-%CF%84%CE%AC%CE%BE%CE%B7">
+    <span class="num">1️⃣</span><span class="label">Α′ τάξη</span><span class="ext">↗ νέα καρτέλα</span>
+  </a>
+  <a class="grade" target="_blank" rel="noopener noreferrer"
+     href="https://wordwall.net/el-gr/community/%CE%B2-%CF%84%CE%AC%CE%BE%CE%B7">
+    <span class="num">2️⃣</span><span class="label">Β′ τάξη</span><span class="ext">↗ νέα καρτέλα</span>
+  </a>
+  <a class="grade" target="_blank" rel="noopener noreferrer"
+     href="https://wordwall.net/el-gb/community/%CE%B3-%CE%B4%CE%B7%CE%BC%CE%BF%CF%84%CE%B9%CE%BA%CE%BF%CF%8D">
+    <span class="num">3️⃣</span><span class="label">Γ′ τάξη</span><span class="ext">↗ νέα καρτέλα</span>
+  </a>
+  <a class="grade" target="_blank" rel="noopener noreferrer"
+     href="https://wordwall.net/el-gr/community/%CE%B4-%CE%B4%CE%B7%CE%BC%CE%BF%CF%84%CE%B9%CE%BA%CE%BF%CF%8D">
+    <span class="num">4️⃣</span><span class="label">Δ′ τάξη</span><span class="ext">↗ νέα καρτέλα</span>
+  </a>
+  <a class="grade" target="_blank" rel="noopener noreferrer"
+     href="https://wordwall.net/el-gr/community/%CE%B5-%CF%84%CE%AC%CE%BE%CE%B7">
+    <span class="num">5️⃣</span><span class="label">Ε′ τάξη</span><span class="ext">↗ νέα καρτέλα</span>
+  </a>
+  <a class="grade" target="_blank" rel="noopener noreferrer"
+     href="https://wordwall.net/el-gr/community/%CF%83%CF%84-%CF%84%CE%B1%CE%BE%CE%B7">
+    <span class="num">6️⃣</span><span class="label">ΣΤ′ τάξη</span><span class="ext">↗ νέα καρτέλα</span>
+  </a>
+</div>
+</body>
+</html>

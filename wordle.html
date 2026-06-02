@@ -1,0 +1,416 @@
+<!DOCTYPE html>
+<html lang="el">
+<head>
+<link rel="icon" type="image/svg+xml" href="favicon.svg">
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
+<title>Βρες τη Λέξη</title>
+<style>
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body {
+    font-family: 'Segoe UI', Tahoma, sans-serif;
+    background: linear-gradient(135deg, #1e3c72, #2a5298 50%, #6b2a8a);
+    color: #fff; min-height: 100vh; padding: 20px;
+    display: flex; flex-direction: column; align-items: center;
+    -webkit-tap-highlight-color: transparent;
+  }
+  .back { position: absolute; top: 20px; left: 20px; z-index: 5; }
+  .back a { color: #fff; text-decoration: none; background: rgba(0,0,0,0.3); padding: 8px 14px; border-radius: 8px; }
+  h1 { font-size: 40px; margin: 6px 0 4px; text-align: center; }
+  .info { opacity: 0.85; margin-bottom: 14px; font-size: 15px; text-align: center; max-width: 700px; }
+
+  .screen { display: none; flex-direction: column; align-items: center; width: 100%; }
+  .screen.active { display: flex; }
+
+  .menu-card {
+    background: rgba(0,0,0,0.4); padding: 24px 30px; border-radius: 16px;
+    min-width: 320px; max-width: 560px; width: 100%;
+    display: flex; flex-direction: column; gap: 16px;
+  }
+  .menu-card h2 { color: #ffb347; font-size: 22px; text-align: center; }
+  .menu-card label { font-size: 14px; opacity: 0.9; display: block; margin-bottom: 6px; }
+  select {
+    padding: 10px 14px; font-size: 16px; border-radius: 8px;
+    border: 2px solid rgba(255,255,255,0.3); background: rgba(0,0,0,0.3);
+    color: #fff; width: 100%; color-scheme: dark;
+  }
+  select:focus { outline: none; border-color: #ff9500; }
+  select option { background: #1e3c72; color: #fff; }
+
+  .diff-cards { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; }
+  .diff-card {
+    background: rgba(0,0,0,0.3); padding: 12px 8px; border-radius: 10px;
+    border: 2px solid transparent; cursor: pointer; text-align: center; transition: all 0.15s;
+  }
+  .diff-card:hover { border-color: #ffb347; }
+  .diff-card.selected { border-color: #ffb347; background: rgba(255,179,71,0.15); }
+  .diff-card .t { font-weight: bold; color: #ffb347; font-size: 15px; }
+  .diff-card .d { font-size: 11px; opacity: 0.8; }
+
+  button {
+    padding: 12px 28px; font-size: 18px; border: none; border-radius: 10px;
+    background: #ff9500; color: #fff; font-weight: bold; cursor: pointer;
+    box-shadow: 0 4px 0 #c46c00;
+  }
+  button:active { transform: translateY(2px); box-shadow: 0 2px 0 #c46c00; }
+  button:disabled { opacity: 0.5; cursor: not-allowed; box-shadow: 0 4px 0 #7a4400; }
+  button.ghost { background: rgba(0,0,0,0.3); box-shadow: none; font-size: 15px; padding: 8px 18px; }
+
+  /* --- board --- */
+  .topbar { display: flex; gap: 14px; align-items: center; margin-bottom: 12px; flex-wrap: wrap; justify-content: center; }
+  .tag { background: rgba(0,0,0,0.35); padding: 6px 14px; border-radius: 20px; font-size: 14px; }
+  .board { display: grid; gap: 6px; margin: 6px 0 16px; }
+  .row { display: grid; gap: 6px; }
+  .cell {
+    width: 48px; height: 48px; border: 2px solid rgba(255,255,255,0.25);
+    border-radius: 6px; display: flex; align-items: center; justify-content: center;
+    font-size: 26px; font-weight: bold; text-transform: uppercase;
+    transition: transform 0.1s;
+  }
+  .cell.filled { border-color: rgba(255,255,255,0.6); transform: scale(1.04); }
+  .cell.correct { background: #4caf50; border-color: #4caf50; }
+  .cell.present { background: #e0a800; border-color: #e0a800; }
+  .cell.absent  { background: #3a3f44; border-color: #3a3f44; }
+
+  /* --- keyboard --- */
+  .kb { display: flex; flex-direction: column; gap: 6px; align-items: center; width: 100%; max-width: 540px; }
+  .kb-row { display: flex; gap: 5px; justify-content: center; width: 100%; }
+  .key {
+    flex: 1; min-width: 0; max-width: 44px; height: 52px; border-radius: 6px; border: none;
+    background: #6b7785; color: #fff; font-size: 18px; font-weight: bold; cursor: pointer;
+    box-shadow: none; padding: 0; display: flex; align-items: center; justify-content: center;
+  }
+  .key.wide { max-width: 72px; font-size: 14px; }
+  .key.correct { background: #4caf50; }
+  .key.present { background: #e0a800; }
+  .key.absent  { background: #3a3f44; color: rgba(255,255,255,0.45); }
+  .key:active { transform: translateY(1px); }
+
+  /* --- πλαίσιο οδηγιών --- */
+  .howto { display: none; background: rgba(0,0,0,0.45); border: 2px solid rgba(255,179,71,0.55);
+    border-radius: 12px; padding: 14px 18px; max-width: 560px; width: 100%;
+    margin-bottom: 14px; font-size: 14px; line-height: 1.5; }
+  .howto.open { display: block; }
+  .howto h3 { color: #ffb347; font-size: 16px; margin-bottom: 8px; }
+  .howto ol { margin: 0 0 4px 20px; }
+  .howto li { margin-bottom: 3px; }
+  .legend { display: flex; flex-wrap: wrap; gap: 8px 16px; margin-top: 8px; }
+  .legend span { display: flex; align-items: center; gap: 7px; }
+  .legend .sw { width: 18px; height: 18px; border-radius: 4px; flex: none; }
+  .howto .closeHow { margin-top: 12px; }
+
+  .msg { min-height: 26px; font-size: 18px; font-weight: bold; margin: 6px 0; text-align: center; }
+  .end { display: flex; gap: 12px; margin-top: 10px; }
+  .toast {
+    position: fixed; top: 16px; left: 50%; transform: translateX(-50%);
+    background: rgba(0,0,0,0.85); padding: 10px 20px; border-radius: 10px;
+    font-weight: bold; opacity: 0; transition: opacity 0.2s; pointer-events: none; z-index: 10;
+  }
+  .toast.show { opacity: 1; }
+
+  @media (max-width: 480px) {
+    .cell { width: 40px; height: 40px; font-size: 22px; }
+    h1 { font-size: 32px; }
+    .key { height: 46px; font-size: 16px; }
+  }
+</style>
+</head>
+<body>
+<div class="back"><a href="index.html">← Πίσω</a></div>
+
+<h1>🔤 Βρες τη Λέξη</h1>
+<div class="info">Μάντεψε την κρυμμένη λέξη! 🟩 σωστό γράμμα &amp; θέση · 🟨 υπάρχει αλλού · ⬛ δεν υπάρχει.</div>
+
+<!-- ΟΘΟΝΗ ΕΠΙΛΟΓΗΣ -->
+<div id="setup" class="screen active">
+  <div class="menu-card">
+    <h2>Διάλεξε λέξεις</h2>
+    <div>
+      <label for="packSel">Τάξη &amp; μάθημα / θέμα</label>
+      <select id="packSel"></select>
+    </div>
+    <div>
+      <label>Δυσκολία (μήκος λέξης)</label>
+      <div class="diff-cards" id="diffCards">
+        <div class="diff-card selected" data-min="3" data-max="6"><div class="t">Εύκολο</div><div class="d">3–6 γράμματα</div></div>
+        <div class="diff-card" data-min="4" data-max="8"><div class="t">Μέτριο</div><div class="d">4–8 γράμματα</div></div>
+        <div class="diff-card" data-min="3" data-max="20"><div class="t">Δύσκολο</div><div class="d">όλες οι λέξεις</div></div>
+      </div>
+    </div>
+    <button id="startBtn">▶ Παίξε</button>
+  </div>
+</div>
+
+<!-- ΟΘΟΝΗ ΠΑΙΧΝΙΔΙΟΥ -->
+<div id="game" class="screen">
+  <div class="topbar">
+    <span class="tag" id="packTag">—</span>
+    <span class="tag" id="lenTag">— γράμματα</span>
+    <span class="tag" id="tryTag">Προσπάθεια 1/6</span>
+    <button class="ghost" id="hintBtn" style="display:none;">💡 Θέμα</button>
+    <button class="ghost" id="helpBtn">❔ Οδηγίες</button>
+    <button class="ghost" id="newWordBtn">🔄 Άλλη λέξη</button>
+  </div>
+  <div class="howto" id="howto">
+    <h3>❔ Πώς παίζεται</h3>
+    <ol>
+      <li>Ο υπολογιστής έκρυψε μια λέξη <b><span id="howLen">—</span></b>.</li>
+      <li>Γράψε μια δική σου λέξη με <b>ίδιο αριθμό γραμμάτων</b> και πάτα <b>⏎ Enter</b>.</li>
+      <li>Τα χρώματα σε καθοδηγούν — έχεις <b>6 προσπάθειες</b>:</li>
+    </ol>
+    <div class="legend">
+      <span><i class="sw" style="background:#4caf50"></i> σωστό γράμμα &amp; σωστή θέση</span>
+      <span><i class="sw" style="background:#e0a800"></i> σωστό γράμμα, αλλού όμως</span>
+      <span><i class="sw" style="background:#3a3f44"></i> το γράμμα δεν υπάρχει</span>
+    </div>
+    <button class="ghost closeHow" id="closeHow">Κατάλαβα 👍</button>
+  </div>
+  <div class="msg" id="msg"></div>
+  <div class="board" id="board"></div>
+  <div class="kb" id="kb"></div>
+  <div class="end" id="endBox" style="display:none;">
+    <button id="againBtn">▶ Νέα λέξη</button>
+    <button class="ghost" id="backSetupBtn">⚙ Αλλαγή θέματος</button>
+  </div>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script src="wordsource.js"></script>
+<script src="sounds.js"></script>
+<script>
+const MAX_TRIES = 6;
+const KB_ROWS = ['ΑΒΓΔΕΖΗΘ', 'ΙΚΛΜΝΞΟΠ', 'ΡΣΤΥΦΧΨΩ'];
+const VALID = /^[Α-Ω]$/;
+
+let diff = { min: 3, max: 6 };
+let pool = [];          // λέξεις του τρέχοντος pool
+let target = '';        // η κρυμμένη λέξη
+let cur = '';           // τρέχουσα γραμμή που πληκτρολογείται
+let rowIdx = 0;
+let over = false;
+let keyState = {};      // γράμμα -> 'correct'|'present'|'absent'
+let howShown = false;   // αν έχουν ήδη φανεί οι οδηγίες αυτή τη συνεδρία
+
+const $ = id => document.getElementById(id);
+const norm = s => (window.WordSource ? WordSource.normalize(s) : s.toUpperCase());
+
+function toast(t) {
+  const el = $('toast'); el.textContent = t; el.classList.add('show');
+  clearTimeout(el._t); el._t = setTimeout(() => el.classList.remove('show'), 1400);
+}
+
+/* ---- setup ---- */
+function buildSetup() {
+  const sel = $('packSel');
+  const packs = WordSource.packs();
+  // ομαδοποίηση ανά gradeName
+  const groups = {};
+  packs.forEach(p => { (groups[p.gradeName] = groups[p.gradeName] || []).push(p); });
+  let html = '<option value="__all__">🎲 Όλα (τυχαία)</option>';
+  Object.keys(groups).forEach(g => {
+    html += `<optgroup label="${g}">`;
+    groups[g].forEach(p => {
+      html += `<option value="${p.id}">${p.icon} ${p.subjectName} (${p.count})</option>`;
+    });
+    html += '</optgroup>';
+  });
+  sel.innerHTML = html;
+
+  $('diffCards').addEventListener('click', e => {
+    const c = e.target.closest('.diff-card'); if (!c) return;
+    document.querySelectorAll('.diff-card').forEach(x => x.classList.remove('selected'));
+    c.classList.add('selected');
+    diff = { min: +c.dataset.min, max: +c.dataset.max };
+  });
+}
+
+function getPool() {
+  const v = $('packSel').value;
+  const opts = { minLen: diff.min, maxLen: diff.max };
+  if (v !== '__all__') opts.packId = v;
+  let words = WordSource.words(opts);
+  // αν το επιλεγμένο πακέτο είναι άδειο για αυτή τη δυσκολία, χαλάρωσε το μήκος
+  if (words.length < 1 && v !== '__all__') {
+    words = WordSource.words({ packId: v });
+  }
+  return words;
+}
+
+/* ---- game ---- */
+function startGame() {
+  pool = getPool();
+  if (!pool.length) { toast('Δεν βρέθηκαν λέξεις — δοκίμασε άλλο θέμα'); return; }
+  const label = $('packSel').selectedOptions[0].text.replace(/\s*\(\d+\)$/, '');
+  $('packTag').textContent = label;
+  $('setup').classList.remove('active');
+  $('game').classList.add('active');
+  buildKeyboard();
+  // η λαμπίτσα (θέμα λέξης) μόνο στο εύκολο επίπεδο
+  $('hintBtn').style.display = (diff.max <= 6) ? '' : 'none';
+  newWord();
+  // οι οδηγίες φαίνονται αυτόματα την πρώτη φορά
+  if (!howShown) { $('howto').classList.add('open'); howShown = true; }
+}
+
+function newWord() {
+  target = pool[Math.floor(Math.random() * pool.length)];
+  cur = ''; rowIdx = 0; over = false; keyState = {};
+  $('msg').textContent = '';
+  $('endBox').style.display = 'none';
+  buildBoard();
+  refreshKeyboard();
+  updateTryTag();
+  const txt = `με ${target.length} γράμματα`;
+  $('lenTag').textContent = `${target.length} γράμματα`;
+  $('howLen').textContent = txt;
+}
+
+function buildBoard() {
+  const b = $('board'); b.innerHTML = '';
+  const cols = target.length;
+  for (let r = 0; r < MAX_TRIES; r++) {
+    const row = document.createElement('div');
+    row.className = 'row';
+    row.style.gridTemplateColumns = `repeat(${cols}, auto)`;
+    for (let c = 0; c < cols; c++) {
+      const cell = document.createElement('div');
+      cell.className = 'cell';
+      cell.id = `c-${r}-${c}`;
+      row.appendChild(cell);
+    }
+    b.appendChild(row);
+  }
+}
+
+function updateTryTag() { $('tryTag').textContent = `Προσπάθεια ${Math.min(rowIdx + 1, MAX_TRIES)}/${MAX_TRIES}`; }
+
+function paintCurrent() {
+  for (let c = 0; c < target.length; c++) {
+    const cell = $(`c-${rowIdx}-${c}`);
+    if (!cell) continue;
+    const ch = cur[c] || '';
+    cell.textContent = ch;
+    cell.classList.toggle('filled', !!ch);
+  }
+}
+
+function scoreGuess(guess) {
+  // επιστρέφει πίνακα 'correct'|'present'|'absent' ανά θέση (Wordle κανόνας)
+  const res = new Array(guess.length).fill('absent');
+  const counts = {};
+  for (const ch of target) counts[ch] = (counts[ch] || 0) + 1;
+  for (let i = 0; i < guess.length; i++) {
+    if (guess[i] === target[i]) { res[i] = 'correct'; counts[guess[i]]--; }
+  }
+  for (let i = 0; i < guess.length; i++) {
+    if (res[i] === 'correct') continue;
+    if (counts[guess[i]] > 0) { res[i] = 'present'; counts[guess[i]]--; }
+  }
+  return res;
+}
+
+function submit() {
+  if (over) return;
+  if (cur.length !== target.length) { toast(`Χρειάζονται ${target.length} γράμματα`); return; }
+  const res = scoreGuess(cur);
+  for (let c = 0; c < cur.length; c++) {
+    const cell = $(`c-${rowIdx}-${c}`);
+    cell.classList.remove('filled');
+    cell.classList.add(res[c]);
+    // κατάσταση πληκτρολογίου (correct > present > absent)
+    const ch = cur[c], rank = { correct: 3, present: 2, absent: 1 };
+    if (!keyState[ch] || rank[res[c]] > rank[keyState[ch]]) keyState[ch] = res[c];
+  }
+  refreshKeyboard();
+
+  const won = res.every(r => r === 'correct');
+  if (won) {
+    over = true;
+    $('msg').textContent = '🎉 Μπράβο! Το βρήκες!';
+    try { GameSounds.bigCorrect(); } catch (e) {}
+    $('endBox').style.display = 'flex';
+    return;
+  }
+  rowIdx++;
+  cur = '';
+  updateTryTag();
+  if (rowIdx >= MAX_TRIES) {
+    over = true;
+    $('msg').innerHTML = `Η λέξη ήταν: <span style="color:#ffb347">${target}</span>`;
+    try { GameSounds.wrong(); } catch (e) {}
+    $('endBox').style.display = 'flex';
+  } else {
+    try { GameSounds.correct(); } catch (e) {}
+  }
+}
+
+function press(ch) {
+  if (over) return;
+  if (cur.length < target.length) { cur += ch; paintCurrent(); }
+}
+function backspace() { if (over) return; cur = cur.slice(0, -1); paintCurrent(); }
+
+/* ---- keyboard ---- */
+function buildKeyboard() {
+  const kb = $('kb'); kb.innerHTML = '';
+  KB_ROWS.forEach((row, i) => {
+    const r = document.createElement('div'); r.className = 'kb-row';
+    if (i === 2) { r.appendChild(makeKey('⏎', 'enter', true)); }
+    for (const ch of row) r.appendChild(makeKey(ch, ch, false));
+    if (i === 2) { r.appendChild(makeKey('⌫', 'back', true)); }
+    kb.appendChild(r);
+  });
+}
+function makeKey(label, val, wide) {
+  const b = document.createElement('button');
+  b.className = 'key' + (wide ? ' wide' : '');
+  b.textContent = label; b.dataset.val = val;
+  b.addEventListener('click', () => {
+    if (val === 'enter') submit();
+    else if (val === 'back') backspace();
+    else press(val);
+  });
+  return b;
+}
+function refreshKeyboard() {
+  document.querySelectorAll('.key').forEach(k => {
+    const v = k.dataset.val;
+    k.classList.remove('correct', 'present', 'absent');
+    if (keyState[v]) k.classList.add(keyState[v]);
+  });
+}
+
+/* ---- physical keyboard ---- */
+document.addEventListener('keydown', e => {
+  if (!$('game').classList.contains('active')) return;
+  if (e.key === 'Enter') { submit(); return; }
+  if (e.key === 'Backspace') { backspace(); return; }
+  const ch = norm(e.key);
+  if (ch.length === 1 && VALID.test(ch)) press(ch);
+});
+
+/* ---- wiring ---- */
+$('startBtn').addEventListener('click', () => { try { GameSounds.unlock(); } catch (e) {} startGame(); });
+$('againBtn').addEventListener('click', newWord);
+$('newWordBtn').addEventListener('click', newWord);
+$('helpBtn').addEventListener('click', () => $('howto').classList.toggle('open'));
+$('closeHow').addEventListener('click', () => $('howto').classList.remove('open'));
+$('hintBtn').addEventListener('click', () => {
+  const cat = WordSource.category(target);
+  toast(cat ? `💡 Θέμα: ${cat}` : '💡 Λέξη από τα μαθήματα');
+});
+$('backSetupBtn').addEventListener('click', () => {
+  $('game').classList.remove('active'); $('setup').classList.add('active');
+});
+
+$('startBtn').disabled = true;
+$('startBtn').textContent = '… φόρτωση λέξεων';
+WordSource.load(() => {
+  buildSetup();
+  $('startBtn').disabled = false;
+  $('startBtn').textContent = '▶ Παίξε';
+});
+</script>
+</body>
+</html>
