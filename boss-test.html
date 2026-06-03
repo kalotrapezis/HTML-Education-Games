@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html lang="el">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Boss Test — Γορίλας</title>
+<style>
+  html, body { margin: 0; height: 100%; background: #050018; font-family: system-ui, sans-serif; color: #fff; }
+  #bar {
+    position: fixed; top: 0; left: 0; right: 0; height: 52px; z-index: 10;
+    display: flex; align-items: center; gap: 10px; padding: 0 14px;
+    background: rgba(0,0,0,0.6); box-sizing: border-box;
+  }
+  #bar b { margin-right: 8px; font-size: 15px; }
+  #bar button {
+    padding: 8px 16px; font-size: 15px; font-weight: bold; cursor: pointer;
+    border: 2px solid #fff; border-radius: 8px; background: rgba(255,255,255,0.08); color: #fff;
+  }
+  #bar button:hover { background: rgba(255,255,255,0.2); }
+  #bar button.active { background: #ff9500; border-color: #ff9500; }
+  #bar .sp { flex: 1; }
+  #bar a { color: #9fd0ff; text-decoration: none; font-size: 14px; }
+  iframe { position: fixed; top: 52px; left: 0; right: 0; bottom: 0; width: 100%; height: calc(100% - 52px); border: 0; }
+</style>
+</head>
+<body>
+  <div id="bar">
+    <b>🦍 Δοκιμή Boss</b>
+    <button data-d="easy">Εύκολο</button>
+    <button data-d="normal" class="active">Κανονικό</button>
+    <button data-d="hard">Δύσκολο</button>
+    <button id="restart">↻ Επανεκκίνηση</button>
+    <span class="sp"></span>
+    <a href="invaders.html">← Κανονικό παιχνίδι</a>
+  </div>
+  <iframe id="game" src="invaders.html?boss=normal"></iframe>
+<script>
+  const frame = document.getElementById('game');
+  let diff = 'normal';
+  function focusGame() { try { frame.contentWindow.focus(); } catch (e) {} }
+  frame.addEventListener('load', focusGame);
+  // ξαναδίνει focus στο παιχνίδι όταν κάνεις κλικ πάνω του (για να πιάνει το πληκτρολόγιο)
+  window.addEventListener('blur', () => setTimeout(focusGame, 0));
+  function load() { frame.src = 'invaders.html?boss=' + diff + '&_=' + Date.now(); }
+  document.querySelectorAll('#bar button[data-d]').forEach(btn => {
+    btn.addEventListener('click', () => {
+      diff = btn.dataset.d;
+      document.querySelectorAll('#bar button[data-d]').forEach(b => b.classList.remove('active'));
+      btn.classList.add('active');
+      load();
+    });
+  });
+  document.getElementById('restart').addEventListener('click', load);
+</script>
+</body>
+</html>

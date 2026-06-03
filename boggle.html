@@ -359,28 +359,40 @@ function placeWord(g, word) {
   return false;
 }
 
-/* τοποθετεί μια λέξη σε ΙΣΙΑ γραμμή (οριζόντια, κάθετα ή διαγώνια) — πιο εύκολο
-   για παιδιά: δεν υπάρχουν στροφές. Με τον ίδιο υποχρεωτικό διαχωρισμό. */
-function placeWordStraight(g, word) {
-  for (let attempt = 0; attempt < 500; attempt++) {
-    const [dr, dc] = pick(DIRS);
-    const sr = rnd(size), sc = rnd(size);
-    const er = sr + dr * (word.length - 1);
-    const ec = sc + dc * (word.length - 1);
-    if (!inb(er, ec)) continue;
-    const cells = [];
-    const used = new Set();
-    for (let i = 0; i < word.length; i++) {
-      const r = sr + dr * i, c = sc + dc * i;
-      cells.push([r, c]); used.add(r + ',' + c);
+/* μόνο «μπροστινές» κατευθύνσεις — το πρώτο γράμμα είναι πάντα πάνω/αριστερά,
+   ώστε καμία λέξη να μη διαβάζεται ανάποδα (δεξιά→αριστερά ή κάτω→πάνω) */
+const FWD_DIRS = [[0,1],[1,0],[1,1],[1,-1]]; // → ↓ ↘ ↙
+
+/* τοποθετεί μια λέξη σε ΙΣΙΑ γραμμή (οριζόντια, κάθετα, διαγώνια) χωρίς στροφές,
+   ΠΟΤΕ ανάποδα. Επιτρέπει λέξεις δίπλα-δίπλα και σταυρωτά: ένα κελί μπορεί να το
+   μοιράζονται λέξεις αρκεί το γράμμα να ταιριάζει (το ίδιο γράμμα 2-3 φορές).
+   Έτσι ο αλγόριθμος δεν «ζορίζεται» και οι λέξεις χωράνε άνετα. */
+function placeWordGuided(g, word) {
+  const candidates = [];
+  for (const [dr, dc] of FWD_DIRS) {
+    for (let sr = 0; sr < size; sr++) {
+      for (let sc = 0; sc < size; sc++) {
+        const er = sr + dr * (word.length - 1);
+        const ec = sc + dc * (word.length - 1);
+        if (!inb(er, ec)) continue;
+        let ok = true, overlaps = 0;
+        for (let i = 0; i < word.length; i++) {
+          const cur = g[sr + dr * i][sc + dc * i];
+          if (cur === '') continue;
+          if (cur === word[i]) overlaps++;     // σταύρωμα σε ίδιο γράμμα — επιτρεπτό
+          else { ok = false; break; }          // διαφορετικό γράμμα — δεν χωράει εδώ
+        }
+        if (ok && overlaps < word.length) candidates.push({ sr, sc, dr, dc, overlaps });
+      }
     }
-    let ok = true;
-    for (const [r, c] of cells) {
-      if (g[r][c] !== '' || !clearNeighborhood(g, r, c, used)) { ok = false; break; }
-    }
-    if (ok) { cells.forEach((cell, i) => { g[cell[0]][cell[1]] = word[i]; }); return true; }
   }
-  return false;
+  if (!candidates.length) return false;
+  candidates.sort(() => Math.random() - 0.5);
+  // μερικές φορές προτίμησε ένα σταύρωμα (ωραίο μπλέξιμο), αλλιώς τυχαία θέση
+  const crossing = candidates.filter(c => c.overlaps > 0);
+  const c = (crossing.length && Math.random() < 0.5) ? crossing[0] : candidates[0];
+  for (let i = 0; i < word.length; i++) g[c.sr + c.dr * i][c.sc + c.dc * i] = word[i];
+  return true;
 }
 
 const MAX_WORDS = 7;
@@ -397,7 +409,7 @@ function buildGrid() {
 
   grid = emptyGrid(size);
   targets = [];
-  const place = mode === 'free' ? placeWord : placeWordStraight;
+  const place = mode === 'free' ? placeWord : placeWordGuided;
   for (const w of chosen) {
     if (w.length > size * size) continue;
     if (place(grid, w)) targets.push({ word: w, found: false });

@@ -128,7 +128,7 @@
 
 <!-- ΜΕΝΟΥ -->
 <div id="menuScreen" class="screen active">
-  <div class="info">Σκάφος που σκοτώνει εξωγήινους με power-ups • 6 waves με αυξανόμενο πληθυσμό, ταχύτητα & δύναμη</div>
+  <div class="info">Σκάφος που σκοτώνει εξωγήινους με power-ups • 9 waves με σταδιακά αυξανόμενη ταχύτητα και BOSS στην 10η: UFO με γορίλα που πετάει βαρέλια!</div>
   <div class="menu-card">
     <h2>Νέο Παιχνίδι</h2>
     <div class="field">
@@ -199,7 +199,7 @@
 <!-- GAME OVER -->
 <div id="resultScreen" class="screen">
   <div class="result-card">
-    <div class="trophy">👾</div>
+    <div class="trophy" id="resultTrophy" title="">👾</div>
     <h2 id="resultTitle">Game Over</h2>
     <div class="stats" id="resultStats"></div>
     <div class="actions">
@@ -244,15 +244,21 @@ for (let i = 0; i < 80; i++) {
   stars.push({ x: Math.random() * W, y: Math.random() * H, s: Math.random() * 2 + 0.5, v: Math.random() * 1.5 + 0.3 });
 }
 
+// Πίστες 1-9 με σταδιακά αυξανόμενη ταχύτητα (η 5η & 6η πιο ήπιες απ' ό,τι πριν),
+// και στην 10η ο BOSS: ένα UFO με γορίλα που πετάει βαρέλια.
 const WAVES = [
-  { rows: 4, cols: 8,  speed: 0.8, dropDist: 18, stepInterval: 38, hpBonus: 0 },
-  { rows: 5, cols: 9,  speed: 1.1, dropDist: 22, stepInterval: 28, hpBonus: 0 },
-  { rows: 6, cols: 10, speed: 1.4, dropDist: 28, stepInterval: 20, hpBonus: 0 },
-  { rows: 6, cols: 11, speed: 1.7, dropDist: 30, stepInterval: 16, hpBonus: 1 },
-  { rows: 7, cols: 11, speed: 2.0, dropDist: 32, stepInterval: 13, hpBonus: 1 },
-  { rows: 8, cols: 12, speed: 2.4, dropDist: 34, stepInterval: 10, hpBonus: 2 }
+  { rows: 4, cols: 8,  speed: 0.70, dropDist: 16, stepInterval: 40, hpBonus: 0 }, // 1
+  { rows: 4, cols: 9,  speed: 0.85, dropDist: 18, stepInterval: 34, hpBonus: 0 }, // 2
+  { rows: 5, cols: 9,  speed: 1.00, dropDist: 20, stepInterval: 30, hpBonus: 0 }, // 3
+  { rows: 5, cols: 10, speed: 1.15, dropDist: 22, stepInterval: 26, hpBonus: 0 }, // 4
+  { rows: 6, cols: 10, speed: 1.30, dropDist: 24, stepInterval: 22, hpBonus: 0 }, // 5
+  { rows: 6, cols: 10, speed: 1.45, dropDist: 26, stepInterval: 19, hpBonus: 1 }, // 6
+  { rows: 6, cols: 11, speed: 1.60, dropDist: 28, stepInterval: 16, hpBonus: 1 }, // 7
+  { rows: 7, cols: 11, speed: 1.80, dropDist: 30, stepInterval: 13, hpBonus: 1 }, // 8
+  { rows: 7, cols: 12, speed: 2.00, dropDist: 32, stepInterval: 11, hpBonus: 2 }  // 9
 ];
-const TOTAL_WAVES = WAVES.length;
+const BOSS_WAVE = 10;
+const TOTAL_WAVES = BOSS_WAVE;
 
 function newGame() {
   const diff = document.getElementById('difficulty').value;
@@ -263,6 +269,8 @@ function newGame() {
     bullets: [],
     enemyBullets: [],
     enemies: [],
+    boss: null,
+    barrels: [],
     powerups: [],
     particles: [],
     score: 0,
@@ -281,7 +289,8 @@ function newGame() {
 }
 
 function buildFormation(waveNum) {
-  const w = WAVES[Math.min(waveNum - 1, TOTAL_WAVES - 1)];
+  if (waveNum >= BOSS_WAVE) { buildBoss(); return; }
+  const w = WAVES[Math.min(waveNum - 1, WAVES.length - 1)];
   // τύποι ανά γραμμή — οι πιο πάνω είναι πιο δυνατοί όπως στο κλασικό
   const ROW_TYPES = [
     { hp: 5, w: 38, h: 38, color: '#ff3a3a', points: 150, emoji: '👹' },
@@ -322,9 +331,215 @@ function buildFormation(waveNum) {
   };
 }
 
+// ---- BOSS: UFO με γορίλα που πετάει βαρέλια (10η πίστα) ----
+function buildBoss() {
+  state.enemies = [];
+  state.barrels = [];
+  // HP κλιμακωμένο ώστε με το ΡΟΖ όπλο (×18 ζημιά/βολή vs απλό) ο χρόνος μάχης
+  // να μένει ίδιος με αυτόν που είχε με το απλό όπλο.
+  const hpByDiff = { easy: 11520, normal: 15840, hard: 21600 };
+  const hp = hpByDiff[state.diff] || 55;
+  state.boss = {
+    x: W / 2, y: 100, w: 160, h: 64,
+    hp, maxHp: hp,
+    phase: 'idle',          // 'idle' = ακίνητος & πετάει βαρέλια | 'flying' = περνάει απέναντι
+    bob: 0,
+    throwT: 70,
+    homeX: W / 2, homeY: 100,
+    quartersLeft: 3,        // 3 «φευγάλες» στα τέταρτα (75%, 50%, 25%)
+    fly: null
+  };
+  state.formation = { dir: 1, stepTimer: 0, initialCount: 1 };
+  if (window.InvSounds) InvSounds.marchStop();
+}
+
+function bossDefeated() {
+  const bo = state.boss;
+  addExplosion(bo.x, bo.y, '#ff4fc4');
+  addExplosion(bo.x - 30, bo.y + 10, '#ffd166');
+  addExplosion(bo.x + 30, bo.y - 10, '#ff7b00');
+  state.shake = 24;
+  state.score += Math.round(500 * state.cfg.scoreMult);
+  state.boss = null;
+  state.barrels = [];
+  state.playing = false;
+  if (window.InvSounds) { InvSounds.marchStop(); InvSounds.victory(); }
+  flash('🏆 ΝΙΚΗΣΕΣ ΤΟΝ ΓΟΡΙΛΑ!', '#ffe066');
+  updateUI();
+  setTimeout(() => { recordScore(); showResultScreen(true); }, 1800);
+}
+
+function bossThrowBarrel() {
+  const bo = state.boss;
+  const sx = Math.max(20, Math.min(W - 20, bo.x));   // αν είναι εκτός οθόνης, ρίξε από την άκρη
+  const bias = Math.max(-4, Math.min(4, (state.player.x - sx) / 50));
+  state.barrels.push({
+    x: sx + 28, y: bo.y - 18,
+    vx: bias + (Math.random() - 0.5) * 1.6,
+    vy: -2 - Math.random() * 1.4,
+    rot: 0, spin: (Math.random() - 0.5) * 0.3, s: 2.3
+  });
+  if (window.InvSounds) InvSounds.shoot();
+}
+
+// Όταν γυρίζει απέναντι ρίχνει ΟΛΑ ΜΑΖΙ μια σειρά βαρέλια — ο παίκτης πρέπει
+// να βρει το ένα ασφαλές «κενό» για να περάσει. Αυτή είναι η αληθινή απειλή.
+let _lastGap = -1;
+function bossBarrage() {
+  const n = 8;
+  let gap;                                               // ποιο πέρασμα είναι ανοιχτό — πάντα διαφορετικό
+  do { gap = 1 + Math.floor(Math.random() * (n - 2)); } while (gap === _lastGap);
+  _lastGap = gap;
+  for (let i = 0; i < n; i++) {
+    if (i === gap) continue;
+    const x = 40 + i * ((W - 80) / (n - 1));
+    state.barrels.push({
+      x, y: -20 - Math.random() * 60,
+      vx: (Math.random() - 0.5) * 0.5,
+      vy: 2.2 + Math.random() * 1.0,
+      rot: Math.random() * Math.PI, spin: (Math.random() - 0.5) * 0.3, s: 2.3
+    });
+  }
+  state.shake = Math.max(state.shake || 0, 6);
+  if (window.InvSounds) InvSounds.shoot();
+}
+
+// όσο φεύγει (στα τέταρτα) ρίχνει βοηθήματα — ζωή/ασπίδα/laser ΚΑΙ όπλα, ώστε ο
+// παίκτης να ξαναχτίσει το ΡΟΖ όπλο μετά τα χτυπήματα (κάθε χτύπημα ρίχνει το όπλο μία βαθμίδα).
+function bossDropPowerup() {
+  const kinds = [
+    { kind: 'shield', color: '#3a6bff', label: 'S' },
+    { kind: 'life',   color: '#e63946', label: '+' },
+    { kind: 'bomb',   color: '#ff3a3a', label: '🔴' },
+    { kind: 'double', color: '#ffd60a', label: '2' },
+    { kind: 'triple', color: '#ff9500', label: '3' }
+  ];
+  const pick = kinds[Math.floor(Math.random() * kinds.length)];
+  const x = Math.max(40, Math.min(W - 40, state.player.x + (Math.random() - 0.5) * 160));
+  state.powerups.push({ x, y: 50, w: 26, h: 26, vy: 1.4, ...pick });
+}
+
+// ξεκινά τη «φευγάλα»: βγαίνει εκτός οθόνης και μπαίνει από την αντίθετη γωνία
+function bossStartFly() {
+  const bo = state.boss;
+  bo.phase = 'flying';
+  const onLeft = bo.x < W / 2;
+  const exitX  = onLeft ? -180 : W + 180;          // βγαίνει από την πλευρά που είναι
+  const entryX = onLeft ? W + 180 : -180;          // μπαίνει από την αντίθετη
+  const entryY = 70;                               // ψηλά, σε γωνία
+  const homeX  = onLeft ? W * 0.74 : W * 0.26;     // νέα θέση στην απέναντι πλευρά
+  bo.fly = {
+    t: 0, dur: 175, seg1: 0.45,
+    sx: bo.x, sy: bo.y,
+    exitX, exitY: bo.y - 10,
+    entryX, entryY,
+    homeX, homeY: 100,
+    throwT: 38, dropT: 10
+  };
+  if (window.InvSounds) InvSounds.laser();
+  flash('💨 Ο γορίλας πετάει απέναντι!', '#7fd6ff');
+}
+
+// εφαρμόζει ζημιά στο boss· επιστρέφει true αν νικήθηκε
+function bossTakeDamage(dmg, hx, hy) {
+  const bo = state.boss;
+  bo.hp -= dmg;
+  if (hx != null) addExplosion(hx, hy, '#ffd166');
+  if (bo.hp <= 0) { bossDefeated(); return true; }
+  // στα τέταρτα της μπάρας φεύγει απέναντι (μόνο όταν είναι ακίνητος)
+  if (bo.phase === 'idle' && bo.quartersLeft > 0 && bo.hp <= bo.maxHp * (bo.quartersLeft / 4)) {
+    bo.quartersLeft--;
+    bossStartFly();
+  }
+  return false;
+}
+
+function updateBoss() {
+  const bo = state.boss;
+  if (!bo) return;
+  bo.bob += 0.05;
+
+  if (bo.phase === 'flying') {
+    const f = bo.fly;
+    f.t++;
+    const p = f.t / f.dur;
+    if (p < f.seg1) {                       // βγαίνει εκτός οθόνης
+      const k = p / f.seg1;
+      bo.x = f.sx + (f.exitX - f.sx) * k;
+      bo.y = f.sy + (f.exitY - f.sy) * k;
+    } else {                                // μπαίνει από τη γωνία προς τη νέα θέση
+      const k = (p - f.seg1) / (1 - f.seg1);
+      bo.x = f.entryX + (f.homeX - f.entryX) * k;
+      bo.y = f.entryY + (f.homeY - f.entryY) * k;
+    }
+    // ρίχνει βαρέλια + βοηθήματα όσο πετάει
+    if (--f.throwT <= 0) { bossThrowBarrel(); f.throwT = 42 + Math.random() * 28; }
+    if (--f.dropT <= 0)  { bossDropPowerup(); f.dropT = 22 + Math.random() * 18; }
+    if (p >= 1) {                           // τέλος φευγάλας → ξανά ακίνητος
+      bo.phase = 'idle';
+      bo.x = f.homeX; bo.y = f.homeY;
+      bo.homeX = f.homeX; bo.homeY = f.homeY;
+      bo.fly = null; bo.throwT = 90;        // μικρή παύση μετά την μπαράζ
+      bossBarrage();                        // ρίχνει όλη τη σειρά μόλις επιστρέψει
+    }
+  } else {                                  // idle: ακίνητος (μόνο bob), πετάει βαρέλια
+    bo.x = bo.homeX;
+    bo.y = bo.homeY + Math.sin(bo.bob) * 5;
+    if (--bo.throwT <= 0) { bossThrowBarrel(); bo.throwT = 55 + Math.random() * 45; }
+  }
+
+  // βλήματα παίκτη χτυπούν το UFO (μόνο όταν είναι εντός οθόνης)
+  if (bo.x > -60 && bo.x < W + 60) {
+    for (let j = state.bullets.length - 1; j >= 0; j--) {
+      const b = state.bullets[j];
+      if (Math.abs(b.x - bo.x) < bo.w / 2 && Math.abs(b.y - bo.y) < bo.h / 2 + 14) {
+        state.bullets.splice(j, 1);
+        state.score += Math.round(2 * state.cfg.scoreMult);
+        if (bossTakeDamage(b.damage || 1, b.x, b.y)) return;
+      }
+    }
+    // το laser ροκανίζει το boss όταν είναι ευθυγραμμισμένο
+    if (state.laser && Math.abs(bo.x - state.player.x) < 22 + bo.w / 2 && bo.y < state.player.y) {
+      if (bossTakeDamage(0.4)) return;
+    }
+  }
+
+  updateUI();
+}
+
+function updateBarrels() {
+  if (!state.barrels || !state.barrels.length) return;
+  for (let i = state.barrels.length - 1; i >= 0; i--) {
+    const ba = state.barrels[i];
+    const s = ba.s || 1;
+    const hw = 12 * s;                              // μισό πλάτος βαρελιού
+    ba.vy += 0.19;                 // βαρύτητα (πέφτουν πιο γρήγορα)
+    ba.x += ba.vx; ba.y += ba.vy; ba.rot += ba.spin;
+    if (ba.x < hw + 4) { ba.x = hw + 4; ba.vx = Math.abs(ba.vx); }     // αναπήδηση στα τοιχώματα
+    if (ba.x > W - hw - 4) { ba.x = W - hw - 4; ba.vx = -Math.abs(ba.vx); }
+
+    // Τα βαρέλια ΔΕΝ καταστρέφονται με πυρά/laser — μόνο ο γορίλας δέχεται ζημιά.
+    let boom = false;
+    // άμεσο χτύπημα στον παίκτη
+    if (!boom && Math.abs(ba.x - state.player.x) < hw + 12 && Math.abs(ba.y - state.player.y) < 15 * s + 12) boom = true;
+    // χτύπησε το έδαφος
+    if (!boom && ba.y > H - 56) boom = true;
+
+    if (boom) {
+      const ex = ba.x, ey = Math.min(ba.y, H - 56);
+      addExplosion(ex, ey, '#ff7b00');
+      state.shake = Math.max(state.shake || 0, 8);
+      if (window.InvSounds) InvSounds.explode(false);
+      // η έκρηξη πληγώνει αν ο παίκτης είναι κοντά (το hitPlayer έχει iframes, δεν διπλοχτυπά)
+      if (Math.hypot(ex - state.player.x, ey - state.player.y) < 36 + 16 * s) hitPlayer();
+      state.barrels.splice(i, 1);
+    }
+  }
+}
+
 function updateUI() {
   document.getElementById('score').textContent = state.score;
-  document.getElementById('wave').textContent = state.wave;
+  document.getElementById('wave').textContent = state.boss ? 'BOSS' : state.wave;
   document.getElementById('kills').textContent = state.kills;
   document.getElementById('lives').textContent = state.lives;
   document.getElementById('shield').textContent = state.player.shield;
@@ -491,24 +706,26 @@ function update() {
     if (b.y > H + 20) state.enemyBullets.splice(i, 1);
   }
 
-  // αν τελείωσαν όλοι, επόμενο wave
-  if (state.enemies.length === 0) {
-    if (state.wave >= TOTAL_WAVES) {
-      state.playing = false;
-      if (window.InvSounds) { InvSounds.marchStop(); InvSounds.victory(); }
-      flash('🏆 ΝΙΚΗΣΕΣ!', '#ffe066');
-      setTimeout(() => { recordScore(); showResultScreen(true); }, 1500);
-      return;
-    }
+  // αν τελείωσαν όλοι (και δεν είναι boss), επόμενο wave
+  if (state.enemies.length === 0 && !state.boss) {
     state.wave++;
     buildFormation(state.wave);
-    if (window.InvSounds) InvSounds.waveClear();
-    flash('WAVE ' + state.wave, '#ffe066');
+    if (state.boss) {
+      if (window.InvSounds) InvSounds.waveClear();
+      flash('👹 BOSS — Ο ΓΟΡΙΛΑΣ!', '#ff4fc4');
+    } else {
+      if (window.InvSounds) InvSounds.waveClear();
+      flash('WAVE ' + state.wave, '#ffe066');
+    }
     updateUI();
   }
 
+  updateBoss();
+  updateBarrels();
+  if (state.shake > 0) { state.shake -= 0.6; if (state.shake < 0) state.shake = 0; }
+
   // ένταση μαρς: όσο πιο χαμηλά (κοντά) φτάνει το κύμα, τόσο πιο γρήγορο
-  if (window.InvSounds) {
+  if (window.InvSounds && state.enemies.length) {
     let lowest = 0;
     for (const e of state.enemies) if (e.y > lowest) lowest = e.y;
     InvSounds.setMarchIntensity((lowest - 60) / (H - 140 - 60));
@@ -748,6 +965,196 @@ function drawShip(x, y) {
   ctx.stroke();
 }
 
+// φλόγες/καπνός πίσω από τον πληγωμένο boss όσο πετάει
+function drawBossFlames(x, pcy, pr, bob) {
+  const t = bob * 6;
+  ctx.save();
+  ctx.globalCompositeOperation = 'lighter';
+  for (let i = 0; i < 9; i++) {
+    const a = (i / 9) * Math.PI * 2 + bob;
+    const fx = x + Math.cos(a) * (pr - 6);
+    const fy = pcy + Math.sin(a) * (pr * 0.45) + 6;
+    const flick = 0.5 + 0.5 * Math.sin(t + i * 1.7);
+    const r = 8 + flick * 12;
+    const g = ctx.createRadialGradient(fx, fy, 1, fx, fy, r);
+    g.addColorStop(0, 'rgba(255,240,150,' + (0.55 * flick).toFixed(2) + ')');
+    g.addColorStop(0.4, 'rgba(255,140,30,' + (0.45 * flick).toFixed(2) + ')');
+    g.addColorStop(1, 'rgba(180,30,0,0)');
+    ctx.fillStyle = g;
+    ctx.beginPath();
+    ctx.arc(fx, fy - flick * 6, r, 0, Math.PI * 2);
+    ctx.fill();
+  }
+  ctx.restore();
+  // λίγος σκούρος καπνός που ανεβαίνει
+  ctx.save();
+  for (let i = 0; i < 4; i++) {
+    const sx = x - 14 + i * 9 + Math.sin(t + i) * 4;
+    const sy = pcy - pr - 4 - ((t * 6 + i * 14) % 36);
+    ctx.fillStyle = 'rgba(60,60,60,0.18)';
+    ctx.beginPath();
+    ctx.arc(sx, sy, 6 + i, 0, Math.PI * 2);
+    ctx.fill();
+  }
+  ctx.restore();
+}
+
+function drawBoss(bo) {
+  const x = bo.x, y = bo.y + Math.sin(bo.bob) * 4;
+  const pcy = y + 28;          // κέντρο του πλανήτη (κάτω από τον γορίλα)
+  const pr = 46;               // ακτίνα πλανήτη
+
+  // --- φλόγες όσο πετάει: δείχνει ότι είναι πληγωμένος ---
+  if (bo.phase === 'flying') drawBossFlames(x, pcy, pr, bo.bob);
+
+  // --- δαχτυλίδι: πίσω μισό ---
+  ctx.save();
+  ctx.translate(x, pcy);
+  ctx.rotate(-0.16);
+  ctx.lineWidth = 7;
+  ctx.strokeStyle = '#e9a23b';
+  ctx.beginPath();
+  ctx.ellipse(0, 0, pr + 30, 15, 0, Math.PI, Math.PI * 2);
+  ctx.stroke();
+  ctx.restore();
+
+  // --- σώμα πλανήτη (Κρόνος, πορτοκαλί) ---
+  const g = ctx.createRadialGradient(x - 14, pcy - 14, 6, x, pcy, pr);
+  g.addColorStop(0, '#ffd166');
+  g.addColorStop(0.55, '#f59e2b');
+  g.addColorStop(1, '#c0610f');
+  ctx.fillStyle = g;
+  ctx.beginPath();
+  ctx.arc(x, pcy, pr, 0, Math.PI * 2);
+  ctx.fill();
+  // κρατήρες / λωρίδες
+  ctx.fillStyle = 'rgba(150,70,10,0.32)';
+  ctx.beginPath(); ctx.ellipse(x - 12, pcy + 10, 15, 8, 0.3, 0, Math.PI * 2); ctx.fill();
+  ctx.beginPath(); ctx.ellipse(x + 20, pcy - 4, 9, 6, -0.2, 0, Math.PI * 2); ctx.fill();
+  ctx.beginPath(); ctx.ellipse(x + 4, pcy + 24, 11, 5, 0.1, 0, Math.PI * 2); ctx.fill();
+
+  // --- δαχτυλίδι: μπροστινό μισό ---
+  ctx.save();
+  ctx.translate(x, pcy);
+  ctx.rotate(-0.16);
+  ctx.lineWidth = 7;
+  ctx.strokeStyle = '#ffd98f';
+  ctx.beginPath();
+  ctx.ellipse(0, 0, pr + 30, 15, 0, 0, Math.PI);
+  ctx.stroke();
+  ctx.restore();
+
+  // --- ο γορίλας πάνω στον πλανήτη ---
+  drawGorilla(x, y - 6, bo.bob);
+}
+
+function drawGorilla(cx, cy, bob) {
+  const fur = '#4a352a', furDark = '#2f211a', skin = '#caa46b', overall = '#8e74c8';
+  const raise = Math.sin(bob * 1.4) * 3;     // τα μπράτσα «πανηγυρίζουν»
+
+  // μπράτσα σηκωμένα (πίσω από τον κορμό)
+  ctx.fillStyle = fur;
+  ctx.save(); ctx.translate(cx - 24, cy - 26); ctx.rotate(-0.45);
+  roundedRect(-9, -36, 18, 48, 9); ctx.fill(); ctx.restore();
+  ctx.save(); ctx.translate(cx + 24, cy - 26); ctx.rotate(0.45);
+  roundedRect(-9, -36, 18, 48, 9); ctx.fill(); ctx.restore();
+  // γροθιές
+  ctx.beginPath(); ctx.arc(cx - 40, cy - 56 - raise, 10, 0, Math.PI * 2); ctx.fill();
+  ctx.beginPath(); ctx.arc(cx + 40, cy - 56 + raise, 10, 0, Math.PI * 2); ctx.fill();
+
+  // κορμός (γούνα)
+  ctx.fillStyle = fur;
+  ctx.beginPath(); ctx.ellipse(cx, cy - 16, 31, 27, 0, 0, Math.PI * 2); ctx.fill();
+
+  // φόρμα (μωβ σαλοπέτα)
+  ctx.fillStyle = overall;
+  roundedRect(cx - 25, cy - 24, 50, 32, 9); ctx.fill();
+  ctx.fillRect(cx - 19, cy - 44, 7, 24);   // τιράντες
+  ctx.fillRect(cx + 12, cy - 44, 7, 24);
+  // κουμπιά
+  ctx.fillStyle = '#f0c419';
+  ctx.beginPath(); ctx.arc(cx - 15, cy - 20, 3.5, 0, Math.PI * 2); ctx.fill();
+  ctx.beginPath(); ctx.arc(cx + 15, cy - 20, 3.5, 0, Math.PI * 2); ctx.fill();
+
+  // κεφάλι
+  ctx.fillStyle = fur;
+  ctx.beginPath(); ctx.arc(cx, cy - 52, 23, 0, Math.PI * 2); ctx.fill();
+  // αυτιά
+  ctx.beginPath(); ctx.arc(cx - 23, cy - 54, 6.5, 0, Math.PI * 2); ctx.fill();
+  ctx.beginPath(); ctx.arc(cx + 23, cy - 54, 6.5, 0, Math.PI * 2); ctx.fill();
+  // πρόσωπο (μουσούδα)
+  ctx.fillStyle = skin;
+  ctx.beginPath(); ctx.ellipse(cx, cy - 47, 16, 14, 0, 0, Math.PI * 2); ctx.fill();
+  // φρύδι/μέτωπο γούνας
+  ctx.fillStyle = furDark;
+  ctx.beginPath(); ctx.ellipse(cx, cy - 58, 17, 8, 0, Math.PI, 0); ctx.fill();
+  // μάτια
+  ctx.fillStyle = '#fff';
+  ctx.beginPath(); ctx.arc(cx - 6, cy - 53, 3.4, 0, Math.PI * 2); ctx.fill();
+  ctx.beginPath(); ctx.arc(cx + 6, cy - 53, 3.4, 0, Math.PI * 2); ctx.fill();
+  ctx.fillStyle = '#1a1a1a';
+  ctx.beginPath(); ctx.arc(cx - 6, cy - 53, 1.7, 0, Math.PI * 2); ctx.fill();
+  ctx.beginPath(); ctx.arc(cx + 6, cy - 53, 1.7, 0, Math.PI * 2); ctx.fill();
+  // πλατύ χαμόγελο με δόντια
+  ctx.fillStyle = '#fff';
+  roundedRect(cx - 11, cy - 45, 22, 9, 3); ctx.fill();
+  ctx.strokeStyle = furDark; ctx.lineWidth = 1;
+  ctx.beginPath(); ctx.moveTo(cx, cy - 45); ctx.lineTo(cx, cy - 36); ctx.stroke();
+  ctx.beginPath(); ctx.moveTo(cx - 11, cy - 40); ctx.lineTo(cx + 11, cy - 40); ctx.stroke();
+}
+
+// βοηθητικό: διαδρομή στρογγυλεμένου ορθογωνίου (συμβατό παντού)
+function roundedRect(x, y, w, h, r) {
+  ctx.beginPath();
+  ctx.moveTo(x + r, y);
+  ctx.arcTo(x + w, y, x + w, y + h, r);
+  ctx.arcTo(x + w, y + h, x, y + h, r);
+  ctx.arcTo(x, y + h, x, y, r);
+  ctx.arcTo(x, y, x + w, y, r);
+  ctx.closePath();
+}
+
+function drawBossHpBar(bo) {
+  const m = 12, bx = m, by = 14, bw = W - m * 2, bh = 16;
+  ctx.fillStyle = 'rgba(0,0,0,0.55)';
+  ctx.fillRect(bx, by, bw, bh);
+  const ratio = Math.max(0, bo.hp / bo.maxHp);
+  ctx.fillStyle = ratio > 0.5 ? '#3ec23e' : ratio > 0.25 ? '#ffb347' : '#ff3a3a';
+  ctx.fillRect(bx, by, bw * ratio, bh);
+  // σημάδια στα τέταρτα (εκεί που φεύγει)
+  ctx.strokeStyle = 'rgba(255,255,255,0.85)'; ctx.lineWidth = 2;
+  for (let q = 1; q <= 3; q++) {
+    const tx = bx + bw * (q / 4);
+    ctx.beginPath(); ctx.moveTo(tx, by); ctx.lineTo(tx, by + bh); ctx.stroke();
+  }
+  ctx.strokeStyle = '#fff'; ctx.lineWidth = 1.5;
+  ctx.strokeRect(bx, by, bw, bh);
+  ctx.fillStyle = '#fff';
+  ctx.font = 'bold 12px Segoe UI';
+  ctx.textAlign = 'center'; ctx.textBaseline = 'middle';
+  ctx.fillText('🦍 BOSS', W / 2, by + bh / 2 + 1);
+}
+
+function drawBarrel(ba) {
+  ctx.save();
+  ctx.translate(ba.x, ba.y);
+  ctx.rotate(ba.rot);
+  ctx.scale(ba.s || 1, ba.s || 1);
+  // σώμα βαρελιού
+  ctx.fillStyle = '#a0521d';
+  ctx.fillRect(-12, -15, 24, 30);
+  // ντούγες/τσέρκια
+  ctx.fillStyle = '#c0703a';
+  ctx.fillRect(-12, -5, 24, 4);
+  ctx.fillRect(-12, 1, 24, 4);
+  ctx.fillStyle = '#5a2d0c';
+  ctx.fillRect(-12, -15, 24, 3);
+  ctx.fillRect(-12, 12, 24, 3);
+  ctx.strokeStyle = '#5a2d0c'; ctx.lineWidth = 2;
+  ctx.strokeRect(-12, -15, 24, 30);
+  ctx.restore();
+}
+
 function draw() {
   // screen shake
   ctx.save();
@@ -808,6 +1215,10 @@ function draw() {
       ctx.fillRect(e.x - w/2, e.y - e.h/2 - 8, w * (e.hp / e.maxHp), 4);
     }
   }
+
+  // boss + βαρέλια
+  if (state.boss) { drawBoss(state.boss); drawBossHpBar(state.boss); }
+  if (state.barrels) for (const ba of state.barrels) drawBarrel(ba);
 
   // powerups
   for (const p of state.powerups) {
@@ -924,7 +1335,10 @@ function endGame() {
   setTimeout(showResultScreen, 700);
 }
 
+let _eggClicks = 0;
 function showResultScreen(won) {
+  _eggClicks = 0;   // reset το κρυφό easter-egg σε κάθε αποτέλεσμα
+  document.getElementById('resultTrophy').textContent = '👾';
   document.getElementById('resultTitle').textContent = won ? '🏆 Νίκησες όλα τα waves!' : '👾 Game Over';
   document.getElementById('resultStats').innerHTML =
     'Score: <b>' + state.score + '</b><br>' +
@@ -988,6 +1402,16 @@ function escapeHtml(s) {
 document.getElementById('startBtn').onclick = startGame;
 document.getElementById('rematchBtn').onclick = () => { renderLb(); startGame(); };
 document.getElementById('newMatchBtn').onclick = () => { if (window.InvSounds) InvSounds.marchStop(); renderLb(); showScreen('menuScreen'); };
+
+// Κρυφό easter-egg: 5 κλικ στο έμβλημα 👾 αποκαλύπτουν την ατάκα του γορίλα
+document.getElementById('resultTrophy').onclick = () => {
+  if (++_eggClicks >= 5) {
+    document.getElementById('resultTrophy').textContent = '🦍';
+    document.getElementById('resultTitle').innerHTML =
+      'YOU STINK, LOSER!<br><span style="font-size:0.5em;font-weight:400;opacity:0.85;">— Philip J. Fry, 1999</span>';
+    _eggClicks = 0;
+  }
+};
 document.getElementById('backToMenuBtn').onclick = () => { if (state) state.playing = false; if (window.InvSounds) InvSounds.marchStop(); renderLb(); showScreen('menuScreen'); };
 document.getElementById('clearLb').onclick = () => {
   if (confirm('Σίγουρα θες να καθαρίσεις το leaderboard;')) {
@@ -1018,6 +1442,21 @@ let soundOn = localStorage.getItem('invaders_sound') !== 'off';
 
 renderLb();
 requestAnimationFrame(loop);
+
+// Debug: ?boss=easy|normal|hard ξεκινά κατευθείαν στη μάχη του boss (για δοκιμή δυσκολίας)
+(function () {
+  const bp = new URLSearchParams(location.search).get('boss');
+  if (!bp) return;
+  window.addEventListener('load', () => {
+    const sel = document.getElementById('difficulty');
+    if (['easy', 'normal', 'hard'].includes(bp)) sel.value = bp;
+    startGame();
+    state.wave = BOSS_WAVE;
+    state.player.weapon = MAX_WEAPON;   // δοκιμή με το ΡΟΖ όπλο (αλλιώς δεν προλαβαίνεις)
+    buildBoss();
+    updateUI();
+  });
+})();
 </script>
 </body>
 </html>
