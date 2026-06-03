@@ -1,8 +1,10 @@
 # Source PDFs (large, not for distribution)
 Books/
 
-# Third-party audio (copyright) — game sounds are synthesized at runtime instead
-Sounds/
+# Third-party audio (copyright) — game sounds are synthesized at runtime instead.
+# Exception: BackBirds.mp3 is original/cleared, used as MathGame background music.
+Sounds/*
+!Sounds/BackBirds.mp3
 
 # Build artifacts / archives
 *.zip
