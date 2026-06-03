@@ -369,17 +369,78 @@ function bossDefeated() {
   setTimeout(() => { recordScore(); showResultScreen(true); }, 1800);
 }
 
-function bossThrowBarrel() {
+// ρίχνει ΕΝΑ βαρέλι με στόχο targetX (το vx «σημαδεύει» εκεί) και βαρύτητα grav
+function spawnBarrel(targetX, grav) {
   const bo = state.boss;
   const sx = Math.max(20, Math.min(W - 20, bo.x));   // αν είναι εκτός οθόνης, ρίξε από την άκρη
-  const bias = Math.max(-4, Math.min(4, (state.player.x - sx) / 50));
+  const spawnX = sx + 28;
+  const bias = Math.max(-4, Math.min(4, (targetX - spawnX) / 50));
   state.barrels.push({
-    x: sx + 28, y: bo.y - 18,
-    vx: bias + (Math.random() - 0.5) * 1.6,
+    x: spawnX, y: bo.y - 18,
+    vx: bias + (Math.random() - 0.5) * 0.8,
     vy: -2 - Math.random() * 1.4,
-    rot: 0, spin: (Math.random() - 0.5) * 0.3, s: 2.3
+    rot: 0, spin: (Math.random() - 0.5) * 0.3, s: 2.3,
+    g: grav
+  });
+}
+
+// παράμετροι ανά στάδιο (1→4, καθώς πέφτει η ζωή στα τέταρτα):
+//  1: ένα-ένα | 2: ένα-ένα λίγο πιο γρήγορα | 3: δυο-δυο | 4: δυο-δυο λίγο πιο γρήγορα
+function bossStageParams() {
+  const stage = 4 - state.boss.quartersLeft;         // 1,2,3,4
+  switch (stage) {
+    case 1:  return { count: 1, interval: [85, 35], grav: 0.19 };
+    case 2:  return { count: 1, interval: [60, 25], grav: 0.24 };
+    case 3:  return { count: 2, interval: [80, 35], grav: 0.19 };
+    default: return { count: 2, interval: [58, 22], grav: 0.24 };
+  }
+}
+
+// ρίχνει βολή: ένα «εκεί που είσαι» κι ένα «εκεί που θα πας» ώστε να μένει
+// μόνο μία πλευρά διαφυγής. Στα μονά στάδια εναλλάσσει τους δύο στόχους.
+let _aimToggle = false;
+function bossVolley(count, grav) {
+  const p = state.player;
+  const lead = 95;
+  let predicted = (Math.abs(p.vx || 0) > 0.6)
+    ? p.x + Math.sign(p.vx) * lead                    // εκεί που κινείται
+    : p.x + (Math.random() < 0.5 ? -lead : lead);     // ακίνητος → κλείσε τη μία πλευρά
+  predicted = Math.max(20, Math.min(W - 20, predicted));
+  if (count >= 2) {
+    spawnBarrel(p.x, grav);                            // εκεί που είσαι
+    spawnBarrel(predicted, grav);                      // εκεί που θα πας
+  } else {
+    _aimToggle = !_aimToggle;
+    spawnBarrel(_aimToggle ? p.x : predicted, grav);
+  }
+  if (window.InvSounds) InvSounds.shoot();
+}
+
+// μονό βαρέλι σημαδεμένο στον παίκτη — χρησιμοποιείται όσο ο γορίλας πετάει απέναντι
+function bossThrowBarrel() {
+  spawnBarrel(state.player.x, 0.19);
+  if (window.InvSounds) InvSounds.shoot();
+}
+
+// ΣΚΑΛΑ (μόνο τελευταίο στάδιο): δύο βαρέλια κλιμακωτά που «σαρώνουν» πλάγια.
+// Πέφτουν ένα-ένα με χρονική απόσταση ώστε τα σημεία πτώσης να περπατούν ~4px/frame
+// (κάτω από την ταχύτητα του παίκτη 6px/frame) και να μένει ανοιχτή η αντίθετη άκρη.
+function bossStaircase(dir) {
+  const dx = 90, n = 2;                     // μέχρι 2 κουτιά — μένει πλατιά άκρη ανοιχτή
+  const x0 = dir > 0 ? 150 : (W - 150);    // ξεκινά πιο μέσα, αφήνει καθαρή διαφυγή
+  state.boss.stairQ = { i: 0, n, t: 0, dt: 22, dir, x0, dx, grav: 0.24 };
+  bossStairStep();                          // το πρώτο σκαλί αμέσως
+}
+function bossStairStep() {
+  const q = state.boss.stairQ; if (!q) return;
+  const x = Math.max(30, Math.min(W - 30, q.x0 + q.dir * q.i * q.dx));
+  state.barrels.push({
+    x, y: -20, vx: 0, vy: 2.0,
+    rot: Math.random() * Math.PI, spin: (Math.random() - 0.5) * 0.3, s: 2.3, g: q.grav
   });
   if (window.InvSounds) InvSounds.shoot();
+  q.i++;
+  if (q.i >= q.n) state.boss.stairQ = null; else q.t = q.dt;
 }
 
 // Όταν γυρίζει απέναντι ρίχνει ΟΛΑ ΜΑΖΙ μια σειρά βαρέλια — ο παίκτης πρέπει
@@ -458,6 +519,7 @@ function updateBoss() {
   const bo = state.boss;
   if (!bo) return;
   bo.bob += 0.05;
+  if (bo.stairQ && --bo.stairQ.t <= 0) bossStairStep();   // επόμενο σκαλί της σκάλας
 
   if (bo.phase === 'flying') {
     const f = bo.fly;
@@ -485,7 +547,18 @@ function updateBoss() {
   } else {                                  // idle: ακίνητος (μόνο bob), πετάει βαρέλια
     bo.x = bo.homeX;
     bo.y = bo.homeY + Math.sin(bo.bob) * 5;
-    if (--bo.throwT <= 0) { bossThrowBarrel(); bo.throwT = 55 + Math.random() * 45; }
+    if (--bo.throwT <= 0) {
+      const st = bossStageParams();
+      const stage = 4 - bo.quartersLeft;
+      bo.volleyCount = (bo.volleyCount || 0) + 1;
+      if (stage === 4 && bo.volleyCount % 3 === 0) {       // κάθε 3η βολή: η ΣΚΑΛΑ
+        bossStaircase((bo.volleyCount / 3) % 2 === 0 ? 1 : -1);
+        bo.throwT = 100 + Math.random() * 25;               // ανάσα μετά τη σκάλα
+      } else {
+        bossVolley(st.count, st.grav);
+        bo.throwT = st.interval[0] + Math.random() * st.interval[1];
+      }
+    }
   }
 
   // βλήματα παίκτη χτυπούν το UFO (μόνο όταν είναι εντός οθόνης)
@@ -509,12 +582,13 @@ function updateBoss() {
 
 function updateBarrels() {
   if (!state.barrels || !state.barrels.length) return;
+  const fm = state.diff === 'easy' ? 0.78 : 1;     // στο εύκολο τα βαρέλια πέφτουν πιο αργά
   for (let i = state.barrels.length - 1; i >= 0; i--) {
     const ba = state.barrels[i];
     const s = ba.s || 1;
     const hw = 12 * s;                              // μισό πλάτος βαρελιού
-    ba.vy += 0.19;                 // βαρύτητα (πέφτουν πιο γρήγορα)
-    ba.x += ba.vx; ba.y += ba.vy; ba.rot += ba.spin;
+    ba.vy += (ba.g || 0.19) * fm;  // βαρύτητα ανά στάδιο (πιο γρήγορα στα προχωρημένα)
+    ba.x += ba.vx; ba.y += ba.vy * fm; ba.rot += ba.spin;
     if (ba.x < hw + 4) { ba.x = hw + 4; ba.vx = Math.abs(ba.vx); }     // αναπήδηση στα τοιχώματα
     if (ba.x > W - hw - 4) { ba.x = W - hw - 4; ba.vx = -Math.abs(ba.vx); }
 
@@ -685,12 +759,14 @@ function update() {
 
   // player
   const speed = 6;
+  const _px = state.player.x;
   if (keys.ArrowLeft || keys.a) state.player.x -= speed;
   if (keys.ArrowRight || keys.d) state.player.x += speed;
   if (keys.ArrowUp || keys.w) state.player.y -= speed;
   if (keys.ArrowDown || keys.s) state.player.y += speed;
   state.player.x = Math.max(20, Math.min(W - 20, state.player.x));
   state.player.y = Math.max(40, Math.min(H - 30, state.player.y));
+  state.player.vx = state.player.x - _px;   // για το «εκεί που θα πας» των βαρελιών
   if (keys[' ']) fire();
   if (state.player.iframes > 0) state.player.iframes--;
 
