@@ -346,7 +346,7 @@ canvas.addEventListener('click', tapStart);
 // Tapping the playfield still launches/restarts the ball (canvas click above).
 let _joyBk = null;
 if (window.TouchControls && TouchControls.isTouch) {
-  _joyBk = TouchControls.joystick({ anchorTo: canvas, corner: 'bl', edgeX: true, insetX: 16, insetY: 18, size: 130 });
+  _joyBk = TouchControls.joystick({ anchorTo: canvas, corner: 'bl', edgeX: true, insetX: 16, insetY: 18, size: 170 });
   _joyBk.show();
 }
 function pollBreakoutJoy() {

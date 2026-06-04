@@ -225,9 +225,6 @@
     <b>← →</b> κίνηση &nbsp;|&nbsp; <b>↓</b> soft drop &nbsp;|&nbsp; <b>↑ ή X</b> περιστροφή &nbsp;|&nbsp;
     <b>Space</b> hard drop &nbsp;|&nbsp; <b>C</b> hold &nbsp;|&nbsp; <b>P</b> pause
   </div>
-  <div class="button-row">
-    <button class="secondary" id="backToMenuBtn">← Πίσω στο Μενού</button>
-  </div>
 </div>
 
 <!-- ΟΘΟΝΗ GAME OVER -->
@@ -609,6 +606,8 @@ function showResultScreen() {
 function showScreen(id) {
   for (const el of document.querySelectorAll('.screen')) el.classList.remove('active');
   document.getElementById(id).classList.add('active');
+  if (_touchPad) (id === 'gameScreen' ? _touchPad.show() : _touchPad.hide());
+  if (_joyT) (id === 'gameScreen' ? _joyT.show() : _joyT.hide());
 }
 
 // keyboard
@@ -641,65 +640,46 @@ document.addEventListener('keyup', e => {
   else if (e.key === 'ArrowDown') delete heldKeys.down;
 });
 
-// Touch: drag left/right to shift, drag down to soft-drop, tap to rotate, button to hold.
+// Touch: αναλογικό joystick (κάτω-αριστερά) — αριστερά/δεξιά μετακίνηση, κάτω
+// soft drop. Κουμπιά κάτω-δεξιά: ↻ περιστροφή & ⬇ hard drop. Tap στο Hold = hold.
+let _joyT = null, _touchPad = null;
+const playable = () => state && state.playing && !state.paused;
 if (window.TouchControls && TouchControls.isTouch) {
-  const STEP_X = 24, STEP_Y = 30;
-  let active = false, lx = 0, ly = 0, accX = 0, accY = 0, moved = 0, emaX = 0, emaY = 0;
-  const bpt = t => {
-    const r = boardCanvas.getBoundingClientRect();
-    return {
-      x: (t.clientX - r.left) * (boardCanvas.width / r.width),
-      y: (t.clientY - r.top) * (boardCanvas.height / r.height)
-    };
-  };
-  const playable = () => state && state.playing && !state.paused;
-  boardCanvas.addEventListener('touchstart', e => {
-    e.preventDefault();
-    if (!playable()) return;
-    active = true; accX = accY = moved = emaX = emaY = 0;
-    const p = bpt(e.touches[0]); lx = p.x; ly = p.y;
-  }, { passive: false });
-  boardCanvas.addEventListener('touchmove', e => {
-    if (!active) return; e.preventDefault();
-    if (!playable()) return;
-    const p = bpt(e.touches[0]);
-    const dx = p.x - lx, dy = p.y - ly;
-    accX += dx; accY += dy; moved += Math.abs(dx) + Math.abs(dy);
-    lx = p.x; ly = p.y;
-    // Decide the gesture's dominant axis from smoothed per-move speed so a
-    // downward pull with a little sideways wobble registers as drop-only.
-    emaX = emaX * 0.6 + Math.abs(dx) * 0.4;
-    emaY = emaY * 0.6 + Math.abs(dy) * 0.4;
-    if (emaY >= emaX) {                 // vertical gesture → soft drop only
-      accX = 0;
-      while (accY >= STEP_Y) { softDrop(); accY -= STEP_Y; }
-      if (accY < 0) accY = 0;           // ignore upward travel
-    } else {                            // horizontal gesture → shift only
-      accY = 0;
-      while (accX >= STEP_X) { move(1); accX -= STEP_X; }
-      while (accX <= -STEP_X) { move(-1); accX += STEP_X; }
-    }
-  }, { passive: false });
-  const endT = e => {
-    if (!active) return; e.preventDefault();
-    active = false;
-    if (moved < 12 && playable()) rotate(1); // tap = rotate
-  };
-  boardCanvas.addEventListener('touchend', endT, { passive: false });
-  boardCanvas.addEventListener('touchcancel', endT, { passive: false });
+  _joyT = TouchControls.joystick({ anchorTo: boardCanvas, corner: 'bl', edgeX: true, insetX: 16, insetY: 18, size: 170 });
+  _touchPad = TouchControls.group();
+  _touchPad.button({ label: '↻', anchorTo: boardCanvas, corner: 'br', edgeX: true, insetX: 16, insetY: 18, size: 100, bg: 'rgba(58,107,255,0.42)',
+    onDown: () => { if (playable()) rotate(1); } });
+  _touchPad.button({ label: '⬇', anchorTo: boardCanvas, corner: 'br', edgeX: true, insetX: 132, insetY: 18, size: 80, bg: 'rgba(255,149,0,0.42)',
+    onDown: () => { if (playable()) hardDrop(); } });
 
   const holdBox = document.getElementById('holdBox');
   holdBox.classList.add('tappable');
   holdBox.addEventListener('click', () => { if (playable()) hold(); });
 }
 
-// DAS repeat
+// DAS repeat (keyboard + touch joystick)
+const JOY_X = 0.42, JOY_DOWN = 0.5, JOY_DAS = 150, JOY_ARR = 60, JOY_DROP = 50;
+let joyDir = 0, joyMoveNext = 0, joyDownNext = 0;
 setInterval(() => {
   if (!state || !state.playing || state.paused) return;
   const now = Date.now();
   if (heldKeys.left && now > heldKeys.left) { move(-1); heldKeys.left = now + arrInterval; }
   if (heldKeys.right && now > heldKeys.right) { move(1); heldKeys.right = now + arrInterval; }
   if (heldKeys.down !== undefined && now > heldKeys.down + arrInterval) { softDrop(); heldKeys.down = now; }
+
+  if (_joyT) {
+    const v = _joyT.value();
+    const dir = v.x <= -JOY_X ? -1 : (v.x >= JOY_X ? 1 : 0);
+    if (dir !== joyDir) {                       // new push → step once, then wait DAS
+      joyDir = dir;
+      if (dir !== 0) { move(dir); joyMoveNext = now + JOY_DAS; }
+    } else if (dir !== 0 && now >= joyMoveNext) { // held → auto-repeat
+      move(dir); joyMoveNext = now + JOY_ARR;
+    }
+    if (v.y >= JOY_DOWN) {
+      if (now >= joyDownNext) { softDrop(); joyDownNext = now + JOY_DROP; }
+    } else { joyDownNext = 0; }
+  }
 }, 16);
 
 // leaderboard
@@ -737,7 +717,6 @@ function escapeHtml(s) {
 document.getElementById('startBtn').onclick = () => { if (window.TouchControls) TouchControls.goFullscreen(); startGame(); };
 document.getElementById('rematchBtn').onclick = () => { renderLb(); startGame(); };
 document.getElementById('newMatchBtn').onclick = () => { if (window.TetrisMusic) TetrisMusic.stop(); renderLb(); showScreen('menuScreen'); };
-document.getElementById('backToMenuBtn').onclick = () => { if (state) state.playing = false; if (window.TetrisMusic) TetrisMusic.stop(); renderLb(); showScreen('menuScreen'); };
 document.getElementById('clearLb').onclick = () => {
   if (confirm('Σίγουρα θες να καθαρίσεις το leaderboard;')) {
     localStorage.removeItem(LB_KEY); renderLb();

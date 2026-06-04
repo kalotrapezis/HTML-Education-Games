@@ -203,9 +203,6 @@
   <div class="controls">
     <b>← → ↑ ↓</b> κίνηση &nbsp;|&nbsp; <b>Space</b> πυρά &nbsp;|&nbsp; <b>B / E / L</b> laser &nbsp;|&nbsp; <b>P</b> pause
   </div>
-  <div class="button-row">
-    <button class="secondary" id="backToMenuBtn">← Πίσω στο Μενού</button>
-  </div>
 </div>
 
 <!-- GAME OVER -->
@@ -1469,7 +1466,7 @@ document.addEventListener('keyup', e => { keys[e.key] = false; });
 // «επιπλέουν» στην κάτω-δεξιά γωνία της πίστας.
 let _touchPad = null, _joy = null;
 if (window.TouchControls && TouchControls.isTouch) {
-  _joy = TouchControls.joystick({ anchorTo: canvas, corner: 'bl', edgeX: true, insetX: 16, insetY: 14, size: 132 });
+  _joy = TouchControls.joystick({ anchorTo: canvas, corner: 'bl', edgeX: true, insetX: 16, insetY: 14, size: 170 });
   _touchPad = TouchControls.group();
   _touchPad.button({ label: '🔫', anchorTo: canvas, corner: 'br', edgeX: true, insetX: 16, insetY: 14, size: 96, bg: 'rgba(20,150,60,0.42)',
     onDown: () => { keys[' '] = true; }, onUp: () => { keys[' '] = false; } });
@@ -1522,7 +1519,6 @@ document.getElementById('resultTrophy').onclick = () => {
     _eggClicks = 0;
   }
 };
-document.getElementById('backToMenuBtn').onclick = () => { if (state) state.playing = false; if (window.InvSounds) InvSounds.marchStop(); renderLb(); showScreen('menuScreen'); };
 document.getElementById('clearLb').onclick = () => {
   if (confirm('Σίγουρα θες να καθαρίσεις το leaderboard;')) {
     localStorage.removeItem(LB_KEY); renderLb();

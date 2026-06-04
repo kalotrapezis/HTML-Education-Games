@@ -337,8 +337,8 @@ document.addEventListener('keyup', e => { keys[e.key.toLowerCase()] = false; });
 // 1-player → left joystick (P1). 2-player → left (P1) + right (P2).
 let _joyL = null, _joyR = null;
 if (window.TouchControls && TouchControls.isTouch) {
-  _joyL = TouchControls.joystick({ anchorTo: canvas, corner: 'bl', edgeX: true, insetX: 16, insetY: 18, size: 130 });
-  _joyR = TouchControls.joystick({ anchorTo: canvas, corner: 'br', edgeX: true, insetX: 16, insetY: 18, size: 130 });
+  _joyL = TouchControls.joystick({ anchorTo: canvas, corner: 'bl', edgeX: true, insetX: 16, insetY: 18, size: 170 });
+  _joyR = TouchControls.joystick({ anchorTo: canvas, corner: 'br', edgeX: true, insetX: 16, insetY: 18, size: 170 });
 }
 function pollPongJoy() {
   if (!_joyL) return;

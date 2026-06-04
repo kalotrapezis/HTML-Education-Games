@@ -190,7 +190,7 @@ if (window.TouchControls) TouchControls.requireLandscape();
     cv.addEventListener('touchcancel', endTouch, { passive: false });
 
     // Single-player: one joystick, bottom-left. Left/right move, up jumps.
-    _joyB = TouchControls.joystick({ anchorTo: cv, corner: 'bl', edgeX: true, insetX: 16, insetY: 18, size: 130 });
+    _joyB = TouchControls.joystick({ anchorTo: cv, corner: 'bl', edgeX: true, insetX: 16, insetY: 18, size: 170 });
   }
   // Map the single-player joystick onto P1's move + jump keys each frame.
   function pollJoyB() {
