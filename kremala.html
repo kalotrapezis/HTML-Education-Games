@@ -3,6 +3,7 @@
 <head>
 <link rel="icon" type="image/svg+xml" href="favicon.svg">
 <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Κρεμάλα</title>
 <style>
   * { box-sizing: border-box; margin: 0; padding: 0; }
@@ -21,12 +22,12 @@
   h1 { font-size: 44px; margin: 10px 0 6px; }
   .info { opacity: 0.85; margin-bottom: 16px; font-size: 16px; text-align: center; max-width: 700px; }
 
-  .screen { display: none; flex-direction: column; align-items: center; }
+  .screen { display: none; flex-direction: column; align-items: center; width: 100%; max-width: 640px; }
   .screen.active { display: flex; }
 
   .menu-card {
-    background: rgba(0,0,0,0.4); padding: 28px 36px; border-radius: 16px;
-    min-width: 440px; max-width: 600px;
+    background: rgba(0,0,0,0.4); padding: 28px 28px; border-radius: 16px;
+    min-width: 0; max-width: 600px; width: 100%;
     display: flex; flex-direction: column; gap: 16px; align-items: stretch;
   }
   .menu-card h2 { color: #ffb347; font-size: 24px; text-align: center; }
@@ -58,7 +59,7 @@
   #step1 { display: flex; flex-direction: column; }
   #step1 .start-btn { margin-top: 16px; }
 
-  .level-cards { display: grid; grid-template-columns: repeat(2, 1fr); gap: 12px; }
+  .level-cards { display: grid; grid-template-columns: repeat(auto-fit, minmax(140px, 1fr)); gap: 12px; }
   .level-card {
     background: rgba(0,0,0,0.3); padding: 14px; border-radius: 10px;
     border: 2px solid transparent; cursor: pointer; text-align: center;
@@ -149,7 +150,7 @@
   .result-card {
     background: rgba(0,0,0,0.45); padding: 36px 44px; border-radius: 18px;
     display: flex; flex-direction: column; align-items: center; gap: 14px;
-    min-width: 420px;
+    min-width: 0; max-width: 460px; width: 100%;
   }
   .result-card .emoji { font-size: 64px; }
   .result-card h2 { font-size: 30px; text-align: center; }
@@ -164,7 +165,7 @@
 
   .leaderboard {
     margin-top: 24px; background: rgba(0,0,0,0.35); padding: 18px 24px;
-    border-radius: 12px; min-width: 500px; max-width: 700px; width: 100%;
+    border-radius: 12px; min-width: 0; max-width: 700px; width: 100%; overflow-x: auto;
   }
   .leaderboard h2 { font-size: 22px; margin-bottom: 12px; text-align: center; color: #ffb347; }
   .leaderboard table { width: 100%; border-collapse: collapse; font-size: 15px; }

@@ -37,20 +37,21 @@
   select:focus { outline: none; border-color: #ff9500; }
   select option { background: #1e3c72; color: #fff; }
 
-  .lang-cards { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+  .lang-cards { display: grid; grid-template-columns: repeat(auto-fit, minmax(130px, 1fr)); gap: 10px; }
   .lang-card { background: rgba(0,0,0,0.3); padding: 12px 8px; border-radius: 10px; border: 2px solid transparent; cursor: pointer; text-align: center; font-size: 16px; font-weight: bold; transition: all 0.15s; }
   .lang-card:hover { border-color: #ffb347; }
   .lang-card.selected { border-color: #ffb347; background: rgba(255,179,71,0.15); }
-  .pack-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; }
+  .pack-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(120px, 1fr)); gap: 8px; }
   .pack-head { grid-column: 1 / -1; color: #ffb347; font-size: 13px; font-weight: bold; opacity: 0.9; margin: 6px 0 0; padding-left: 2px; }
-  .pack-card { display: flex; align-items: center; gap: 8px; background: rgba(0,0,0,0.3); padding: 10px 10px; border-radius: 10px; border: 2px solid transparent; cursor: pointer; transition: all 0.15s; }
+  .pack-card { display: flex; align-items: center; gap: 8px; min-width: 0; background: rgba(0,0,0,0.3); padding: 10px 10px; border-radius: 10px; border: 2px solid transparent; cursor: pointer; transition: all 0.15s; }
   .pack-card:hover { border-color: #ffb347; }
   .pack-card.selected { border-color: #ffb347; background: rgba(255,179,71,0.15); }
   .pack-card .ic { font-size: 22px; flex: none; }
-  .pack-card .nm { font-size: 14px; line-height: 1.2; }
+  .pack-card > span { min-width: 0; }
+  .pack-card .nm { font-size: 14px; line-height: 1.2; overflow-wrap: anywhere; }
   .pack-card .cnt { font-size: 11px; opacity: 0.7; }
   .pack-card.all { grid-column: 1 / -1; justify-content: center; font-weight: bold; }
-  .mode-cards { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+  .mode-cards { display: grid; grid-template-columns: repeat(auto-fit, minmax(130px, 1fr)); gap: 10px; }
   .mode-card { background: rgba(0,0,0,0.3); padding: 12px 10px; border-radius: 10px; border: 2px solid transparent; cursor: pointer; transition: all 0.15s; }
   .mode-card:hover { border-color: #ffb347; }
   .mode-card.selected { border-color: #ffb347; background: rgba(255,179,71,0.15); }

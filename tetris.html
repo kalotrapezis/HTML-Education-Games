@@ -3,6 +3,7 @@
 <head>
 <link rel="icon" type="image/svg+xml" href="favicon.svg">
 <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Tetris</title>
 <style>
   * { box-sizing: border-box; margin: 0; padding: 0; }
@@ -21,12 +22,12 @@
   h1 { font-size: 44px; margin: 10px 0 6px; }
   .info { opacity: 0.85; margin-bottom: 16px; font-size: 16px; text-align: center; }
 
-  .screen { display: none; flex-direction: column; align-items: center; }
+  .screen { display: none; flex-direction: column; align-items: center; width: 100%; max-width: 760px; }
   .screen.active { display: flex; }
 
   .menu-card {
     background: rgba(0,0,0,0.4); padding: 32px 40px; border-radius: 16px;
-    min-width: 420px; display: flex; flex-direction: column; gap: 18px; align-items: center;
+    min-width: 0; max-width: 560px; width: 100%; display: flex; flex-direction: column; gap: 18px; align-items: center;
   }
   .menu-card h2 { color: #ffb347; font-size: 24px; }
   .menu-card .field { display: flex; flex-direction: column; gap: 6px; width: 100%; }
@@ -81,7 +82,7 @@
   .result-card {
     background: rgba(0,0,0,0.45); padding: 36px 44px; border-radius: 18px;
     display: flex; flex-direction: column; align-items: center; gap: 14px;
-    min-width: 420px;
+    min-width: 0; max-width: 460px; width: 100%;
   }
   .result-card .trophy { font-size: 64px; }
   .result-card h2 { font-size: 30px; color: #ffe066; text-align: center; }
@@ -90,7 +91,7 @@
 
   .leaderboard {
     margin-top: 24px; background: rgba(0,0,0,0.35); padding: 18px 24px;
-    border-radius: 12px; min-width: 460px; max-width: 600px; width: 100%;
+    border-radius: 12px; min-width: 0; max-width: 600px; width: 100%; overflow-x: auto;
   }
   .leaderboard h2 { font-size: 22px; margin-bottom: 12px; text-align: center; color: #ffb347; }
   .leaderboard table { width: 100%; border-collapse: collapse; font-size: 15px; }
@@ -104,6 +105,39 @@
   .leaderboard .clear-btn {
     margin-top: 10px; padding: 6px 14px; font-size: 13px;
     background: rgba(255,255,255,0.1); box-shadow: none; color: #fff;
+  }
+
+  /* σε αφή ολόκληρο το κουτί Hold γίνεται κουμπί (το ενεργοποιεί η JS) */
+  #holdBox.tappable {
+    cursor: pointer; border: 2px solid rgba(58,107,255,0.7);
+    -webkit-tap-highlight-color: transparent; user-select: none;
+  }
+  #holdBox.tappable:active { background: rgba(58,107,255,0.3); transform: translateY(1px); }
+
+  /* Κινητό: όλα τα πάνελ (Next/Hold/Score) χωράνε γύρω από την πίστα,
+     που μικραίνει ώστε να ταιριάζει στο ύψος της οθόνης. */
+  @media (max-width: 560px) {
+    body { padding: 8px; }
+    h1 { font-size: 30px; margin: 4px 0; }
+    #gameScreen .game-layout {
+      flex-direction: column; align-items: center; gap: 10px; width: 100%;
+    }
+    #gameScreen .game-layout .side {
+      flex-direction: row; min-width: 0; width: 100%;
+      justify-content: center; flex-wrap: wrap; gap: 10px;
+    }
+    #gameScreen .panel {
+      padding: 6px 12px; display: flex; flex-direction: column; align-items: center;
+    }
+    #gameScreen .panel .label { font-size: 10px; margin-bottom: 2px; }
+    #gameScreen .panel .value { font-size: 18px; }
+    #gameScreen .panel.preview canvas { width: 52px; height: 52px; }
+    #gameScreen canvas.board {
+      width: auto; height: auto;
+      max-width: 100%;
+      max-height: calc(100vh - 310px);
+    }
+    #gameScreen .controls { display: none; }
   }
 </style>
 </head>
@@ -180,7 +214,7 @@
         <div class="label">Επόμενο</div>
         <canvas id="next" width="120" height="120"></canvas>
       </div>
-      <div class="panel preview">
+      <div class="panel preview" id="holdBox">
         <div class="label">Hold (C)</div>
         <canvas id="hold" width="120" height="120"></canvas>
       </div>
@@ -210,6 +244,7 @@
 </div>
 
 <script src="tetris-music.js"></script>
+<script src="touch-controls.js"></script>
 <script>
 const COLS = 10, ROWS = 20, CELL = 30;
 const boardCanvas = document.getElementById('board');
@@ -606,6 +641,49 @@ document.addEventListener('keyup', e => {
   else if (e.key === 'ArrowDown') delete heldKeys.down;
 });
 
+// Touch: drag left/right to shift, drag down to soft-drop, tap to rotate, button to hold.
+if (window.TouchControls && TouchControls.isTouch) {
+  const STEP_X = 24, STEP_Y = 30;
+  let active = false, lx = 0, ly = 0, accX = 0, accY = 0, moved = 0;
+  const bpt = t => {
+    const r = boardCanvas.getBoundingClientRect();
+    return {
+      x: (t.clientX - r.left) * (boardCanvas.width / r.width),
+      y: (t.clientY - r.top) * (boardCanvas.height / r.height)
+    };
+  };
+  const playable = () => state && state.playing && !state.paused;
+  boardCanvas.addEventListener('touchstart', e => {
+    e.preventDefault();
+    if (!playable()) return;
+    active = true; accX = accY = moved = 0;
+    const p = bpt(e.touches[0]); lx = p.x; ly = p.y;
+  }, { passive: false });
+  boardCanvas.addEventListener('touchmove', e => {
+    if (!active) return; e.preventDefault();
+    if (!playable()) return;
+    const p = bpt(e.touches[0]);
+    const dx = p.x - lx, dy = p.y - ly;
+    accX += dx; accY += dy; moved += Math.abs(dx) + Math.abs(dy);
+    lx = p.x; ly = p.y;
+    while (accX >= STEP_X) { move(1); accX -= STEP_X; }
+    while (accX <= -STEP_X) { move(-1); accX += STEP_X; }
+    while (accY >= STEP_Y) { softDrop(); accY -= STEP_Y; }
+    if (accY < 0) accY = 0; // ignore upward travel
+  }, { passive: false });
+  const endT = e => {
+    if (!active) return; e.preventDefault();
+    active = false;
+    if (moved < 12 && playable()) rotate(1); // tap = rotate
+  };
+  boardCanvas.addEventListener('touchend', endT, { passive: false });
+  boardCanvas.addEventListener('touchcancel', endT, { passive: false });
+
+  const holdBox = document.getElementById('holdBox');
+  holdBox.classList.add('tappable');
+  holdBox.addEventListener('click', () => { if (playable()) hold(); });
+}
+
 // DAS repeat
 setInterval(() => {
   if (!state || !state.playing || state.paused) return;
@@ -647,7 +725,7 @@ function escapeHtml(s) {
   return s.replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 }
 
-document.getElementById('startBtn').onclick = startGame;
+document.getElementById('startBtn').onclick = () => { if (window.TouchControls) TouchControls.goFullscreen(); startGame(); };
 document.getElementById('rematchBtn').onclick = () => { renderLb(); startGame(); };
 document.getElementById('newMatchBtn').onclick = () => { if (window.TetrisMusic) TetrisMusic.stop(); renderLb(); showScreen('menuScreen'); };
 document.getElementById('backToMenuBtn').onclick = () => { if (state) state.playing = false; if (window.TetrisMusic) TetrisMusic.stop(); renderLb(); showScreen('menuScreen'); };

@@ -3,6 +3,7 @@
 <head>
 <link rel="icon" type="image/svg+xml" href="favicon.svg">
 <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Soccer Heads</title>
 <style>
   * { box-sizing: border-box; margin: 0; padding: 0; user-select: none; }
@@ -110,7 +111,9 @@
   <button id="startBtn">Έναρξη</button>
 </div>
 
+<script src="touch-controls.js"></script>
 <script>
+if (window.TouchControls) TouchControls.requireLandscape();
 const C = document.getElementById('c'), X = C.getContext('2d');
 const W = 900, H = 500;
 const GROUND = 440;
@@ -608,6 +611,28 @@ const p1 = new Player(200, '#ff5252', {left:'KeyA', right:'KeyD', jump:'KeyW', k
 const p2 = new Player(W-200, '#4fc3f7', {left:'ArrowLeft', right:'ArrowRight', jump:'ArrowUp', kick:'KeyM'}, 'R');
 const players = [p1, p2];
 const ball = new Ball();
+
+// On-screen touch controls: P1 pad bottom-left, P2 pad bottom-right (2p only).
+let _padL = null, _padR = null;
+if (window.TouchControls && TouchControls.isTouch) {
+  const hold = code => ({ onDown: () => { KEYS[code] = true; }, onUp: () => { KEYS[code] = false; } });
+  _padL = TouchControls.group();
+  _padL.button(Object.assign({ label: '◀', left: 20,  bottom: 30 },  hold('KeyA')));
+  _padL.button(Object.assign({ label: '▶', left: 104, bottom: 30 },  hold('KeyD')));
+  _padL.button(Object.assign({ label: '🦵', left: 20,  bottom: 114, bg: 'rgba(180,60,20,0.55)' }, hold('KeyG')));
+  _padL.button(Object.assign({ label: '⬆', left: 104, bottom: 114, bg: 'rgba(40,120,60,0.55)' }, hold('KeyW')));
+  _padR = TouchControls.group();
+  _padR.button(Object.assign({ label: '◀', right: 104, bottom: 30 },  hold('ArrowLeft')));
+  _padR.button(Object.assign({ label: '▶', right: 20,  bottom: 30 },  hold('ArrowRight')));
+  _padR.button(Object.assign({ label: '🦵', right: 104, bottom: 114, bg: 'rgba(180,60,20,0.55)' }, hold('KeyM')));
+  _padR.button(Object.assign({ label: '⬆', right: 20,  bottom: 114, bg: 'rgba(40,120,60,0.55)' }, hold('ArrowUp')));
+}
+function showTouchPads() {
+  if (!_padL) return;
+  _padL.show();
+  (mode === '2p' ? _padR.show() : _padR.hide());
+}
+function hideTouchPads() { if (_padL) { _padL.hide(); _padR.hide(); } }
 let powerups = [];
 let score = [0, 0];
 let goalFlash = 0;
@@ -669,6 +694,7 @@ startBtn.onclick = () => {
   overlay.classList.add('hidden');
   resetRound(true);
   running = true;
+  showTouchPads();
 };
 
 function formatTime(ms){
@@ -713,6 +739,7 @@ function afterGoal(){
 
 function endMatch(){
   running = false;
+  hideTouchPads();
   if(score[0] > score[1]) winner = 1;
   else if(score[1] > score[0]) winner = 2;
   else winner = 0;
