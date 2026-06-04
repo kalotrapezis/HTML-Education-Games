@@ -96,6 +96,25 @@
   button:active { transform: translateY(2px); box-shadow: 0 2px 0 #c46c00; }
   .back { position: absolute; top: 20px; left: 20px; }
   .back a { color: #fff; text-decoration: none; background: rgba(0,0,0,0.3); padding: 8px 14px; border-radius: 8px; }
+
+  /* Touch devices: trim the chrome and let the canvas scale to the available
+     screen height (like Invaders) instead of only fitting by width. */
+  @media (pointer: coarse) {
+    body { padding: 8px; }
+    .back { display: none; }
+    body > h1 { display: none; }
+    .info, .legend, .controls { display: none; }
+    #resetBtn {
+      position: fixed; top: 8px; left: 8px; margin: 0; z-index: 30;
+      padding: 6px 14px; font-size: 14px;
+    }
+    canvas {
+      max-width: 98vw;
+      max-height: calc(100dvh - 70px);
+      width: auto;
+      height: auto;
+    }
+  }
 </style>
 </head>
 <body>
@@ -323,14 +342,22 @@ function tapStart() {
 // Tap / click on the playfield starts or restarts (works alongside Space).
 canvas.addEventListener('click', tapStart);
 
-if (window.TouchControls) {
-  TouchControls.attachDrag(canvas, {
-    onMove: x => { state.paddleX = Math.max(0, Math.min(W - PADDLE_W, x - PADDLE_W/2)); },
-    onTap: tapStart
-  });
+// Touch: one horizontal joystick in the left margin moves the paddle.
+// Tapping the playfield still launches/restarts the ball (canvas click above).
+let _joyBk = null;
+if (window.TouchControls && TouchControls.isTouch) {
+  _joyBk = TouchControls.joystick({ anchorTo: canvas, corner: 'bl', edgeX: true, insetX: 16, insetY: 18, size: 130 });
+  _joyBk.show();
+}
+function pollBreakoutJoy() {
+  if (!_joyBk) return;
+  const v = _joyBk.value();
+  keys['ArrowLeft'] = v.x < -0.35;
+  keys['ArrowRight'] = v.x > 0.35;
 }
 
 function update() {
+  pollBreakoutJoy();
   const speed = 8;
   if (keys['ArrowLeft']) state.paddleX -= speed;
   if (keys['ArrowRight']) state.paddleX += speed;
