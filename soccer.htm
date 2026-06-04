@@ -640,8 +640,8 @@ const ball = new Ball();
 let _joy1 = null, _joy2 = null, _kick1 = null, _kick2 = null, _kickSolo = null;
 if (window.TouchControls && TouchControls.isTouch) {
   const hold = code => ({ onDown: () => { KEYS[code] = true; }, onUp: () => { KEYS[code] = false; } });
-  _joy1 = TouchControls.joystick({ anchorTo: C, corner: 'bl', edgeX: true, insetX: 16, insetY: 18, size: 130 });
-  _joy2 = TouchControls.joystick({ anchorTo: C, corner: 'br', edgeX: true, insetX: 16, insetY: 18, size: 130 });
+  _joy1 = TouchControls.joystick({ anchorTo: C, corner: 'bl', edgeX: true, insetX: 16, insetY: 18, size: 170 });
+  _joy2 = TouchControls.joystick({ anchorTo: C, corner: 'br', edgeX: true, insetX: 16, insetY: 18, size: 170 });
   _kickSolo = TouchControls.group();
   _kickSolo.button(Object.assign({ label: '🦵', anchorTo: C, corner: 'br', edgeX: true, insetX: 16, insetY: 18, size: 92, bg: 'rgba(180,60,20,0.45)' }, hold('KeyG')));
   _kick1 = TouchControls.group();

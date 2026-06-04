@@ -263,7 +263,11 @@
      the player). Anchor it to the game canvas via opts.anchorTo. */
   function joystick(o) {
     o = o || {};
-    var R = o.size || 132, KR = o.knobSize || 58, maxR = (R - KR) / 2;
+    var R = o.size || 170, KR = o.knobSize || Math.round(R * 0.46), maxR = (R - KR) / 2;
+    // Dead zone: ignore small thumb wobble near the center so the player doesn't
+    // need to hold a finger perfectly still. Output is rescaled past the dead
+    // zone so motion still ramps smoothly from 0 at the edge of it.
+    var dead = o.deadzone != null ? o.deadzone : 0.28;
     var base = document.createElement('div'), knob = document.createElement('div');
     var bs = base.style;
     bs.position = 'fixed'; bs.zIndex = '300'; bs.display = 'none';
@@ -315,7 +319,12 @@
 
     return {
       el: base,
-      value: function () { return vec; },
+      value: function () {
+        var m = Math.hypot(vec.x, vec.y);
+        if (m <= dead) return { x: 0, y: 0 };
+        var f = ((m - dead) / (1 - dead)) / m;
+        return { x: vec.x * f, y: vec.y * f };
+      },
       setCenterY: function (b) { anchorOpts.centerY = b; if (place && base.style.display !== 'none') place(); },
       show: function () { if (isTouch) { base.style.display = 'block'; if (place) place(); } },
       hide: function () { base.style.display = 'none'; id = null; vec.x = vec.y = 0; setKnob(0, 0); }
