@@ -41,6 +41,23 @@
     background: #1e3c72; color: #fff;
   }
 
+  .step-head { font-size: 16px; font-weight: bold; margin-bottom: 10px; display: flex; align-items: center; gap: 8px; }
+  .step-num {
+    display: inline-flex; align-items: center; justify-content: center;
+    width: 26px; height: 26px; border-radius: 50%; background: #ff9500;
+    color: #fff; font-size: 15px; font-weight: bold; flex: 0 0 auto;
+  }
+  .step-level { color: #ffb347; font-weight: bold; }
+  .breadcrumb { font-size: 16px; font-weight: bold; margin-bottom: 10px; display: flex; align-items: center; gap: 8px; flex-wrap: wrap; }
+  .breadcrumb .crumb-sep { color: #ffb347; }
+  .breadcrumb .crumb-link { color: #ffb347; cursor: pointer; }
+  .breadcrumb .crumb-link:hover { text-decoration: underline; }
+  .breadcrumb .crumb-current { opacity: 0.95; }
+  .wizard-nav { display: flex; gap: 12px; justify-content: center; margin-top: 16px; }
+  .wizard-nav .start-btn { align-self: auto; }
+  #step1 { display: flex; flex-direction: column; }
+  #step1 .start-btn { margin-top: 16px; }
+
   .level-cards { display: grid; grid-template-columns: repeat(2, 1fr); gap: 12px; }
   .level-card {
     background: rgba(0,0,0,0.3); padding: 14px; border-radius: 10px;
@@ -178,15 +195,26 @@
       <label>Όνομα παίχτη</label>
       <input id="playerName" maxlength="14" value="Παίχτης" style="margin-top:6px;">
     </div>
-    <div>
-      <label style="margin-bottom:6px; display:block;">Διάλεξε επίπεδο</label>
+    <!-- Βήμα 1: Επίπεδο -->
+    <div id="step1">
+      <div class="step-head"><span class="step-num">1</span> Διάλεξε επίπεδο</div>
       <div class="level-cards" id="levelCards"></div>
+      <button class="start-btn" id="toStep2Btn">Επόμενο →</button>
     </div>
-    <div>
-      <label>Κατηγορία</label>
-      <select id="categorySelect" style="margin-top:6px;"></select>
+
+    <!-- Βήμα 2: Θέμα -->
+    <div id="step2" style="display:none;">
+      <div class="breadcrumb">
+        <span class="crumb crumb-link" id="crumbLevel"></span>
+        <span class="crumb-sep">›</span>
+        <span class="crumb crumb-current">Διάλεξε θέμα</span>
+      </div>
+      <div class="level-cards" id="categoryCards"></div>
+      <div class="wizard-nav">
+        <button class="secondary" id="backToStep1Btn">← Πίσω</button>
+        <button class="start-btn" id="startBtn">▶ Παίξε</button>
+      </div>
     </div>
-    <button class="start-btn" id="startBtn">▶ Έναρξη</button>
   </div>
 
   <div class="leaderboard">
@@ -330,20 +358,36 @@ function buildLevelCards() {
       selectedLevel = key;
       selectedCategory = 'all';
       buildLevelCards();
-      buildCategorySelect();
     };
     grid.appendChild(card);
   }
 }
 
-function buildCategorySelect() {
-  const sel = document.getElementById('categorySelect');
+function buildCategoryCards() {
+  const grid = document.getElementById('categoryCards');
   const lvl = LEVELS[selectedLevel];
-  const cats = Object.keys(lvl.categories);
-  sel.innerHTML = '<option value="all">Όλες οι κατηγορίες (τυχαία)</option>' +
-    cats.map(c => `<option value="${c}">${c} (${lvl.categories[c].length} λέξεις)</option>`).join('');
-  sel.value = selectedCategory;
-  sel.onchange = () => { selectedCategory = sel.value; };
+  document.getElementById('crumbLevel').textContent = lvl.title;
+  grid.innerHTML = '';
+
+  const total = Object.values(lvl.categories).reduce((n, w) => n + w.length, 0);
+  const makeCard = (key, title, desc) => {
+    const card = document.createElement('div');
+    card.className = 'level-card' + (key === selectedCategory ? ' selected' : '');
+    card.innerHTML = `<div class="title">${title}</div><div class="desc">${desc}</div>`;
+    card.onclick = () => { selectedCategory = key; buildCategoryCards(); };
+    grid.appendChild(card);
+  };
+
+  makeCard('all', '🎲 Όλα', `Τυχαία από όλα τα θέματα (${total} λέξεις)`);
+  for (const [name, words] of Object.entries(lvl.categories)) {
+    makeCard(name, name, `${words.length} λέξεις`);
+  }
+}
+
+function goToStep(n) {
+  document.getElementById('step1').style.display = n === 1 ? '' : 'none';
+  document.getElementById('step2').style.display = n === 2 ? '' : 'none';
+  if (n === 2) buildCategoryCards();
 }
 
 function pickWord(levelKey) {
@@ -649,7 +693,10 @@ function escapeHtml(s) {
 }
 
 document.getElementById('startBtn').onclick = startGame;
-document.getElementById('backToMenuBtn').onclick = () => { renderLb(); showScreen('menuScreen'); };
+document.getElementById('toStep2Btn').onclick = () => goToStep(2);
+document.getElementById('backToStep1Btn').onclick = () => goToStep(1);
+document.getElementById('crumbLevel').onclick = () => goToStep(1);
+document.getElementById('backToMenuBtn').onclick = () => { renderLb(); goToStep(1); showScreen('menuScreen'); };
 document.getElementById('nextWordBtn').onclick = nextWord;
 document.getElementById('clearLb').onclick = () => {
   if (confirm('Σίγουρα θες να καθαρίσεις το leaderboard;')) {
@@ -658,7 +705,7 @@ document.getElementById('clearLb').onclick = () => {
 };
 
 buildLevelCards();
-buildCategorySelect();
+goToStep(1);
 renderLb();
 drawGallows();
 </script>
