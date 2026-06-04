@@ -3,6 +3,7 @@
 <head>
 <link rel="icon" type="image/svg+xml" href="favicon.svg">
 <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Tug of War — Μαθηματικά</title>
 <style>
   * { box-sizing: border-box; margin: 0; padding: 0; }
@@ -30,7 +31,7 @@
 
   .menu-card {
     background: rgba(0,0,0,0.4); padding: 28px 36px; border-radius: 16px;
-    min-width: 440px; max-width: 600px;
+    min-width: 0; max-width: 600px; width: 100%;
     display: flex; flex-direction: column; gap: 16px;
   }
   .menu-card h2 { color: #ffb347; font-size: 24px; text-align: center; }
@@ -46,7 +47,7 @@
   .name-row { display: flex; gap: 12px; }
   .name-row > div { flex: 1; }
 
-  .mode-cards { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+  .mode-cards { display: grid; grid-template-columns: repeat(auto-fit, minmax(130px, 1fr)); gap: 10px; }
   .mode-card {
     background: rgba(0,0,0,0.3); padding: 14px; border-radius: 10px;
     border: 2px solid transparent; cursor: pointer; text-align: center;

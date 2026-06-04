@@ -3,6 +3,7 @@
 <head>
 <link rel="icon" type="image/svg+xml" href="favicon.svg">
 <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Breakout - Πολύχρωμα Τουβλάκια</title>
 <style>
   * { box-sizing: border-box; margin: 0; padding: 0; }
@@ -20,10 +21,13 @@
   .info { opacity: 0.9; margin-bottom: 14px; font-size: 16px; text-align: center; }
   .scoreboard {
     display: flex;
-    gap: 24px;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 12px;
     margin-bottom: 10px;
     font-size: 22px;
     font-weight: bold;
+    max-width: 100%;
   }
   .score-box {
     background: rgba(0,0,0,0.35);
@@ -64,6 +68,8 @@
     border-radius: 8px;
     box-shadow: 0 0 30px rgba(0,0,0,0.5);
     display: block;
+    max-width: 100%;
+    height: auto;
   }
   .controls {
     margin-top: 14px;
@@ -114,6 +120,7 @@
 </div>
 <button id="resetBtn">Νέο Παιχνίδι</button>
 
+<script src="touch-controls.js"></script>
 <script>
 const canvas = document.getElementById('game');
 const ctx = canvas.getContext('2d');
@@ -307,6 +314,21 @@ canvas.addEventListener('mousemove', e => {
 });
 
 document.getElementById('resetBtn').onclick = resetGame;
+
+function tapStart() {
+  if (state.over || state.won) resetGame();
+  else if (!state.running) launchBall();
+}
+
+// Tap / click on the playfield starts or restarts (works alongside Space).
+canvas.addEventListener('click', tapStart);
+
+if (window.TouchControls) {
+  TouchControls.attachDrag(canvas, {
+    onMove: x => { state.paddleX = Math.max(0, Math.min(W - PADDLE_W, x - PADDLE_W/2)); },
+    onTap: tapStart
+  });
+}
 
 function update() {
   const speed = 8;

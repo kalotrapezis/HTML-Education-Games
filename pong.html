@@ -3,6 +3,7 @@
 <head>
 <link rel="icon" type="image/svg+xml" href="favicon.svg">
 <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Pong - Το πρώτο βιντεοπαιχνίδι</title>
 <style>
   * { box-sizing: border-box; margin: 0; padding: 0; }
@@ -47,6 +48,8 @@
     border-radius: 6px;
     box-shadow: 0 0 30px rgba(0,0,0,0.5), inset 0 0 0 4px #8b4818;
     display: block;
+    max-width: 100%;
+    height: auto;
   }
   .controls {
     margin-top: 16px;
@@ -90,9 +93,10 @@
     background: rgba(0,0,0,0.35);
     padding: 18px 24px;
     border-radius: 12px;
-    min-width: 500px;
+    min-width: 0;
     max-width: 700px;
     width: 100%;
+    overflow-x: auto;
   }
   .leaderboard h2 { font-size: 22px; margin-bottom: 12px; text-align: center; color: #ffb347; }
   .leaderboard table { width: 100%; border-collapse: collapse; font-size: 15px; }
@@ -108,12 +112,12 @@
     background: rgba(255,255,255,0.1); box-shadow: none; color: #fff;
   }
 
-  .screen { display: none; flex-direction: column; align-items: center; }
+  .screen { display: none; flex-direction: column; align-items: center; width: 100%; max-width: 760px; }
   .screen.active { display: flex; }
 
   .menu-card {
     background: rgba(0,0,0,0.4); padding: 32px 40px; border-radius: 16px;
-    box-shadow: 0 8px 24px rgba(0,0,0,0.4); min-width: 420px;
+    box-shadow: 0 8px 24px rgba(0,0,0,0.4); min-width: 0; max-width: 560px; width: 100%;
     display: flex; flex-direction: column; gap: 18px; align-items: center;
   }
   .menu-card h2 { color: #ffb347; font-size: 22px; }
@@ -125,15 +129,19 @@
     color: #fff; width: 100%;
   }
   .menu-card input:focus, .menu-card select:focus { outline: none; border-color: #ff9500; }
-  .menu-card .two-col { display: flex; gap: 14px; width: 100%; }
-  .menu-card .two-col .field { flex: 1; }
+  .menu-card .fields {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(190px, 1fr));
+    gap: 14px 18px; width: 100%;
+  }
+  .menu-card .note { font-size: 14px; opacity: 0.7; text-align: center; margin-top: 4px; }
   .start-btn { font-size: 22px !important; padding: 14px 36px !important; }
 
   .result-card {
     background: rgba(0,0,0,0.45); padding: 36px 44px; border-radius: 18px;
     box-shadow: 0 8px 32px rgba(0,0,0,0.5);
     display: flex; flex-direction: column; align-items: center; gap: 16px;
-    min-width: 420px;
+    min-width: 0; max-width: 460px; width: 100%;
   }
   .result-card .trophy { font-size: 64px; }
   .result-card h2 { font-size: 32px; color: #ffe066; text-align: center; }
@@ -152,14 +160,14 @@
   <div class="info" style="margin-bottom:20px;">Το πρώτο βιντεοπαιχνίδι που φτιάχτηκε ποτέ (1972)</div>
   <div class="menu-card">
     <h2>Νέο Παιχνίδι</h2>
-    <div class="field">
-      <label>Τρόπος παιχνιδιού</label>
-      <select id="mode">
-        <option value="2p">2 παίχτες</option>
-        <option value="1p">1 παίχτης vs CPU</option>
-      </select>
-    </div>
-    <div class="two-col">
+    <div class="fields">
+      <div class="field">
+        <label>Τρόπος παιχνιδιού</label>
+        <select id="mode">
+          <option value="2p">2 παίχτες</option>
+          <option value="1p">1 παίχτης vs CPU</option>
+        </select>
+      </div>
       <div class="field">
         <label>Όνομα Παίχτη 1</label>
         <input id="name1" maxlength="14" value="Παίχτης 1">
@@ -168,24 +176,24 @@
         <label>Όνομα Παίχτη 2</label>
         <input id="name2" maxlength="14" value="Παίχτης 2">
       </div>
+      <div class="field" id="cpuField" style="display:none">
+        <label>Δυσκολία CPU</label>
+        <select id="cpuDiff">
+          <option value="easy">Εύκολο</option>
+          <option value="normal" selected>Κανονικό</option>
+          <option value="hard">Δύσκολο</option>
+        </select>
+      </div>
+      <div class="field">
+        <label>Ταχύτητα μπάλας</label>
+        <select id="ballSpeed">
+          <option value="slow">🐢 Αργό (για αρχάριους)</option>
+          <option value="normal" selected>Κανονικό</option>
+          <option value="fast">🐇 Γρήγορο</option>
+        </select>
+      </div>
     </div>
-    <div class="field" id="cpuField" style="display:none">
-      <label>Δυσκολία CPU</label>
-      <select id="cpuDiff">
-        <option value="easy">Εύκολο</option>
-        <option value="normal" selected>Κανονικό</option>
-        <option value="hard">Δύσκολο</option>
-      </select>
-    </div>
-    <div class="field">
-      <label>Ταχύτητα μπάλας</label>
-      <select id="ballSpeed">
-        <option value="slow">🐢 Αργό (για αρχάριους)</option>
-        <option value="normal" selected>Κανονικό</option>
-        <option value="fast">🐇 Γρήγορο</option>
-      </select>
-    </div>
-    <div style="font-size:14px;opacity:0.7;text-align:center;margin-top:4px;">
+    <div class="note">
       Best of 3 sets • Κάθε set στους 11 (νίκη με 2 πόντους διαφορά)
     </div>
     <button class="start-btn" id="startBtn">▶ Έναρξη</button>
@@ -252,6 +260,7 @@
   </div>
 </div>
 
+<script src="touch-controls.js"></script>
 <script>
 const canvas = document.getElementById('game');
 const ctx = canvas.getContext('2d');
@@ -302,6 +311,24 @@ function startCountdown(frames) {
   state.countdown = frames;
 }
 document.addEventListener('keyup', e => { keys[e.key.toLowerCase()] = false; });
+
+// Touch: drag on left half moves P1, right half moves P2 (2-player). Multi-touch.
+if (window.TouchControls && TouchControls.isTouch) {
+  const touchPaddle = e => {
+    e.preventDefault();
+    const r = canvas.getBoundingClientRect();
+    const twoP = document.getElementById('mode').value === '2p';
+    for (const t of e.touches) {
+      const x = (t.clientX - r.left) * (W / r.width);
+      const y = (t.clientY - r.top) * (H / r.height);
+      const py = Math.max(0, Math.min(H - PADDLE_H, y - PADDLE_H/2));
+      if (x < W/2) state.p1.y = py;
+      else if (twoP) state.p2.y = py;
+    }
+  };
+  canvas.addEventListener('touchstart', touchPaddle, { passive: false });
+  canvas.addEventListener('touchmove', touchPaddle, { passive: false });
+}
 
 function launchBall() {
   state.rallyHits = 0;

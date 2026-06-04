@@ -23,8 +23,8 @@
   .screen.active { display: flex; }
 
   .menu-card {
-    background: rgba(0,0,0,0.4); padding: 24px 30px; border-radius: 16px;
-    min-width: 320px; max-width: 560px; width: 100%;
+    background: rgba(0,0,0,0.4); padding: 22px 20px; border-radius: 16px;
+    min-width: 0; max-width: 560px; width: 100%;
     display: flex; flex-direction: column; gap: 16px;
   }
   .menu-card h2 { color: #ffb347; font-size: 22px; text-align: center; }
@@ -37,7 +37,7 @@
   select:focus { outline: none; border-color: #ff9500; }
   select option { background: #1e3c72; color: #fff; }
 
-  .diff-cards { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; }
+  .diff-cards { display: grid; grid-template-columns: repeat(auto-fit, minmax(96px, 1fr)); gap: 10px; }
   .diff-card {
     background: rgba(0,0,0,0.3); padding: 12px 8px; border-radius: 10px;
     border: 2px solid transparent; cursor: pointer; text-align: center; transition: all 0.15s;
@@ -48,7 +48,7 @@
   .diff-card .d { font-size: 11px; opacity: 0.8; }
 
   /* --- επιλογή γλώσσας --- */
-  .lang-cards { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+  .lang-cards { display: grid; grid-template-columns: repeat(auto-fit, minmax(130px, 1fr)); gap: 10px; }
   .lang-card {
     background: rgba(0,0,0,0.3); padding: 12px 8px; border-radius: 10px;
     border: 2px solid transparent; cursor: pointer; text-align: center;
@@ -58,7 +58,7 @@
   .lang-card.selected { border-color: #ffb347; background: rgba(255,179,71,0.15); }
 
   /* --- πλέγμα πακέτων (τάξη/θέμα) --- */
-  .pack-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; }
+  .pack-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(135px, 1fr)); gap: 8px; }
   .pack-head {
     grid-column: 1 / -1; color: #ffb347; font-size: 13px; font-weight: bold;
     opacity: 0.9; margin: 6px 0 0; padding-left: 2px;
@@ -109,6 +109,8 @@
     box-shadow: none; padding: 0; display: flex; align-items: center; justify-content: center;
   }
   .key.wide { max-width: 72px; font-size: 14px; }
+  .key.submit { flex: 2.4; max-width: 120px; font-size: 12px; white-space: nowrap; background: #2e9b44; }
+  .key.erase  { flex: 1.4; max-width: 84px; font-size: 22px; background: #d8332c; }
   .key.correct { background: #4caf50; }
   .key.present { background: #e0a800; }
   .key.absent  { background: #3a3f44; color: rgba(255,255,255,0.45); }
@@ -137,6 +139,7 @@
   .toast.show { opacity: 1; }
 
   @media (max-width: 480px) {
+    body { padding: 12px; }
     .cell { width: 40px; height: 40px; font-size: 22px; }
     h1 { font-size: 32px; }
     .key { height: 46px; font-size: 16px; }
@@ -486,18 +489,19 @@ function backspace() { if (over) return; cur = cur.slice(0, -1); paintCurrent();
 function buildKeyboard() {
   const kb = $('kb'); kb.innerHTML = '';
   const rows = lang === 'en' ? KB_ROWS_EN : KB_ROWS;
-  const last = rows.length - 1;
-  rows.forEach((row, i) => {
+  rows.forEach(row => {
     const r = document.createElement('div'); r.className = 'kb-row';
-    if (i === last) { r.appendChild(makeKey('⏎', 'enter', true)); }
-    for (const ch of row) r.appendChild(makeKey(ch, ch, false));
-    if (i === last) { r.appendChild(makeKey('⌫', 'back', true)); }
+    for (const ch of row) r.appendChild(makeKey(ch, ch, ''));
     kb.appendChild(r);
   });
+  const ar = document.createElement('div'); ar.className = 'kb-row kb-actions';
+  ar.appendChild(makeKey(lang === 'en' ? 'Enter' : 'Υποβολή', 'enter', 'submit'));
+  ar.appendChild(makeKey('⌫', 'back', 'erase'));
+  kb.appendChild(ar);
 }
-function makeKey(label, val, wide) {
+function makeKey(label, val, cls) {
   const b = document.createElement('button');
-  b.className = 'key' + (wide ? ' wide' : '');
+  b.className = 'key' + (cls ? ' ' + cls : '');
   b.textContent = label; b.dataset.val = val;
   b.addEventListener('click', () => {
     if (val === 'enter') submit();

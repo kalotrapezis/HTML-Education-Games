@@ -3,6 +3,7 @@
 <head>
 <link rel="icon" type="image/svg+xml" href="favicon.svg">
 <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Slime Volley</title>
 <style>
   html, body { margin: 0; padding: 0; height: 100%; background: #1a1a2e; font-family: system-ui, sans-serif; color: #fff; overflow: hidden; }
@@ -96,7 +97,9 @@
 </div>
 <div id="hint">Made for Windows 11 · single .htm file · no dependencies</div>
 
+<script src="touch-controls.js"></script>
 <script>
+if (window.TouchControls) TouchControls.requireLandscape();
 (() => {
   const cv = document.getElementById('game');
   const ctx = cv.getContext('2d');
@@ -123,6 +126,50 @@
     if ([' ','ArrowUp','ArrowDown','ArrowLeft','ArrowRight'].includes(e.key)) e.preventDefault();
   });
   addEventListener('keyup', e => { keys[e.key.toLowerCase()] = false; });
+
+  // Touch: drag to move (steer toward finger), tap to jump.
+  // 1p: whole screen controls P1. 2p: left half = P1, right half = P2.
+  if (window.TouchControls && TouchControls.isTouch) {
+    const tmap = {};
+    const gpt = t => {
+      const r = cv.getBoundingClientRect();
+      return { x: (t.clientX - r.left) * (W / r.width), y: (t.clientY - r.top) * (H / r.height) };
+    };
+    const whichP = x => (mode === 2 ? (x < W / 2 ? p1 : p2) : p1);
+    const setMove = (p, dir) => {
+      if (p === p1) { keys['a'] = dir < 0; keys['d'] = dir > 0; }
+      else { keys['arrowleft'] = dir < 0; keys['arrowright'] = dir > 0; }
+    };
+    const steer = (p, fx) => { const d = fx - p.x; setMove(p, d < -18 ? -1 : d > 18 ? 1 : 0); };
+    cv.addEventListener('touchstart', e => {
+      e.preventDefault();
+      for (const t of e.changedTouches) {
+        const pt = gpt(t), p = whichP(pt.x);
+        tmap[t.identifier] = { p, lx: pt.x, moved: 0 };
+        steer(p, pt.x);
+      }
+    }, { passive: false });
+    cv.addEventListener('touchmove', e => {
+      e.preventDefault();
+      for (const t of e.changedTouches) {
+        const m = tmap[t.identifier]; if (!m) continue;
+        const pt = gpt(t);
+        m.moved += Math.abs(pt.x - m.lx); m.lx = pt.x;
+        steer(m.p, pt.x);
+      }
+    }, { passive: false });
+    const endTouch = e => {
+      e.preventDefault();
+      for (const t of e.changedTouches) {
+        const m = tmap[t.identifier]; if (!m) continue;
+        if (m.moved < 16 && m.p.y >= GROUND) m.p.vy = -JUMP; // tap = jump
+        setMove(m.p, 0);
+        delete tmap[t.identifier];
+      }
+    };
+    cv.addEventListener('touchend', endTouch, { passive: false });
+    cv.addEventListener('touchcancel', endTouch, { passive: false });
+  }
 
   const PALETTE = ['#e63946','#3a86ff','#ffb703','#06d6a0','#ff70a6','#9d4edd','#fb8500','#ffffff','#000000'];
   const chosen = { 1: '#e63946', 2: '#3a86ff' };

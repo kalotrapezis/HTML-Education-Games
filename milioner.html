@@ -3,6 +3,7 @@
 <head>
 <link rel="icon" type="image/svg+xml" href="favicon.svg">
 <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Ποιος Θέλει να Γίνει Παντογνώστης;</title>
 <style>
   * { box-sizing: border-box; margin: 0; padding: 0; user-select: none; }
@@ -247,6 +248,33 @@
   .rung.safe::after { content: ' 🔒'; }
   .rung.done { color: #66aa66; }
   .rung.done .num { color: #66aa66; }
+  #points { display: none; }
+  @media (max-width: 680px) {
+    #main { grid-template-columns: 1fr; }
+    #points {
+      display: flex; align-items: center; justify-content: center; gap: 8px;
+      background: rgba(0,0,0,0.5);
+      border: 2px solid rgba(255,215,0,0.5);
+      border-radius: 22px;
+      padding: 7px 20px;
+      color: #ffaa00; font-size: 16px; font-weight: bold;
+      flex-shrink: 0;
+    }
+    #points b { color: #ffd700; }
+    #ladder {
+      position: fixed;
+      top: 0; right: 0; bottom: 0;
+      width: min(240px, 78vw);
+      z-index: 90;
+      background: rgba(5,10,32,0.97);
+      border-radius: 0;
+      transform: translateX(105%);
+      transition: transform 0.35s ease;
+      box-shadow: -10px 0 30px rgba(0,0,0,0.6);
+      padding: 14px 12px;
+    }
+    #ladder.show { transform: translateX(0); }
+  }
   #overlay {
     position: fixed;
     inset: 0;
@@ -562,6 +590,7 @@
       <button class="lifeline" id="ll-teacher" title="Ρώτα τον δάσκαλό σου">👨‍🏫</button>
       <div id="qTimer" class="hidden">⏱️ 50</div>
     </div>
+    <div id="points"></div>
     <div id="teacherMsg" class="hidden"></div>
     <div id="question">Πάτα «Έναρξη» για να ξεκινήσει το παιχνίδι.</div>
     <div id="answers"></div>
@@ -795,6 +824,14 @@ let isAnswering = false;
 const qEl = document.getElementById('question');
 const ansEl = document.getElementById('answers');
 const ladderEl = document.getElementById('ladder');
+const pointsEl = document.getElementById('points');
+let flashTimer = null;
+function flashLadder(){
+  if(!window.matchMedia('(max-width: 680px)').matches) return;
+  ladderEl.classList.add('show');
+  clearTimeout(flashTimer);
+  flashTimer = setTimeout(() => ladderEl.classList.remove('show'), 1900);
+}
 const llEl = document.getElementById('ll-5050');
 const walkBtn = document.getElementById('walkBtn');
 const overlay = document.getElementById('overlay');
@@ -832,6 +869,8 @@ function renderLadder(){
     div.innerHTML = '<span class="num">' + (i+1) + '</span><span>' + formatPrize(prizes[i]) + '</span>';
     ladderEl.appendChild(div);
   }
+  const cur = prizes[Math.min(currentLevel, prizes.length - 1)];
+  pointsEl.innerHTML = '💰 Παίζεις για <b>' + formatPrize(cur) + '</b>';
 }
 
 function showQuestion(){
@@ -856,6 +895,7 @@ function showQuestion(){
     ansEl.appendChild(btn);
   });
   renderLadder();
+  flashLadder();
 }
 
 function answerClicked(idx, btn){
