@@ -1,0 +1,207 @@
+<!DOCTYPE html>
+<html lang="el">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Έλεγχος Ερωτήσεων — Εκατομμυριούχος</title>
+<style>
+  :root{ --bg:#0f1226; --card:#1a1f3a; --line:#2c335c; --txt:#e8ebff; --muted:#9aa2cf; --ok:#1f9d55; --okbg:#13351f; --warn:#b8860b; --warnbg:#3a2f0c; }
+  *{ box-sizing:border-box; }
+  body{ margin:0; font-family:system-ui,'Segoe UI',Roboto,sans-serif; background:var(--bg); color:var(--txt); }
+  header{ position:sticky; top:0; z-index:5; background:#11142b; border-bottom:1px solid var(--line); padding:14px 18px; }
+  h1{ margin:0 0 10px; font-size:20px; }
+  .controls{ display:flex; flex-wrap:wrap; gap:10px; align-items:center; }
+  input[type=text], select{ background:var(--card); color:var(--txt); border:1px solid var(--line); border-radius:8px; padding:8px 10px; font-size:14px; }
+  input[type=text]{ min-width:240px; }
+  label.chk{ display:inline-flex; align-items:center; gap:6px; font-size:14px; color:var(--muted); cursor:pointer; }
+  .stats{ color:var(--muted); font-size:13px; margin-left:auto; }
+  main{ padding:18px; max-width:1000px; margin:0 auto; }
+  .grp{ margin-bottom:26px; }
+  .grp > h2{ font-size:16px; margin:0 0 4px; color:#aeb6ff; }
+  .grp > .chap{ font-size:13px; color:var(--muted); margin:10px 0 6px; font-weight:600; }
+  .q{ background:var(--card); border:1px solid var(--line); border-radius:10px; padding:12px 14px; margin:8px 0; }
+  .q.flag{ border-color:var(--warn); }
+  .qtext{ font-weight:600; margin-bottom:8px; }
+  .badge{ font-size:11px; padding:2px 7px; border-radius:20px; margin-left:8px; vertical-align:middle; }
+  .b-easy{ background:#14352a; color:#7be3a8; }
+  .b-medium{ background:#2a2f5c; color:#bcc4ff; }
+  .b-hard{ background:#451f2a; color:#ff9db0; }
+  .ans{ list-style:none; padding:0; margin:0; display:grid; grid-template-columns:1fr 1fr; gap:6px; }
+  .ans li{ padding:6px 10px; border-radius:7px; background:#11142b; border:1px solid var(--line); font-size:14px; }
+  .ans li.correct{ background:var(--okbg); border-color:var(--ok); color:#9ff0bf; font-weight:600; }
+  .ans li.correct::before{ content:'✔ '; color:#5fe39a; }
+  .warns{ margin-top:8px; font-size:13px; color:#ffcf6b; }
+  .warns div{ margin-top:3px; }
+  .empty{ color:var(--muted); padding:30px; text-align:center; }
+  @media(max-width:600px){ .ans{ grid-template-columns:1fr; } }
+</style>
+</head>
+<body>
+<header>
+  <h1>🔎 Έλεγχος Ερωτήσεων</h1>
+  <div class="controls">
+    <input type="text" id="search" placeholder="Αναζήτηση σε ερωτήσεις/απαντήσεις…">
+    <select id="fGrade"><option value="">Όλες οι τάξεις</option></select>
+    <select id="fSubject"><option value="">Όλα τα μαθήματα</option></select>
+    <label class="chk"><input type="checkbox" id="onlyFlags"> Μόνο ύποπτες ⚠️</label>
+    <span class="stats" id="stats"></span>
+  </div>
+</header>
+<main id="out"><div class="empty">Φόρτωση τράπεζας ερωτήσεων…</div></main>
+
+<script>
+window.QUIZ_BANK = [];
+window.registerQuiz = function(o){ window.QUIZ_BANK.push(o); };
+</script>
+<script src="bank/manifest.js"></script>
+<script>
+(function(){
+  const M = window.QUIZ_MANIFEST;
+  const out = document.getElementById('out');
+  if(!M || !Array.isArray(M.files)){ out.innerHTML = '<div class="empty">Δεν βρέθηκε το bank/manifest.js</div>'; return; }
+
+  let pending = M.files.length;
+  M.files.forEach(fn => {
+    const s = document.createElement('script');
+    s.src = 'bank/' + fn;
+    s.onload = s.onerror = () => { if(--pending === 0) build(); };
+    document.body.appendChild(s);
+  });
+
+  const gradeName = id => (M.grades.find(g => g.id === id) || {}).name || id;
+  const subjName  = id => (M.subjects.find(s => s.id === id) || {}).icon
+    ? (M.subjects.find(s => s.id === id).icon + ' ' + M.subjects.find(s => s.id === id).name)
+    : id;
+  const gradeOrder = id => { const g = M.grades.find(x => x.id === id); return g ? g.order : 99; };
+  const subjOrder  = id => M.subjects.findIndex(x => x.id === id);
+
+  // Αφαιρεί τόνους/πεζά για χαλαρή σύγκριση (εντοπισμός απάντησης μέσα στην εκφώνηση)
+  function norm(s){
+    return (s || '').toLowerCase()
+      .normalize('NFD').replace(/[̀-ͯ]/g, '')
+      .replace(/[«».,;:!();"'\-_…\s]/g, '');
+  }
+
+  // Επιστρέφει λίστα προειδοποιήσεων για μία ερώτηση
+  function warnsFor(q){
+    const w = [];
+    if(typeof q.correct !== 'number' || q.correct < 0 || q.correct >= q.answers.length)
+      w.push('Άκυρος δείκτης σωστής απάντησης (correct).');
+    // Αποκάλυψη: το κείμενο της σωστής απάντησης εμφανίζεται αυτούσιο στην εκφώνηση
+    const ca = q.answers[q.correct];
+    if(ca && norm(ca).length >= 3){
+      const nq = norm(q.q), nca = norm(ca);
+      if(nq.includes(nca)) w.push('Η σωστή απάντηση «' + ca + '» φαίνεται μέσα στην εκφώνηση.');
+    }
+    // Διπλές ίδιες απαντήσεις
+    const seen = {};
+    q.answers.forEach(a => { const n = norm(a); if(n){ if(seen[n]) w.push('Διπλή απάντηση: «' + a + '».'); seen[n] = 1; } });
+    return w;
+  }
+
+  let DATA = [];
+  function build(){
+    DATA = window.QUIZ_BANK.slice().sort((a,b) =>
+      gradeOrder(a.grade) - gradeOrder(b.grade) || subjOrder(a.subject) - subjOrder(b.subject));
+
+    // γέμισμα φίλτρων
+    const fg = document.getElementById('fGrade'), fs = document.getElementById('fSubject');
+    [...new Set(DATA.map(e => e.grade))].sort((a,b)=>gradeOrder(a)-gradeOrder(b))
+      .forEach(g => fg.add(new Option(gradeName(g), g)));
+    [...new Set(DATA.map(e => e.subject))].sort((a,b)=>subjOrder(a)-subjOrder(b))
+      .forEach(s => fs.add(new Option((M.subjects.find(x=>x.id===s)||{}).name||s, s)));
+
+    ['input','change'].forEach(ev=>{
+      document.getElementById('search').addEventListener(ev, render);
+    });
+    fg.addEventListener('change', render);
+    fs.addEventListener('change', render);
+    document.getElementById('onlyFlags').addEventListener('change', render);
+    render();
+  }
+
+  function render(){
+    const term = norm(document.getElementById('search').value);
+    const gSel = document.getElementById('fGrade').value;
+    const sSel = document.getElementById('fSubject').value;
+    const onlyFlags = document.getElementById('onlyFlags').checked;
+
+    let total = 0, flagged = 0, shown = 0;
+    const frag = document.createDocumentFragment();
+
+    DATA.forEach(entry => {
+      if(gSel && entry.grade !== gSel) return;
+      if(sSel && entry.subject !== sSel) return;
+
+      const grp = document.createElement('section');
+      grp.className = 'grp';
+      const h2 = document.createElement('h2');
+      h2.textContent = subjName(entry.subject) + ' — ' + gradeName(entry.grade);
+      grp.appendChild(h2);
+      let anyInGrp = false;
+
+      entry.chapters.forEach(ch => {
+        const chHead = document.createElement('div');
+        chHead.className = 'chap';
+        chHead.textContent = '📂 ' + (ch.name || ch.id || '');
+        let anyInCh = false;
+        const chFrag = document.createDocumentFragment();
+
+        ch.questions.forEach(q => {
+          total++;
+          const w = warnsFor(q);
+          if(w.length) flagged++;
+          if(onlyFlags && !w.length) return;
+          if(term){
+            const hay = norm(q.q + ' ' + q.answers.join(' '));
+            if(!hay.includes(term)) return;
+          }
+          shown++; anyInCh = true; anyInGrp = true;
+
+          const card = document.createElement('div');
+          card.className = 'q' + (w.length ? ' flag' : '');
+          const qt = document.createElement('div');
+          qt.className = 'qtext';
+          qt.textContent = q.q;
+          const b = document.createElement('span');
+          b.className = 'badge b-' + (q.d || 'medium');
+          b.textContent = q.d || '—';
+          qt.appendChild(b);
+          card.appendChild(qt);
+
+          const ul = document.createElement('ul');
+          ul.className = 'ans';
+          q.answers.forEach((a, i) => {
+            const li = document.createElement('li');
+            if(i === q.correct) li.className = 'correct';
+            li.textContent = a;
+            ul.appendChild(li);
+          });
+          card.appendChild(ul);
+
+          if(w.length){
+            const wd = document.createElement('div');
+            wd.className = 'warns';
+            w.forEach(msg => { const d = document.createElement('div'); d.textContent = '⚠️ ' + msg; wd.appendChild(d); });
+            card.appendChild(wd);
+          }
+          chFrag.appendChild(card);
+        });
+
+        if(anyInCh){ grp.appendChild(chHead); grp.appendChild(chFrag); }
+      });
+
+      if(anyInGrp) frag.appendChild(grp);
+    });
+
+    out.innerHTML = '';
+    if(!shown) out.innerHTML = '<div class="empty">Καμία ερώτηση δεν ταιριάζει στα φίλτρα.</div>';
+    else out.appendChild(frag);
+
+    document.getElementById('stats').textContent =
+      shown + ' σε προβολή · ' + total + ' σύνολο · ' + flagged + ' ύποπτες ⚠️';
+  }
+})();
+</script>
+</body>
+</html>
