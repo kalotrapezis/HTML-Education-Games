@@ -148,6 +148,27 @@
   .result-card .setsline { font-size: 22px; opacity: 0.95; }
   .result-card .pointsline { font-size: 16px; opacity: 0.7; }
   .result-card .actions { display: flex; gap: 12px; margin-top: 8px; }
+
+  /* Touch devices: trim chrome and scale the board to the screen height so the
+     game fits without scrolling (matches Soccer/Invaders). */
+  @media (pointer: coarse) {
+    body { padding: 8px; }
+    .back { display: none; }
+    body > h1 { display: none; }
+    .scoreboard { font-size: 18px; gap: 12px; margin-bottom: 6px; }
+    .score-box { padding: 4px 10px; }
+    #gameScreen .controls { display: none; }
+    #gameScreen .button-row {
+      position: fixed; top: 8px; left: 8px; margin: 0; z-index: 30;
+    }
+    #gameScreen .button-row button { margin: 0; padding: 6px 14px; font-size: 14px; }
+    #gameScreen canvas {
+      max-width: 98vw;
+      max-height: calc(100dvh - 110px);
+      width: auto;
+      height: auto;
+    }
+  }
 </style>
 </head>
 <body>
@@ -312,23 +333,35 @@ function startCountdown(frames) {
 }
 document.addEventListener('keyup', e => { keys[e.key.toLowerCase()] = false; });
 
-// Touch: drag on left half moves P1, right half moves P2 (2-player). Multi-touch.
+// Touch: one vertical joystick per active paddle, hugging the side margins.
+// 1-player → left joystick (P1). 2-player → left (P1) + right (P2).
+let _joyL = null, _joyR = null;
 if (window.TouchControls && TouchControls.isTouch) {
-  const touchPaddle = e => {
-    e.preventDefault();
-    const r = canvas.getBoundingClientRect();
-    const twoP = document.getElementById('mode').value === '2p';
-    for (const t of e.touches) {
-      const x = (t.clientX - r.left) * (W / r.width);
-      const y = (t.clientY - r.top) * (H / r.height);
-      const py = Math.max(0, Math.min(H - PADDLE_H, y - PADDLE_H/2));
-      if (x < W/2) state.p1.y = py;
-      else if (twoP) state.p2.y = py;
-    }
-  };
-  canvas.addEventListener('touchstart', touchPaddle, { passive: false });
-  canvas.addEventListener('touchmove', touchPaddle, { passive: false });
+  _joyL = TouchControls.joystick({ anchorTo: canvas, corner: 'bl', edgeX: true, insetX: 16, insetY: 18, size: 130 });
+  _joyR = TouchControls.joystick({ anchorTo: canvas, corner: 'br', edgeX: true, insetX: 16, insetY: 18, size: 130 });
 }
+function pollPongJoy() {
+  if (!_joyL) return;
+  const vl = _joyL.value();
+  keys['w'] = vl.y < -0.35;
+  keys['s'] = vl.y > 0.35;
+  if (document.getElementById('mode').value === '2p') {
+    const vr = _joyR.value();
+    keys['arrowup'] = vr.y < -0.35;
+    keys['arrowdown'] = vr.y > 0.35;
+  }
+}
+function showPongTouch() {
+  if (!_joyL) return;
+  // 2-player: both joysticks at center height of their side. 1-player: single
+  // joystick stays bottom-left.
+  const twoP = document.getElementById('mode').value === '2p';
+  _joyL.setCenterY(twoP);
+  _joyL.show();
+  if (twoP) { _joyR.setCenterY(true); _joyR.show(); }
+  else _joyR.hide();
+}
+function hidePongTouch() { if (_joyL) { _joyL.hide(); _joyR.hide(); } }
 
 function launchBall() {
   state.rallyHits = 0;
@@ -477,6 +510,7 @@ function startMatch() {
   state.speedCfg = SPEED[document.getElementById('ballSpeed').value] || SPEED.normal;
   resetGame();
   showScreen('gameScreen');
+  showPongTouch();
   startCountdown(180); // 3..2..1..GO
 }
 
@@ -487,15 +521,17 @@ function showResultScreen() {
   document.getElementById('finalPoints').textContent =
     'Συνολικοί πόντοι: ' + getName(1) + ' ' + state.p1.totalPoints +
     ' • ' + getName(2) + ' ' + state.p2.totalPoints;
+  hidePongTouch();
   showScreen('resultScreen');
 }
 
 document.getElementById('startBtn').onclick = startMatch;
-document.getElementById('rematchBtn').onclick = () => { state.speedCfg = SPEED[document.getElementById('ballSpeed').value] || SPEED.normal; resetGame(); showScreen('gameScreen'); startCountdown(180); };
-document.getElementById('newMatchBtn').onclick = () => { renderLb(); showScreen('menuScreen'); };
-document.getElementById('backToMenuBtn').onclick = () => { renderLb(); showScreen('menuScreen'); };
+document.getElementById('rematchBtn').onclick = () => { state.speedCfg = SPEED[document.getElementById('ballSpeed').value] || SPEED.normal; resetGame(); showScreen('gameScreen'); showPongTouch(); startCountdown(180); };
+document.getElementById('newMatchBtn').onclick = () => { hidePongTouch(); renderLb(); showScreen('menuScreen'); };
+document.getElementById('backToMenuBtn').onclick = () => { hidePongTouch(); renderLb(); showScreen('menuScreen'); };
 
 function update() {
+  pollPongJoy();
   const ballSpeed = Math.hypot(state.ball.vx, state.ball.vy);
   const speed = Math.max(8, ballSpeed * 0.9);
   if (keys['w']) state.p1.y -= speed;

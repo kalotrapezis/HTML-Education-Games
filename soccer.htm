@@ -32,6 +32,8 @@
     border-radius: 0 0 12px 12px;
     display: block;
     max-width: 95vw;
+    max-height: calc(100vh - 96px);
+    width: auto;
     height: auto;
   }
   #help {
@@ -75,6 +77,24 @@
   .swatch.active { border-color: #fff; transform: scale(1.18); box-shadow: 0 0 12px rgba(255,255,255,0.6); }
   .swatch.disabled { opacity: 0.25; cursor: not-allowed; }
   #picker2.cpu .picker-label::after { content: ' 🤖'; }
+
+  /* Landscape phones: title/help eat the limited height, so hide them and let
+     the pitch fill the screen (HUD stays for the score). Placed last so these
+     win over the base rules at equal specificity. */
+  @media (max-height: 520px) {
+    h1 { display: none; }
+    #help { display: none; }
+    #hud { font-size: 16px; padding: 4px 12px; }
+    #hud .score { font-size: 22px; }
+    canvas { max-height: calc(100vh - 50px); }
+    /* Setup overlay is tall — let it scroll and shrink so nothing is cut off. */
+    #overlay { justify-content: flex-start; overflow-y: auto; padding: 12px 0; }
+    #overlay h2 { font-size: 28px; margin-bottom: 6px; }
+    #overlay p { font-size: 15px; margin-bottom: 10px; }
+    #overlay #startBtn { padding: 10px 24px; font-size: 18px; }
+    .picker-label { font-size: 14px; }
+    .swatch { width: 28px; height: 28px; }
+  }
 </style>
 </head>
 <body>
@@ -612,27 +632,49 @@ const p2 = new Player(W-200, '#4fc3f7', {left:'ArrowLeft', right:'ArrowRight', j
 const players = [p1, p2];
 const ball = new Ball();
 
-// On-screen touch controls: P1 pad bottom-left, P2 pad bottom-right (2p only).
-let _padL = null, _padR = null;
+// On-screen touch controls.
+//  • 1-player: joystick bottom-left + kick button bottom-right (Space-Invaders
+//    style), spread to the side margins.
+//  • 2-player: each player gets a joystick at the bottom + a kick button at the
+//    top of the SAME side (P1 left, P2 right).
+let _joy1 = null, _joy2 = null, _kick1 = null, _kick2 = null, _kickSolo = null;
 if (window.TouchControls && TouchControls.isTouch) {
   const hold = code => ({ onDown: () => { KEYS[code] = true; }, onUp: () => { KEYS[code] = false; } });
-  _padL = TouchControls.group();
-  _padL.button(Object.assign({ label: '◀', left: 20,  bottom: 30 },  hold('KeyA')));
-  _padL.button(Object.assign({ label: '▶', left: 104, bottom: 30 },  hold('KeyD')));
-  _padL.button(Object.assign({ label: '🦵', left: 20,  bottom: 114, bg: 'rgba(180,60,20,0.55)' }, hold('KeyG')));
-  _padL.button(Object.assign({ label: '⬆', left: 104, bottom: 114, bg: 'rgba(40,120,60,0.55)' }, hold('KeyW')));
-  _padR = TouchControls.group();
-  _padR.button(Object.assign({ label: '◀', right: 104, bottom: 30 },  hold('ArrowLeft')));
-  _padR.button(Object.assign({ label: '▶', right: 20,  bottom: 30 },  hold('ArrowRight')));
-  _padR.button(Object.assign({ label: '🦵', right: 104, bottom: 114, bg: 'rgba(180,60,20,0.55)' }, hold('KeyM')));
-  _padR.button(Object.assign({ label: '⬆', right: 20,  bottom: 114, bg: 'rgba(40,120,60,0.55)' }, hold('ArrowUp')));
+  _joy1 = TouchControls.joystick({ anchorTo: C, corner: 'bl', edgeX: true, insetX: 16, insetY: 18, size: 130 });
+  _joy2 = TouchControls.joystick({ anchorTo: C, corner: 'br', edgeX: true, insetX: 16, insetY: 18, size: 130 });
+  _kickSolo = TouchControls.group();
+  _kickSolo.button(Object.assign({ label: '🦵', anchorTo: C, corner: 'br', edgeX: true, insetX: 16, insetY: 18, size: 92, bg: 'rgba(180,60,20,0.45)' }, hold('KeyG')));
+  _kick1 = TouchControls.group();
+  _kick1.button(Object.assign({ label: '🦵', anchorTo: C, corner: 'tl', edgeX: true, insetX: 16, insetY: 18, size: 92, bg: 'rgba(180,60,20,0.45)' }, hold('KeyG')));
+  _kick2 = TouchControls.group();
+  _kick2.button(Object.assign({ label: '🦵', anchorTo: C, corner: 'tr', edgeX: true, insetX: 16, insetY: 18, size: 92, bg: 'rgba(180,60,20,0.45)' }, hold('KeyM')));
+}
+// Map each player's joystick onto their move + jump keys every frame.
+function pollJoystick() {
+  if (!_joy1) return;
+  const v1 = _joy1.value();
+  KEYS['KeyA'] = v1.x < -0.35;
+  KEYS['KeyD'] = v1.x > 0.35;
+  KEYS['KeyW'] = v1.y < -0.5;
+  if (mode === '2p') {
+    const v2 = _joy2.value();
+    KEYS['ArrowLeft'] = v2.x < -0.35;
+    KEYS['ArrowRight'] = v2.x > 0.35;
+    KEYS['ArrowUp'] = v2.y < -0.5;
+  }
 }
 function showTouchPads() {
-  if (!_padL) return;
-  _padL.show();
-  (mode === '2p' ? _padR.show() : _padR.hide());
+  if (!_joy1) return;
+  _joy1.show();
+  if (mode === '2p') {
+    _kickSolo.hide();
+    _joy2.show(); _kick1.show(); _kick2.show();
+  } else {
+    _joy2.hide(); _kick1.hide(); _kick2.hide();
+    _kickSolo.show();
+  }
 }
-function hideTouchPads() { if (_padL) { _padL.hide(); _padR.hide(); } }
+function hideTouchPads() { if (_joy1) { _joy1.hide(); _joy2.hide(); _kick1.hide(); _kick2.hide(); _kickSolo.hide(); } }
 let powerups = [];
 let score = [0, 0];
 let goalFlash = 0;
@@ -826,6 +868,7 @@ function loop(now){
   const dt = Math.min(50, now - last);
   last = now;
   if(running){
+    pollJoystick();
     p1.update(dt, ball); p2.update(dt, ball);
     // human kick edge detection (skipped for AI — AI kicks via tryKick directly)
     if(!p1.isAI){

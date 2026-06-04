@@ -644,7 +644,7 @@ document.addEventListener('keyup', e => {
 // Touch: drag left/right to shift, drag down to soft-drop, tap to rotate, button to hold.
 if (window.TouchControls && TouchControls.isTouch) {
   const STEP_X = 24, STEP_Y = 30;
-  let active = false, lx = 0, ly = 0, accX = 0, accY = 0, moved = 0;
+  let active = false, lx = 0, ly = 0, accX = 0, accY = 0, moved = 0, emaX = 0, emaY = 0;
   const bpt = t => {
     const r = boardCanvas.getBoundingClientRect();
     return {
@@ -656,7 +656,7 @@ if (window.TouchControls && TouchControls.isTouch) {
   boardCanvas.addEventListener('touchstart', e => {
     e.preventDefault();
     if (!playable()) return;
-    active = true; accX = accY = moved = 0;
+    active = true; accX = accY = moved = emaX = emaY = 0;
     const p = bpt(e.touches[0]); lx = p.x; ly = p.y;
   }, { passive: false });
   boardCanvas.addEventListener('touchmove', e => {
@@ -666,10 +666,19 @@ if (window.TouchControls && TouchControls.isTouch) {
     const dx = p.x - lx, dy = p.y - ly;
     accX += dx; accY += dy; moved += Math.abs(dx) + Math.abs(dy);
     lx = p.x; ly = p.y;
-    while (accX >= STEP_X) { move(1); accX -= STEP_X; }
-    while (accX <= -STEP_X) { move(-1); accX += STEP_X; }
-    while (accY >= STEP_Y) { softDrop(); accY -= STEP_Y; }
-    if (accY < 0) accY = 0; // ignore upward travel
+    // Decide the gesture's dominant axis from smoothed per-move speed so a
+    // downward pull with a little sideways wobble registers as drop-only.
+    emaX = emaX * 0.6 + Math.abs(dx) * 0.4;
+    emaY = emaY * 0.6 + Math.abs(dy) * 0.4;
+    if (emaY >= emaX) {                 // vertical gesture → soft drop only
+      accX = 0;
+      while (accY >= STEP_Y) { softDrop(); accY -= STEP_Y; }
+      if (accY < 0) accY = 0;           // ignore upward travel
+    } else {                            // horizontal gesture → shift only
+      accY = 0;
+      while (accX >= STEP_X) { move(1); accX -= STEP_X; }
+      while (accX <= -STEP_X) { move(-1); accX += STEP_X; }
+    }
   }, { passive: false });
   const endT = e => {
     if (!active) return; e.preventDefault();

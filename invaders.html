@@ -119,6 +119,17 @@
     display: flex; align-items: center; justify-content: center;
     font-size: 12px; font-weight: bold;
   }
+
+  /* Touch devices: drop the keyboard hint + power-up legend (the on-screen
+     joystick/buttons replace them) and zoom the board to fill the screen. */
+  @media (pointer: coarse) {
+    h1 { font-size: 22px; margin: 6px 0; }
+    #gameScreen .powerups-legend, #gameScreen .controls { display: none; }
+    canvas.game {
+      height: min(820px, calc(100dvh - 200px));
+      max-width: 98vw;
+    }
+  }
 </style>
 </head>
 <body>
@@ -771,6 +782,7 @@ function update() {
   if (keys.ArrowRight || keys.d) state.player.x += speed;
   if (keys.ArrowUp || keys.w) state.player.y -= speed;
   if (keys.ArrowDown || keys.s) state.player.y += speed;
+  if (_joy) { const jv = _joy.value(); state.player.x += jv.x * speed; state.player.y += jv.y * speed; }
   state.player.x = Math.max(20, Math.min(W - 20, state.player.x));
   state.player.y = Math.max(40, Math.min(H - 30, state.player.y));
   state.player.vx = state.player.x - _px;   // για το «εκεί που θα πας» των βαρελιών
@@ -1434,6 +1446,7 @@ function showScreen(id) {
   for (const el of document.querySelectorAll('.screen')) el.classList.remove('active');
   document.getElementById(id).classList.add('active');
   if (_touchPad) (id === 'gameScreen' ? _touchPad.show() : _touchPad.hide());
+  if (_joy) (id === 'gameScreen' ? _joy.show() : _joy.hide());
 }
 
 // keyboard
@@ -1451,22 +1464,17 @@ document.addEventListener('keydown', e => {
 });
 document.addEventListener('keyup', e => { keys[e.key] = false; });
 
-// Touch: drag to move the ship, Fire button (hold) and Laser button (tap).
-let _touchPad = null;
+// Touch: αναλογικό joystick (κάτω-αριστερά) για κίνηση — το δάχτυλο μένει στο
+// στικ, όχι πάνω στο σκάφος. Πυρά/laser σε μεγάλα ημιδιάφανα κουμπιά που
+// «επιπλέουν» στην κάτω-δεξιά γωνία της πίστας.
+let _touchPad = null, _joy = null;
 if (window.TouchControls && TouchControls.isTouch) {
-  TouchControls.attachDrag(canvas, {
-    tapThreshold: 9999, // movement only — firing is on the buttons
-    onMove: (x, y) => {
-      if (!state || !state.playing) return;
-      state.player.x = Math.max(20, Math.min(W - 20, x));
-      state.player.y = Math.max(40, Math.min(H - 30, y));
-    }
-  });
+  _joy = TouchControls.joystick({ anchorTo: canvas, corner: 'bl', edgeX: true, insetX: 16, insetY: 14, size: 132 });
   _touchPad = TouchControls.group();
-  _touchPad.button({ label: '🔴', right: 24,  bottom: 30, bg: 'rgba(180,20,20,0.55)',
-    onDown: () => { if (state && state.playing) activateLaser(); } });
-  _touchPad.button({ label: '🔫', right: 110, bottom: 30, size: 84, bg: 'rgba(0,120,40,0.55)',
+  _touchPad.button({ label: '🔫', anchorTo: canvas, corner: 'br', edgeX: true, insetX: 16, insetY: 14, size: 96, bg: 'rgba(20,150,60,0.42)',
     onDown: () => { keys[' '] = true; }, onUp: () => { keys[' '] = false; } });
+  _touchPad.button({ label: '🔴', anchorTo: canvas, corner: 'br', edgeX: true, insetX: 124, insetY: 14, size: 76, bg: 'rgba(200,40,40,0.42)',
+    onDown: () => { if (state && state.playing) activateLaser(); } });
 }
 
 // leaderboard

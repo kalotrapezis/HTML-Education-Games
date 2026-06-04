@@ -33,6 +33,20 @@
   .toggle input { width: 18px; height: 18px; cursor: pointer; }
   .toggle span { font-size: 16px; }
   #hint { position: absolute; bottom: 10px; width: 100%; text-align: center; color: #666; font-size: 12px; }
+
+  /* Landscape phones: the menu is taller than the screen, so let it scroll and
+     shrink the title/buttons/keys so nothing is cut off. Gameplay is just the
+     canvas (already fits via max-height). */
+  @media (max-height: 520px) {
+    #menu { justify-content: flex-start; overflow-y: auto; padding: 12px 0; }
+    #menu h1 { font-size: 30px; margin: 0 0 6px; }
+    #menu p { font-size: 13px; margin: 3px 0; }
+    .btn { padding: 10px 22px; font-size: 17px; margin: 6px; }
+    .keys { margin-top: 12px; gap: 30px; }
+    .colors { margin: 10px 0; gap: 40px; }
+    .toggle { margin: 8px 0; }
+    .preview { width: 110px; height: 70px; }
+  }
 </style>
 </head>
 <body>
@@ -118,11 +132,12 @@ if (window.TouchControls) TouchControls.requireLandscape();
   let difficulty = 'hard';
   let ceilingOn = false;
   let running = false;
+  let _joyB = null;
 
   const keys = {};
   addEventListener('keydown', e => {
     keys[e.key.toLowerCase()] = true;
-    if (e.key === 'Escape') { running = false; menu.style.display = 'flex'; cancelAnimationFrame(winAnimId); document.querySelector('#menu h1').textContent = 'SLIME VOLLEY'; showPhase(phase1); }
+    if (e.key === 'Escape') { running = false; hideSlimeTouch(); menu.style.display = 'flex'; cancelAnimationFrame(winAnimId); document.querySelector('#menu h1').textContent = 'SLIME VOLLEY'; showPhase(phase1); }
     if ([' ','ArrowUp','ArrowDown','ArrowLeft','ArrowRight'].includes(e.key)) e.preventDefault();
   });
   addEventListener('keyup', e => { keys[e.key.toLowerCase()] = false; });
@@ -141,7 +156,9 @@ if (window.TouchControls) TouchControls.requireLandscape();
       else { keys['arrowleft'] = dir < 0; keys['arrowright'] = dir > 0; }
     };
     const steer = (p, fx) => { const d = fx - p.x; setMove(p, d < -18 ? -1 : d > 18 ? 1 : 0); };
+    // 2-player: drag each half of the canvas to steer that slime, tap to jump.
     cv.addEventListener('touchstart', e => {
+      if (mode !== 2) return;
       e.preventDefault();
       for (const t of e.changedTouches) {
         const pt = gpt(t), p = whichP(pt.x);
@@ -150,6 +167,7 @@ if (window.TouchControls) TouchControls.requireLandscape();
       }
     }, { passive: false });
     cv.addEventListener('touchmove', e => {
+      if (mode !== 2) return;
       e.preventDefault();
       for (const t of e.changedTouches) {
         const m = tmap[t.identifier]; if (!m) continue;
@@ -159,6 +177,7 @@ if (window.TouchControls) TouchControls.requireLandscape();
       }
     }, { passive: false });
     const endTouch = e => {
+      if (mode !== 2) return;
       e.preventDefault();
       for (const t of e.changedTouches) {
         const m = tmap[t.identifier]; if (!m) continue;
@@ -169,7 +188,24 @@ if (window.TouchControls) TouchControls.requireLandscape();
     };
     cv.addEventListener('touchend', endTouch, { passive: false });
     cv.addEventListener('touchcancel', endTouch, { passive: false });
+
+    // Single-player: one joystick, bottom-left. Left/right move, up jumps.
+    _joyB = TouchControls.joystick({ anchorTo: cv, corner: 'bl', edgeX: true, insetX: 16, insetY: 18, size: 130 });
   }
+  // Map the single-player joystick onto P1's move + jump keys each frame.
+  function pollJoyB() {
+    if (!_joyB || mode !== 1) return;
+    const v = _joyB.value();
+    keys['a'] = v.x < -0.35;
+    keys['d'] = v.x > 0.35;
+    keys['w'] = v.y < -0.4;
+  }
+  function showSlimeTouch() {
+    if (!_joyB) return;
+    if (mode === 1) _joyB.show();
+    else _joyB.hide();
+  }
+  function hideSlimeTouch() { if (_joyB) _joyB.hide(); }
 
   const PALETTE = ['#e63946','#3a86ff','#ffb703','#06d6a0','#ff70a6','#9d4edd','#fb8500','#ffffff','#000000'];
   const chosen = { 1: '#e63946', 2: '#3a86ff' };
@@ -361,6 +397,7 @@ if (window.TouchControls) TouchControls.requireLandscape();
     resetServe();
     menu.style.display = 'none';
     running = true;
+    showSlimeTouch();
     _lastTime = 0; _acc = 0;
     requestAnimationFrame(loop);
   }
@@ -376,6 +413,7 @@ if (window.TouchControls) TouchControls.requireLandscape();
 
   function update() {
     if (winner) return;
+    pollJoyB();
 
     // Player 1
     if (keys['a']) p1.x -= MOVE;
@@ -568,6 +606,7 @@ if (window.TouchControls) TouchControls.requireLandscape();
       winner = a > b ? 1 : 2;
       setTimeout(() => {
         running = false;
+        hideSlimeTouch();
         showVictory(winner);
       }, 1200);
     }
