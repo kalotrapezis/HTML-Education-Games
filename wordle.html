@@ -521,7 +521,7 @@ function refreshKeyboard() {
 /* ---- physical keyboard ---- */
 document.addEventListener('keydown', e => {
   if (!$('game').classList.contains('active')) return;
-  if (e.key === 'Enter') { submit(); return; }
+  if (e.key === 'Enter') { e.preventDefault(); submit(); return; }
   if (e.key === 'Backspace') { backspace(); return; }
   const ch = norm(e.key);
   if (ch.length === 1 && curValid().test(ch)) press(ch);
