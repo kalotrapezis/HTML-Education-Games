@@ -200,7 +200,10 @@
     <div id="step1">
       <div class="step-head"><span class="step-num">1</span> Διάλεξε επίπεδο</div>
       <div class="level-cards" id="levelCards"></div>
-      <button class="start-btn" id="toStep2Btn">Επόμενο →</button>
+      <div class="wizard-nav">
+        <button class="start-btn" id="playAllBtn">▶ Παίξε με όλες τις λέξεις</button>
+        <button class="secondary" id="toStep2Btn">Διάλεξε θέμα →</button>
+      </div>
     </div>
 
     <!-- Βήμα 2: Θέμα -->
@@ -694,6 +697,7 @@ function escapeHtml(s) {
 }
 
 document.getElementById('startBtn').onclick = startGame;
+document.getElementById('playAllBtn').onclick = () => { selectedCategory = 'all'; startGame(); };
 document.getElementById('toStep2Btn').onclick = () => goToStep(2);
 document.getElementById('backToStep1Btn').onclick = () => goToStep(1);
 document.getElementById('crumbLevel').onclick = () => goToStep(1);
