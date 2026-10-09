@@ -330,12 +330,32 @@
   .trace th { font-weight: normal; opacity: 0.85; text-align: right; }
 
   /* ΕΠΙΦΑΝΕΙΑ ΕΡΓΑΣΙΑΣ */
-  .desk { position: relative; width: 1000px; height: 560px; background: linear-gradient(160deg, #00897b, #26a69a 60%, #4db6ac); border-radius: 16px; overflow: hidden; flex: none; box-shadow: inset 0 -44px 0 rgba(0,0,0,0.35); }
+  .desk { position: relative; width: 1000px; height: 560px; background: linear-gradient(160deg, #00897b, #26a69a 60%, #4db6ac); border-radius: 16px; overflow: hidden; flex: none; touch-action: none; }
+  .dicon .nm { text-align: center; line-height: 1.15; }
+  .dicon .rn { width: 128px; font-size: 18px; padding: 2px 4px; border: 2px solid #1565c0; border-radius: 4px; user-select: text; }
+  .taskbar { position: absolute; left: 0; right: 0; bottom: 0; height: 52px; background: rgba(20,30,40,0.92); display: flex; align-items: center; gap: 6px; padding: 0 8px; z-index: 900; }
+  .taskbar button { font-size: 18px; padding: 6px 12px; box-shadow: none; border-radius: 8px; background: rgba(255,255,255,0.12); }
+  .taskbar .startbtn { background: #1e88e5; font-size: 19px; }
+  .taskbar .tbtn { font-size: 28px; padding: 2px 12px 6px; background: transparent; position: relative; }
+  .taskbar .tbtn.open::after { content: ''; position: absolute; left: 50%; bottom: 2px; width: 10px; height: 4px; margin-left: -5px; border-radius: 2px; background: #b0bec5; }
+  .taskbar .tbtn.on { background: rgba(255,255,255,0.25); } .taskbar .tbtn.on::after { width: 26px; margin-left: -13px; background: #4fc3f7; }
+  .dicon span { position: relative; } .dicon .sc { position: absolute; left: -4px; bottom: 2px; font-style: normal; font-size: 18px; background: #fff; color: #1565c0; border-radius: 3px; padding: 0 3px; line-height: 1.2; font-weight: bold; }
+  .taskbar .clock { margin-left: auto; font-size: 18px; color: #fff; }
+  .startmenu { position: absolute; left: 6px; bottom: 58px; width: 300px; background: rgba(30,40,55,0.97); border-radius: 12px; padding: 10px; display: flex; flex-direction: column; gap: 6px; z-index: 950; box-shadow: 0 10px 30px rgba(0,0,0,0.5); }
+  .startmenu .sm-h { font-size: 17px; opacity: 0.8; padding: 0 6px; }
+  .startmenu button, .ctx button { text-align: left; font-size: 21px; padding: 8px 14px; background: transparent; box-shadow: none; }
+  .startmenu button:hover, .ctx button:hover { background: rgba(255,255,255,0.15); }
+  .startmenu .off { border-top: 1px solid rgba(255,255,255,0.2); border-radius: 0; color: #ffab91; }
+  .ctx { position: absolute; width: 230px; background: #37474f; border-radius: 10px; padding: 6px; display: flex; flex-direction: column; z-index: 960; box-shadow: 0 8px 24px rgba(0,0,0,0.5); }
+  .snapprev { position: absolute; background: rgba(255,255,255,0.25); border: 3px solid #fff; border-radius: 10px; z-index: 850; pointer-events: none; }
+  .dlg { position: absolute; left: 50%; top: 40%; transform: translate(-50%, -50%); background: #fff; color: #263238; border-radius: 14px; padding: 20px 28px; font-size: 24px; text-align: center; z-index: 980; display: flex; flex-direction: column; gap: 12px; box-shadow: 0 12px 40px rgba(0,0,0,0.5); }
   .dicon { position: absolute; width: 130px; display: flex; flex-direction: column; align-items: center; gap: 4px; font-size: 20px; color: #fff; text-shadow: 0 1px 3px #000; cursor: pointer; touch-action: none; border-radius: 10px; padding: 6px; }
   .dicon span { font-size: 64px; text-shadow: none; } .dicon.sel { background: rgba(255,255,255,0.3); }
   .win { position: absolute; width: 520px; height: 330px; background: #fff; color: #263238; border-radius: 10px; box-shadow: 0 12px 40px rgba(0,0,0,0.5); display: flex; flex-direction: column; overflow: hidden; }
   .win .title { background: #1565c0; color: #fff; font-size: 22px; padding: 8px 12px; display: flex; align-items: center; gap: 10px; cursor: grab; touch-action: none; }
-  .win .title .x { margin-left: auto; background: #e53935; box-shadow: none; padding: 2px 14px; font-size: 22px; }
+  .win .title .tn { flex: 1; }
+  .win .title .wb { background: rgba(255,255,255,0.18); box-shadow: none; padding: 2px 14px; font-size: 20px; border-radius: 6px; }
+  .win .title .wb.x { background: #e53935; }
   .win .body { flex: 1; display: flex; align-items: center; justify-content: center; font-size: 28px; gap: 20px; flex-wrap: wrap; padding: 16px; }
   .tasks { width: 470px; display: flex; flex-direction: column; gap: 10px; }
   .task { background: rgba(0,0,0,0.3); border-radius: 12px; padding: 10px 16px; font-size: 22px; }
@@ -1018,6 +1038,42 @@ const BOOK_B = [
         ],
       },
       {
+        icon: '🗂️', title: 'Παράθυρα, γραμμή εργασιών και φάκελοι', sub: 'Έναρξη · — ▢ ✕ · νέος φάκελος',
+        acts: [
+          { type: 'info', ref: 'έκδ. 7.0 σελ. 58–59 · έκδ. v08 σελ. 53–55 (επέκταση)', text: 'Ένα ή δύο κλικ;', cards: [
+            ['↗️', 'Οι <b>συντομεύσεις</b> στην επιφάνεια εργασίας έχουν ένα μικρό <b>βελάκι</b> κάτω αριστερά. Τις ανοίγουμε με <b>διπλό κλικ</b>.'],
+            ['▬', 'Η <b>γραμμή εργασιών</b> είναι η λωρίδα στο κάτω μέρος της οθόνης. Οι εφαρμογές που είναι «καρφιτσωμένες» εκεί ανοίγουν με <b>ένα κλικ</b>.'],
+            ['👀', 'Στη γραμμή εργασιών βλέπουμε αν μια εφαρμογή είναι: <b>κλειστή</b> (μόνο το εικονίδιο), <b>ανοιχτή</b> (μικρή γραμμή από κάτω), <b>ενεργή</b> (φωτεινή, με μεγάλη γραμμή).'],
+          ] },
+          { type: 'desktop', tasks: 'taskbar', ref: 'επέκταση', text: 'Η γραμμή εργασιών: ανοιχτά και κλειστά παράθυρα.',
+            explain: 'Ανοιχτό = γραμμή κάτω από το εικονίδιο. Ενεργό = φωτεινό. Ελαχιστοποιημένο = έχει γραμμή αλλά δεν φαίνεται στην οθόνη. Κλειστό = καμία γραμμή.' },
+          { type: 'info', ref: 'έκδ. 7.0 σελ. 59 (επέκταση)', text: 'Τα κουμπιά του παραθύρου:', cards: [
+            ['—', '<b>Ελαχιστοποίηση</b>: το παράθυρο «κρύβεται» στη γραμμή εργασιών, χωρίς να κλείσει.'],
+            ['▢', '<b>Μεγιστοποίηση</b>: το παράθυρο γεμίζει όλη την οθόνη. Τότε το κουμπί γίνεται ❐ <b>Επαναφορά</b>, για να ξαναγίνει όπως πριν.'],
+            ['✕', '<b>Κλείσιμο</b>: κλείνει την εφαρμογή. Μπορούμε επίσης να κάνουμε διπλό κλικ στη γραμμή τίτλου για μεγιστοποίηση/επαναφορά.'],
+          ] },
+          { type: 'desktop', tasks: 'windows', ref: 'επέκταση', text: 'Δοκίμασε τα κουμπιά — ▢ ❐ ✕ του παραθύρου.' },
+          { type: 'info', ref: 'επέκταση', text: 'Το κουμπί Έναρξη:', cards: [
+            ['⊞', 'Η <b>Έναρξη</b> είναι το κουμπί κάτω αριστερά. Ανοίγει ένα μενού με <b>όλες τις εφαρμογές</b> του υπολογιστή.'],
+            ['⏻', 'Από την Έναρξη κάνουμε και <b>Τερματισμό</b>: έτσι κλείνουμε σωστά τον υπολογιστή, όχι από το κουμπί του ρεύματος!'],
+          ] },
+          { type: 'desktop', tasks: 'start', ref: 'επέκταση', text: 'Βρες τις εφαρμογές από το μενού Έναρξη.' },
+          { type: 'info', ref: 'επέκταση', text: 'Τακτοποιώ τα παράθυρα:', cards: [
+            ['⬆️', 'Σέρνω το παράθυρο από τη γραμμή τίτλου <b>στην κορυφή</b> της οθόνης → <b>μεγιστοποιείται</b>. Αν το σύρω προς τα κάτω, ξαναμικραίνει.'],
+            ['⬅️➡️', 'Σέρνω το παράθυρο στην <b>αριστερή</b> ή στη <b>δεξιά άκρη</b> → πιάνει τη <b>μισή οθόνη</b>. Έτσι βλέπω δύο παράθυρα δίπλα-δίπλα!'],
+            ['⌨️', 'Με το πληκτρολόγιο: πλήκτρο <b>Windows</b> + ⬅️ / ➡️ / ⬆️.'],
+          ] },
+          { type: 'desktop', tasks: 'snap', ref: 'επέκταση', text: 'Μεγιστοποίησε με σύρσιμο και μοίρασε την οθόνη στα δύο.',
+            explain: 'Όταν το παράθυρο φτάσει στην άκρη, εμφανίζεται ένα διάφανο πλαίσιο που δείχνει πού θα «κουμπώσει».' },
+          { type: 'info', ref: 'έκδ. 7.0 σελ. 64–70 · έκδ. v08 σελ. 60–64', text: 'Φάκελοι και ονόματα:', cards: [
+            ['📁', 'Στους <b>φακέλους</b> τακτοποιούμε τα αρχεία μας, όπως τα τετράδια στα συρτάρια.'],
+            ['🖱️', 'Νέος φάκελος: <b>δεξί κλικ</b> σε άδειο σημείο → «Νέος φάκελος» → γράφουμε όνομα → Enter. (Στον πίνακα: κρατάμε πατημένο το δάχτυλο αντί για δεξί κλικ.)'],
+            ['✏️', 'Αλλαγή ονόματος: <b>δεξί κλικ</b> στο εικονίδιο → «Μετονομασία» (ή πλήκτρο <b>F2</b>). Δίνουμε ονόματα που λένε τι έχει μέσα!'],
+          ] },
+          { type: 'desktop', tasks: 'folders', ref: 'επέκταση', text: 'Φτιάξε φάκελο και άλλαξε ονόματα.' },
+        ],
+      },
+      {
         icon: '🌐', title: 'Το Διαδίκτυο', sub: 'Ένα μεγάλο δίκτυο υπολογιστών',
         acts: [
           { type: 'info', ref: 'έκδ. 7.0 σελ. 60–61 · έκδ. v08 σελ. 56', text: 'Διαβάζουμε μαζί:', cards: [
@@ -1391,7 +1447,7 @@ const GUIDE = {
   river: 'Πατήστε ένα ζώο ή το λάχανο για να μπει στη βάρκα και μετά «⛵ Πέρνα απέναντι». Ο βαρκάρης παίρνει έναν επιβάτη τη φορά.',
   caesar: 'Για κάθε γράμμα της λέξης, πατήστε στον πίνακα το σωστό γράμμα.',
   stepper: 'Πατήστε «▶ Επόμενο βήμα». Η γραμμή που εκτελείται φωτίζεται· όταν ερωτηθείτε, μαντέψτε τη νέα τιμή της μεταβλητής.',
-  desktop: 'Κάντε με τη σειρά τις εργασίες δεξιά. Διπλό κλικ = δύο γρήγορα πατήματα.',
+  desktop: 'Κάντε με τη σειρά τις εργασίες δεξιά. Διπλό κλικ = δύο γρήγορα πατήματα · δεξί κλικ = κρατήστε πατημένο το δάχτυλο.',
   microbit: 'Πατήστε τα κουμπιά του micro:bit (ή τα εικονίδια του προγράμματος) και δείτε τι συμβαίνει.',
 };
 const KIND_NAMES = { info: '📖 Διαβάζω', order: '🔢 Σειρά βημάτων', trace: '🔍 Πού θα φτάσει;', program: '🧩 Φτιάχνω πρόγραμμα',
@@ -2389,85 +2445,282 @@ RENDER.microbit = (act, area) => {
   }
 };
 
-// σύρσιμο σε σκηνή που έχει μικρύνει (scale): onMove(dx, dy) σε μονάδες σκηνής, onEnd(moved)
-function dragger(handle, onMove, onEnd) {
-  handle.onpointerdown = e => {
+// ---- Επιφάνεια εργασίας «σαν Windows»: εικονίδια, παράθυρα (— ▢ ✕), γραμμή εργασιών, Έναρξη,
+//      σύρσιμο στις άκρες (μεγιστοποίηση / μισή οθόνη), δεξί κλικ → νέος φάκελος / μετονομασία
+const norm = t => t.normalize('NFD').replace(/[̀-ͯ]/g, '').toLowerCase().trim();
+// πάτημα / διπλό / παρατεταμένο πάτημα / σύρσιμο, με ποντίκι ή δάχτυλο· τα κουμπιά μέσα στο στοιχείο δεν «αρπάζονται»
+function press(target, h) {
+  target.onpointerdown = e => {
+    if (e.button === 2) return;
+    const inner = e.target.closest('button, input');
+    if (inner && inner !== target && target.contains(inner)) return;
     e.preventDefault();
-    handle.setPointerCapture(e.pointerId);
+    e.stopPropagation();
+    target.setPointerCapture(e.pointerId);
     const scale = $('stage').getBoundingClientRect().width / 1600;
     const sx = e.clientX, sy = e.clientY;
-    let moved = false;
-    handle.onpointermove = ev => {
+    let moved = false, long = false;
+    const timer = h.onLong && setTimeout(() => { if (!moved) { long = true; h.onLong(e); } }, 650);
+    target.onpointermove = ev => {
       const dx = (ev.clientX - sx) / scale, dy = (ev.clientY - sy) / scale;
-      if (Math.abs(dx) + Math.abs(dy) > 8) moved = true;
-      if (moved) onMove(dx, dy);
+      if (!moved && Math.abs(dx) + Math.abs(dy) > 8) { moved = true; clearTimeout(timer); if (h.onDragStart) h.onDragStart(ev); }
+      if (moved && h.onDrag) h.onDrag(dx, dy, ev);
     };
-    handle.onpointerup = handle.onpointercancel = () => { handle.onpointermove = handle.onpointerup = handle.onpointercancel = null; onEnd(moved); };
+    target.onpointerup = target.onpointercancel = ev => {
+      clearTimeout(timer);
+      target.onpointermove = target.onpointerup = target.onpointercancel = null;
+      if (long) return;
+      if (moved) { if (h.onDragEnd) h.onDragEnd(ev); return; }
+      const now = Date.now();
+      if (h.onDouble && now - (target._lastTap || 0) < 500) { target._lastTap = 0; h.onDouble(ev); }
+      else { target._lastTap = now; if (h.onTap) h.onTap(ev); }
+    };
   };
+  if (h.onLong) target.oncontextmenu = e => { e.preventDefault(); e.stopPropagation(); h.onLong(e); };
 }
-RENDER.desktop = (act, area) => {
-  const ICONS = [
-    { id: 'paint', em: '🎨', name: 'Ζωγραφική', body: '🖌️ Εδώ ζωγραφίζουμε!' },
-    { id: 'folder', em: '📁', name: 'Οι εργασίες μου', body: '📄 Ιστορία &nbsp; 🖼️ Ζωγραφιά &nbsp; 🎵 Τραγούδι' },
-    { id: 'file', em: '📄', name: 'Ιστορία', body: 'Μια φορά κι έναν καιρό…' },
-    { id: 'calc', em: '🧮', name: 'Αριθμομηχανή', body: '2 + 2 = 4' },
-  ];
-  const TASKS = [
-    ['Κάνε <b>διπλό κλικ</b> στο εικονίδιο «Ζωγραφική» για να ανοίξει η εφαρμογή.', ev => ev.t === 'open' && ev.id === 'paint'],
+const PINNED = ['web', 'notepad', 'paint']; // καρφιτσωμένες στη γραμμή εργασιών
+const DESK_W = 1000, DESK_H = 560, BAR = 52, WIN_W = 520, WIN_H = 320;
+const DESK_APPS = {
+  paint: { em: '🎨', name: 'Ζωγραφική', body: '🖌️ Εδώ ζωγραφίζουμε!' },
+  calc: { em: '🧮', name: 'Αριθμομηχανή', body: '2 + 2 = 4' },
+  notepad: { em: '📝', name: 'Σημειωματάριο', body: 'Γράφω τις σημειώσεις μου…' },
+  web: { em: '🌐', name: 'Περιηγητής', body: '🔎 Αναζήτηση στο διαδίκτυο' },
+};
+const isName = (ev, n) => norm(ev.name || '').includes(norm(n));
+const DESK_TASKS = {
+  basic: [
+    ['Κάνε <b>διπλό κλικ</b> στη συντόμευση «Ζωγραφική» (το εικονίδιο με το βελάκι ↗) για να ανοίξει.', ev => ev.t === 'open' && ev.id === 'paint' && ev.from !== 'bar'],
     ['<b>Σύρε</b> το παράθυρο από τη μπλε γραμμή τίτλου σε άλλη θέση.', ev => ev.t === 'movewin'],
     ['<b>Κλείσε</b> το παράθυρο πατώντας το ✕ πάνω δεξιά.', ev => ev.t === 'close'],
-    ['<b>Σύρε</b> το εικονίδιο «Οι εργασίες μου» σε άλλη θέση της επιφάνειας εργασίας.', ev => ev.t === 'moveicon' && ev.id === 'folder'],
+    ['<b>Σύρε</b> το εικονίδιο «Οι εργασίες μου» σε άλλη θέση.', ev => ev.t === 'moveicon' && ev.id === 'folder'],
     ['Άνοιξε τον <b>φάκελο</b> «Οι εργασίες μου» με διπλό κλικ. Τι έχει μέσα;', ev => ev.t === 'open' && ev.id === 'folder'],
+  ],
+  windows: [
+    ['Άνοιξε τη «Ζωγραφική» με διπλό κλικ.', ev => ev.t === 'open' && ev.id === 'paint'],
+    ['Πάτα το <b>—</b> (ελαχιστοποίηση). Πού πήγε το παράθυρο;', ev => ev.t === 'min'],
+    ['Φέρ’ το πίσω: πάτα το κουμπί του στη <b>γραμμή εργασιών</b> (κάτω).', ev => ev.t === 'restore'],
+    ['Πάτα το <b>▢</b> (μεγιστοποίηση): το παράθυρο γεμίζει την οθόνη.', ev => ev.t === 'max'],
+    ['Πάτα το <b>❐</b> (επαναφορά): ξαναγίνεται όπως πριν.', ev => ev.t === 'unmax'],
+    ['Κλείσε το παράθυρο με το <b>✕</b>.', ev => ev.t === 'close'],
+  ],
+  start: [
+    ['Πάτα το κουμπί <b>⊞ Έναρξη</b> κάτω αριστερά.', ev => ev.t === 'start'],
+    ['Από το μενού Έναρξη, άνοιξε την <b>Αριθμομηχανή</b>.', ev => ev.t === 'open' && ev.id === 'calc' && ev.from === 'start'],
+    ['Κλείσε την Αριθμομηχανή με το ✕.', ev => ev.t === 'close'],
+    ['Άνοιξε ξανά την Έναρξη και πάτα <b>⏻ Τερματισμός</b>.', ev => ev.t === 'shutdown'],
+  ],
+  snap: [
+    ['Άνοιξε την «Αριθμομηχανή» με διπλό κλικ.', ev => ev.t === 'open' && ev.id === 'calc'],
+    ['Σύρε το παράθυρο από τη γραμμή τίτλου ως την <b>κορυφή</b> της οθόνης: μεγιστοποιείται!', ev => ev.t === 'snap' && ev.zone === 'max'],
+    ['Σύρε τη γραμμή τίτλου <b>προς τα κάτω</b>: το παράθυρο ξαναμικραίνει.', ev => ev.t === 'movewin' && ev.wasSnapped],
+    ['Σύρε το παράθυρο στην <b>αριστερή άκρη</b>: πιάνει τη μισή οθόνη.', ev => ev.t === 'snap' && ev.zone === 'left'],
+    ['Άνοιξε τη «Ζωγραφική» και σύρε τη στη <b>δεξιά άκρη</b>. Δύο παράθυρα δίπλα-δίπλα!', ev => ev.t === 'snap' && ev.zone === 'right' && ev.id === 'paint'],
+  ],
+  taskbar: [
+    ['Άνοιξε τον <b>Περιηγητή</b> 🌐 από τη γραμμή εργασιών (κάτω) με <b>ένα</b> κλικ.', ev => ev.t === 'open' && ev.id === 'web' && ev.from === 'bar'],
+    ['Κάτω από το 🌐 εμφανίστηκε γραμμή: είναι <b>ανοιχτό</b>. Άνοιξε και το <b>Σημειωματάριο</b> 📝 από τη γραμμή εργασιών.', ev => ev.t === 'open' && ev.id === 'notepad' && ev.from === 'bar'],
+    ['Τώρα ενεργό είναι το 📝. Πάτα το 🌐 στη γραμμή εργασιών για να έρθει <b>μπροστά</b>.', ev => ev.t === 'focus' && ev.id === 'web'],
+    ['Πάτα <b>ξανά</b> το ενεργό 🌐: ελαχιστοποιείται (η γραμμή μένει, αλλά δεν φωτίζεται).', ev => ev.t === 'min' && ev.id === 'web'],
+    ['Κλείσε το Σημειωματάριο με το ✕: η γραμμή κάτω από το 📝 χάνεται — είναι <b>κλειστό</b>.', ev => ev.t === 'close' && ev.id === 'notepad'],
+  ],
+  folders: [
+    ['Κάνε <b>δεξί κλικ</b> (ή κράτα πατημένο το δάχτυλο) σε άδειο σημείο και διάλεξε «📁 Νέος φάκελος».', ev => ev.t === 'newfolder'],
+    ['Γράψε το όνομα <b>Πληροφορική</b> και πάτα Enter.', ev => ev.t === 'rename' && isName(ev, 'πληροφορικ')],
+    ['Άνοιξε τον φάκελο «Πληροφορική» με διπλό κλικ.', ev => ev.t === 'open' && ev.kind === 'folder' && isName(ev, 'πληροφορικ')],
+    ['Κλείσε τον φάκελο με το ✕.', ev => ev.t === 'close'],
+    ['Μετονόμασε το αρχείο «Ιστορία» σε <b>Η ιστορία μου</b>: δεξί κλικ → «Μετονομασία».', ev => ev.t === 'rename' && ev.id === 'file' && isName(ev, 'ιστορια μου')],
+  ],
+};
+RENDER.desktop = (act, area) => {
+  const tasks = DESK_TASKS[act.tasks || 'basic'];
+  let ti = 0, z = 10, nextNew = 1;
+  const desk = el('div', 'desk'), side = el('div', 'tasks');
+  area.append(desk, side);
+  const icons = [
+    { id: 'paint', kind: 'app', ...DESK_APPS.paint }, { id: 'folder', kind: 'folder', em: '📁', name: 'Οι εργασίες μου', body: '📄 Ιστορία &nbsp; 🖼️ Ζωγραφιά &nbsp; 🎵 Τραγούδι' },
+    { id: 'file', kind: 'file', em: '📄', name: 'Ιστορία', body: 'Μια φορά κι έναν καιρό…' }, { id: 'calc', kind: 'app', ...DESK_APPS.calc },
   ];
-  let ti = 0;
-  const desk = el('div', 'desk'), tasks = el('div', 'tasks');
-  area.append(desk, tasks);
-  const pos = {};
-  ICONS.forEach((ic, i) => { pos[ic.id] = [20, 14 + i * 124]; });
-  let win = null, winPos = [330, 90];
-  const lastTap = {};
-  function event(ev) {
-    if (ti >= TASKS.length || !TASKS[ti][1](ev)) return;
+  icons.forEach((ic, i) => { ic.x = 16; ic.y = 10 + i * 122; });
+  const wins = {};
+  const deskXY = ev => { const r = desk.getBoundingClientRect(), sc = r.width / DESK_W; return [(ev.clientX - r.left) / sc, (ev.clientY - r.top) / sc]; };
+
+  function event(e) {
+    if (ti >= tasks.length || !tasks[ti][1](e)) return;
     ti++;
     drawTasks();
-    if (ti === TASKS.length) complete('🎉 Μπράβο! Ξέρεις να ανοίγεις, να μετακινείς και να κλείνεις παράθυρα και εικονίδια!');
+    if (ti === tasks.length) complete('🎉 Μπράβο! Τα κατάφερες όλα στην επιφάνεια εργασίας!');
     else say('✅ Σωστά!', 'good');
   }
   function drawTasks() {
-    tasks.innerHTML = '';
-    TASKS.forEach(([t], i) => tasks.appendChild(el('div', 'task' + (i < ti ? ' ok' : i === ti ? ' cur' : ''), (i < ti ? '✅ ' : `${i + 1}. `) + t)));
+    side.innerHTML = '';
+    tasks.forEach(([t], i) => side.appendChild(el('div', 'task' + (i < ti ? ' ok' : i === ti ? ' cur' : ''), (i < ti ? '✅ ' : `${i + 1}. `) + t)));
   }
-  function openWin(ic) {
-    if (win) win.remove();
-    win = el('div', 'win', `<div class="title"><span>${ic.em}</span>${ic.name}</div><div class="body">${ic.body}</div>`);
-    const x = el('button', 'x', '✕');
-    x.onclick = () => { win.remove(); win = null; event({ t: 'close' }); };
-    win.firstChild.appendChild(x);
-    const place = () => { win.style.left = winPos[0] + 'px'; win.style.top = winPos[1] + 'px'; };
-    place();
+  const closeMenus = () => desk.querySelectorAll('.ctx, .startmenu').forEach(m => m.remove());
+  function menuAt(ev, items) {
+    closeMenus();
+    const [x, y] = deskXY(ev);
+    const m = el('div', 'ctx');
+    Object.assign(m.style, { left: Math.min(x, DESK_W - 230) + 'px', top: Math.min(y, DESK_H - BAR - items.length * 50 - 10) + 'px' });
+    for (const [label, fn] of items) { const b = el('button', '', label); b.onclick = () => { closeMenus(); fn(); }; m.appendChild(b); }
+    desk.appendChild(m);
+  }
+
+  // ---------- εικονίδια
+  function drawIcon(ic) {
+    if (!ic.el) { ic.el = el('div', 'dicon'); desk.appendChild(ic.el); }
+    const d = ic.el;
+    d.innerHTML = `<span>${ic.em}${ic.kind === 'app' ? '<i class="sc">↗</i>' : ''}</span><div class="nm"></div>`;
+    d.lastChild.textContent = ic.name;
+    d.style.left = ic.x + 'px'; d.style.top = ic.y + 'px';
     let start;
-    dragger(win.firstChild, (dx, dy) => { start = start || [...winPos]; winPos = [Math.max(0, Math.min(480, start[0] + dx)), Math.max(0, Math.min(230, start[1] + dy))]; place(); },
-      moved => { start = null; if (moved) event({ t: 'movewin' }); });
-    desk.appendChild(win);
-    event({ t: 'open', id: ic.id });
+    press(d, {
+      onTap: () => { closeMenus(); desk.querySelectorAll('.dicon').forEach(o => o.classList.remove('sel')); d.classList.add('sel'); },
+      onDouble: () => openWin(ic),
+      onLong: e => menuAt(e, [['📂 Άνοιγμα', () => openWin(ic)], ['✏️ Μετονομασία', () => rename(ic)]]),
+      onDrag: (dx, dy) => { start = start || [ic.x, ic.y]; ic.x = Math.max(0, Math.min(DESK_W - 130, start[0] + dx)); ic.y = Math.max(0, Math.min(DESK_H - BAR - 110, start[1] + dy)); d.style.left = ic.x + 'px'; d.style.top = ic.y + 'px'; },
+      onDragEnd: () => { start = null; event({ t: 'moveicon', id: ic.id }); },
+    });
   }
-  for (const ic of ICONS) {
-    const d = el('div', 'dicon', `<span>${ic.em}</span>${ic.name}`);
-    const place = () => { d.style.left = pos[ic.id][0] + 'px'; d.style.top = pos[ic.id][1] + 'px'; };
-    place();
-    let start;
-    dragger(d, (dx, dy) => { start = start || [...pos[ic.id]]; pos[ic.id] = [Math.max(0, Math.min(860, start[0] + dx)), Math.max(0, Math.min(400, start[1] + dy))]; place(); },
-      moved => {
-        start = null;
-        if (moved) return event({ t: 'moveicon', id: ic.id });
-        // διπλό κλικ: δύο πατήματα σε λιγότερο από μισό δευτερόλεπτο (δουλεύει και με δάχτυλο)
-        const now = Date.now();
-        for (const o of desk.querySelectorAll('.dicon')) o.classList.remove('sel');
-        d.classList.add('sel');
-        if (now - (lastTap[ic.id] || 0) < 500) { lastTap[ic.id] = 0; openWin(ic); } else lastTap[ic.id] = now;
-      });
-    desk.appendChild(d);
+  function rename(ic) {
+    const d = ic.el;
+    const inp = el('input', 'rn');
+    inp.value = ic.name;
+    d.lastChild.replaceWith(inp);
+    inp.focus(); inp.select();
+    let doneRn = false;
+    const commit = () => { if (doneRn) return; doneRn = true; ic.name = inp.value.trim() || ic.name; drawIcon(ic); event({ t: 'rename', id: ic.id, name: ic.name }); };
+    inp.onkeydown = e => { e.stopPropagation(); if (e.key === 'Enter') commit(); };
+    inp.onblur = commit;
+    say('⌨️ Γράψε το νέο όνομα και πάτα Enter (στον πίνακα: πληκτρολόγιο οθόνης).');
   }
+  function newFolder(ev) {
+    const n = icons.length;
+    const ic = { id: 'new' + nextNew++, kind: 'folder', em: '📁', name: 'Νέος φάκελος', body: '(Ο φάκελος είναι άδειος)', x: 16 + Math.floor(n / 4) * 140, y: 10 + (n % 4) * 122 };
+    icons.push(ic);
+    drawIcon(ic);
+    event({ t: 'newfolder' });
+    rename(ic); // όπως στα Windows: ο νέος φάκελος περιμένει όνομα
+  }
+
+  // ---------- παράθυρα
+  function geom(w) {
+    const H = DESK_H - BAR;
+    return w.state === 'max' ? [0, 0, DESK_W, H] : w.state === 'left' ? [0, 0, DESK_W / 2, H] : w.state === 'right' ? [DESK_W / 2, 0, DESK_W / 2, H] : [w.x, w.y, WIN_W, WIN_H];
+  }
+  function layout(w) {
+    const [x, y, ww, hh] = geom(w);
+    Object.assign(w.el.style, { left: x + 'px', top: y + 'px', width: ww + 'px', height: hh + 'px', display: w.min ? 'none' : 'flex', zIndex: w.z });
+    w.maxBtn.textContent = w.state === 'normal' ? '▢' : '❐';
+    drawBar();
+  }
+  const focus = w => { w.z = ++z; layout(w); };
+  function openWin(ic, from) {
+    closeMenus();
+    let w = wins[ic.id];
+    if (w) { w.min = false; focus(w); return event({ t: 'open', id: ic.id, kind: ic.kind, name: ic.name, from }); }
+    const n = Object.keys(wins).length;
+    w = wins[ic.id] = { ic, state: 'normal', x: 200 + n * 40, y: 30 + n * 30, min: false, z: ++z };
+    w.el = el('div', 'win', `<div class="title"><span>${ic.em}</span><span class="tn"></span></div><div class="body">${ic.body}</div>`);
+    w.el.querySelector('.tn').textContent = ic.name;
+    const title = w.el.firstChild;
+    const mk = (cls, txt, fn) => { const b = el('button', 'wb ' + cls, txt); b.onclick = e => { e.stopPropagation(); fn(); }; title.appendChild(b); return b; };
+    mk('mn', '—', () => { w.min = true; layout(w); event({ t: 'min', id: ic.id }); });
+    w.maxBtn = mk('mx', '▢', () => { const was = w.state; w.state = was === 'normal' ? 'max' : 'normal'; layout(w); event({ t: was === 'normal' ? 'max' : 'unmax', id: ic.id }); });
+    mk('x', '✕', () => { w.el.remove(); delete wins[ic.id]; drawBar(); event({ t: 'close', id: ic.id }); });
+    w.el.onpointerdown = () => focus(w);
+    // σύρσιμο από τη γραμμή τίτλου· στις άκρες: μεγιστοποίηση ή μισή οθόνη
+    let base, zone = null, wasSnapped = false;
+    const preview = el('div', 'snapprev');
+    press(title, {
+      onDouble: () => w.maxBtn.onclick({ stopPropagation() {} }),
+      onDragStart: ev => {
+        focus(w);
+        wasSnapped = w.state !== 'normal';
+        const [px, py] = deskXY(ev);
+        if (wasSnapped) { w.state = 'normal'; w.x = px - WIN_W / 2; w.y = Math.max(0, py - 20); layout(w); }
+        base = [w.x, w.y];
+      },
+      onDrag: (dx, dy, ev) => {
+        const [px, py] = deskXY(ev);
+        w.x = Math.max(-WIN_W + 80, Math.min(DESK_W - 80, base[0] + dx));
+        w.y = Math.max(0, Math.min(DESK_H - BAR - 40, base[1] + dy));
+        layout(w);
+        zone = py < 12 ? 'max' : px < 12 ? 'left' : px > DESK_W - 12 ? 'right' : null;
+        if (zone) {
+          const [x, y, ww, hh] = geom({ state: zone });
+          Object.assign(preview.style, { left: x + 'px', top: y + 'px', width: ww + 'px', height: hh + 'px' });
+          if (!preview.parentNode) desk.appendChild(preview);
+        } else preview.remove();
+      },
+      onDragEnd: () => {
+        preview.remove();
+        if (zone) { w.state = zone; layout(w); event({ t: 'snap', zone, id: ic.id }); zone = null; }
+        else event({ t: 'movewin', id: ic.id, wasSnapped });
+      },
+    });
+    desk.appendChild(w.el);
+    layout(w);
+    event({ t: 'open', id: ic.id, kind: ic.kind, name: ic.name, from });
+  }
+
+  // ---------- γραμμή εργασιών & Έναρξη
+  const bar = el('div', 'taskbar');
+  desk.appendChild(bar);
+  function drawBar() {
+    bar.innerHTML = '';
+    const st = el('button', 'startbtn', '⊞ Έναρξη');
+    st.onclick = e => { e.stopPropagation(); toggleStart(); };
+    bar.appendChild(st);
+    const top = Object.values(wins).filter(w => !w.min).sort((a, b) => b.z - a.z)[0];
+    // πρώτα οι καρφιτσωμένες εφαρμογές (ανοίγουν με ΕΝΑ κλικ), μετά όσα άλλα παράθυρα είναι ανοιχτά
+    const ids = [...PINNED, ...Object.keys(wins).filter(id => !PINNED.includes(id))];
+    for (const id of ids) {
+      const w = wins[id];
+      const ic = w ? w.ic : { id, kind: 'app', ...DESK_APPS[id] };
+      const b = el('button', 'tbtn' + (w ? ' open' : '') + (w === top ? ' on' : '') + (w && w.min ? ' min' : ''), ic.em);
+      b.title = ic.name;
+      b.onclick = e => {
+        e.stopPropagation();
+        if (!w) return openWin(ic, 'bar');
+        if (w.min) { w.min = false; focus(w); event({ t: 'restore', id }); }
+        else if (w === top) { w.min = true; layout(w); event({ t: 'min', id }); }
+        else { focus(w); event({ t: 'focus', id }); }
+      };
+      bar.appendChild(b);
+    }
+    const now = new Date();
+    bar.appendChild(el('span', 'clock', now.toLocaleTimeString('el-GR', { hour: '2-digit', minute: '2-digit' })));
+  }
+  function toggleStart() {
+    if (desk.querySelector('.startmenu')) return closeMenus();
+    closeMenus();
+    const m = el('div', 'startmenu', '<div class="sm-h">Όλες οι εφαρμογές</div>');
+    for (const [id, a] of Object.entries(DESK_APPS)) {
+      const b = el('button', '', `${a.em} ${a.name}`);
+      b.onclick = () => { closeMenus(); openWin({ id, kind: 'app', ...a }, 'start'); };
+      m.appendChild(b);
+    }
+    const off = el('button', 'off', '⏻ Τερματισμός');
+    off.onclick = () => {
+      closeMenus();
+      const dlg = el('div', 'dlg', '⏻ <b>Τερματισμός</b><br>Έτσι κλείνουμε σωστά τον υπολογιστή.<br><small>(Εδώ είναι μόνο εξάσκηση — δεν κλείνει τίποτα!)</small>');
+      const ok = el('button', '', 'Εντάξει');
+      ok.onclick = () => dlg.remove();
+      dlg.appendChild(ok);
+      desk.appendChild(dlg);
+      event({ t: 'shutdown' });
+    };
+    m.appendChild(off);
+    desk.appendChild(m);
+    event({ t: 'start' });
+  }
+  // άδειο σημείο: πάτημα κλείνει τα μενού · δεξί κλικ / παρατεταμένο πάτημα → μενού επιφάνειας εργασίας
+  press(desk, {
+    onTap: () => { closeMenus(); desk.querySelectorAll('.dicon').forEach(o => o.classList.remove('sel')); },
+    onLong: e => menuAt(e, [['📁 Νέος φάκελος', () => newFolder(e)], ['🔄 Ανανέωση', () => {}]]),
+  });
+  icons.forEach(drawIcon);
+  drawBar();
   drawTasks();
 };
 
