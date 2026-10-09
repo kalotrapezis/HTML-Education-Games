@@ -362,7 +362,7 @@
   .task.cur { background: #fff8e1; color: #3e2723; outline: 4px solid #ffb347; } .task.ok { background: #2e7d32; }
 
   /* ΒΗΜΑ-ΒΗΜΑ ΕΚΤΕΛΕΣΗ */
-  .code { width: 820px; background: #263238; border-radius: 14px; padding: 16px; font: 23px Consolas, monospace; align-self: stretch; overflow: hidden; }
+  .algo-code { width: 820px; background: #263238; border-radius: 14px; padding: 16px; font: 23px Consolas, monospace; align-self: stretch; overflow: hidden; }
   .cl-line { padding: 5px 10px; border-radius: 6px; white-space: pre-wrap; }
   .cl-line.cur { background: #ffb347; color: #3a2400; font-weight: bold; }
   .stepside { width: 560px; display: flex; flex-direction: column; gap: 14px; }
@@ -2729,7 +2729,7 @@ const escHTML = t => t.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g
 RENDER.stepper = (act, area) => {
   let si = -1;
   const vars = {};
-  const code = el('div', 'code'), side = el('div', 'stepside');
+  const code = el('div', 'algo-code'), side = el('div', 'stepside');
   const varsEl = el('div', 'vars'), note = el('div', 'note'), ask = el('div', 'ask'), btn = el('button', '', '▶ Επόμενο βήμα');
   side.append(varsEl, note, ask, btn);
   area.append(code, side);
