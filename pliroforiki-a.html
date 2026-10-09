@@ -1,0 +1,990 @@
+<!DOCTYPE html>
+<html lang="el">
+<head>
+<link rel="icon" type="image/svg+xml" href="favicon.svg">
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>Πληροφορική Α΄ — Διαδραστικό βιβλίο</title>
+<style>
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  html, body { height: 100%; overflow: hidden; }
+  body {
+    font-family: 'Segoe UI', Tahoma, sans-serif;
+    background: linear-gradient(135deg, #1e3c72, #2a5298 50%, #41a0d8);
+    color: #fff;
+    touch-action: none; user-select: none;
+  }
+  /* σταθερή «σκηνή» 1600×900 που μικραίνει ώστε να χωράει πάντα, χωρίς scroll/zoom */
+  .stage {
+    position: absolute; left: 50%; top: 50%;
+    width: 1600px; height: 900px;
+    transform: translate(-50%, -50%) scale(var(--s, 1));
+    padding: 24px 40px;
+    display: flex; flex-direction: column;
+  }
+  .screen { display: none; flex: 1; flex-direction: column; min-height: 0; }
+  .screen.active { display: flex; }
+
+  button {
+    font-family: inherit; border: none; border-radius: 14px; cursor: pointer;
+    font-weight: bold; color: #fff;
+    background: #ff9500; box-shadow: 0 5px 0 #c46c00;
+    padding: 14px 30px; font-size: 26px;
+  }
+  button:active { transform: translateY(3px); box-shadow: 0 2px 0 #c46c00; }
+  button.secondary { background: #5a6890; box-shadow: 0 5px 0 #3a4670; }
+  button:disabled { opacity: 0.35; cursor: default; }
+  .back {
+    color: #fff; text-decoration: none; background: rgba(0,0,0,0.55);
+    padding: 10px 18px; border-radius: 10px; font-size: 20px; font-weight: bold;
+  }
+
+  /* ΑΡΧΙΚΗ */
+  .home-head { display: flex; align-items: center; gap: 24px; }
+  .home-head h1 { flex: 1; text-align: center; font-size: 46px; margin-right: 120px; }
+  .tabs { display: flex; gap: 12px; justify-content: center; margin: 18px 0 20px; }
+  .tab { background: rgba(0,0,0,0.3); box-shadow: none; font-size: 22px; padding: 12px 22px; border: 3px solid transparent; }
+  .tab.on { border-color: #ffb347; background: rgba(255,179,71,0.18); }
+  .tab.soon { opacity: 0.5; }
+  .chapter-title { text-align: center; font-size: 28px; color: #ffb347; margin-bottom: 18px; }
+  .lessons { display: grid; grid-template-columns: repeat(3, 1fr); gap: 20px; }
+  .lesson {
+    background: rgba(0,0,0,0.35); box-shadow: none; border: 3px solid transparent; border-radius: 18px;
+    padding: 18px 22px; display: flex; align-items: center; gap: 18px; text-align: left; min-height: 150px;
+  }
+  .lesson:hover { border-color: #ffb347; }
+  .lesson .ico { font-size: 64px; }
+  .lesson .ttl { font-size: 25px; color: #ffb347; }
+  .lesson .sub { font-size: 17px; font-weight: normal; opacity: 0.8; margin-top: 6px; }
+  .lesson .prog { font-size: 18px; margin-top: 6px; color: #b9f6ca; }
+  .soon-box { text-align: center; font-size: 30px; opacity: 0.85; margin-top: 120px; line-height: 1.6; }
+
+  /* ΔΡΑΣΤΗΡΙΟΤΗΤΑ */
+  .topbar { display: flex; align-items: center; gap: 20px; }
+  .topbar .lesson-title { flex: 1; font-size: 30px; font-weight: bold; text-align: center; }
+  .pips { display: flex; gap: 8px; }
+  .pip { width: 22px; height: 22px; border-radius: 50%; background: rgba(255,255,255,0.25); }
+  .pip.done { background: #66bb6a; }
+  .pip.cur { outline: 3px solid #ffb347; }
+  .instr {
+    margin-top: 14px; background: rgba(0,0,0,0.3); border-radius: 14px; padding: 14px 22px;
+    font-size: 27px; line-height: 1.35; display: flex; gap: 16px; align-items: center;
+  }
+  .instr .kind { background: #ffb347; color: #3a2400; border-radius: 10px; padding: 4px 12px; font-size: 18px; font-weight: bold; white-space: nowrap; }
+  .instr .ref { margin-left: auto; font-size: 17px; opacity: 0.75; white-space: nowrap; }
+  .area { flex: 1; min-height: 0; margin-top: 16px; display: flex; gap: 40px; align-items: center; justify-content: center; position: relative; }
+  .bottombar { display: flex; align-items: center; gap: 20px; margin-top: 12px; min-height: 76px; }
+  .msg { flex: 1; text-align: center; font-size: 27px; }
+  .msg.good { color: #b9f6ca; }
+  .msg.bad { color: #ffcdd2; }
+  @keyframes pulse { 0%,100% { transform: scale(1); } 50% { transform: scale(1.08); } }
+  #nextBtn.pulse { animation: pulse 1s infinite; background: #43a047; box-shadow: 0 5px 0 #1b5e20; }
+
+  /* INFO */
+  .info { max-width: 1250px; display: flex; flex-direction: column; gap: 18px; }
+  .info .card { background: #fff; color: #1e3c72; border-radius: 18px; padding: 22px 30px; font-size: 32px; line-height: 1.4; display: flex; gap: 22px; align-items: center; }
+  .info .card .em { font-size: 64px; }
+  .info .card b { color: #e65100; }
+
+  /* ΣΕΙΡΑ */
+  .order { display: grid; grid-template-columns: 1fr 1fr; gap: 40px; width: 100%; height: 100%; }
+  .col { display: flex; flex-direction: column; gap: 8px; min-height: 0; }
+  .col h3 { font-size: 22px; opacity: 0.85; text-align: center; }
+  .list { flex: 1; display: flex; flex-direction: column; gap: var(--gap, 12px); }
+  .slot { flex: 1; max-height: 110px; display: flex; align-items: center; gap: 14px; border: 3px dashed rgba(255,255,255,0.35); border-radius: 16px; padding: 0 12px; }
+  .num { width: 50px; height: 50px; flex: none; border-radius: 50%; background: rgba(0,0,0,0.4); display: flex; align-items: center; justify-content: center; font-size: 26px; font-weight: bold; color: #ffb347; }
+  .step { flex: 1; max-height: 110px; display: flex; align-items: center; gap: 14px; background: #fff; color: #1e3c72; border-radius: 14px; padding: 6px 16px; font-size: var(--fs, 28px); font-weight: bold; box-shadow: 0 5px 0 rgba(0,0,0,0.3); cursor: pointer; }
+  .slot .step { align-self: stretch; margin: 6px 0; }
+  .step .em { font-size: 1.5em; flex: none; }
+  .step.wrong { background: #ffcdd2; outline: 5px solid #e53935; }
+  .step.right { background: #c8e6c9; }
+  .step.hidden { visibility: hidden; }
+
+  /* ΠΛΕΓΜΑ */
+  .grid { position: relative; background: #fff8e1; border: 4px solid #ef8a2c; border-radius: 6px; flex: none; }
+  .grid.garden { background: #7cb342; border-color: #558b2f; }
+  .cell { position: absolute; border: 2px solid #f0b37a; display: flex; align-items: center; justify-content: center; }
+  .garden .cell { border: 3px solid #689f38; background: #8bc34a; }
+  .cell.obstacle { background: #e8f5e9; }
+  .cell.pond { background: radial-gradient(ellipse at center, #4fc3f7 0 55%, #fff8e1 56%); }
+  .cell.tap { cursor: pointer; }
+  .cell.tap:hover { background: #ffe0b2; }
+  .cell.hit { background: #c8e6c9 !important; }
+  .cell.miss { background: #ffcdd2 !important; }
+  .cell .it { line-height: 1; }
+  .sprite { position: absolute; display: flex; align-items: center; justify-content: center; transition: left 0.35s, top 0.35s, transform 0.35s; pointer-events: none; z-index: 3; }
+  .sprite.crash { animation: shake 0.4s; }
+  .trail { position: absolute; inset: 0; pointer-events: none; z-index: 2; }
+  @keyframes shake { 0%,100% { margin-left: 0; } 25% { margin-left: -10px; } 75% { margin-left: 10px; } }
+
+  /* ΕΝΤΟΛΕΣ (μπλε πλακίδια σαν του ScratchJr) */
+  .blk { display: inline-flex; flex-direction: column; align-items: center; justify-content: center; width: 70px; height: 70px; border-radius: 12px; background: #29a3e8; box-shadow: 0 4px 0 #1a6fa0; color: #fff; font-size: 44px; font-weight: bold; line-height: 1; position: relative; }
+  .blk.robot { background: #43a047; box-shadow: 0 4px 0 #1b5e20; }
+  .blk .n { position: absolute; bottom: -6px; background: #fff; color: #1a6fa0; border-radius: 8px; font-size: 18px; padding: 0 8px; }
+  .strip { display: flex; flex-wrap: wrap; gap: 10px; align-items: center; }
+  .side { display: flex; flex-direction: column; gap: 20px; width: 640px; }
+  .palette { display: grid; grid-template-columns: repeat(4, 1fr); gap: 14px; }
+  .palette button { display: flex; flex-direction: column; align-items: center; gap: 4px; padding: 10px 6px; font-size: 18px; background: #29a3e8; box-shadow: 0 5px 0 #1a6fa0; }
+  .palette.robot button { background: #43a047; box-shadow: 0 5px 0 #1b5e20; }
+  .palette button .g { font-size: 52px; line-height: 1; }
+  .prog-box { background: rgba(0,0,0,0.3); border-radius: 16px; padding: 16px; min-height: 120px; }
+  .prog-box h4 { font-size: 20px; opacity: 0.85; margin-bottom: 10px; }
+  .prog-box .slotbox { width: 70px; height: 70px; border: 3px dashed rgba(255,255,255,0.45); border-radius: 12px; }
+  .prog-box .blk { cursor: pointer; }
+  .controls { display: flex; gap: 14px; }
+  .found { font-size: 22px; color: #b9f6ca; }
+
+  /* ΕΠΙΛΟΓΗ ΠΡΟΓΡΑΜΜΑΤΟΣ / ΕΡΩΤΗΣΕΙΣ */
+  .choices { display: flex; flex-direction: column; gap: 18px; width: 640px; }
+  .choice { display: flex; align-items: center; gap: 18px; background: rgba(255,255,255,0.14); box-shadow: 0 5px 0 rgba(0,0,0,0.3); padding: 14px 20px; text-align: left; font-size: 30px; }
+  .choice .letter { width: 56px; height: 56px; flex: none; border-radius: 50%; background: #fff; color: #1e3c72; display: flex; align-items: center; justify-content: center; font-size: 30px; }
+  .choice.right { background: #2e7d32; box-shadow: 0 5px 0 #1b5e20; }
+  .choice.wrong { background: #c62828; box-shadow: 0 5px 0 #7f0000; }
+  .q-wrap { display: flex; flex-direction: column; align-items: center; gap: 22px; width: 1250px; }
+  .q-wrap .q { font-size: 36px; font-weight: bold; text-align: center; }
+  .q-wrap .choices { width: 100%; display: grid; grid-template-columns: 1fr 1fr; }
+  .q-wrap .count { font-size: 22px; opacity: 0.8; }
+
+  /* ΤΑΙΡΙΑΣΜΑ */
+  .match { display: grid; grid-template-columns: 1fr 1fr; gap: 120px; width: 1250px; }
+  .match .col { gap: 16px; }
+  .pair { background: #fff; color: #1e3c72; box-shadow: 0 5px 0 rgba(0,0,0,0.3); font-size: 28px; padding: 16px 20px; text-align: left; min-height: 84px; }
+  .pair.sel { outline: 6px solid #ffb347; }
+  .pair.ok { background: #c8e6c9; cursor: default; }
+  .pair.no { animation: shake 0.4s; background: #ffcdd2; }
+
+  /* ΤΑΞΙΝΟΜΗΣΗ */
+  .sort { display: flex; flex-direction: column; align-items: center; gap: 30px; }
+  .sort .item { background: #fff; color: #1e3c72; border-radius: 22px; padding: 26px 50px; font-size: 44px; font-weight: bold; display: flex; gap: 24px; align-items: center; box-shadow: 0 8px 0 rgba(0,0,0,0.3); }
+  .sort .item .em { font-size: 90px; }
+  .sort .bins { display: flex; gap: 40px; }
+  .sort .bins button { font-size: 34px; padding: 24px 40px; min-width: 420px; }
+  .sort .bins button.b0 { background: #2e7d32; box-shadow: 0 6px 0 #1b5e20; }
+  .sort .bins button.b1 { background: #c62828; box-shadow: 0 6px 0 #7f0000; }
+  .sort .count { font-size: 22px; opacity: 0.8; }
+
+  /* ΤΕΛΕΙΕΣ */
+  .dots svg { width: 600px; height: 600px; background: #fff; border-radius: 18px; }
+  .reveal { width: 560px; display: flex; flex-direction: column; gap: 20px; align-items: center; text-align: center; font-size: 30px; }
+  .reveal .big { font-size: 140px; }
+</style>
+</head>
+<body>
+<div class="stage" id="stage">
+
+  <div class="screen active" id="homeScreen">
+    <div class="home-head">
+      <a class="back" href="index.html">← Πίσω</a>
+      <h1>💻 Πληροφορική Α΄ Δημοτικού</h1>
+    </div>
+    <div class="tabs" id="tabs"></div>
+    <div class="chapter-title" id="chapterTitle"></div>
+    <div class="lessons" id="lessons"></div>
+  </div>
+
+  <div class="screen" id="actScreen">
+    <div class="topbar">
+      <button class="secondary" id="homeBtn">← Μαθήματα</button>
+      <div class="lesson-title" id="lessonTitle"></div>
+      <div class="pips" id="pips"></div>
+    </div>
+    <div class="instr"><span class="kind" id="kind"></span><span id="instr"></span><span class="ref" id="ref"></span></div>
+    <div class="area" id="area"></div>
+    <div class="bottombar">
+      <button class="secondary" id="prevBtn">◀ Πίσω</button>
+      <div class="msg" id="msg"></div>
+      <button id="nextBtn">Επόμενο ▶</button>
+    </div>
+  </div>
+</div>
+
+<script>
+// ============================================================================
+// ΠΕΡΙΕΧΟΜΕΝΟ — από τα βιβλία «Πληροφορική Α΄ Δημοτικού»:
+//   έκδ. 6.0 (Υπατία & Ήρωνας, «σελ.» = αρίθμηση βιβλίου) και έκδ. v09 (ΙΕΠ).
+// Οι εικόνες των βιβλίων δεν μπαίνουν εδώ (άδειες Freepik κ.ά.) — μόνο emoji/σχέδια.
+// ============================================================================
+const P = s => s.match(/[UDLRFBlr]\d*/g) || [];   // 'RRU' ή 'R6 U2' → ['R','R','U'] / ['R6','U2']
+
+const SQUIRREL = '🐿️', ACORN = '🌰', CENTIPEDE = '🐛', DUCK = '🦆', REED = '🌾', BEE = '🐝', SUNFLOWER = '🌻';
+
+const BOOK = [
+  {
+    tab: 'Κεφ. 1', title: 'Αλγοριθμική – Προγραμματισμός – Ρομποτική',
+    lessons: [
+      {
+        icon: '🧭', title: 'Τι είναι αλγόριθμος;', sub: 'Πώς λύνω ένα πρόβλημα',
+        acts: [
+          { type: 'info', ref: 'έκδ. v09 σελ. 13 · έκδ. 6.0 σελ. 10–12', text: 'Διαβάζουμε μαζί:', cards: [
+            ['🧭', '<b>Αλγόριθμος:</b> Μια σειρά βημάτων με σκοπό τη λύση ενός προβλήματος.'],
+            ['🎒', 'Η Υπατία ξεχνάει πράγματα όταν ετοιμάζει την τσάντα της. Ο Ήρωνας της δίνει <b>μικρά και απλά βήματα</b>.'],
+            ['💡', 'Μπορείς να λύσεις ευκολότερα ένα πρόβλημα αν το περιγράψεις με μικρά και απλά βήματα.'],
+          ] },
+          { type: 'order', ref: 'έκδ. 6.0 σελ. 10', title: 'Ετοιμάζω την τσάντα μου', text: 'Βοήθησε την Υπατία: βάλε τα 3 βήματα στη σωστή σειρά.', steps: [
+            ['📅', 'Δες το πρόγραμμα της επόμενης ημέρας.'],
+            ['📚', 'Μάζεψε τα πράγματα που χρειάζεσαι.'],
+            ['🎒', 'Βάλε τα πράγματά σου μέσα στην τσάντα σου.'],
+          ], before: 'chain' },
+          { type: 'order', ref: 'έκδ. v09 σελ. 13', title: 'Προετοιμασία για το σχολείο', text: 'Πρόβλημα: Προετοιμασία για το σχολείο. Βάλε τα βήματα στη σειρά.', steps: [
+            ['⏰', 'Ξυπνάω.'], ['🧼', 'Πλένω το πρόσωπό μου.'], ['🥣', 'Τρώω το πρωινό μου.'],
+            ['👕', 'Ντύνομαι.'], ['🎒', 'Ετοιμάζω την τσάντα μου.'], ['🚶', 'Πηγαίνω στο σχολείο.'],
+          ], before: [[0,1],[0,2],[0,3],[0,4],[1,5],[2,5],[3,5],[4,5]] },
+          { type: 'order', ref: 'έκδ. v09 σελ. 14', title: 'Πρόσθεση 2 + 2', text: 'Πρόβλημα: Πρόσθεση 2 + 2. Ποια είναι η σειρά;', steps: [
+            ['✌️', 'Σηκώνω 2 δάχτυλα στο ένα χέρι μου.'], ['✌️', 'Σηκώνω 2 δάχτυλα στο άλλο χέρι μου.'],
+            ['💭', 'Μετράω οπτικά με το μυαλό μου όλα τα δάχτυλα.'], ['🗣️', 'Λέω δυνατά το αποτέλεσμα.'],
+          ], before: [[0,2],[1,2],[2,3]] },
+          { type: 'order', ref: 'έκδ. v09 σελ. 15', title: 'Πλύσιμο δοντιών', text: 'Βάζω στη σειρά τις εικόνες για να πλύνω τα δόντια μου.', steps: [
+            ['✋', 'Παίρνω την οδοντόβουρτσα.'], ['🧴', 'Βάζω οδοντόκρεμα.'], ['🚰', 'Ανοίγω τη βρύση.'],
+            ['😁', 'Βουρτσίζω τα δόντια για 2 λεπτά.'], ['💦', 'Ξεπλένω το στόμα.'], ['🚱', 'Κλείνω τη βρύση.'],
+          ], before: [[0,1],[1,3],[3,4],[2,4],[4,5]] },
+          { type: 'dots', ref: 'έκδ. v09 σελ. 15', text: 'Πρόβλημα: Σχέδιο. Ενώστε με τη σειρά τους αριθμούς από το 1 έως το 10.',
+            points: [[20,14],[80,14],[80,58],[56,58],[56,72],[70,84],[30,84],[44,72],[44,58],[20,58]], close: true,
+            reveal: ['🖥️', 'Μια οθόνη υπολογιστή!', 'Τι θα συμβεί αν δεν ενωθούν οι τελίτσες με τη σωστή σειρά;'] },
+          { type: 'dots', ref: 'έκδ. v09 σελ. 15', text: 'Ενώστε με τη σειρά τους αριθμούς από το 1 έως το 8.',
+            points: [[34,18],[66,18],[66,40],[86,40],[86,76],[14,76],[14,40],[34,40]], close: true,
+            reveal: ['🖨️', 'Ένας εκτυπωτής!', 'Όταν ακολουθούμε τη σωστή σειρά, το σχέδιο βγαίνει σωστό.'] },
+        ],
+      },
+      {
+        icon: '🔢', title: 'Η σειρά έχει σημασία!', sub: 'Ποιο είναι πριν και ποιο μετά;',
+        acts: [
+          { type: 'info', ref: 'έκδ. 6.0 σελ. 13–14', text: 'Διαβάζουμε μαζί:', cards: [
+            ['🔢', 'Όταν περιγράφουμε ένα πρόβλημα με απλά και μικρά βήματα, πρέπει αυτά να βρίσκονται <b>στη σωστή σειρά</b>!'],
+            ['✏️', 'Το βήμα «Ετοίμασε την κασετίνα σου» πρέπει να βρίσκεται <b>πριν</b> από το βήμα «Βάλε την κασετίνα στην τσάντα».'],
+          ] },
+          { type: 'order', ref: 'έκδ. 6.0 σελ. 11–14', title: 'Ετοιμάζω την τσάντα μου', text: 'Τα βήματα έγιναν πιο μικρά και πιο απλά. Βάλ’ τα στη σωστή σειρά!', steps: [
+            ['📅', 'Δες το πρόγραμμα της επόμενης ημέρας.'], ['📚', 'Διάλεξε τα σωστά βιβλία.'],
+            ['📓', 'Διάλεξε τα σωστά τετράδια.'], ['✏️', 'Ετοίμασε την κασετίνα σου.'],
+            ['🎒', 'Βάλε τα τετράδια και τα βιβλία στην τσάντα σου.'], ['👝', 'Βάλε την κασετίνα στην τσάντα σου.'],
+            ['🤐', 'Κλείσε την τσάντα σου.'],
+          ], before: [[0,1],[0,2],[0,3],[1,4],[2,4],[3,5],[4,6],[5,6]] },
+          { type: 'order', ref: 'έκδ. 6.0 σελ. 16', title: 'Κουλουράκια', text: 'Βοήθησε τον Ήρωνα να φτιάξει κουλουράκια! Βάλε τα βήματα στη σειρά.', steps: [
+            ['📖', 'Διαβάζω τη συνταγή.'], ['🥣', 'Φτιάχνω τη ζύμη για κουλουράκια.'],
+            ['👐', 'Πλάθω κουλουράκια σε διάφορα σχήματα.'], ['🔥', 'Ψήνω τα κουλουράκια στον φούρνο.'],
+          ], before: 'chain' },
+          { type: 'order', ref: 'έκδ. v09 σελ. 40', title: 'Δημητριακά', text: 'Βοηθήστε τον Δημήτρη να ετοιμάσει τα δημητριακά. Υπάρχουν πολλές σωστές λύσεις!', steps: [
+            ['🗄️', 'Ανοίγω το ντουλάπι και παίρνω τα δημητριακά.'], ['🥣', 'Τοποθετώ τα δημητριακά στο μπολ.'],
+            ['🥛', 'Ανοίγω το ψυγείο και βγάζω το γάλα.'], ['🫗', 'Ρίχνω το γάλα στο μπολ.'],
+          ], before: [[0,1],[2,3]] },
+        ],
+      },
+      {
+        icon: '➡️', title: 'Φτιάχνω το πρώτο μου πρόγραμμα', sub: 'Εντολές κίνησης',
+        acts: [
+          { type: 'info', ref: 'έκδ. 6.0 σελ. 17–18 · έκδ. v09 σελ. 19', text: 'Διαβάζουμε μαζί:', cards: [
+            ['🧩', 'Οι εντολές: <span class="blk">↑</span> Κινήσου πάνω, <span class="blk">↓</span> κάτω, <span class="blk">←</span> αριστερά, <span class="blk">→</span> δεξιά.'],
+            ['🐛', 'Κάθε εντολή με κάνει να κινούμαι <b>ένα τετράγωνο</b> πιο πέρα!'],
+            ['💻', 'Όταν βάζω εντολές στη σειρά φτιάχνω ένα <b>πρόγραμμα</b> ή αλλιώς <b>προγραμματίζω</b>.'],
+          ] },
+          { type: 'trace', ref: 'έκδ. 6.0 σελ. 18', text: 'Πού θα φτάσει το σκιουράκι με αυτές τις εντολές; Πάτησε το τετράγωνο.',
+            grid: { cols: 4, rows: 4, start: [0, 3], actor: SQUIRREL }, program: P('UU') },
+          { type: 'trace', ref: 'έκδ. 6.0 σελ. 18', text: 'Πού θα φτάσει το σκιουράκι; Πάτησε το τετράγωνο.',
+            grid: { cols: 4, rows: 4, start: [0, 0], actor: SQUIRREL }, program: P('RRD') },
+          { type: 'trace', ref: 'έκδ. 6.0 σελ. 18', text: 'Πού θα φτάσει το σκιουράκι; Πάτησε το τετράγωνο.',
+            grid: { cols: 4, rows: 4, start: [0, 2], actor: SQUIRREL }, program: P('UURR') },
+          { type: 'trace', ref: 'έκδ. 6.0 σελ. 18', text: 'Πού θα φτάσει το σκιουράκι; Πάτησε το τετράγωνο.',
+            grid: { cols: 4, rows: 4, start: [3, 1], actor: SQUIRREL }, program: P('LLLD') },
+          { type: 'program', ref: 'έκδ. 6.0 σελ. 19', text: 'Βοήθησε το σκιουράκι να φτάσει στην τροφή του! Δώσε τις εντολές με τη σωστή σειρά.',
+            grid: { cols: 4, rows: 4, start: [3, 3], actor: SQUIRREL, goals: [[1, 0, ACORN]] }, slots: 5 },
+          { type: 'program', ref: 'έκδ. 6.0 σελ. 19', text: 'Βοήθησε το σκιουράκι να φτάσει στην τροφή του!',
+            grid: { cols: 4, rows: 4, start: [0, 0], actor: SQUIRREL, goals: [[3, 2, ACORN]] }, slots: 5 },
+          { type: 'program', ref: 'έκδ. v09 σελ. 20', text: 'Η μελισσούλα πήγε στο λουλούδι με → → → ↑ ↑. Σχεδιάστε μια ΑΛΛΗ διαδρομή για να πάρει το νέκταρ.',
+            grid: { cols: 4, rows: 3, start: [0, 2], actor: BEE, goals: [[3, 0, SUNFLOWER]] }, differentFrom: P('RRRUU') },
+        ],
+      },
+      {
+        icon: '🐛', title: 'Πού θα φτάσει η σαρανταποδαρούσα;', sub: 'Εκτελώ εγώ τις εντολές',
+        acts: [
+          { type: 'trace', ref: 'έκδ. 6.0 σελ. 21', text: 'Πού θα φτάσει η σαρανταποδαρούσα; Πάτησε το τετράγωνο.', grid: { cols: 4, rows: 4, start: [0, 2], actor: CENTIPEDE }, program: P('UURR') },
+          { type: 'trace', ref: 'έκδ. 6.0 σελ. 21', text: 'Πού θα φτάσει η σαρανταποδαρούσα;', grid: { cols: 4, rows: 4, start: [0, 2], actor: CENTIPEDE }, program: P('RURU') },
+          { type: 'trace', ref: 'έκδ. 6.0 σελ. 21', text: 'Πού θα φτάσει η σαρανταποδαρούσα;', grid: { cols: 4, rows: 4, start: [3, 0], actor: CENTIPEDE }, program: P('LLDRRU') },
+          { type: 'trace', ref: 'έκδ. 6.0 σελ. 22', text: 'Πού θα φτάσει η σαρανταποδαρούσα;', grid: { cols: 4, rows: 4, start: [1, 0], actor: CENTIPEDE }, program: P('LDD') },
+          { type: 'trace', ref: 'έκδ. 6.0 σελ. 22', text: 'Πού θα φτάσει η σαρανταποδαρούσα;', grid: { cols: 4, rows: 4, start: [3, 1], actor: CENTIPEDE }, program: P('DLL') },
+          { type: 'trace', ref: 'έκδ. 6.0 σελ. 22', text: 'Πού θα φτάσει η σαρανταποδαρούσα;', grid: { cols: 4, rows: 4, start: [0, 2], actor: CENTIPEDE }, program: P('RRUU') },
+          { type: 'pick', ref: 'έκδ. 6.0 σελ. 23', text: 'Ποιο πρόγραμμα ταιριάζει με το μονοπάτι της σαρανταποδαρούσας;',
+            grid: { cols: 4, rows: 4, start: [1, 3], actor: CENTIPEDE }, path: P('RUU'), options: [P('RDL'), P('RUU'), P('URD')] },
+          { type: 'pick', ref: 'έκδ. 6.0 σελ. 23', text: 'Ποιο πρόγραμμα ταιριάζει με το μονοπάτι;',
+            grid: { cols: 4, rows: 4, start: [1, 0], actor: CENTIPEDE }, path: P('RDL'), options: [P('RDL'), P('RUU'), P('URD')] },
+          { type: 'pick', ref: 'έκδ. 6.0 σελ. 23', text: 'Ποιο πρόγραμμα ταιριάζει με το μονοπάτι;',
+            grid: { cols: 4, rows: 4, start: [1, 3], actor: CENTIPEDE }, path: P('URD'), options: [P('RDL'), P('RUU'), P('URD')] },
+        ],
+      },
+      {
+        icon: '🦆', title: 'Σχεδιάζοντας το μονοπάτι', sub: 'Αποφεύγω τα εμπόδια',
+        acts: [
+          { type: 'program', ref: 'έκδ. 6.0 σελ. 24–25', text: 'Βοήθησε την πάπια να φτάσει στη λιμνούλα. Δεν πρέπει να περάσει από τα καλάμια! Βρες 2 μονοπάτια.',
+            grid: { cols: 4, rows: 4, start: [0, 3], actor: DUCK, goals: [[3, 0, '', 'pond']], obstacles: [[0, 1], [1, 3]] }, slots: 6, paths: 2 },
+          { type: 'program', ref: 'έκδ. 6.0 σελ. 25–26', text: 'Βρες δύο μονοπάτια που μπορεί να ακολουθήσει η πάπια για να φτάσει στη λιμνούλα.',
+            grid: { cols: 4, rows: 4, start: [0, 3], actor: DUCK, goals: [[3, 0, '', 'pond']], obstacles: [[1, 1], [3, 2], [2, 3]] }, slots: 6, paths: 2 },
+          { type: 'info', ref: 'έκδ. 6.0 σελ. 26', text: 'Μπράβο!', cards: [
+            ['👩‍💻', 'Τα προγράμματα γράφονται από ανθρώπους που ονομάζονται <b>προγραμματιστές</b>.'],
+            ['🎉', '«Μπράβο, Υπατία! Μόλις έγινες μια νέα προγραμματίστρια.»'],
+          ] },
+        ],
+      },
+      {
+        icon: '🐱', title: 'Προγραμματίζω στον υπολογιστή', sub: 'ScratchJr',
+        acts: [
+          { type: 'info', ref: 'έκδ. 6.0 σελ. 27–34 · έκδ. v09 σελ. 21–22', text: 'Διαβάζουμε μαζί:', cards: [
+            ['🛠️', 'Οι προγραμματιστές φτιάχνουν τα προγράμματά τους σε <b>περιβάλλοντα προγραμματισμού</b>. Ένα τέτοιο είναι το <b>ScratchJr</b>.'],
+            ['🔢', 'Το κουτάκι κάτω από μια εντολή λέει πόσα βήματα θα κάνει ο ήρωας: <span class="blk">→<span class="n">6</span></span> = 6 βήματα δεξιά.'],
+            ['👻', 'Οι ροζ εντολές <b>ΕΜΦΑΝΙΣΟΥ</b> και <b>ΕΞΑΦΑΝΙΣΟΥ</b> εμφανίζουν και εξαφανίζουν τον ήρωα.'],
+          ] },
+          { type: 'mcq', ref: 'έκδ. 6.0 σελ. 29–31', text: 'Το ίδιο αποτέλεσμα με λιγότερες εντολές! Ποιο πρόγραμμα κάνει ακριβώς το ίδιο;', questions: [
+            { prog: P('RRRRRR'), options: [P('R6'), P('R3'), P('L6')], answer: 0 },
+            { prog: P('UUURR'), options: [P('U2 R3'), P('U3 R2'), P('R5')], answer: 1 },
+            { prog: P('LLDDDD'), options: [P('L2 D4'), P('D2 L4'), P('L4 D2')], answer: 0 },
+          ] },
+          { type: 'match', ref: 'έκδ. 6.0 σελ. 34', text: 'Εντολές που έμαθα: ταίριαξε κάθε εντολή με αυτό που κάνει.', pairs: [
+            ['→ ΚΙΝΗΣΟΥ ΔΕΞΙΑ', 'Ένα τετράγωνο δεξιά'],
+            ['↑ ΚΙΝΗΣΟΥ ΠΑΝΩ', 'Ένα τετράγωνο πάνω'],
+            ['🏁 ΠΗΓΑΙΝΕ ΣΤΗΝ ΑΡΧΗ', 'Ξεκινά πάντα από το ίδιο σημείο'],
+            ['👀 ΕΜΦΑΝΙΣΟΥ', 'Ο ήρωας φαίνεται'],
+            ['👻 ΕΞΑΦΑΝΙΣΟΥ', 'Ο ήρωας κρύβεται'],
+          ] },
+          { type: 'order', ref: 'έκδ. 6.0 σελ. 33', title: 'Ο πύραυλος γυρίζει στη Γη', text: 'Βάλε το πρόγραμμα του πύραυλου στη σειρά. Προσοχή! Η σειρά έχει σημασία!', steps: [
+            ['🏁', 'ΠΗΓΑΙΝΕ ΣΤΗΝ ΑΡΧΗ'], ['👀', 'ΕΜΦΑΝΙΣΟΥ'], ['🚀', 'ΚΙΝΗΣΟΥ ΠΑΝΩ 4 βήματα'], ['👻', 'ΕΞΑΦΑΝΙΣΟΥ'],
+          ], before: [[0,2],[1,2],[2,3]] },
+        ],
+      },
+      {
+        icon: '🤖', title: 'Τα ρομπότ στη ζωή μας', sub: 'Τι μπορούν να κάνουν;',
+        acts: [
+          { type: 'info', ref: 'έκδ. 6.0 σελ. 35–36 · έκδ. v09 σελ. 30', text: 'Διαβάζουμε μαζί:', cards: [
+            ['🤖', 'Τα <b>ρομπότ</b> είναι μηχανές που βοηθούν τους ανθρώπους σε δουλειές δύσκολες, επικίνδυνες ή κουραστικές.'],
+            ['🧑‍🔧', 'Οι άνθρωποι ελέγχουν τα ρομπότ και τους λένε τι να κάνουν, δίνοντάς τους <b>εντολές</b>.'],
+            ['🏛️', '<b>Τάλως:</b> το πρώτο ρομπότ της ελληνικής μυθολογίας — γίγαντας από χαλκό, φύλακας της Κρήτης.'],
+          ] },
+          { type: 'sort', ref: 'έκδ. 6.0 σελ. 35–36', text: 'Μπορούν τα ρομπότ να το κάνουν;', bins: ['✅ Μπορούν', '❌ Δεν μπορούν'], items: [
+            ['🚶', 'Να περπατάνε', 0], ['🗣️', 'Να μιλάνε', 0], ['👂', 'Να ακούν', 0], ['👀', 'Να βλέπουν', 0],
+            ['📦', 'Να μεταφέρουν αντικείμενα', 0], ['🧮', 'Να κάνουν υπολογισμούς', 0],
+            ['😫', 'Να κουράζονται', 1], ['🍽️', 'Να τρώνε', 1], ['😢', 'Να κλαίνε', 1],
+            ['😂', 'Να γελάνε', 1], ['😴', 'Να κοιμούνται', 1],
+          ] },
+          { type: 'match', ref: 'έκδ. v09 σελ. 32', text: 'Χρήση ρομπότ: κάντε τη σωστή αντιστοίχιση.', pairs: [
+            ['🧹 Ρομποτική σκούπα', '🏠 Σπίτι'],
+            ['🩺 Ρομπότ στην ιατρική', '🏥 Νοσοκομείο'],
+            ['🦾 Ρομπότ στη βιομηχανία', '🚗 Αυτοκίνητο'],
+            ['🛰️ Ρομπότ στο διάστημα', '🔴 Πλανήτης Άρης'],
+            ['🏛️ Τάλως', '🏝️ Κρήτη'],
+          ] },
+        ],
+      },
+      {
+        icon: '🐞', title: 'Προγραμματίζω το ρομπότ-πασχαλίτσα', sub: 'Μπροστά, πίσω, στρίψε',
+        acts: [
+          { type: 'info', ref: 'έκδ. 6.0 σελ. 37–38', text: 'Διαβάζουμε μαζί:', cards: [
+            ['🤖', 'Ένα ρομπότ καταλαβαίνει <b>μόνο συγκεκριμένες εντολές</b>.'],
+            ['🐞', 'Εντολές: <span class="blk robot">⬆</span> 1 βήμα μπροστά, <span class="blk robot">⬇</span> 1 βήμα πίσω, <span class="blk robot">↶</span> στρίψε αριστερά, <span class="blk robot">↷</span> στρίψε δεξιά.'],
+            ['⚠️', 'Προσοχή! Το «Στρίψε δεξιά» και το «Στρίψε αριστερά» <b>στρίβουν</b> το ρομπότ, αλλά <b>δεν το προχωράνε</b> κανένα βήμα!'],
+          ] },
+          { type: 'program', mode: 'robot', ref: 'έκδ. 6.0 σελ. 38', text: 'Προγραμμάτισε το ρομπότ ώστε να φτάσει στη γαλάζια μαργαρίτα.',
+            grid: { cols: 4, rows: 3, start: [0, 2], heading: 0, garden: true, goals: [[3, 0, 'flower:#81d4fa']], decor: [[1, 2, 'flower:#fff'], [3, 2, 'flower:#fafafa']] }, slots: 6 },
+          { type: 'program', mode: 'robot', ref: 'έκδ. 6.0 σελ. 39', text: 'Πήγαινε στην κόκκινη καμέλια, αφού περάσεις πρώτα από την κίτρινη μαργαρίτα.',
+            grid: { cols: 7, rows: 5, start: [0, 4], heading: 0, garden: true,
+              goals: [[0, 1, 'flower:#ffb300'], [3, 0, 'flower:#e53935']],
+              decor: [[2, 1, 'flower:#ab47bc'], [5, 1, '🌻'], [3, 2, 'flower:#81d4fa'], [5, 3, 'flower:#ce93d8'], [1, 4, 'flower:#fff'], [3, 4, 'flower:#fafafa'], [6, 4, 'flower:#81d4fa']] }, slots: 8 },
+          { type: 'program', mode: 'robot', ref: 'έκδ. v09 σελ. 33', text: 'Βοηθήστε την πασχαλίτσα να πάει στο κόκκινο τετράγωνο.',
+            grid: { cols: 7, rows: 5, start: [0, 4], heading: 0, goals: [[0, 1, '🟥']],
+              decor: [[1, 0, '🔺'], [4, 0, '🟠'], [3, 1, '🔷'], [1, 2, '🔵'], [4, 2, '🟩'], [1, 3, '🔶'], [5, 3, '🟡'], [2, 4, '⭐'], [4, 4, '❤️']] } },
+          { type: 'program', mode: 'robot', ref: 'έκδ. v09 σελ. 33', text: 'Τώρα δώστε τις εντολές για να πάει στην κόκκινη καρδούλα.',
+            grid: { cols: 7, rows: 5, start: [0, 4], heading: 0, goals: [[4, 4, '❤️']],
+              decor: [[1, 0, '🔺'], [4, 0, '🟠'], [0, 1, '🟥'], [3, 1, '🔷'], [1, 2, '🔵'], [4, 2, '🟩'], [1, 3, '🔶'], [5, 3, '🟡'], [2, 4, '⭐']] } },
+        ],
+      },
+      {
+        icon: '📝', title: 'Επανάληψη', sub: 'Τι έμαθα;',
+        acts: [
+          { type: 'info', ref: 'έκδ. v09 σελ. 39', text: 'Ανακεφαλαίωση:', cards: [
+            ['🧠', 'Κάθε μέρα δημιουργούμε <b>αλγορίθμους</b> για να λύνουμε προβλήματα.'],
+            ['💻', 'Για να λύσουμε προβλήματα στον υπολογιστή γράφουμε <b>προγράμματα</b>.'],
+            ['🤖', 'Τα <b>ρομπότ</b> είναι συσκευές που με τα κατάλληλα προγράμματα εκτελούν εργασίες και βοηθούν τον άνθρωπο.'],
+          ] },
+          { type: 'match', ref: 'έκδ. v09 σελ. 42 (Γλωσσάριο)', text: 'Ταίριαξε κάθε λέξη με τη σημασία της.', pairs: [
+            ['❓ Πρόβλημα', 'Μια κατάσταση που χρειάζεται λύση'],
+            ['🧭 Αλγόριθμος', 'Μια σειρά βημάτων για να λύσω ένα πρόβλημα'],
+            ['💻 Πρόγραμμα', 'Μια σειρά εντολών σε έναν υπολογιστή'],
+            ['➡️ Εντολές', 'Οδηγίες σε μια υπολογιστική συσκευή'],
+            ['🤖 Ρομπότ', 'Συσκευές που υπακούν σε εντολές'],
+          ] },
+        ],
+      },
+    ],
+  },
+  { tab: 'Κεφ. 2', title: 'Υπολογιστικά συστήματα – Ψηφιακές συσκευές – Δίκτυα', lessons: [] },
+  { tab: 'Κεφ. 3', title: 'Δεδομένα – Αρχεία – Εννοιολογικοί χάρτες', lessons: [] },
+  { tab: 'Κεφ. 4', title: 'Ψηφιακός γραμματισμός – Ποντίκι & πληκτρολόγιο', lessons: [] },
+];
+
+const KIND_NAMES = { info: '📖 Διαβάζω', order: '🔢 Σειρά βημάτων', trace: '🔍 Πού θα φτάσει;', program: '🧩 Φτιάχνω πρόγραμμα',
+  pick: '🎯 Ποιο πρόγραμμα;', mcq: '❓ Ερωτήσεις', match: '🔗 Ταίριασμα', sort: '🗂️ Ταξινόμηση', dots: '✏️ Ενώνω τις τελείες' };
+
+// ============================================================================
+// ΓΕΝΙΚΑ
+// ============================================================================
+const $ = id => document.getElementById(id);
+const shuffle = a => { for (let i = a.length - 1; i > 0; i--) { const j = Math.floor(Math.random() * (i + 1)); [a[i], a[j]] = [a[j], a[i]]; } return a; };
+const sleep = ms => new Promise(r => setTimeout(r, ms));
+const el = (tag, cls, html) => { const e = document.createElement(tag); if (cls) e.className = cls; if (html != null) e.innerHTML = html; return e; };
+
+let chapterIdx = 0, lessonIdx = 0, actIdx = 0;
+let runId = 0; // αλλάζει σε κάθε νέα δραστηριότητα ώστε να σταματούν τα παλιά animations
+const done = new Set(); // 'κεφ-μάθημα-δραστηριότητα' που ολοκληρώθηκαν (μόνο για αυτή τη χρήση)
+const key = (c, l, a) => `${c}-${l}-${a}`;
+
+function say(text, kind = '') { const m = $('msg'); m.innerHTML = text; m.className = 'msg ' + kind; }
+function complete(text) {
+  done.add(key(chapterIdx, lessonIdx, actIdx));
+  say(text || '🎉 Μπράβο!', 'good');
+  $('nextBtn').classList.add('pulse');
+  renderPips();
+}
+
+// ============================================================================
+// ΑΡΧΙΚΗ
+// ============================================================================
+function renderHome() {
+  const tabs = $('tabs');
+  tabs.innerHTML = '';
+  BOOK.forEach((ch, i) => {
+    const b = el('button', 'tab' + (i === chapterIdx ? ' on' : '') + (ch.lessons.length ? '' : ' soon'), ch.tab);
+    b.onclick = () => { chapterIdx = i; renderHome(); };
+    tabs.appendChild(b);
+  });
+  const ch = BOOK[chapterIdx];
+  $('chapterTitle').textContent = ch.title;
+  const box = $('lessons');
+  box.innerHTML = '';
+  if (!ch.lessons.length) {
+    box.appendChild(el('div', 'soon-box', '🚧 Σύντομα!<br>Αυτό το κεφάλαιο ετοιμάζεται.'));
+    box.style.display = 'block';
+    return;
+  }
+  box.style.display = '';
+  ch.lessons.forEach((les, i) => {
+    const n = les.acts.filter((_, a) => done.has(key(chapterIdx, i, a))).length;
+    const b = el('button', 'lesson',
+      `<div class="ico">${les.icon}</div><div><div class="ttl">${i + 1}. ${les.title}</div><div class="sub">${les.sub}</div>` +
+      `<div class="prog">${n ? '✔ ' + n + ' / ' + les.acts.length : les.acts.length + ' δραστηριότητες'}</div></div>`);
+    b.onclick = () => openLesson(i);
+    box.appendChild(b);
+  });
+}
+
+function showScreen(id) {
+  for (const s of document.querySelectorAll('.screen')) s.classList.remove('active');
+  $(id).classList.add('active');
+}
+
+function openLesson(i) {
+  lessonIdx = i;
+  actIdx = 0;
+  showScreen('actScreen');
+  renderAct();
+}
+
+function renderPips() {
+  const les = BOOK[chapterIdx].lessons[lessonIdx];
+  const pips = $('pips');
+  pips.innerHTML = '';
+  les.acts.forEach((_, a) => {
+    const p = el('div', 'pip' + (done.has(key(chapterIdx, lessonIdx, a)) ? ' done' : '') + (a === actIdx ? ' cur' : ''));
+    pips.appendChild(p);
+  });
+}
+
+function renderAct() {
+  runId++;
+  const les = BOOK[chapterIdx].lessons[lessonIdx];
+  const act = les.acts[actIdx];
+  $('lessonTitle').textContent = `${les.icon} ${lessonIdx + 1}. ${les.title}`;
+  $('kind').textContent = KIND_NAMES[act.type];
+  $('instr').textContent = act.text;
+  $('ref').textContent = act.ref ? '📖 ' + act.ref : '';
+  $('prevBtn').disabled = actIdx === 0;
+  $('nextBtn').textContent = actIdx === les.acts.length - 1 ? 'Τέλος 🏁' : 'Επόμενο ▶';
+  $('nextBtn').classList.remove('pulse');
+  say('');
+  const area = $('area');
+  area.innerHTML = '';
+  RENDER[act.type](act, area);
+  renderPips();
+}
+
+// ============================================================================
+// ΠΛΕΓΜΑ: προσομοίωση & σχεδίαση
+// ============================================================================
+const MOVES = { U: [0, -1], D: [0, 1], L: [-1, 0], R: [1, 0] };
+const HEAD = [[0, -1], [1, 0], [0, 1], [-1, 0]]; // 0=πάνω 1=δεξιά 2=κάτω 3=αριστερά
+const GLYPH = { U: '↑', D: '↓', L: '←', R: '→', F: '⬆', B: '⬇', l: '↶', r: '↷' };
+const CMD_NAME = { U: 'Κινήσου πάνω', D: 'Κινήσου κάτω', L: 'Κινήσου αριστερά', R: 'Κινήσου δεξιά',
+  F: '1 βήμα μπροστά', B: '1 βήμα πίσω', l: 'Στρίψε αριστερά', r: 'Στρίψε δεξιά' };
+
+// 'R6' → ['R','R','R','R','R','R']
+const expand = prog => prog.flatMap(t => Array(+(t.slice(1) || 1)).fill(t[0]));
+
+// εκτελεί το πρόγραμμα: επιστρέφει όλες τις θέσεις (και την αρχή) και πού «τράκαρε», αν τράκαρε
+function simulate(g, prog) {
+  let [x, y] = g.start, h = g.heading || 0;
+  const path = [{ x, y, h }];
+  const blocked = new Set((g.obstacles || []).map(([a, b]) => a + ',' + b));
+  for (const c of expand(prog)) {
+    if (c === 'l') h = (h + 3) % 4;
+    else if (c === 'r') h = (h + 1) % 4;
+    else {
+      const [dx, dy] = MOVES[c] || (c === 'F' ? HEAD[h] : HEAD[(h + 2) % 4]);
+      x += dx; y += dy;
+      if (x < 0 || y < 0 || x >= g.cols || y >= g.rows) return { path, crash: 'wall' };
+      if (blocked.has(x + ',' + y)) { path.push({ x, y, h }); return { path, crash: 'obstacle' }; }
+    }
+    path.push({ x, y, h });
+  }
+  return { path, crash: null };
+}
+
+function blockEl(token, robot) {
+  const n = token.slice(1);
+  return el('span', 'blk' + (robot ? ' robot' : ''), GLYPH[token[0]] + (n ? `<span class="n">${n}</span>` : ''));
+}
+function stripEl(prog, robot) {
+  const s = el('div', 'strip');
+  prog.forEach(t => s.appendChild(blockEl(t, robot)));
+  return s;
+}
+
+// σχέδια χωρίς αρχεία εικόνας: λουλούδι με χρώμα και πασχαλίτσα που κοιτάει πάνω
+function flowerSVG(color, size) {
+  const petals = [0, 60, 120, 180, 240, 300].map(a => `<ellipse cx="50" cy="24" rx="15" ry="24" fill="${color}" stroke="#90a4ae" stroke-width="2" transform="rotate(${a} 50 50)"/>`).join('');
+  return `<svg width="${size}" height="${size}" viewBox="0 0 100 100">${petals}<circle cx="50" cy="50" r="14" fill="#fdd835"/></svg>`;
+}
+function ladybugSVG(size) {
+  return `<svg width="${size}" height="${size}" viewBox="0 0 100 100"><circle cx="50" cy="22" r="16" fill="#212121"/>
+    <ellipse cx="50" cy="58" rx="34" ry="36" fill="#e53935" stroke="#212121" stroke-width="4"/><line x1="50" y1="24" x2="50" y2="94" stroke="#212121" stroke-width="4"/>
+    <circle cx="34" cy="50" r="7" fill="#212121"/><circle cx="66" cy="50" r="7" fill="#212121"/><circle cx="36" cy="74" r="6" fill="#212121"/><circle cx="64" cy="74" r="6" fill="#212121"/>
+    <circle cx="44" cy="17" r="4" fill="#fff"/><circle cx="56" cy="17" r="4" fill="#fff"/></svg>`;
+}
+const itemHTML = (it, cs) => it.startsWith('flower:') ? flowerSVG(it.slice(7), cs * 0.8) : `<span class="it" style="font-size:${cs * 0.62}px">${it}</span>`;
+
+function buildGrid(g, maxW, maxH, opts = {}) {
+  const cs = Math.floor(Math.min(maxW / g.cols, maxH / g.rows, 150));
+  const wrap = el('div', 'grid' + (g.garden ? ' garden' : ''));
+  wrap.style.width = g.cols * cs + 8 + 'px';
+  wrap.style.height = g.rows * cs + 8 + 'px';
+  const cells = {};
+  for (let y = 0; y < g.rows; y++) for (let x = 0; x < g.cols; x++) {
+    const c = el('div', 'cell');
+    Object.assign(c.style, { left: x * cs + 'px', top: y * cs + 'px', width: cs + 'px', height: cs + 'px' });
+    cells[x + ',' + y] = c;
+    wrap.appendChild(c);
+  }
+  for (const [x, y, it] of g.decor || []) cells[x + ',' + y].innerHTML = itemHTML(it, cs);
+  for (const [x, y] of g.obstacles || []) { cells[x + ',' + y].classList.add('obstacle'); cells[x + ',' + y].innerHTML = itemHTML(REED, cs); }
+  for (const [x, y, it, cls] of g.goals || []) { if (cls) cells[x + ',' + y].classList.add(cls); if (it) cells[x + ',' + y].innerHTML = itemHTML(it, cs); }
+
+  const svg = document.createElementNS('http://www.w3.org/2000/svg', 'svg');
+  svg.setAttribute('class', 'trail');
+  svg.setAttribute('width', g.cols * cs);
+  svg.setAttribute('height', g.rows * cs);
+  wrap.appendChild(svg);
+
+  const sprite = el('div', 'sprite');
+  Object.assign(sprite.style, { width: cs + 'px', height: cs + 'px' });
+  sprite.innerHTML = g.actor ? `<span style="font-size:${cs * 0.7}px;line-height:1">${g.actor}</span>` : ladybugSVG(cs * 0.85);
+  wrap.appendChild(sprite);
+
+  const api = {
+    el: wrap, cells, cs,
+    put(p) {
+      sprite.style.left = p.x * cs + 'px';
+      sprite.style.top = p.y * cs + 'px';
+      if (!g.actor) sprite.style.transform = `rotate(${(p.rotation ?? p.h * 90)}deg)`;
+    },
+    // κόκκινη διακεκομμένη γραμμή όπως στο βιβλίο, με βελάκι στο τέλος
+    trail(points) {
+      const c = p => `${p.x * cs + cs / 2},${p.y * cs + cs / 2}`;
+      const pts = points.filter((p, i) => i === 0 || p.x !== points[i - 1].x || p.y !== points[i - 1].y);
+      svg.innerHTML = pts.length < 2 ? '' :
+        `<defs><marker id="ah" markerWidth="8" markerHeight="8" refX="5" refY="4" orient="auto"><path d="M0,0 L8,4 L0,8 z" fill="#c62828"/></marker></defs>
+         <polyline points="${pts.map(c).join(' ')}" fill="none" stroke="#c62828" stroke-width="${cs / 16}" stroke-dasharray="${cs / 14} ${cs / 10}" stroke-linecap="round" marker-end="url(#ah)"/>`;
+    },
+    crash() { sprite.classList.remove('crash'); void sprite.offsetWidth; sprite.classList.add('crash'); },
+  };
+  let rot = (g.heading || 0) * 90;
+  api.reset = () => { rot = (g.heading || 0) * 90; api.put({ x: g.start[0], y: g.start[1], rotation: rot }); svg.innerHTML = ''; };
+  // κινεί βήμα-βήμα και ζωγραφίζει το μονοπάτι (η περιστροφή μετριέται συνεχόμενα για να μη «γυρίζει ανάποδα»)
+  api.animate = async (path, my) => {
+    for (let i = 1; i < path.length; i++) {
+      if (my !== runId) return false;
+      const d = ((path[i].h - path[i - 1].h) + 4) % 4;
+      rot += d === 1 ? 90 : d === 3 ? -90 : 0;
+      api.put({ ...path[i], rotation: rot });
+      api.trail(path.slice(0, i + 1));
+      await sleep(450);
+    }
+    return my === runId;
+  };
+  api.reset();
+  return api;
+}
+
+// ============================================================================
+// ΔΡΑΣΤΗΡΙΟΤΗΤΕΣ
+// ============================================================================
+const RENDER = {};
+
+RENDER.info = (act, area) => {
+  const box = el('div', 'info');
+  for (const [em, html] of act.cards) box.appendChild(el('div', 'card', `<span class="em">${em}</span><span>${html}</span>`));
+  area.appendChild(box);
+  complete('👍 Πάμε παρακάτω!');
+};
+
+// ---- Σειρά βημάτων: `before` = ζευγάρια [α, β] όπου το α πρέπει να γίνει πριν από το β
+function orderRules(act) {
+  return act.before === 'chain' ? act.steps.slice(1).map((_, i) => [i, i + 1]) : act.before;
+}
+function firstMistake(rules, order) {
+  const pos = [];
+  order.forEach((s, i) => { pos[s] = i; });
+  return rules.find(([a, b]) => pos[a] > pos[b]) || null;
+}
+RENDER.order = (act, area) => {
+  const rules = orderRules(act);
+  const n = act.steps.length;
+  let pool;
+  do { pool = shuffle([...Array(n).keys()]); } while (firstMistake(rules, pool) === null);
+  const placed = Array(n).fill(null);
+  let solved = false;
+  area.style.setProperty('--fs', n > 5 ? '24px' : '28px');
+  area.style.setProperty('--gap', n > 5 ? '8px' : '14px');
+  const wrap = el('div', 'order');
+  const left = el('div', 'col', '<h3>Η σειρά μου</h3>');
+  const right = el('div', 'col', '<h3>Πάτησε ένα βήμα για να το βάλεις στη σειρά</h3>');
+  const slots = el('div', 'list'), poolEl = el('div', 'list');
+  left.appendChild(slots); right.appendChild(poolEl);
+  wrap.append(left, right);
+  area.appendChild(wrap);
+  const stepEl = s => { const c = el('div', 'step', `<span class="em">${act.steps[s][0]}</span><span></span>`); c.lastChild.textContent = act.steps[s][1]; return c; };
+
+  function draw(wrong) {
+    slots.innerHTML = '';
+    poolEl.innerHTML = '';
+    placed.forEach((s, i) => {
+      const slot = el('div', 'slot', `<div class="num">${i + 1}</div>`);
+      if (s !== null) {
+        const c = stepEl(s);
+        if (wrong && wrong.includes(s)) c.classList.add('wrong');
+        if (solved) c.classList.add('right');
+        c.onclick = () => { if (solved) return; placed[i] = null; say(''); draw(); };
+        slot.appendChild(c);
+      }
+      slots.appendChild(slot);
+    });
+    for (const s of pool) {
+      const c = stepEl(s);
+      if (placed.includes(s)) c.classList.add('hidden');
+      else c.onclick = () => { placed[placed.indexOf(null)] = s; say(''); draw(); check(); };
+      poolEl.appendChild(c);
+    }
+  }
+  function check() {
+    if (placed.includes(null)) return;
+    const m = firstMistake(rules, placed);
+    if (m) {
+      const t = i => act.steps[i][1].replace(/\.$/, '');
+      say(`Όχι ακόμα! Το «${t(m[0])}» πρέπει να γίνει <b>πριν</b> από το «${t(m[1])}». Πάτησε ένα βήμα για να το βγάλεις.`, 'bad');
+      draw(m);
+    } else {
+      solved = true;
+      draw();
+      complete('🎉 Μπράβο! Τα βήματα είναι στη σωστή σειρά!');
+    }
+  }
+  draw();
+};
+
+// ---- Πού θα φτάσει; (πατάνε το τετράγωνο)
+RENDER.trace = (act, area) => {
+  const my = runId;
+  const grid = buildGrid(act.grid, 640, 560);
+  const robot = act.mode === 'robot';
+  const side = el('div', 'side');
+  const box = el('div', 'prog-box', '<h4>Το πρόγραμμα:</h4>');
+  box.appendChild(stripEl(act.program, robot));
+  const show = el('button', 'secondary', '👀 Δείξε μου');
+  side.append(box, show);
+  area.append(grid.el, side);
+  const { path } = simulate(act.grid, act.program);
+  const end = path[path.length - 1];
+  let busy = false;
+  const play = async () => { busy = true; grid.reset(); await grid.animate(path, my); busy = false; };
+  show.onclick = async () => { if (busy) return; await play(); if (my === runId) grid.cells[end.x + ',' + end.y].classList.add('hit'); };
+  for (const [k, c] of Object.entries(grid.cells)) {
+    c.classList.add('tap');
+    c.onclick = async () => {
+      if (busy || done.has(key(chapterIdx, lessonIdx, actIdx))) return;
+      if (k === end.x + ',' + end.y) {
+        c.classList.add('hit');
+        await play();
+        if (my === runId) complete('🎉 Σωστά! Εκεί θα φτάσει!');
+      } else {
+        c.classList.add('miss');
+        setTimeout(() => c.classList.remove('miss'), 700);
+        say('Όχι εκεί! Ακολούθησε τα βελάκια ένα-ένα με το δάχτυλο.', 'bad');
+      }
+    };
+  }
+};
+
+// ---- Ποιο πρόγραμμα ταιριάζει με το μονοπάτι;
+RENDER.pick = (act, area) => {
+  const grid = buildGrid(act.grid, 640, 560);
+  const { path } = simulate(act.grid, act.path);
+  grid.trail(path);
+  const list = el('div', 'choices');
+  const answer = act.options.findIndex(o => o.join() === act.path.join());
+  act.options.forEach((o, i) => {
+    const b = el('button', 'choice', `<span class="letter">${'ΑΒΓΔ'[i]}</span>`);
+    b.appendChild(stripEl(o));
+    b.onclick = () => {
+      if (done.has(key(chapterIdx, lessonIdx, actIdx))) return;
+      if (i === answer) { b.classList.add('right'); complete('🎉 Σωστά! Αυτό το πρόγραμμα ταιριάζει με το μονοπάτι!'); }
+      else { b.classList.add('wrong'); say('Όχι αυτό. Ακολούθησε τα βελάκια πάνω στο πλέγμα.', 'bad'); }
+    };
+    list.appendChild(b);
+  });
+  area.append(grid.el, list);
+};
+
+// ---- Φτιάχνω πρόγραμμα (βέλη ή ρομπότ με στροφές)
+RENDER.program = (act, area) => {
+  const g = act.grid;
+  const robot = act.mode === 'robot';
+  const grid = buildGrid(g, 760, 560);
+  const prog = [];
+  const found = new Set();
+  const need = act.paths || 1;
+  const max = act.slots || 10;
+  let busy = false;
+
+  const side = el('div', 'side');
+  const pal = el('div', 'palette' + (robot ? ' robot' : ''));
+  for (const c of robot ? ['F', 'B', 'l', 'r'] : ['U', 'D', 'L', 'R']) {
+    const b = el('button', '', `<span class="g">${GLYPH[c]}</span>${CMD_NAME[c]}`);
+    b.onclick = () => { if (busy || prog.length >= max) return; prog.push(c); grid.reset(); say(''); draw(); };
+    pal.appendChild(b);
+  }
+  const box = el('div', 'prog-box', `<h4>Το πρόγραμμά μου${act.slots ? ` (${act.slots} κουτάκια)` : ''} — πάτησε μια εντολή για να τη σβήσεις</h4>`);
+  const strip = el('div', 'strip');
+  box.appendChild(strip);
+  const ctrls = el('div', 'controls');
+  const run = el('button', '', '▶ Εκτέλεση');
+  const clear = el('button', 'secondary', '🗑 Από την αρχή');
+  ctrls.append(run, clear);
+  const foundEl = el('div', 'found');
+  side.append(pal, box, ctrls, foundEl);
+  area.append(grid.el, side);
+
+  function draw() {
+    strip.innerHTML = '';
+    prog.forEach((c, i) => {
+      const b = blockEl(c, robot);
+      b.onclick = () => { if (busy) return; prog.splice(i, 1); grid.reset(); draw(); };
+      strip.appendChild(b);
+    });
+    for (let i = prog.length; i < (act.slots || 0); i++) strip.appendChild(el('span', 'slotbox'));
+    foundEl.textContent = need > 1 ? `Μονοπάτια που βρήκες: ${found.size} / ${need}` : '';
+  }
+  clear.onclick = () => { if (busy) return; prog.length = 0; grid.reset(); say(''); draw(); };
+  run.onclick = async () => {
+    if (busy || !prog.length) return;
+    const my = runId;
+    busy = true;
+    grid.reset();
+    const res = simulate(g, prog);
+    await grid.animate(res.path, my);
+    busy = false;
+    if (my !== runId) return;
+    if (res.crash) {
+      grid.crash();
+      return say(res.crash === 'wall' ? 'Ωχ! Βγήκε έξω από το πλέγμα. Διόρθωσε το πρόγραμμα!' : 'Ωχ! Πέρασε από τα καλάμια! Βρες άλλο μονοπάτι.', 'bad');
+    }
+    // οι στόχοι πρέπει να επισκεφθούν με τη σειρά, και το πρόγραμμα να τελειώνει στον τελευταίο
+    let gi = 0;
+    for (const p of res.path) if (gi < g.goals.length && p.x === g.goals[gi][0] && p.y === g.goals[gi][1]) gi++;
+    const last = res.path[res.path.length - 1], goal = g.goals[g.goals.length - 1];
+    if (gi < g.goals.length || last.x !== goal[0] || last.y !== goal[1]) {
+      return say(g.goals.length > 1 && gi === 0 ? 'Πρώτα πρέπει να περάσεις από την κίτρινη μαργαρίτα!' : 'Δεν έφτασε ακόμα στον στόχο. Πρόσθεσε ή άλλαξε εντολές!', 'bad');
+    }
+    const k = expand(prog).join('');
+    if (act.differentFrom && k === expand(act.differentFrom).join('')) return say('Αυτή είναι η διαδρομή του βιβλίου! Βρείτε μια <b>άλλη</b> διαδρομή.', 'bad');
+    if (found.has(k)) return say('Αυτό το μονοπάτι το βρήκες ήδη! Βρες ένα <b>άλλο</b>.', 'bad');
+    found.add(k);
+    draw();
+    if (found.size >= need) complete(need > 1 ? '🎉 Μπράβο! Βρήκες ' + need + ' διαφορετικά μονοπάτια!' : '🎉 Μπράβο! Το πρόγραμμά σου δουλεύει!');
+    else say('👏 Σωστά! Τώρα βρες κι άλλο μονοπάτι (με διαφορετικό πρόγραμμα).', 'good');
+  };
+  draw();
+};
+
+// ---- Ερωτήσεις (π.χ. «ίδιο αποτέλεσμα, λιγότερες εντολές»)
+RENDER.mcq = (act, area) => {
+  let qi = 0, right = 0;
+  const wrap = el('div', 'q-wrap');
+  area.appendChild(wrap);
+  function show() {
+    const q = act.questions[qi];
+    wrap.innerHTML = '';
+    wrap.appendChild(el('div', 'count', `Ερώτηση ${qi + 1} από ${act.questions.length}`));
+    const qEl = el('div', 'q', q.q || 'Αυτό το πρόγραμμα:');
+    wrap.appendChild(qEl);
+    if (q.prog) wrap.appendChild(stripEl(q.prog));
+    const list = el('div', 'choices');
+    q.options.forEach((o, i) => {
+      const b = el('button', 'choice', `<span class="letter">${'ΑΒΓΔ'[i]}</span>`);
+      if (Array.isArray(o)) b.appendChild(stripEl(o)); else b.appendChild(document.createTextNode(o));
+      b.onclick = () => {
+        if (list.dataset.locked) return;
+        if (i !== q.answer) { b.classList.add('wrong'); return say('Όχι αυτό — μέτρησε τα βελάκια!', 'bad'); }
+        list.dataset.locked = 1;
+        b.classList.add('right');
+        right++;
+        if (++qi < act.questions.length) { say('✅ Σωστά!', 'good'); setTimeout(show, 900); }
+        else complete('🎉 Μπράβο! Με λιγότερες εντολές το πρόγραμμα διαβάζεται πιο εύκολα!');
+      };
+      list.appendChild(b);
+    });
+    wrap.appendChild(list);
+  }
+  show();
+};
+
+// ---- Ταίριασμα: πατάς αριστερά, μετά δεξιά
+RENDER.match = (act, area) => {
+  const wrap = el('div', 'match');
+  const L = el('div', 'col'), R = el('div', 'col');
+  wrap.append(L, R);
+  area.appendChild(wrap);
+  let sel = null, left = act.pairs.length;
+  const lefts = act.pairs.map((p, i) => { const b = el('button', 'pair'); b.textContent = p[0]; b.dataset.i = i; L.appendChild(b); return b; });
+  shuffle(act.pairs.map((p, i) => i)).forEach(i => {
+    const b = el('button', 'pair');
+    b.textContent = act.pairs[i][1];
+    b.onclick = () => {
+      if (b.classList.contains('ok')) return;
+      if (!sel) return say('Πάτησε πρώτα κάτι από την αριστερή στήλη.', 'bad');
+      if (+sel.dataset.i === i) {
+        sel.classList.replace('sel', 'ok'); b.classList.add('ok'); sel = null;
+        if (--left === 0) complete('🎉 Μπράβο! Τα ταίριαξες όλα!'); else say('✅ Σωστό ζευγάρι!', 'good');
+      } else {
+        b.classList.remove('no'); void b.offsetWidth; b.classList.add('no');
+        say('Δεν ταιριάζουν. Δοκίμασε άλλο!', 'bad');
+      }
+    };
+    R.appendChild(b);
+  });
+  lefts.forEach(b => b.onclick = () => {
+    if (b.classList.contains('ok')) return;
+    if (sel) sel.classList.remove('sel');
+    sel = b; b.classList.add('sel'); say('');
+  });
+};
+
+// ---- Ταξινόμηση σε 2 ομάδες, ένα-ένα
+RENDER.sort = (act, area) => {
+  const items = shuffle([...act.items]);
+  let i = 0;
+  const wrap = el('div', 'sort');
+  area.appendChild(wrap);
+  function show() {
+    const [em, text, bin] = items[i];
+    wrap.innerHTML = '';
+    wrap.appendChild(el('div', 'count', `${i + 1} από ${items.length}`));
+    const card = el('div', 'item', `<span class="em">${em}</span><span></span>`);
+    card.lastChild.textContent = text;
+    wrap.appendChild(card);
+    const bins = el('div', 'bins');
+    act.bins.forEach((label, b) => {
+      const btn = el('button', 'b' + b, label);
+      btn.onclick = () => {
+        if (b !== bin) return say('Σκέψου ξανά! 🤔', 'bad');
+        if (++i < items.length) { say('✅ Σωστά!', 'good'); show(); }
+        else complete('🎉 Μπράβο! Τα ρομπότ μοιάζουν με εμάς σε κάποια πράγματα και διαφέρουν σε άλλα!');
+      };
+      bins.appendChild(btn);
+    });
+    wrap.appendChild(bins);
+  }
+  show();
+};
+
+// ---- Ενώνω τις τελείες με τη σειρά
+RENDER.dots = (act, area) => {
+  const NS = 'http://www.w3.org/2000/svg';
+  const box = el('div', 'dots');
+  const svg = document.createElementNS(NS, 'svg');
+  svg.setAttribute('viewBox', '0 0 100 100');
+  box.appendChild(svg);
+  const reveal = el('div', 'reveal', '<div style="opacity:.8">Ξεκίνα από το 1!</div>');
+  area.append(box, reveal);
+  const lines = document.createElementNS(NS, 'g');
+  svg.appendChild(lines);
+  let next = 0;
+  const line = (a, b) => {
+    const l = document.createElementNS(NS, 'line');
+    Object.entries({ x1: a[0], y1: a[1], x2: b[0], y2: b[1], stroke: '#1976d2', 'stroke-width': 1.4, 'stroke-linecap': 'round' }).forEach(([k, v]) => l.setAttribute(k, v));
+    lines.appendChild(l);
+  };
+  act.points.forEach((p, i) => {
+    const g = document.createElementNS(NS, 'g');
+    g.style.cursor = 'pointer';
+    g.innerHTML = `<circle cx="${p[0]}" cy="${p[1]}" r="7" fill="transparent"/><circle cx="${p[0]}" cy="${p[1]}" r="1.8" fill="#212121"/>
+      <text x="${p[0] + 2.6}" y="${p[1] - 2.6}" font-size="5" fill="#212121" font-family="Segoe UI, sans-serif">${i + 1}</text>`;
+    g.onclick = () => {
+      if (next >= act.points.length) return;
+      if (i !== next) return say(`Όχι! Μετά το ${next} έρχεται το ${next + 1}.`, 'bad');
+      if (i > 0) line(act.points[i - 1], p);
+      g.querySelectorAll('circle')[1].setAttribute('fill', '#1976d2');
+      next++;
+      say('');
+      if (next === act.points.length) {
+        if (act.close) line(p, act.points[0]);
+        const [em, title, q] = act.reveal;
+        reveal.innerHTML = `<div class="big">${em}</div><div><b>${title}</b></div><div style="opacity:.9">${q}</div>`;
+        complete('🎉 Μπράβο! Ακολούθησες τη σωστή σειρά!');
+      }
+    };
+    svg.appendChild(g);
+  });
+};
+
+// ============================================================================
+// ΠΛΟΗΓΗΣΗ & ΣΚΗΝΗ
+// ============================================================================
+$('homeBtn').onclick = () => { runId++; renderHome(); showScreen('homeScreen'); };
+$('prevBtn').onclick = () => { if (actIdx > 0) { actIdx--; renderAct(); } };
+$('nextBtn').onclick = () => {
+  const les = BOOK[chapterIdx].lessons[lessonIdx];
+  if (actIdx < les.acts.length - 1) { actIdx++; renderAct(); }
+  else { runId++; renderHome(); showScreen('homeScreen'); }
+};
+
+function fitStage() { $('stage').style.setProperty('--s', Math.min(innerWidth / 1600, innerHeight / 900)); }
+addEventListener('resize', fitStage);
+addEventListener('wheel', e => e.preventDefault(), { passive: false });
+addEventListener('touchmove', e => e.preventDefault(), { passive: false });
+addEventListener('gesturestart', e => e.preventDefault());
+addEventListener('keydown', e => { if ((e.ctrlKey || e.metaKey) && ['+', '-', '=', '0'].includes(e.key)) e.preventDefault(); });
+
+// έλεγχος δεδομένων: κάθε άσκηση του βιβλίου πρέπει να λύνεται
+for (const ch of BOOK) for (const les of ch.lessons) for (const a of les.acts) {
+  if (a.type === 'order') console.assert(firstMistake(orderRules(a), a.steps.map((_, i) => i)) === null, 'σειρά: ' + a.title);
+  if (a.type === 'pick') console.assert(a.options.some(o => o.join() === a.path.join()), 'pick: ' + a.text);
+  if (a.type === 'trace') console.assert(!simulate(a.grid, a.program).crash, 'trace: ' + a.text);
+}
+
+renderHome();
+fitStage();
+</script>
+</body>
+</html>

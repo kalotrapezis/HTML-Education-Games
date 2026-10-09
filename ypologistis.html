@@ -1,0 +1,300 @@
+<!DOCTYPE html>
+<html lang="el">
+<head>
+<link rel="icon" type="image/svg+xml" href="favicon.svg">
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>Γνωρίζω τον υπολογιστή</title>
+<style>
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  html, body { height: 100%; overflow: hidden; }
+  body {
+    font-family: 'Segoe UI', Tahoma, sans-serif;
+    background: linear-gradient(135deg, #1e3c72, #2a5298 50%, #6b2a8a);
+    color: #fff;
+    touch-action: none; user-select: none;
+  }
+  /* σταθερή «σκηνή» 1600×900 που μικραίνει ώστε να χωράει πάντα, χωρίς scroll/zoom */
+  .stage {
+    position: absolute; left: 50%; top: 50%;
+    width: 1600px; height: 900px;
+    transform: translate(-50%, -50%) scale(var(--s, 1));
+    padding: 30px 40px;
+    display: flex; flex-direction: column;
+  }
+  .back {
+    position: absolute; top: 24px; left: 30px;
+    color: #fff; text-decoration: none;
+    background: rgba(0,0,0,0.55); padding: 10px 18px;
+    border-radius: 10px; font-size: 20px; font-weight: bold;
+  }
+  h1 { font-size: 46px; text-align: center; }
+
+  .screen { display: none; flex: 1; flex-direction: column; align-items: center; min-height: 0; }
+  .screen.active { display: flex; }
+
+  button {
+    font-family: inherit; border: none; border-radius: 14px; cursor: pointer;
+    font-weight: bold; color: #fff;
+    background: #ff9500; box-shadow: 0 5px 0 #c46c00;
+    padding: 16px 34px; font-size: 28px;
+  }
+  button:active { transform: translateY(3px); box-shadow: 0 2px 0 #c46c00; }
+  button.secondary { background: #5a6890; box-shadow: 0 5px 0 #3a4670; }
+
+  /* ΜΕΝΟΥ */
+  .menu-title { font-size: 30px; margin: 40px 0 30px; opacity: 0.9; }
+  .topics { display: grid; grid-template-columns: repeat(2, 560px); gap: 30px; }
+  .topic {
+    background: rgba(0,0,0,0.35); border: 3px solid transparent; box-shadow: none;
+    border-radius: 18px; padding: 26px; display: flex; align-items: center; gap: 22px; text-align: left;
+  }
+  .topic:hover { border-color: #ffb347; }
+  .topic .ico { font-size: 76px; }
+  .topic .ttl { font-size: 32px; color: #ffb347; }
+  .topic .sub { font-size: 20px; font-weight: normal; opacity: 0.85; margin-top: 6px; }
+
+  /* ΕΡΩΤΗΣΗ */
+  .status { font-size: 26px; opacity: 0.9; margin-top: 10px; }
+  .status b { color: #ffb347; }
+  .q-emoji { font-size: 130px; line-height: 1.1; margin-top: 10px; min-height: 140px; }
+  .q-text {
+    font-size: 40px; font-weight: bold; text-align: center; max-width: 1300px;
+    min-height: 110px; display: flex; align-items: center; justify-content: center;
+  }
+  .answers { display: grid; gap: 18px; margin-top: 18px; width: 1300px; }
+  .answers.cols-3 { grid-template-columns: repeat(3, 1fr); }
+  .answers.cols-2 { grid-template-columns: repeat(2, 1fr); }
+  .answers.cols-1 { grid-template-columns: 1fr; gap: 12px; }
+  .answers button {
+    background: rgba(255,255,255,0.14); box-shadow: 0 5px 0 rgba(0,0,0,0.3);
+    min-height: 100px; font-size: 32px; padding: 12px 20px;
+  }
+  .answers.cols-1 button { min-height: 72px; font-size: 26px; text-align: left; }
+  .answers button.right { background: #2e7d32; box-shadow: 0 5px 0 #1b5e20; }
+  .answers button.wrong { background: #c62828; box-shadow: 0 5px 0 #7f0000; }
+  .answers button:disabled { cursor: default; }
+  .answers button:disabled:not(.right):not(.wrong) { opacity: 0.45; }
+
+  .feedback {
+    margin-top: 22px; display: flex; align-items: center; gap: 30px;
+    background: rgba(0,0,0,0.35); border-radius: 16px; padding: 16px 26px; width: 1300px;
+    visibility: hidden;
+  }
+  .feedback.show { visibility: visible; }
+  .feedback .explain { flex: 1; font-size: 26px; line-height: 1.35; }
+  .feedback .explain b { color: #ffb347; }
+
+  /* ΑΠΟΤΕΛΕΣΜΑ */
+  .result { margin-top: 60px; text-align: center; display: flex; flex-direction: column; gap: 24px; align-items: center; }
+  .result .big { font-size: 120px; }
+  .result .score { font-size: 54px; font-weight: bold; }
+  .result .note { font-size: 30px; opacity: 0.9; }
+  .result .actions { display: flex; gap: 20px; margin-top: 20px; }
+</style>
+</head>
+<body>
+<div class="stage" id="stage">
+  <a class="back" href="index.html">← Πίσω</a>
+  <h1>🖥️ Γνωρίζω τον υπολογιστή</h1>
+
+  <div class="screen active" id="menuScreen">
+    <div class="menu-title">Διάλεξε τι θέλεις να παίξεις:</div>
+    <div class="topics" id="topics"></div>
+  </div>
+
+  <div class="screen" id="quizScreen">
+    <div class="status" id="status"></div>
+    <div class="q-emoji" id="qEmoji"></div>
+    <div class="q-text" id="qText"></div>
+    <div class="answers" id="answers"></div>
+    <div class="feedback" id="feedback">
+      <div class="explain" id="explain"></div>
+      <button id="nextBtn">Επόμενη ▶</button>
+    </div>
+  </div>
+
+  <div class="screen" id="resultScreen">
+    <div class="result">
+      <div class="big" id="resultEmoji"></div>
+      <div class="score" id="resultScore"></div>
+      <div class="note" id="resultNote"></div>
+      <div class="actions">
+        <button id="againBtn">🔄 Ξανά</button>
+        <button class="secondary" id="menuBtn">← Μενού</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+// Περιεχόμενο από τα βιβλία Πληροφορικής Δημοτικού (Β΄, Γ΄, Δ΄, ΣΤ΄).
+const DEVICES = [
+  { name: 'Πληκτρολόγιο', emoji: '⌨️', kind: 'in',  why: 'Πατάω τα πλήκτρα και γράφω κείμενο: γράμματα, σύμβολα και αριθμούς.' },
+  { name: 'Ποντίκι',      emoji: '🖱️', kind: 'in',  why: 'Κουνάω το ποντίκι και κινείται ο δείκτης στην οθόνη. Με τα πλήκτρα του δίνω οδηγίες στον υπολογιστή.' },
+  { name: 'Μικρόφωνο',    emoji: '🎤', kind: 'in',  why: 'Περνάει μέσα στον υπολογιστή ήχους: φωνή, μουσική κ.ά.' },
+  { name: 'Κάμερα',       emoji: '📷', kind: 'in',  why: 'Περνάει μέσα στον υπολογιστή εικόνες ή βίντεο από αυτό που συμβαίνει.' },
+  { name: 'Σαρωτής',      emoji: '📠', kind: 'in',  why: 'Περνάει μέσα στον υπολογιστή εικόνες τυπωμένες σε χαρτί.' },
+  { name: 'Οθόνη',        emoji: '🖥️', kind: 'out', why: 'Εμφανίζει κείμενο και εικόνες για να τα βλέπω.' },
+  { name: 'Εκτυπωτής',    emoji: '🖨️', kind: 'out', why: 'Γράφει στο χαρτί κείμενο και εικόνες.' },
+  { name: 'Ηχεία',        emoji: '🔊', kind: 'out', why: 'Αναπαράγουν ήχους από τον υπολογιστή για να τους ακούσω.' },
+  { name: 'Ακουστικά',    emoji: '🎧', kind: 'out', why: 'Αναπαράγουν ήχους από τον υπολογιστή για να τους ακούσω μόνο εγώ.' },
+  { name: 'Οθόνη αφής',   emoji: '📱', kind: 'both', why: 'Μου δείχνει κείμενο και εικόνες (έξοδος) και δέχεται οδηγίες με το δάχτυλο (είσοδος).' },
+];
+const KINDS = { in: '⬅️ Εισόδου', out: '➡️ Εξόδου', both: '↔️ Εισόδου και εξόδου' };
+const KIND_WORD = { in: 'εισόδου', out: 'εξόδου', both: 'εισόδου και εξόδου' };
+
+const STORAGE = [
+  { name: 'Σκληρός δίσκος (HDD)', emoji: '🗄️', desc: 'Είναι σαν ένα μεγάλο ντουλάπι μέσα στον υπολογιστή. Χωράει πολλά αρχεία, αλλά δουλεύει λίγο αργά.' },
+  { name: 'Δίσκος SSD',           emoji: '⚡', desc: 'Είναι σαν ένα πολύ γρήγορο ντουλάπι. Κάνει τον υπολογιστή μας πολύ γρήγορο.' },
+  { name: 'Μνήμη USB (στικάκι)',  emoji: '🔌', desc: 'Τη συνδέω στη θύρα USB και μεταφέρω εύκολα τα αρχεία μου σε άλλον υπολογιστή.' },
+  { name: 'Κάρτα μνήμης (SD)',    emoji: '📸', desc: 'Μικρή κάρτα που χρησιμοποιούμε κυρίως σε κάμερες, φωτογραφικές μηχανές και κινητά τηλέφωνα.' },
+  { name: 'CD / DVD',             emoji: '💿', desc: 'Στρογγυλός, γυαλιστερός οπτικός δίσκος για ταινίες, μουσική και αρχεία.' },
+  { name: 'Εξωτερικός δίσκος',    emoji: '🧳', desc: 'Τον συνδέω με καλώδιο για να έχω περισσότερο χώρο ή για να κρατήσω αντίγραφα των αρχείων μου.' },
+  { name: 'Σύννεφο (cloud)',      emoji: '☁️', desc: 'Αποθηκεύω τα αρχεία μου σε έναν υπολογιστή του διαδικτύου και τα ανοίγω από όποιον υπολογιστή κι αν είμαι.' },
+];
+
+const PARTS = [
+  { name: 'Επεξεργαστής (CPU)',     emoji: '🧠', job: 'Είναι το «μυαλό» του υπολογιστή: κάνει όλες τις πράξεις.' },
+  { name: 'Μνήμη RAM',              emoji: '🪑', job: 'Κρατά προσωρινά τις πληροφορίες, όσο ο υπολογιστής είναι ανοιχτός — σαν το θρανίο μας.' },
+  { name: 'Σκληρός δίσκος',         emoji: '📚', job: 'Αποθηκεύει μόνιμα τα αρχεία και τα προγράμματά μας — σαν τα ράφια της βιβλιοθήκης.' },
+  { name: 'Μητρική κάρτα (πλακέτα)', emoji: '🧩', job: 'Η μεγάλη πλακέτα πάνω στην οποία τοποθετούνται όλα τα εξαρτήματα και οι θύρες σύνδεσης.' },
+  { name: 'Κάρτα γραφικών (GPU)',   emoji: '🎨', job: 'Φτιάχνει τις εικόνες και τα βίντεο που βλέπουμε στην οθόνη.' },
+  // shortcut: δεν υπάρχει στα βιβλία — απλή διατύπωση δική μας
+  { name: 'Τροφοδοτικό',            emoji: '🔋', job: 'Παίρνει το ρεύμα από την πρίζα και δίνει ρεύμα σε όλα τα εξαρτήματα.' },
+];
+
+// Κάθε ερώτηση: { emoji, text, options[], answer (index), explain (html), cols }
+function qDevice(d) {
+  const options = Object.keys(KINDS);
+  return {
+    emoji: d.emoji, text: `${d.name}: είναι συσκευή…`,
+    options: options.map(k => KINDS[k]), answer: options.indexOf(d.kind), cols: 3,
+    explain: `<b>${d.name}</b> — συσκευή ${KIND_WORD[d.kind]}. ${d.why}`,
+  };
+}
+function qStorage(s) {
+  const opts = shuffle([s, ...shuffle(STORAGE.filter(x => x !== s)).slice(0, 3)]);
+  return {
+    emoji: s.emoji, text: s.desc + ' Πώς λέγεται;',
+    options: opts.map(x => x.name), answer: opts.indexOf(s), cols: 2,
+    explain: `<b>${s.name}</b>: ${s.desc}`,
+  };
+}
+function qPart(p) {
+  const opts = shuffle([p, ...shuffle(PARTS.filter(x => x !== p)).slice(0, 3)]);
+  const explain = `<b>${p.name}</b>: ${p.job}`;
+  // μισές φορές «τι κάνει;», μισές «ποιο είναι;»
+  if (Math.random() < 0.5) {
+    return { emoji: p.emoji, text: `Ποια είναι η δουλειά: ${p.name};`, options: opts.map(x => x.job), answer: opts.indexOf(p), cols: 1, explain };
+  }
+  return { emoji: '❓', text: p.job + ' Ποιο εξάρτημα είναι;', options: opts.map(x => x.name), answer: opts.indexOf(p), cols: 2, explain };
+}
+
+const TOPICS = [
+  { icon: '🔌', title: 'Είσοδος ή Έξοδος;',     sub: 'Περιφερειακές συσκευές', make: () => DEVICES.map(d => () => qDevice(d)) },
+  { icon: '💾', title: 'Μέσα αποθήκευσης',       sub: 'Πώς λέγεται;',          make: () => STORAGE.map(s => () => qStorage(s)) },
+  { icon: '🧩', title: 'Μέσα στον υπολογιστή',   sub: 'Τι δουλειά κάνει;',     make: () => PARTS.map(p => () => qPart(p)) },
+  { icon: '🎲', title: 'Όλα μαζί',               sub: 'Ανακατεμένες ερωτήσεις', make: () => [...TOPICS[0].make(), ...TOPICS[1].make(), ...TOPICS[2].make()] },
+];
+const ROUND = 10;
+
+let topic = null, deck = [], index = 0, score = 0;
+
+function shuffle(a) {
+  for (let i = a.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1));
+    [a[i], a[j]] = [a[j], a[i]];
+  }
+  return a;
+}
+
+function buildMenu() {
+  const box = document.getElementById('topics');
+  TOPICS.forEach(t => {
+    const b = document.createElement('button');
+    b.className = 'topic';
+    b.innerHTML = `<div class="ico">${t.icon}</div><div><div class="ttl">${t.title}</div><div class="sub">${t.sub}</div></div>`;
+    b.onclick = () => startTopic(t);
+    box.appendChild(b);
+  });
+}
+
+function startTopic(t) {
+  topic = t;
+  // κάθε αντικείμενο μία φορά πριν ξαναεμφανιστεί
+  deck = [];
+  while (deck.length < ROUND) deck.push(...shuffle(t.make()));
+  deck = deck.slice(0, ROUND);
+  index = 0;
+  score = 0;
+  showScreen('quizScreen');
+  showQuestion();
+}
+
+function showQuestion() {
+  const q = deck[index]();
+  document.getElementById('status').innerHTML = `Ερώτηση <b>${index + 1}</b> από ${ROUND} &nbsp;·&nbsp; ⭐ <b>${score}</b>`;
+  document.getElementById('qEmoji').textContent = q.emoji;
+  document.getElementById('qText').textContent = q.text;
+  const box = document.getElementById('answers');
+  box.className = 'answers cols-' + q.cols;
+  box.innerHTML = '';
+  q.options.forEach((text, i) => {
+    const b = document.createElement('button');
+    b.textContent = text;
+    b.onclick = () => answer(q, i);
+    box.appendChild(b);
+  });
+  document.getElementById('feedback').classList.remove('show');
+}
+
+function answer(q, i) {
+  const buttons = document.querySelectorAll('#answers button');
+  buttons.forEach(b => { b.disabled = true; });
+  buttons[q.answer].classList.add('right');
+  if (i === q.answer) score++;
+  else buttons[i].classList.add('wrong');
+  document.getElementById('status').innerHTML = `Ερώτηση <b>${index + 1}</b> από ${ROUND} &nbsp;·&nbsp; ⭐ <b>${score}</b>`;
+  document.getElementById('explain').innerHTML = (i === q.answer ? '✅ Σωστά! ' : '❌ Όχι… ') + q.explain;
+  document.getElementById('nextBtn').textContent = index + 1 < ROUND ? 'Επόμενη ▶' : 'Τέλος 🏁';
+  document.getElementById('feedback').classList.add('show');
+}
+
+function next() {
+  index++;
+  if (index < ROUND) return showQuestion();
+  const ratio = score / ROUND;
+  document.getElementById('resultEmoji').textContent = ratio === 1 ? '🏆' : ratio >= 0.7 ? '🌟' : ratio >= 0.4 ? '👍' : '💪';
+  document.getElementById('resultScore').textContent = `${score} / ${ROUND} σωστές`;
+  document.getElementById('resultNote').textContent =
+    ratio === 1 ? 'Τέλειο! Τα ξέρεις όλα!' : ratio >= 0.7 ? 'Πολύ καλά!' : ratio >= 0.4 ? 'Καλή προσπάθεια!' : 'Πάμε άλλη μία φορά;';
+  showScreen('resultScreen');
+}
+
+function showScreen(id) {
+  for (const el of document.querySelectorAll('.screen')) el.classList.remove('active');
+  document.getElementById(id).classList.add('active');
+}
+
+// ====== ΣΚΗΝΗ: χωράει πάντα στην οθόνη, χωρίς scroll / zoom ======
+function fitStage() {
+  document.getElementById('stage').style.setProperty('--s', Math.min(innerWidth / 1600, innerHeight / 900));
+}
+addEventListener('resize', fitStage);
+addEventListener('wheel', e => e.preventDefault(), { passive: false });
+addEventListener('touchmove', e => e.preventDefault(), { passive: false });
+addEventListener('gesturestart', e => e.preventDefault());
+addEventListener('keydown', e => {
+  if ((e.ctrlKey || e.metaKey) && ['+', '-', '=', '0'].includes(e.key)) e.preventDefault();
+});
+
+document.getElementById('nextBtn').onclick = next;
+document.getElementById('againBtn').onclick = () => startTopic(topic);
+document.getElementById('menuBtn').onclick = () => showScreen('menuScreen');
+
+buildMenu();
+fitStage();
+</script>
+</body>
+</html>
