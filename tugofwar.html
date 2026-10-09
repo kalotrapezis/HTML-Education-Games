@@ -3,7 +3,7 @@
 <head>
 <link rel="icon" type="image/svg+xml" href="favicon.svg">
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
 <title>Tug of War — Μαθηματικά</title>
 <style>
   * { box-sizing: border-box; margin: 0; padding: 0; }
@@ -67,15 +67,20 @@
   button.secondary { background: #5a6890; box-shadow: 0 4px 0 #3a4670; }
   .start-btn { font-size: 22px; padding: 14px 36px; align-self: center; }
 
-  /* ΠΑΙΧΝΙΔΙ */
-  .arena {
-    display: grid;
-    grid-template-columns: 1fr 480px 1fr;
-    gap: 16px;
-    width: 100%;
-    align-items: stretch;
+  /* ΠΑΙΧΝΙΔΙ — σταθερή «σκηνή» 1600×900 που μικραίνει ώστε να χωράει πάντα, χωρίς scroll/zoom */
+  body.in-game { overflow: hidden; }
+  body.in-game > h1, body.in-game > .back { display: none; }
+  #gameScreen.active {
+    display: block; position: fixed; inset: 0; z-index: 50;
+    overflow: hidden; touch-action: none; user-select: none;
+  }
+  .stage {
+    position: absolute; left: 50%; top: 50%;
+    width: 1600px; height: 900px;
+    transform: translate(-50%, -50%) scale(var(--s, 1));
   }
   .player {
+    position: absolute; width: 420px;
     background: rgba(0,0,0,0.35);
     border-radius: 14px;
     padding: 18px;
@@ -83,8 +88,8 @@
     border: 3px solid transparent;
     transition: border-color 0.2s, transform 0.2s;
   }
-  .player.p1 { border-left: 6px solid #42A5F5; }
-  .player.p2 { border-right: 6px solid #EF5350; }
+  .player.p1 { border-left: 6px solid var(--cl); }
+  .player.p2 { border-right: 6px solid var(--cl); }
   .player.active {
     border-color: #ffb347;
     box-shadow: 0 0 24px rgba(255,179,71,0.4);
@@ -94,8 +99,7 @@
   .player .name {
     font-size: 22px; font-weight: bold; text-align: center;
   }
-  .player.p1 .name { color: #64b5f6; }
-  .player.p2 .name { color: #ef9a9a; }
+  .player .name { color: var(--cl); }
   .player .score {
     font-size: 16px; opacity: 0.9; text-align: center;
   }
@@ -137,11 +141,11 @@
   .keypad button:hover { background: rgba(255,255,255,0.2); }
   .keypad button.clear { background: #c0392b; box-shadow: 0 3px 0 #7a2519; grid-column: span 1; }
   .keypad button.ok { background: #27ae60; box-shadow: 0 3px 0 #195e34; }
-  .player.p1 .keypad button.ok { background: #1976D2; box-shadow: 0 3px 0 #0d47a1; }
-  .player.p2 .keypad button.ok { background: #c62828; box-shadow: 0 3px 0 #7a1313; }
+  .player .keypad button.ok { background: var(--c); box-shadow: 0 3px 0 var(--cd); }
 
   /* TUG OF WAR canvas */
   .center-col {
+    position: absolute; left: 50%; top: 20px; width: 560px; transform: translateX(-50%);
     display: flex; flex-direction: column; gap: 14px;
     align-items: center; justify-content: flex-start;
   }
@@ -154,9 +158,8 @@
     font-size: 22px; font-weight: bold; color: #ffb347; margin-top: 4px;
   }
   canvas.tug {
-    width: 100%;
-    max-width: 480px;
-    height: 360px;
+    width: 560px;
+    height: 420px;
     background: linear-gradient(180deg, rgba(255,255,255,0.06), rgba(0,0,0,0.2));
     border-radius: 14px;
   }
@@ -178,6 +181,27 @@
   .result-card .actions { display: flex; gap: 12px; justify-content: center; }
 
   .button-row { display: flex; gap: 10px; margin-top: 16px; justify-content: center; }
+  .stage .button-row {
+    position: absolute; left: 50%; bottom: 20px; transform: translateX(-50%);
+    margin: 0; z-index: 5; flex-wrap: nowrap;
+  }
+  #editBar { display: none; }
+
+  /* Επεξεργασία θέσης αριθμομηχανών */
+  body.editing #editBar { display: flex; }
+  body.editing #gameButtons { display: none; }
+  body.editing .player {
+    opacity: 1; pointer-events: auto; cursor: grab;
+    outline: 4px dashed #ffb347; outline-offset: 4px;
+  }
+  body.editing .player.dragging { cursor: grabbing; }
+  body.editing .player * { pointer-events: none; }
+  .edit-hint {
+    position: absolute; left: 50%; top: 470px; transform: translateX(-50%);
+    background: rgba(0,0,0,0.6); padding: 10px 18px; border-radius: 10px;
+    font-size: 18px; text-align: center; display: none;
+  }
+  body.editing .edit-hint { display: block; }
 </style>
 </head>
 <body>
@@ -192,12 +216,14 @@
     <h2>Νέο Παιχνίδι</h2>
     <div class="name-row">
       <div>
-        <label>🔵 Όνομα Παίχτη 1</label>
+        <label><span id="emoji1">🔵</span> Όνομα Παίχτη 1</label>
         <input id="name1" maxlength="14" value="Μπλε" style="margin-top:6px;">
+        <select id="color1" style="margin-top:6px;"></select>
       </div>
       <div>
-        <label>🔴 Όνομα Παίχτη 2</label>
+        <label><span id="emoji2">🔴</span> Όνομα Παίχτη 2</label>
         <input id="name2" maxlength="14" value="Κόκκινος" style="margin-top:6px;">
+        <select id="color2" style="margin-top:6px;"></select>
       </div>
     </div>
     <div>
@@ -232,12 +258,13 @@
       </select>
     </div>
     <button class="start-btn" id="startBtn">▶ Έναρξη</button>
+    <button class="secondary" id="layoutBtn" style="align-self:center;">⚙ Ρυθμίσεις: θέση αριθμομηχανών</button>
   </div>
 </div>
 
 <!-- ΠΑΙΧΝΙΔΙ -->
 <div id="gameScreen" class="screen">
-  <div class="arena">
+  <div class="stage" id="stage">
     <div class="player p1" id="player1">
       <div class="name" id="name1Disp">🔵 Παίχτης 1</div>
       <div class="score" id="score1">Πόντοι: 0</div>
@@ -264,10 +291,19 @@
       <div class="answer-input" id="input2">_</div>
       <div class="keypad" id="keypad2"></div>
     </div>
-  </div>
 
-  <div class="button-row">
-    <button class="secondary" id="backToMenuBtn">← Πίσω στο Μενού</button>
+    <div class="edit-hint">Σύρε κάθε αριθμομηχανή όπου βολεύει στον πίνακα</div>
+    <div class="button-row" id="gameButtons">
+      <button class="secondary" id="backToMenuBtn">← Πίσω στο Μενού</button>
+    </div>
+    <div class="button-row" id="editBar">
+      <button class="secondary" data-preset="top">⬆ Πάνω</button>
+      <button class="secondary" data-preset="center">⏺ Κέντρο</button>
+      <button class="secondary" data-preset="bottom">⬇ Κάτω</button>
+      <button class="secondary" id="layoutResetBtn">↺ Προεπιλογή</button>
+      <button id="layoutSaveBtn">✔ Αποθήκευση</button>
+      <button class="secondary" id="layoutCancelBtn">✕ Άκυρο</button>
+    </div>
   </div>
 </div>
 
@@ -293,6 +329,67 @@ const MODES = {
   simul: { title: '⚡ Ταυτόχρονα', desc: 'Και οι δύο απαντούν μαζί — όποιος προλάβει!' },
   turns: { title: '🔁 Εναλλάξ', desc: 'Μία ο ένας, μία ο άλλος — με τη σειρά.' }
 };
+
+// χρώματα ομάδων: c = κύριο, cl = ανοιχτό, cd = σκούρο
+const COLORS = {
+  blue:   { label: 'Μπλε',      emoji: '🔵', c: '#1976D2', cl: '#64B5F6', cd: '#0D47A1' },
+  red:    { label: 'Κόκκινο',   emoji: '🔴', c: '#C62828', cl: '#EF5350', cd: '#7F0000' },
+  green:  { label: 'Πράσινο',   emoji: '🟢', c: '#2E7D32', cl: '#81C784', cd: '#1B5E20' },
+  yellow: { label: 'Κίτρινο',   emoji: '🟡', c: '#F9A825', cl: '#FFF176', cd: '#F57F17' },
+  purple: { label: 'Μωβ',       emoji: '🟣', c: '#7B1FA2', cl: '#CE93D8', cd: '#4A148C' },
+  orange: { label: 'Πορτοκαλί', emoji: '🟠', c: '#EF6C00', cl: '#FFB74D', cd: '#BF360C' },
+  brown:  { label: 'Καφέ',      emoji: '🟤', c: '#6D4C41', cl: '#BCAAA4', cd: '#3E2723' },
+  black:  { label: 'Μαύρο',     emoji: '⚫', c: '#424242', cl: '#BDBDBD', cd: '#212121' },
+};
+
+function paintPanel(pn, col) {
+  const el = document.getElementById('player' + pn);
+  el.style.setProperty('--c', col.c);
+  el.style.setProperty('--cl', col.cl);
+  el.style.setProperty('--cd', col.cd);
+}
+
+// ονόματα & χρώματα μένουν αποθηκευμένα στον browser για το επόμενο παιχνίδι
+const PLAYERS_KEY = 'tugofwar.players';
+const playerFields = ['name1', 'name2', 'color1', 'color2'];
+function savePlayers() {
+  const data = {};
+  for (const id of playerFields) data[id] = document.getElementById(id).value;
+  try { localStorage.setItem(PLAYERS_KEY, JSON.stringify(data)); } catch (e) {}
+}
+function setupPlayers() {
+  for (const pn of [1, 2]) {
+    const sel = document.getElementById('color' + pn);
+    for (const [key, col] of Object.entries(COLORS)) sel.add(new Option(col.emoji + ' ' + col.label, key));
+  }
+  document.getElementById('color1').value = 'blue';
+  document.getElementById('color2').value = 'red';
+  let saved = {};
+  try { saved = JSON.parse(localStorage.getItem(PLAYERS_KEY)) || {}; } catch (e) {}
+  for (const id of playerFields) {
+    const el = document.getElementById(id);
+    if (saved[id] && (el.tagName !== 'SELECT' || COLORS[saved[id]])) el.value = saved[id];
+  }
+  for (const pn of [1, 2]) {
+    const sel = document.getElementById('color' + pn);
+    sel.dataset.prev = sel.value;
+    sel.onchange = () => {
+      // δύο ομάδες με ίδιο χρώμα μπερδεύουν — η άλλη παίρνει το παλιό χρώμα
+      const other = document.getElementById('color' + (3 - pn));
+      if (other.value === sel.value) { other.value = sel.dataset.prev; other.dataset.prev = other.value; }
+      sel.dataset.prev = sel.value;
+      updateEmojis();
+      savePlayers();
+    };
+  }
+  for (const pn of [1, 2]) document.getElementById('name' + pn).addEventListener('change', savePlayers);
+  updateEmojis();
+}
+function updateEmojis() {
+  for (const pn of [1, 2]) {
+    document.getElementById('emoji' + pn).textContent = COLORS[document.getElementById('color' + pn).value].emoji;
+  }
+}
 
 let selectedMode = 'simul';
 let state = null;
@@ -343,17 +440,22 @@ function rand(min, max) {
 function startGame() {
   const n1 = document.getElementById('name1').value.trim() || 'Μπλε';
   const n2 = document.getElementById('name2').value.trim() || 'Κόκκινος';
+  const c1 = COLORS[document.getElementById('color1').value];
+  const c2 = COLORS[document.getElementById('color2').value];
+  savePlayers();
   state = {
     mode: selectedMode,
-    p1: { name: n1, score: 0, q: null, input: '' },
-    p2: { name: n2, score: 0, q: null, input: '' },
+    p1: { name: n1, color: c1, score: 0, q: null, input: '' },
+    p2: { name: n2, color: c2, score: 0, q: null, input: '' },
     rope: 0,  // < 0 = προς p1, > 0 = προς p2 (αντίστροφο εμφανίζω)
     winAt: parseInt(document.getElementById('winSelect').value),
     winner: null,
     turn: 1  // για mode='turns'
   };
-  document.getElementById('name1Disp').textContent = '🔵 ' + n1;
-  document.getElementById('name2Disp').textContent = '🔴 ' + n2;
+  document.getElementById('name1Disp').textContent = c1.emoji + ' ' + n1;
+  document.getElementById('name2Disp').textContent = c2.emoji + ' ' + n2;
+  paintPanel(1, c1);
+  paintPanel(2, c2);
   document.getElementById('modeHint').textContent = MODES[state.mode].desc;
   buildKeypad(1);
   buildKeypad(2);
@@ -403,7 +505,7 @@ function buildKeypad(pn) {
 
 function typeKey(pn, k) {
   const p = state['p' + pn];
-  if (!p.q) return;
+  if (!p.q || p.wait) return;
   if (p.input.length < 5) p.input += k;
   activeInput = pn;
   updateUI();
@@ -417,17 +519,28 @@ function clearInput(pn) {
 
 function submit(pn) {
   const p = state['p' + pn];
-  if (!p.q || p.input === '') return;
+  if (!p.q || p.input === '' || p.wait || state.winner) return;
   const val = parseInt(p.input);
   if (val === p.q.answer) {
     p.score++;
+    p.wait = true; // όχι διπλό πόντο με γρήγορο ξανά-πάτημα του ✓
     state.rope += (pn === 1 ? -1 : 1);
     showFeedback(pn, true);
     checkWin();
     if (!state.winner) {
+      const s = state;
       setTimeout(() => {
-        if (state.mode === 'turns') state.turn = (state.turn === 1 ? 2 : 1);
-        nextQuestion();
+        if (state !== s) return; // το παιχνίδι ξεκίνησε από την αρχή στο μεταξύ
+        p.wait = false;
+        if (s.mode === 'turns') {
+          s.turn = (s.turn === 1 ? 2 : 1);
+          nextQuestion();
+        } else {
+          // ταυτόχρονα: νέα πράξη ΜΟΝΟ για την ομάδα που απάντησε, η άλλη συνεχίζει τη δική της
+          p.q = genQuestion();
+          p.input = '';
+          updateUI();
+        }
       }, 600);
     }
   } else {
@@ -478,7 +591,7 @@ function showResult() {
   const overlay = document.getElementById('resultOverlay');
   const winnerP = state.winner === 1 ? state.p1 : state.p2;
   const loserP = state.winner === 1 ? state.p2 : state.p1;
-  const color = state.winner === 1 ? '🔵' : '🔴';
+  const color = winnerP.color.emoji;
   document.getElementById('resultTitle').innerHTML = '🏆 ' + color + ' ' + winnerP.name + '!';
   document.getElementById('resultStats').innerHTML =
     winnerP.name + ': <b>' + winnerP.score + '</b> πόντοι<br>' +
@@ -490,7 +603,101 @@ function showScreen(id) {
   for (const el of document.querySelectorAll('.screen')) el.classList.remove('active');
   document.getElementById(id).classList.add('active');
   document.getElementById('resultOverlay').classList.remove('active');
+  document.body.classList.toggle('in-game', id === 'gameScreen');
+  if (id !== 'gameScreen') document.body.classList.remove('editing');
+  fitStage();
+  applyLayout(layout);
 }
+
+// ====== ΣΚΗΝΗ: χωράει πάντα στην οθόνη, χωρίς scroll / zoom ======
+const STAGE_W = 1600, STAGE_H = 900, MARGIN = 20;
+const stage = document.getElementById('stage');
+let stageScale = 1;
+function fitStage() {
+  stageScale = Math.min(innerWidth / STAGE_W, innerHeight / STAGE_H);
+  stage.style.setProperty('--s', stageScale);
+}
+addEventListener('resize', fitStage);
+const inGame = () => document.body.classList.contains('in-game');
+// κανένα scroll / pinch / ctrl+τροχός κατά το παιχνίδι — τα παιδιά δεν «κουνάνε» την οθόνη του αντιπάλου
+addEventListener('wheel', e => { if (inGame()) e.preventDefault(); }, { passive: false });
+addEventListener('touchmove', e => { if (inGame()) e.preventDefault(); }, { passive: false });
+addEventListener('gesturestart', e => e.preventDefault());
+addEventListener('keydown', e => {
+  if (inGame() && (e.ctrlKey || e.metaKey) && ['+', '-', '=', '0'].includes(e.key)) e.preventDefault();
+});
+
+// ====== ΘΕΣΗ ΑΡΙΘΜΟΜΗΧΑΝΩΝ (αποθηκεύεται στον browser του πίνακα) ======
+const LAYOUT_KEY = 'tugofwar.layout';
+const panels = { p1: document.getElementById('player1'), p2: document.getElementById('player2') };
+const defaultLayout = () => ({ p1: { x: MARGIN, y: 120 }, p2: { x: STAGE_W - 420 - MARGIN, y: 120 } });
+let layout = defaultLayout();
+try { Object.assign(layout, JSON.parse(localStorage.getItem(LAYOUT_KEY)) || {}); } catch (e) {}
+
+function applyLayout(l) {
+  for (const k of ['p1', 'p2']) {
+    const el = panels[k];
+    // κρατάμε το πάνελ μέσα στη σκηνή (π.χ. αν άλλαξε το μέγεθος του πάνελ)
+    l[k].x = Math.max(0, Math.min(STAGE_W - el.offsetWidth, l[k].x));
+    l[k].y = Math.max(0, Math.min(STAGE_H - el.offsetHeight, l[k].y));
+    el.style.left = l[k].x + 'px';
+    el.style.top = l[k].y + 'px';
+  }
+}
+
+let draft = null; // θέσεις υπό επεξεργασία
+function openLayoutEditor() {
+  startGame(); // δείχνει τις πραγματικές αριθμομηχανές με δοκιμαστικές πράξεις
+  draft = JSON.parse(JSON.stringify(layout));
+  document.body.classList.add('editing');
+  applyLayout(draft);
+}
+function closeLayoutEditor(save) {
+  if (save) {
+    layout = draft;
+    try { localStorage.setItem(LAYOUT_KEY, JSON.stringify(layout)); } catch (e) {}
+  }
+  draft = null;
+  showScreen('menuScreen');
+}
+
+for (const k of ['p1', 'p2']) {
+  const el = panels[k];
+  el.addEventListener('pointerdown', e => {
+    if (!draft) return;
+    e.preventDefault();
+    el.setPointerCapture(e.pointerId);
+    el.classList.add('dragging');
+    const start = { x: e.clientX, y: e.clientY, px: draft[k].x, py: draft[k].y };
+    const move = ev => {
+      draft[k].x = start.px + (ev.clientX - start.x) / stageScale;
+      draft[k].y = start.py + (ev.clientY - start.y) / stageScale;
+      applyLayout(draft);
+    };
+    const up = () => {
+      el.classList.remove('dragging');
+      el.removeEventListener('pointermove', move);
+      el.removeEventListener('pointerup', up);
+      el.removeEventListener('pointercancel', up);
+    };
+    el.addEventListener('pointermove', move);
+    el.addEventListener('pointerup', up);
+    el.addEventListener('pointercancel', up);
+  });
+}
+for (const b of document.querySelectorAll('[data-preset]')) {
+  b.onclick = () => {
+    for (const k of ['p1', 'p2']) {
+      const h = panels[k].offsetHeight;
+      draft[k].y = { top: MARGIN, center: (STAGE_H - h) / 2, bottom: STAGE_H - h - MARGIN }[b.dataset.preset];
+    }
+    applyLayout(draft);
+  };
+}
+document.getElementById('layoutResetBtn').onclick = () => { draft = defaultLayout(); applyLayout(draft); };
+document.getElementById('layoutSaveBtn').onclick = () => closeLayoutEditor(true);
+document.getElementById('layoutCancelBtn').onclick = () => closeLayoutEditor(false);
+document.getElementById('layoutBtn').onclick = openLayoutEditor;
 
 // ====== ΣΧΕΔΙΑΣΗ TUG OF WAR ======
 function drawTug() {
@@ -646,8 +853,9 @@ function drawTug() {
   ctx.stroke();
 
   // παίχτες (μπλε αριστερά, κόκκινος δεξιά)
-  drawPuller(ropeMid - 80, ropeY, '#1565C0', '#64B5F6', '#0D47A1', 'left');
-  drawPuller(ropeMid + 80, ropeY, '#B71C1C', '#EF5350', '#7F0000', 'right');
+  const col1 = state ? state.p1.color : COLORS.blue, col2 = state ? state.p2.color : COLORS.red;
+  drawPuller(ropeMid - 80, ropeY, col1.c, col1.cl, col1.cd, 'left');
+  drawPuller(ropeMid + 80, ropeY, col2.c, col2.cl, col2.cd, 'right');
 
   // ταμπέλα τίτλου στην κορυφή
   ctx.fillStyle = 'rgba(0,0,0,0.55)';
@@ -820,7 +1028,7 @@ function loop() {
 // ====== ΠΛΗΚΤΡΟΛΟΓΙΟ ======
 document.addEventListener('keydown', e => {
   if (!document.getElementById('gameScreen').classList.contains('active')) return;
-  if (!state || state.winner) return;
+  if (!state || state.winner || draft) return;
   // P1 = αριστερά πληκτρολόγιο (Q W E A S D Z X C + space submit? )
   // Πιο εύκολο: αριθμοί 1-9, 0 — επιλογή με Tab/Shift για να αλλάξεις παίχτη
   // Default: στο simul mode, πληκτρολόγιο για τον τρέχοντα activeInput
@@ -832,7 +1040,7 @@ document.addEventListener('keydown', e => {
   const pn = activeInput;
   if (!pn) return;
   const p = state['p' + pn];
-  if (!p.q) return;
+  if (!p.q || p.wait) return;
   if (e.key >= '0' && e.key <= '9') {
     if (p.input.length < 5) p.input += e.key;
     updateUI();
@@ -855,6 +1063,7 @@ document.getElementById('rematchBtn').onclick = () => {
 document.getElementById('newMatchBtn').onclick = () => showScreen('menuScreen');
 document.getElementById('backToMenuBtn').onclick = () => showScreen('menuScreen');
 
+setupPlayers();
 buildModeCards();
 loop();
 </script>
