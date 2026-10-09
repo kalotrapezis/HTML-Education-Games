@@ -374,6 +374,26 @@
   .ask { display: flex; flex-direction: column; gap: 10px; }
   .ask .q { font-size: 24px; font-weight: bold; } .ask .opts { display: flex; gap: 12px; flex-wrap: wrap; }
 
+  /* ΛΟΓΙΚΕΣ ΕΚΦΡΑΣΕΙΣ: διακόπτες, λάμπα, πίνακας αλήθειας */
+  .logic { display: flex; gap: 40px; align-items: center; }
+  .lg-in { display: flex; flex-direction: column; gap: 14px; width: 470px; }
+  .sw { display: flex; align-items: center; gap: 12px; text-align: left; font-size: 22px; padding: 10px 14px; box-shadow: 0 5px 0 rgba(0,0,0,0.3); background: #c62828; }
+  .sw.on { background: #2e7d32; } .sw .em { font-size: 40px; } .sw .v { margin-left: auto; font-weight: bold; white-space: nowrap; }
+  .lg-mid { display: flex; flex-direction: column; align-items: center; gap: 8px; width: 300px; text-align: center; }
+  .lg-mid .ex { font-size: 30px; font-weight: bold; color: #ffb347; }
+  .lg-mid .out { font-size: 24px; }
+  .tt { border-collapse: collapse; font-size: 22px; background: rgba(0,0,0,0.3); }
+  .tt th, .tt td { border: 1px solid rgba(255,255,255,0.25); padding: 6px 14px; text-align: center; }
+  .tt tr.cur td { background: rgba(255,179,71,0.35); }
+  /* ΜΑΝΤΕΨΕ ΤΟΝ ΑΡΙΘΜΟ */
+  .guess { display: flex; gap: 50px; align-items: center; }
+  .gpad { display: grid; grid-template-columns: repeat(3, 90px); gap: 10px; }
+  .gpad button { font-size: 34px; padding: 10px 0; }
+  .gside { width: 560px; display: flex; flex-direction: column; gap: 14px; }
+  .gdisp { font: bold 64px Consolas, monospace; background: #fff; color: #1e3c72; border-radius: 14px; text-align: center; padding: 6px; min-height: 90px; }
+  .gsay { font-size: 26px; min-height: 70px; background: rgba(0,0,0,0.3); border-radius: 12px; padding: 10px 16px; }
+  .ghist { font-size: 22px; opacity: 0.9; }
+
   /* ΤΕΛΕΙΕΣ */
   .dots svg { width: 600px; height: 600px; background: #fff; border-radius: 18px; }
   .reveal { width: 560px; display: flex; flex-direction: column; gap: 20px; align-items: center; text-align: center; font-size: 30px; }
@@ -1416,6 +1436,65 @@ const BOOK_F = [
           ] },
         ],
       },
+      {
+        icon: '🔀', title: 'Λογικές εκφράσεις και σχεδίαση αλγορίθμων', sub: 'ΚΑΙ, Ή, ΟΧΙ · Μάντεψε τον αριθμό',
+        acts: [
+          { type: 'info', ref: 'έκδ. 8.02 σελ. 14', text: 'Γρήγορη επανάληψη:', cards: [
+            ['🧩', 'Οι <b>λογικές εκφράσεις</b> έχουν αποτέλεσμα μια <b>λογική τιμή</b>: ΑΛΗΘΗΣ ή ΨΕΥΔΗΣ.'],
+            ['➕', '<b>Απλή</b>: μία μόνο έκφραση, π.χ. «5 > 1». <b>Σύνθετη</b>: δύο ή περισσότερες απλές, ενωμένες με τους <b>λογικούς τελεστές</b> ΚΑΙ, Ή, ΟΧΙ — π.χ. «5 > 1 ΚΑΙ 6 > 2».'],
+            ['🔗', '<b>ΚΑΙ</b> = σύζευξη · <b>Ή</b> = διάζευξη · <b>ΟΧΙ</b> = άρνηση.'],
+            ['🎩', 'Ο <b>George Boole</b> (1815–1864) ήταν ο μαθηματικός που έφτιαξε αυτή τη λογική με ΑΛΗΘΗΣ και ΨΕΥΔΗΣ — την «άλγεβρα Boole» που χρησιμοποιούν σήμερα όλοι οι υπολογιστές.'],
+          ] },
+          { type: 'logic', ref: 'έκδ. 8.02 σελ. 14 (σύζευξη)', text: 'ΚΑΙ: η λάμπα ανάβει μόνο όταν είναι αληθείς και οι δύο.',
+            inputs: [['Α', '📚', 'Έχω τελειώσει τα μαθήματα'], ['Β', '☀️', 'Έχει ήλιο']], expr: 'Α ΚΑΙ Β', out: ['🌳', 'Πάω στο πάρκο'], f: v => v[0] && v[1],
+            explain: 'Ο τελεστής <b>ΚΑΙ</b> δίνει ΑΛΗΘΗΣ <b>μόνο</b> όταν και οι δύο εκφράσεις είναι αληθείς.' },
+          { type: 'logic', ref: 'έκδ. 8.02 σελ. 14 (διάζευξη)', text: 'Ή: η λάμπα ανάβει όταν είναι αληθής έστω η μία.',
+            inputs: [['Α', '🗓️', 'Είναι Σάββατο'], ['Β', '🗓️', 'Είναι Κυριακή']], expr: 'Α Ή Β', out: ['🏖️', 'Δεν έχει σχολείο'], f: v => v[0] || v[1],
+            explain: 'Ο τελεστής <b>Ή</b> δίνει ΑΛΗΘΗΣ όταν <b>τουλάχιστον μία</b> έκφραση είναι αληθής.' },
+          { type: 'logic', ref: 'έκδ. 8.02 σελ. 14 (άρνηση)', text: 'ΟΧΙ: η λάμπα κάνει το αντίθετο από τον διακόπτη.',
+            inputs: [['Α', '🌧️', 'Βρέχει']], expr: 'ΟΧΙ Α', out: ['⚽', 'Παίζω έξω'], f: v => !v[0],
+            explain: 'Ο τελεστής <b>ΟΧΙ</b> αντιστρέφει την τιμή: το ΑΛΗΘΗΣ γίνεται ΨΕΥΔΗΣ και το ΨΕΥΔΗΣ γίνεται ΑΛΗΘΗΣ.' },
+          { type: 'mcq', ref: 'έκδ. 8.02 σελ. 14', text: 'Βρες τη λογική τιμή.', hint: 'Βρες πρώτα την τιμή κάθε απλής έκφρασης, μετά εφάρμοσε τον τελεστή.', questions: [
+            { q: '5 > 2 ΚΑΙ 1 > 2', options: ['ΑΛΗΘΗΣ', 'ΨΕΥΔΗΣ'], answer: 1, explain: '5 > 2 είναι αληθής, 1 > 2 είναι ψευδής. Με ΚΑΙ, αρκεί μία ψευδής → ΨΕΥΔΗΣ.' },
+            { q: '5 > 2 Ή 1 > 2', options: ['ΑΛΗΘΗΣ', 'ΨΕΥΔΗΣ'], answer: 0, explain: 'Με Ή, αρκεί μία αληθής → ΑΛΗΘΗΣ.' },
+            { q: 'ΟΧΙ 1 > 10', options: ['ΑΛΗΘΗΣ', 'ΨΕΥΔΗΣ'], answer: 0, explain: '1 > 10 είναι ψευδής· η άρνηση το κάνει ΑΛΗΘΗΣ.' },
+            { q: '5 > 1 ΚΑΙ 6 > 2', options: ['ΑΛΗΘΗΣ', 'ΨΕΥΔΗΣ'], answer: 0 },
+            { q: '3 > 7 Ή 2 > 9', options: ['ΑΛΗΘΗΣ', 'ΨΕΥΔΗΣ'], answer: 1, explain: 'Και οι δύο είναι ψευδείς, οπότε και το Ή δίνει ΨΕΥΔΗΣ.' },
+          ] },
+          { type: 'sort', ref: 'έκδ. 8.02 σελ. 14', text: 'Απλή ή σύνθετη λογική έκφραση;', bins: ['1️⃣ Απλή', '🔗 Σύνθετη'], doneMsg: '🎉 Μπράβο! Η σύνθετη έχει μέσα της ΚΑΙ ή Ή.', items: [
+            ['🔢', '5 > 1', 0], ['🔢', '5 > 1 ΚΑΙ 6 > 2', 1], ['🌧️', 'Βρέχει', 0], ['❄️', 'Βρέχει Ή χιονίζει', 1],
+            ['🎂', 'Είμαι 11 χρονών', 0], ['📚', 'Έχω διάβασμα ΚΑΙ έχω προπόνηση', 1], ['🔢', 'Χ = 10', 0],
+          ] },
+          { type: 'stepper', ref: 'έκδ. 8.02 σελ. 15', text: 'Παράδειγμα 1: ανταλλαγή τιμών. Η Χ = 5 και η Υ = 10 πρέπει να «αλλάξουν θέση».',
+            code: ['Όρισε Χ σε 5', 'Όρισε Υ σε 10', 'Όρισε Ζ σε Χ   // προσωρινή μεταβλητή', 'Όρισε Χ σε Υ', 'Όρισε Υ σε Ζ'],
+            steps: [
+              { line: 0, vars: { 'Χ': 5 } }, { line: 1, vars: { 'Υ': 10 } },
+              { line: 2, vars: { 'Ζ': 5 }, ask: { q: 'Τι τιμή παίρνει η Ζ;', options: ['5', '10', '0'], answer: 0 }, after: 'Κρατάμε την τιμή της Χ στη Ζ, για να μη χαθεί!' },
+              { line: 3, vars: { 'Χ': 10 }, ask: { q: 'Τι τιμή παίρνει η Χ;', options: ['5', '10'], answer: 1 } },
+              { line: 4, vars: { 'Υ': 5 }, ask: { q: 'Τι τιμή παίρνει η Υ;', options: ['5', '10'], answer: 0 }, after: 'Τώρα Χ = 10 και Υ = 5. Οι τιμές άλλαξαν θέση!' },
+            ],
+            explain: 'Χωρίς τη βοηθητική μεταβλητή Ζ, όταν γράφαμε «Όρισε Χ σε Υ» η τιμή 5 θα χανόταν για πάντα.' },
+          { type: 'logic', ref: 'έκδ. 8.02 σελ. 15', text: 'Παράδειγμα 2: Μπορεί ο Γιώργος να παίξει ποδόσφαιρο;',
+            inputs: [['Α', '🌧️', 'Βρέχει'], ['Β', '🌤️', 'Έχει αίθριο καιρό'], ['Γ', '🌬️', 'Έχει δυνατό άνεμο']],
+            expr: 'ΟΧΙ Α ΚΑΙ Β ΚΑΙ ΟΧΙ Γ', out: ['⚽', 'Ο Γιώργος παίζει ποδόσφαιρο'], f: v => !v[0] && v[1] && !v[2],
+            explain: 'Ο Γιώργος παίζει <b>μόνο</b> όταν δεν βρέχει, έχει αίθριο καιρό και δεν έχει δυνατό άνεμο — μία από τις 8 περιπτώσεις!' },
+          { type: 'info', ref: 'έκδ. 8.0 σελ. 14–15', text: 'Το παιχνίδι «Μάντεψε τον αριθμό»:', cards: [
+            ['🤖', algo(['Διάλεξε έναν τυχαίο αριθμό 1–10: <b>Μυστικός_Αριθμός</b>', 'Όρισε τις <b>προσπάθειες</b> σε 1'],
+              'Επανάλαβε ώσπου αριθμός_παίκτη = Μυστικός_Αριθμός <b>Ή</b> προσπάθειες > 5',
+              ['Αν είναι μικρότερος → πες «Ο μυστικός αριθμός είναι μεγαλύτερος»', 'Αν είναι μεγαλύτερος → πες «Ο μυστικός αριθμός είναι μικρότερος»', 'Αύξησε τις προσπάθειες κατά 1'],
+              ['Αν προσπάθειες > 5 τότε πες «Έχασες!» αλλιώς πες «Μπράβο!»'])],
+          ] },
+          { type: 'guess', max: 10, tries: 5, ref: 'έκδ. 8.0 σελ. 14–16 (Αλγόριθμος 2)', text: 'Παίξε με τον υπολογιστή: αριθμός από το 1 μέχρι το 10, με 5 προσπάθειες.' },
+          { type: 'guess', max: 100, tries: 7, ref: 'έκδ. 8.0 σελ. 15 (συζήτηση στρατηγικής)', text: 'Τώρα από το 1 μέχρι το 100, με 7 προσπάθειες! Ποια στρατηγική θα χρησιμοποιήσεις;',
+            explain: 'Η καλύτερη στρατηγική: ξεκινάω από τη <b>μέση</b> (50) και κάθε φορά κόβω το διάστημα στη μέση. Έτσι βρίσκω οποιονδήποτε αριθμό από 1 έως 100 σε 7 προσπάθειες το πολύ!' },
+          { type: 'mcq', ref: 'έκδ. 8.0 σελ. 16', text: 'Σύγκρινε τους δύο αλγορίθμους.', questions: [
+            { q: 'Η συνθήκη λήξης «αριθμός_παίκτη = Μυστικός_Αριθμός Ή προσπάθειες > 5» είναι…', options: ['σύνθετη λογική έκφραση', 'απλή λογική έκφραση'], answer: 0,
+              explain: 'Αποτελείται από δύο απλές: «αριθμός_παίκτη = Μυστικός_Αριθμός» και «προσπάθειες > 5», ενωμένες με Ή.' },
+            { q: 'Ποια είναι η διαφορά του Αλγορίθμου 2 από τον Αλγόριθμο 1;', options: ['Μετράει τις προσπάθειες και μπορείς να χάσεις', 'Διαλέγει μεγαλύτερο αριθμό', 'Δεν λέει «μεγαλύτερος / μικρότερος»'], answer: 0 },
+            { q: 'Στον Αλγόριθμο 1, πόσες προσπάθειες χρειάζονται στη χειρότερη περίπτωση (1–10);', options: ['5', '10', '1'], answer: 1, explain: 'Αν δοκιμάζεις έναν-έναν, μπορεί να χρειαστεί να δοκιμάσεις και τους 10.' },
+          ] },
+        ],
+      },
     ],
   },
   { tab: 'Κεφ. 2', title: 'Υπολογιστικά συστήματα – Ψηφιακές συσκευές – Δίκτυα', lessons: [] },
@@ -1446,6 +1525,8 @@ const GUIDE = {
   board: 'Δύο ομάδες παίζουν με τη σειρά: πατήστε «🎲 Ρίξε το ζάρι». Αν πέσετε σε κουτάκι με κανόνα, ο κανόνας εφαρμόζεται!',
   river: 'Πατήστε ένα ζώο ή το λάχανο για να μπει στη βάρκα και μετά «⛵ Πέρνα απέναντι». Ο βαρκάρης παίρνει έναν επιβάτη τη φορά.',
   caesar: 'Για κάθε γράμμα της λέξης, πατήστε στον πίνακα το σωστό γράμμα.',
+  logic: 'Πατήστε τους διακόπτες για να γίνουν ΑΛΗΘΗΣ ή ΨΕΥΔΗΣ. Πότε ανάβει η λάμπα; Δοκιμάστε όλους τους συνδυασμούς.',
+  guess: 'Πληκτρολογήστε έναν αριθμό και πατήστε ✔. Ο υπολογιστής σας λέει αν ο μυστικός αριθμός είναι μεγαλύτερος ή μικρότερος.',
   stepper: 'Πατήστε «▶ Επόμενο βήμα». Η γραμμή που εκτελείται φωτίζεται· όταν ερωτηθείτε, μαντέψτε τη νέα τιμή της μεταβλητής.',
   desktop: 'Κάντε με τη σειρά τις εργασίες δεξιά. Διπλό κλικ = δύο γρήγορα πατήματα · δεξί κλικ = κρατήστε πατημένο το δάχτυλο.',
   microbit: 'Πατήστε τα κουμπιά του micro:bit (ή τα εικονίδια του προγράμματος) και δείτε τι συμβαίνει.',
@@ -1453,7 +1534,7 @@ const GUIDE = {
 const KIND_NAMES = { info: '📖 Διαβάζω', order: '🔢 Σειρά βημάτων', trace: '🔍 Πού θα φτάσει;', program: '🧩 Φτιάχνω πρόγραμμα',
   pick: '🎯 Ποιο πρόγραμμα;', mcq: '❓ Ερωτήσεις', match: '🔗 Ταίριασμα', sort: '🗂️ Ταξινόμηση', dots: '✏️ Ενώνω τις τελείες',
   counter: '🔢 Μετράμε', bits: '💡 Λάμπες', bracelet: '📿 Βραχιόλι', sticks: '🪵 Ξυλάκια',
-  microbit: '📟 micro:bit', stepper: '👣 Βήμα-βήμα', desktop: '🖥️ Επιφάνεια εργασίας', dress: '👕 Ντύσε τον Ήρωνα', decision: '🔀 Σχεδιάγραμμα απόφασης', board: '🎲 Επιτραπέζιο', river: '🚣 Γρίφος', caesar: '🔐 Κρυπτογράφηση' };
+  logic: '💡 Λογικές εκφράσεις', guess: '🔢 Μάντεψε τον αριθμό', microbit: '📟 micro:bit', stepper: '👣 Βήμα-βήμα', desktop: '🖥️ Επιφάνεια εργασίας', dress: '👕 Ντύσε τον Ήρωνα', decision: '🔀 Σχεδιάγραμμα απόφασης', board: '🎲 Επιτραπέζιο', river: '🚣 Γρίφος', caesar: '🔐 Κρυπτογράφηση' };
 
 // ============================================================================
 // ΓΕΝΙΚΑ
@@ -2772,6 +2853,93 @@ RENDER.stepper = (act, area) => {
   drawCode(-1);
   drawVars([]);
   note.textContent = 'Πατήστε «▶ Επόμενο βήμα» για να ξεκινήσει ο αλγόριθμος.';
+};
+
+// ---- Λογικές εκφράσεις: διακόπτες ΑΛΗΘΗΣ/ΨΕΥΔΗΣ → λάμπα, και πίνακας αλήθειας που γεμίζει (ΣΤ΄ έκδ. 8.02 σελ. 14–15)
+RENDER.logic = (act, area) => {
+  const n = act.inputs.length;
+  const vals = Array(n).fill(false);
+  const seen = new Set();
+  const left = el('div', 'lg-in'), mid = el('div', 'lg-mid'), table = el('table', 'tt');
+  const wrap = el('div', 'logic');
+  wrap.append(left, mid, table);
+  area.appendChild(wrap);
+  const combos = [...Array(2 ** n).keys()].map(k => [...Array(n)].map((_, i) => !!(k & (1 << (n - 1 - i)))));
+  const mark = b => (b ? '✅' : '❌');
+  function draw() {
+    const res = !!act.f(vals);
+    seen.add(vals.join());
+    left.innerHTML = '';
+    act.inputs.forEach(([nm, em, label], i) => {
+      const b = el('button', 'sw' + (vals[i] ? ' on' : ''), `<span class="em">${em}</span><span><b>${nm}:</b> ${label}</span><span class="v">${vals[i] ? 'ΑΛΗΘΗΣ' : 'ΨΕΥΔΗΣ'}</span>`);
+      b.onclick = () => { vals[i] = !vals[i]; draw(); };
+      left.appendChild(b);
+    });
+    mid.innerHTML = `<div class="ex">${act.expr}</div>${lampSVG(res, 120)}<div class="out">${act.out[0]} ${act.out[1]}<br><b>${res ? 'ΑΛΗΘΗΣ ✅' : 'ΨΕΥΔΗΣ ❌'}</b></div>`;
+    table.innerHTML = `<tr>${act.inputs.map(x => `<th>${x[0]}</th>`).join('')}<th>${act.expr}</th></tr>` +
+      combos.map(c => `<tr class="${c.join() === vals.join() ? 'cur' : ''}">${c.map(v => `<td>${mark(v)}</td>`).join('')}<td>${seen.has(c.join()) ? mark(act.f(c)) : '?'}</td></tr>`).join('');
+    if (seen.size === combos.length) complete(act.doneMsg || '🎉 Μπράβο! Δοκίμασες όλους τους συνδυασμούς — συμπλήρωσες τον πίνακα αλήθειας!');
+    else say(`Δοκίμασε όλους τους συνδυασμούς: ${seen.size} από ${combos.length}.`);
+  }
+  draw();
+};
+
+// ---- «Μάντεψε τον αριθμό» (ΣΤ΄ έκδ. 8.0 μαθ. 2): ο υπολογιστής διαλέγει, εμείς μαντεύουμε με όριο προσπαθειών
+RENDER.guess = (act, area) => {
+  const max = act.max || 10, tries = act.tries || 5;
+  let secret, attempts, typed, over, hist;
+  const wrap = el('div', 'guess'), pad = el('div', 'gpad'), side = el('div', 'gside');
+  const disp = el('div', 'gdisp'), talk = el('div', 'gsay'), varsEl = el('div', 'vars'), histEl = el('div', 'ghist');
+  side.append(disp, talk, varsEl, histEl);
+  wrap.append(pad, side);
+  area.appendChild(wrap);
+  for (const k of ['7', '8', '9', '4', '5', '6', '1', '2', '3', '⌫', '0', 'OK']) {
+    const b = el('button', k === 'OK' ? '' : 'secondary', k === 'OK' ? '✔' : k);
+    b.onclick = () => pressKey(k);
+    pad.appendChild(b);
+  }
+  function drawVars() {
+    varsEl.innerHTML = `<h4>📦 Μεταβλητές</h4><div class="var"><span>προσπάθειες</span><b>${attempts}</b></div><div class="var"><span>Μυστικός_Αριθμός</span><b>${over ? secret : '?'}</b></div>`;
+    histEl.textContent = hist.length ? 'Δοκίμασες: ' + hist.join(' · ') : '';
+    disp.textContent = typed || '_';
+  }
+  function start() {
+    secret = 1 + Math.floor(Math.random() * max);
+    attempts = 1; typed = ''; over = false; hist = [];
+    talk.innerHTML = `🤖 Διάλεξα έναν αριθμό από το 1 μέχρι το ${max}. Μάντεψέ τον! Έχεις <b>${tries}</b> προσπάθειες.`;
+    drawVars();
+  }
+  function pressKey(k) {
+    if (over) return;
+    if (k === '⌫') typed = typed.slice(0, -1);
+    else if (k === 'OK') return check();
+    else if (typed.length < String(max).length) typed += k;
+    drawVars();
+  }
+  function check() {
+    const g = +typed;
+    if (!typed || g < 1 || g > max) { talk.innerHTML = `Δώσε έναν αριθμό από το 1 μέχρι το ${max}.`; return; }
+    typed = '';
+    if (g === secret) {
+      over = true; hist.push(g + ' ✅'); drawVars();
+      talk.innerHTML = `🎉 «Μπράβο! Βρήκες τον αριθμό» σε <b>${attempts}</b> ${attempts === 1 ? 'προσπάθεια' : 'προσπάθειες'}.`;
+      return finish(true);
+    }
+    hist.push(g + (g < secret ? ' ⬆' : ' ⬇'));
+    talk.innerHTML = g < secret ? '🤖 «Ο μυστικός αριθμός είναι <b>μεγαλύτερος</b> από αυτόν που μου έδωσες»' : '🤖 «Ο μυστικός αριθμός είναι <b>μικρότερος</b> από αυτόν που μου έδωσες»';
+    attempts++; // «Αύξησε τις προσπάθειες κατά 1»
+    if (attempts > tries) { over = true; drawVars(); talk.innerHTML = `😢 «Έχασες! Δεν μάντεψες τον αριθμό». Ήταν το <b>${secret}</b>.`; return finish(false); }
+    drawVars();
+  }
+  function finish(won) {
+    const again = el('button', 'secondary', '🔁 Ξανά');
+    again.onclick = () => { again.remove(); start(); };
+    talk.appendChild(document.createElement('br'));
+    talk.appendChild(again);
+    if (won) complete(act.doneMsg || '🎉 Μπράβο! Ο αλγόριθμος σταμάτησε γιατί η συνθήκη έγινε αληθής.');
+    else say('Η επανάληψη σταμάτησε γιατί έγινε αληθής το «προσπάθειες > ' + tries + '». Δοκίμασε ξανά!', 'bad');
+  }
+  start();
 };
 
 // ---- Τσαμπιά με ξυλάκια (8, 4, 2, 1) που σέρνονται στο καλάθι (RAM) για να βγει ένας αριθμός
