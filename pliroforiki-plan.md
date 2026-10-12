@@ -54,22 +54,40 @@ sliders, messages, subprograms with parameters, ask/answer, draggable sprites) a
 
 Known source issue: the newer Ε΄ edition (v08, 1.1.2) prints «12 > 15 ΑΛΗΘΗΣ» — the book uses correct examples instead.
 
-### Next: chapter 2 (computers · devices · networks)
-- Α΄ (10–14): ο υπολογιστής, συσκευές, άνοιγμα/κλείσιμο (desktop simulator), δίκτυα.
-- Β΄: lessons 10–14 done; add v08 2.1.4 «Ανοίγουμε, κλείνουμε εφαρμογές» if missing.
-- Γ΄ (9–13): ψηφιακή εικόνα (pixel grid), εξαρτήματα, εφαρμογές, δικτύωση, ασφάλεια/ιοί.
-- Δ΄ (11–15 · v07 2.1.1–2.2.2): ψηφιακά δεδομένα, είδη υπολογιστών, εφαρμογές, ταξίδι δεδομένων, προστασία.
-- Ε΄ (12–15 · v08 2.1.1–2.2.2): ψηφιοποίηση κειμένου (ASCII + `bits`), υλικό & χρήστες, δίκτυα, URLs, αξιοπιστία.
-- ΣΤ΄ (12–15 · 8.02 2.1.1–2.2.2): υλικό & ρυθμίσεις, πάροχοι & πρωτόκολλα, IoT, κίνδυνοι.
+Chapter 2 (computers · devices · networks) is **done for every grade** (2026-10-12), both editions
+merged, every lesson with practice, a chapter review per grade.
 
-Then chapters 3–5 for all grades (files, concept maps, spreadsheets, digital literacy, society).
+| Grade | Older-edition lessons | Newer-edition sections | Lessons in the book |
+|---|---|---|---|
+| Α΄ | 10–14 | 2.1.1–2.2.1 + review | 6 |
+| Β΄ | 10–14 | 2.1.1–2.2.1 + review | 7 |
+| Γ΄ | 9–13 | 2.1–2.2 + review | 6 |
+| Δ΄ | 11–15 | 2.1.1–2.2.2 + review | 6 |
+| Ε΄ | 12–15 | 2.1.1–2.2.2 + review | 6 |
+| ΣΤ΄ | 12–15 | 2.1.1–2.2.2 + review | 6 |
+
+Engine pieces added for chapter 2: `net` (connect devices with cables; `mode: 'path'` = packet routing
+with shortest path and broken routers; `hideTasks` hides the answer list), `pixels` (decode/encode 1-, 2-, 3-bit
+images with bit/Byte count; `rle: true` = run-length rows), `binword` (letters ↔ bits with the 5-bit Greek
+table or ASCII), `password` (strength trainer, local only), desktop `boot` (power on/off) and the
+`settings` tasks (wallpaper, brightness, resolution) with a ⚙️ Ρυθμίσεις app.
+
+### Next: chapter 3 (data · files · concept maps · spreadsheets)
+- Α΄ (15–18): αρχεία και φάκελοι, αποθήκευση, ο πρώτος εννοιολογικός χάρτης.
+- Γ΄ (14–16): αρχεία και φάκελοι, είδη εννοιολογικών χαρτών, πρόβλημα με εννοιολογικό χάρτη.
+- Δ΄ (16–19): ψηφιακό περιεχόμενο, μεγέθη αρχείων και κάδος ανακύκλωσης, επεξεργασία δεδομένων, χάρτης με εικόνες.
+- Ε΄ (16–20): υπολογιστικό φύλλο (πίνακας, πράξεις, διαγράμματα), τεχνητή νοημοσύνη.
+- ΣΤ΄ (16–20): φόρμες, υπολογιστικό φύλλο (ταξινόμηση, φίλτρα), ερωτήματα σε δεδομένα.
+- Β΄: check the older edition's chapter-3 lessons against both editions.
+
+Needs a `conceptmap` activity and a mini spreadsheet. Then chapters 4–5.
 
 ## Order of work
 
 - **Phase 0** ✅ — engine: `theory` page type + per-lesson `practice`. Retrofit all existing
   lessons: practice set for every lesson, theory page where the lesson has extra info.
 - **Phase 1** ✅ — Κεφ. 1 (algorithms) finished for Γ΄, Δ΄, Ε΄, ΣΤ΄.
-- **Phase 2** — Κεφ. 2 for all grades (computers, binary, networks, safety).
+- **Phase 2** ✅ — Κεφ. 2 for all grades (computers, binary, networks, safety).
 - **Phase 3** — Κεφ. 3 (files, concept maps, spreadsheets) — needs `conceptmap` + mini sheet.
 - **Phase 4** — Κεφ. 4 digital literacy — `mouse`/`keys` games; platform-specific lessons
   (e-me, Φωτόδεντρο, email) become info + quiz.
