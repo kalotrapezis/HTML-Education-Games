@@ -72,15 +72,40 @@ images with bit/Byte count; `rle: true` = run-length rows), `binword` (letters �
 table or ASCII), `password` (strength trainer, local only), desktop `boot` (power on/off) and the
 `settings` tasks (wallpaper, brightness, resolution) with a ⚙️ Ρυθμίσεις app.
 
-### Next: chapter 3 (data · files · concept maps · spreadsheets)
-- Α΄ (15–18): αρχεία και φάκελοι, αποθήκευση, ο πρώτος εννοιολογικός χάρτης.
-- Γ΄ (14–16): αρχεία και φάκελοι, είδη εννοιολογικών χαρτών, πρόβλημα με εννοιολογικό χάρτη.
-- Δ΄ (16–19): ψηφιακό περιεχόμενο, μεγέθη αρχείων και κάδος ανακύκλωσης, επεξεργασία δεδομένων, χάρτης με εικόνες.
-- Ε΄ (16–20): υπολογιστικό φύλλο (πίνακας, πράξεις, διαγράμματα), τεχνητή νοημοσύνη.
-- ΣΤ΄ (16–20): φόρμες, υπολογιστικό φύλλο (ταξινόμηση, φίλτρα), ερωτήματα σε δεδομένα.
-- Β΄: check the older edition's chapter-3 lessons against both editions.
+Chapter 3 (data · files · concept maps · spreadsheets) is **done for every grade** (2026-10-12), both
+editions merged, every lesson with practice, a chapter review per grade.
 
-Needs a `conceptmap` activity and a mini spreadsheet. Then chapters 4–5.
+| Grade | Older-edition lessons | Newer-edition sections | Lessons in the book |
+|---|---|---|---|
+| Α΄ | 15–18 | 3.1.1–3.2 + review | 5 |
+| Β΄ | 15–18 | 3.1.1–3.2.2 + review | 6 |
+| Γ΄ | 14–16 | 3.1–3.2 + review | 4 |
+| Δ΄ | 16–19 | 3.1.1–3.2.1 + review | 6 |
+| Ε΄ | 16–20 | 3.1.1–3.2.4 + review | 6 |
+| ΣΤ΄ | 16–20 | 3.1.1–3.2.3 + review | 6 |
+
+Engine pieces added for chapter 3: `conceptmap` (fill concepts and link words from a card bank; sibling
+slots accept answers in any order; `read: true` reads the map back as sentences; `arrows: true` for
+organisational maps), `files` (file explorer: locations, folders, `app` with Αρχείο → Αποθήκευση ως / Άνοιγμα,
+new folder/file, rename keeps the extension, copy/cut/paste, delete with `bin: true` recycle bin and restore,
+list view with sizes, ℹ️ properties; task predicates get `ev.here`), `sheet` (mini spreadsheet: formula bar,
+safe parser with + − * / and SUM AVERAGE MAX MIN COUNT COUNTIF, Greek-keyboard cell names, Σ, fill-down with
+`$` locking, column and pie charts, `sortFilter: true` for ascending/descending sort and an autofilter),
+`mltrain` (teach a classifier with labelled examples, then test it).
+
+Note: the newer Β΄/Γ΄/Δ΄ editions point to CmapTools / Φωτόδεντρο tools; we keep those as «Στην τάξη» cards
+next to the in-book concept-map games.
+
+### Next: chapter 4 (digital literacy) and chapter 5 (society)
+- Α΄ (19–30): ποντίκι (δείκτης, κλικ, δεξί κλικ, ροδέλα, σύρε), πληκτρολόγιο, ιστοσελίδες, σελιδοδείκτες, ζωγραφική, Φωτόδεντρο.
+- Β΄ (19–28): φυλλομετρητής, ψηφιακοί πόροι, πληκτρολόγιο, ζωγραφική, e-me, ηλεκτρονικά μηνύματα.
+- Γ΄ (17–28): πληκτρολόγιο, δικτυακός τόπος, μηχανές αναζήτησης, κινούμενα σχέδια, e-me, αποθετήρια.
+- Δ΄ (20–30): φυλλομετρητής και αναζήτηση, αξιολόγηση αποτελεσμάτων, email, παρουσιάσεις, κειμενογράφος, e-me · Κεφ. 5: πνευματικά δικαιώματα, netiquette, αξιολόγηση πηγών.
+- Ε΄ (21–30): γραμμή διευθύνσεων, φίλτρα αναζήτησης, αρχεία, παρουσιάσεις, e-me, ψηφιακά μουσεία · Κεφ. 5: ψηφιακές υπηρεσίες του πολίτη κ.ά.
+- ΣΤ΄ (21–30): εντοπισμός περιεχομένου, συζητήσεις, ιστολόγια, κειμενογράφος, τηλεκπαίδευση, βίντεο · Κεφ. 5: ψηφιακές υπηρεσίες, GDPR, δημιουργικό Διαδίκτυο.
+
+Needs `mouse` and `keys` games (Α΄–Γ΄); platform-specific lessons (e-me, Φωτόδεντρο, email) become info + quiz
+and simulations where cheap (a mock browser with address bar, bookmarks and search results).
 
 ## Order of work
 
@@ -88,10 +113,13 @@ Needs a `conceptmap` activity and a mini spreadsheet. Then chapters 4–5.
   lessons: practice set for every lesson, theory page where the lesson has extra info.
 - **Phase 1** ✅ — Κεφ. 1 (algorithms) finished for Γ΄, Δ΄, Ε΄, ΣΤ΄.
 - **Phase 2** ✅ — Κεφ. 2 for all grades (computers, binary, networks, safety).
-- **Phase 3** — Κεφ. 3 (files, concept maps, spreadsheets) — needs `conceptmap` + mini sheet.
+- **Phase 3** ✅ — Κεφ. 3 (files, concept maps, spreadsheets) — `conceptmap`, `files`, `sheet`, `mltrain`.
 - **Phase 4** — Κεφ. 4 digital literacy — `mouse`/`keys` games; platform-specific lessons
   (e-me, Φωτόδεντρο, email) become info + quiz.
 - **Phase 5** — Κεφ. 5 society & safety for all grades.
+- **Phase 6** — ⌨️ Συντομεύσεις extra chapter (Β΄–ΣΤ΄): `keys` trainer + on-screen keyboard (built with
+  Phase 4's keyboard games), shortcut layer in `desktop` / `files` / `sheet`, new `editor`; then «⌨️ Συντόμευση»
+  cards in the regular lessons.
 
 - **Later (not on GitHub Pages)** — an emoji self-assessment rubric at the end of every
   lesson (😀 🙂 😐 per learning goal), on a proper page backed by Firebase so the teacher
