@@ -249,6 +249,38 @@
   .bwword span { background: rgba(0,0,0,0.3); border-radius: 8px; padding: 6px 10px; display: flex; flex-direction: column; align-items: center; gap: 4px; min-width: 70px; }
   .bwword span.cur { outline: 3px solid #ffb347; } .bwword b { font-size: 30px; color: #ffb347; min-height: 38px; }
   .bwbits { display: flex; gap: 8px; } .bwbits button { width: 64px; height: 72px; font: bold 36px Consolas, monospace; }
+  .cmap { position: relative; width: 1000px; height: 600px; background: #f5f7fb; border-radius: 18px; flex: none; }
+  .cmap svg { position: absolute; inset: 0; width: 100%; height: 100%; }
+  .cmap .cn, .cmap .cl { position: absolute; transform: translate(-50%, -50%); text-align: center; color: #1e3c72; }
+  .cmap .cn { background: #fff; border: 3px solid #5c6bc0; border-radius: 14px; padding: 8px 14px; font: bold 22px 'Segoe UI', sans-serif; max-width: 220px; box-shadow: 0 3px 0 rgba(0,0,0,0.15); }
+  .cmap .cn.root { background: #ffe0b2; border-color: #ef6c00; font-size: 26px; }
+  .cmap .cl { background: #f5f7fb; font: italic 19px 'Segoe UI', sans-serif; padding: 2px 8px; white-space: nowrap; color: #37474f; border-radius: 8px; }
+  .cmap .slot { border: 3px dashed #90a4ae; background: #eceff1; color: #90a4ae; min-width: 90px; cursor: pointer; font-style: normal; }
+  .cmap .slot.ok { border: 3px solid #43a047; background: #e8f5e9; color: #1b5e20; cursor: default; }
+  .cmap .slot.no { animation: shake 0.4s; border-color: #e53935; }
+  .cbank { width: 330px; display: flex; flex-wrap: wrap; gap: 10px; align-content: flex-start; }
+  .cbank h3 { width: 100%; margin: 0; font-size: 22px; }
+  .cbank button { font-size: 22px; padding: 10px 14px; background: #fff; color: #1e3c72; box-shadow: 0 4px 0 rgba(0,0,0,0.3); }
+  .cbank button.sel { outline: 5px solid #ffb347; } .cbank button.used { visibility: hidden; }
+  .cread { font-size: 20px; line-height: 1.5; } .cread b { color: #ffb347; }
+  .fx { width: 960px; height: 600px; background: #fff; color: #263238; border-radius: 14px; display: flex; flex-direction: column; overflow: hidden; flex: none; font-size: 20px; box-shadow: 0 10px 30px rgba(0,0,0,0.35); }
+  .fx .app { background: #37474f; color: #fff; display: flex; gap: 12px; align-items: center; padding: 6px 12px; position: relative; }
+  .fx .app button, .fx .bar button { font-size: 17px; padding: 6px 10px; box-shadow: none; }
+  .fx .menu { position: absolute; top: 44px; left: 120px; background: #fff; color: #263238; border-radius: 8px; box-shadow: 0 6px 18px rgba(0,0,0,0.35); display: flex; flex-direction: column; z-index: 5; }
+  .fx .menu button { background: transparent; color: #263238; text-align: left; font-size: 19px; }
+  .fx .menu button:hover { background: #e3f2fd; }
+  .fx .bar { background: #eceff1; display: flex; gap: 6px; padding: 6px 10px; align-items: center; flex-wrap: wrap; }
+  .fx .bar .path { flex: 1; min-width: 200px; background: #fff; border: 1px solid #b0bec5; border-radius: 6px; padding: 4px 10px; font-size: 18px; }
+  .fx .main { flex: 1; display: flex; min-height: 0; }
+  .fx .side { width: 230px; background: #f5f7fb; border-right: 1px solid #cfd8dc; padding: 8px; display: flex; flex-direction: column; gap: 4px; overflow: auto; }
+  .fx .side div { padding: 6px 8px; border-radius: 6px; cursor: pointer; white-space: nowrap; } .fx .side div.on { background: #bbdefb; }
+  .fx .items { flex: 1; padding: 10px; display: flex; flex-wrap: wrap; gap: 8px; align-content: flex-start; overflow: auto; touch-action: none; }
+  .fx .it { width: 128px; display: flex; flex-direction: column; align-items: center; gap: 2px; padding: 6px; border-radius: 8px; cursor: pointer; text-align: center; font-size: 17px; word-break: break-word; }
+  .fx .it span { font-size: 46px; } .fx .it.sel { background: #bbdefb; } .fx .it.cut { opacity: 0.45; }
+  .fx .items.list { flex-direction: column; flex-wrap: nowrap; gap: 0; } .fx .items.list .it { width: auto; flex-direction: row; gap: 12px; padding: 4px 8px; text-align: left; }
+  .fx .items.list .it span { font-size: 26px; } .fx .items.list .it small { margin-left: auto; color: #607d8b; }
+  .fx .it small { color: #607d8b; } .fx .it input { width: 120px; font-size: 16px; }
+  .fx .save { background: #e3f2fd; display: flex; gap: 10px; padding: 8px 12px; align-items: center; } .fx .save input { flex: 1; font-size: 20px; padding: 4px 8px; }
   .pixside { width: 520px; display: flex; flex-direction: column; gap: 16px; font-size: 24px; }
   .pal { display: flex; gap: 10px; flex-wrap: wrap; }
   .pal button { min-width: 110px; font: bold 22px Consolas, monospace; border: 4px solid transparent; }
@@ -1129,7 +1161,187 @@ const BOOK_A = [
       },
     ],
   },
-  { tab: 'Κεφ. 3', title: 'Δεδομένα – Αρχεία – Εννοιολογικοί χάρτες', lessons: [] },
+  {
+    tab: 'Κεφ. 3', title: 'Δεδομένα – Αρχεία – Εννοιολογικοί χάρτες',
+    lessons: [
+      {
+        icon: '📁', title: 'Αρχεία και φάκελοι', sub: 'Ονόματα, εικονίδια και είδη αρχείων',
+        acts: [
+          { type: 'info', ref: 'έκδ. 6.0 σελ. 60–61 · έκδ. v09 σελ. 65–66', text: 'Διαβάζουμε μαζί:', cards: [
+            ['💾', 'Όταν κλείνουμε τον υπολογιστή σταματάει το ρεύμα και ό,τι κάναμε <b>χάνεται</b>. Για να το ξαναβρούμε, το <b>αποθηκεύουμε</b> σε ένα <b>αρχείο</b>.'],
+            ['🏷️', 'Κάθε αρχείο έχει ένα <b>όνομα</b>. Διαλέγω όνομα που μου θυμίζει τι έχει μέσα.'],
+            ['📁', 'Τα αρχεία μπαίνουν σε <b>φακέλους</b>, όπως τα βιβλία στα ράφια της βιβλιοθήκης: ένας φάκελος για τα έγγραφα, άλλος για τις φωτογραφίες, άλλος για τη μουσική.'],
+          ] },
+          { type: 'match', ref: 'έκδ. 6.0 σελ. 61', text: 'Βοήθησε την Υπατία να διαλέξει ονόματα για τις ζωγραφιές της.', pairs: [
+            ['👵 Ζωγραφιά με τη θεία Ιουλία', 'Θεία'], ['🐕 Ζωγραφιά με τον σκύλο', 'Σκύλος'], ['🎄 Ζωγραφιά με το στολισμένο δέντρο', 'Χριστούγεννα'],
+          ] },
+          { type: 'sort', ref: 'έκδ. 6.0 σελ. 62', text: 'Βοήθησε τον Ήρωνα: αρχείο ή φάκελος;', bins: ['📄 Αρχείο', '📁 Φάκελος'], colors: ['#1565c0', '#f9a825'], items: [
+            ['🖼️', 'Θάλασσα', 0], ['📄', 'Αίσωπος.odt', 0], ['🎵', 'Τραγούδι.mp3', 0],
+            ['📁', 'Έγγραφα', 1, 'Οι φάκελοι έχουν όλοι το ίδιο εικονίδιο και το ίδιο χρώμα.'], ['📁', 'Εικόνες', 1], ['📁', 'Μουσική', 1],
+          ] },
+          { type: 'theory', ref: 'έκδ. 6.0 σελ. 63 · έκδ. v09 σελ. 67', text: 'Τι μας λέει το εικονίδιο;', sections: [
+            ['🖼️ Εικόνα', 'Φωτογραφίες και ζωγραφιές. Το εικονίδιο μοιάζει με την εικόνα.', ['εικόνα.jpg']],
+            ['🎬 Βίντεο', 'Ταινίες και βιντεάκια. Το εικονίδιο δείχνει την αρχή του βίντεο.', ['βίντεο.mp4']],
+            ['🎵 Ήχος', 'Τραγούδια και ηχογραφήσεις: με ένα κλικ τα ακούω.', ['τραγούδι.mp3']],
+            ['📄 Κείμενο', 'Γραμμές με γράμματα, σύμβολα και αριθμούς — μπορεί να έχει και εικόνες.', ['ιστορία.docx']],
+          ] },
+          { type: 'match', ref: 'έκδ. v09 σελ. 69', text: 'Αντιστοίχισε τα αρχεία με τα ονόματά τους.', pairs: [
+            ['🎬', 'βίντεο.mp4'], ['📄', 'ιστορία.docx'], ['🎵', 'τραγούδι.mp3'], ['🖼️', 'εικόνα.jpg'],
+          ] },
+          { type: 'files', tools: [], ref: 'έκδ. 6.0 σελ. 62 · έκδ. v09 σελ. 69', text: 'Ψάξε στους φακέλους του υπολογιστή!',
+            tree: { 'Έγγραφα': { 'Αίσωπος.odt': '📄', 'Η ιστορία μου.docx': '📄' }, 'Εικόνες': { 'Θάλασσα.jpg': '🖼️', 'Σκύλος.png': '🖼️', 'Ήλιος.png': '🖼️' },
+              'Μουσική': { 'Τραγούδι.mp3': '🎵' }, 'Βίντεο': { 'Γενέθλια.mp4': '🎬', 'Εκδρομή.mp4': '🎬' } },
+            tasks: [
+              ['Πάτα αριστερά τον φάκελο <b>Εικόνες</b>.', ev => ev.t === 'nav' && ev.path === 'Εικόνες'],
+              ['Άνοιξε με <b>διπλό κλικ</b> τη ζωγραφιά <b>Θάλασσα</b>.', ev => ev.t === 'openfile' && ev.name === 'Θάλασσα.jpg'],
+              ['Πήγαινε στον φάκελο <b>Βίντεο</b>. Πόσα βίντεο έχει;', ev => ev.t === 'nav' && ev.path === 'Βίντεο'],
+              ['Άνοιξε το βίντεο από τα <b>Γενέθλια</b>.', ev => ev.t === 'openfile' && ev.name === 'Γενέθλια.mp4'],
+            ] },
+        ],
+        practice: [
+          { type: 'sort', ref: 'εξάσκηση', text: 'Σε ποιον φάκελο θα το αποθηκεύσεις;', bins: ['📁 Εικόνες', '📁 Μουσική', '📁 Βίντεο', '📁 Έγγραφα'], items: [
+            ['🖼️', 'Η ζωγραφιά με τον ήλιο', 0], ['📸', 'Φωτογραφία από την εκδρομή', 0], ['🎵', 'Το τραγούδι της γιορτής', 1],
+            ['🎬', 'Το βίντεο από το πάρτι', 2], ['📄', 'Η ιστορία που έγραψα', 3],
+          ] },
+          { type: 'mcq', ref: 'εξάσκηση', text: 'Θυμάμαι:', questions: [
+            { q: 'Γιατί αποθηκεύω τη δουλειά μου;', options: ['Για να μη χαθεί όταν κλείσει ο υπολογιστής', 'Για να γίνει πιο όμορφη'], answer: 0 },
+            { q: 'Τι μου δείχνει το εικονίδιο ενός αρχείου;', options: ['Τι είδους αρχείο είναι: εικόνα, βίντεο, ήχος ή κείμενο', 'Πόσο χρονών είναι'], answer: 0 },
+            { q: 'Ποιο είναι το εικονίδιο του φακέλου;', options: ['📄', '📁', '🎵'], answer: 1 },
+          ] },
+        ],
+      },
+      {
+        icon: '💾', title: 'Αποθηκεύω τη ζωγραφιά μου', sub: 'Αρχείο → Αποθήκευση',
+        acts: [
+          { type: 'info', ref: 'έκδ. 6.0 σελ. 64–65 · έκδ. v09 σελ. 68', text: 'Η Υπατία ζωγραφίζει μια θάλασσα, αλλά χτυπάει το κουδούνι!', cards: [
+            ['🎨', 'Για να μη χάσει τη ζωγραφιά της, κάνει κλικ στο μενού <b>Αρχείο</b> και μετά στην <b>Αποθήκευση</b>.'],
+            ['💾', 'Πολύ συχνά το εικονίδιο της Αποθήκευσης είναι μια <b>δισκέτα</b> 💾. Όλες οι εφαρμογές έχουν Αποθήκευση.'],
+            ['🏷️', 'Δίνει στο αρχείο όνομα που της θυμίζει τη ζωγραφιά: <b>ΘΑΛΑΣΣΑ</b>. Το βάζει στον φάκελο <b>Εικόνες</b>.'],
+          ] },
+          { type: 'mcq', ref: 'έκδ. 6.0 σελ. 65', text: 'Κύκλωσε το σωστό εικονίδιο για την Αποθήκευση.', questions: [
+            { q: 'Ποιο είναι το εικονίδιο της Αποθήκευσης;', options: ['🖨️', '💾', '✂️', '🗑️'], answer: 1 },
+          ] },
+          { type: 'files', tools: [], start: 'Έγγραφα', ref: 'έκδ. 6.0 σελ. 64–65 · έκδ. v09 σελ. 68', text: 'Αποθήκευσε τη ζωγραφιά της Υπατίας!',
+            app: { em: '🌅', name: 'Ζωγραφική', ext: '.png', fileEm: '🖼️' },
+            tree: { 'Έγγραφα': { 'Αίσωπος.odt': '📄' }, 'Εικόνες': { 'Ήλιος.png': '🖼️' }, 'Μουσική': {} },
+            tasks: [
+              ['Πάτα <b>Αρχείο ▾</b> και μετά <b>💾 Αποθήκευση</b>.', ev => ev.t === 'menu'],
+              ['Πάτα αριστερά τον φάκελο <b>Εικόνες</b>.', ev => ev.t === 'nav' && ev.path === 'Εικόνες'],
+              ['Γράψε το όνομα <b>ΘΑΛΑΣΣΑ</b> και πάτα το κουμπί <b>💾 Αποθήκευση</b>.', ev => ev.t === 'save' && ev.path === 'Εικόνες' && isName(ev, 'θαλασσα')],
+            ], doneMsg: '🎉 Μπράβο! Η ζωγραφιά «ΘΑΛΑΣΣΑ» είναι ασφαλής στον φάκελο Εικόνες.' },
+          { type: 'order', ref: 'έκδ. 6.0 σελ. 64–65', title: 'Αποθηκεύω', text: 'Βάλε τα βήματα στη σειρά.', steps: [
+            ['🎨', 'Ζωγραφίζω στη Ζωγραφική.'], ['📂', 'Πατάω το μενού «Αρχείο».'], ['💾', 'Πατάω «Αποθήκευση».'],
+            ['📁', 'Διαλέγω τον φάκελο «Εικόνες».'], ['⌨️', 'Γράφω ένα όνομα και πατάω «Αποθήκευση».'],
+          ], before: 'chain' },
+          { type: 'info', ref: 'έκδ. 6.0 σελ. 65 · έκδ. v09 σελ. 68–69', text: 'Στην τάξη:', cards: [
+            ['🖌️', 'Ζωγράφισε μια θάλασσα (ή χρωμάτισε μια έτοιμη εικόνα στο Tux Paint) και αποθήκευσέ τη στον υπολογιστή.'],
+            ['🔍', 'Βρες τον φάκελο «Εικόνες» και μέτρησε πόσες εικόνες έχει. Μετά κάνε το ίδιο με τον φάκελο «Βίντεο».'],
+          ] },
+        ],
+        practice: [
+          { type: 'sort', ref: 'εξάσκηση', text: 'Καλό ή κακό όνομα για τη ζωγραφιά με τη γάτα;', bins: ['👍 Καλό όνομα', '👎 Δεν βοηθάει'], colors: ['#2e7d32', '#c62828'], items: [
+            ['🐱', 'Γάτα', 0], ['🐱', 'Η γάτα μου', 0], ['🐱', 'ασδφγ', 1, 'Από αυτό το όνομα δεν καταλαβαίνω τι έχει μέσα.'], ['🐱', 'Χωρίς τίτλο', 1], ['🐱', '1234', 1],
+          ] },
+          { type: 'mcq', ref: 'εξάσκηση', text: 'Θυμάμαι:', questions: [
+            { q: 'Σε ποιο μενού βρίσκω την Αποθήκευση;', options: ['Αρχείο', 'Χρώματα', 'Βοήθεια'], answer: 0 },
+            { q: 'Τι θα γίνει αν κλείσω τη Ζωγραφική χωρίς να αποθηκεύσω;', options: ['Η ζωγραφιά θα χαθεί', 'Θα τυπωθεί'], answer: 0 },
+          ] },
+        ],
+      },
+      {
+        icon: '🗺️', title: 'Ο πρώτος μου εννοιολογικός χάρτης', sub: 'Σχήματα και γραμμές που συνδέουν',
+        acts: [
+          { type: 'info', ref: 'έκδ. 6.0 σελ. 66 · έκδ. v09 σελ. 71–72', text: 'Διαβάζουμε μαζί:', cards: [
+            ['🗺️', 'Ένας <b>εννοιολογικός χάρτης</b> δείχνει πώς διαφορετικά πράγματα <b>συνδέονται</b> μεταξύ τους.'],
+            ['🔷', 'Έχει <b>σχήματα</b> (κύκλους, τετράγωνα ή εικόνες) με λέξεις μέσα, και <b>γραμμές</b> που ενώνουν τα σχήματα.'],
+            ['⭐', 'Ξεκινάμε από την <b>κύρια ιδέα</b>, με το μεγαλύτερο σχήμα. Για να τον διαβάσουμε, ξεκινάμε από εκεί και ακολουθούμε τις γραμμές.'],
+          ] },
+          { type: 'conceptmap', ref: 'έκδ. v09 σελ. 72', text: 'Τι μας δίνει ο ήλιος; Βάλε τις κάρτες στα σωστά σχήματα.', root: 's', read: true,
+            nodes: [['s', 50, 22, '☀️ Ήλιος'], ['a', 27, 75, '?💡 φως'], ['b', 73, 75, '?🔥 ζέστη']], links: [['s', 'a', 'δίνει'], ['s', 'b', 'δίνει']], bank: ['❄️ χιόνι'] },
+          { type: 'conceptmap', ref: 'έκδ. 6.0 σελ. 66–67', text: 'Φτιάξε τον χάρτη της πρότασης: «Η Μαρία πηγαίνει σχολείο και μπαλέτο και είναι 6 χρονών».', root: 'm', read: true,
+            nodes: [['m', 50, 15, '👧 Η Μαρία'], ['a', 18, 82, '?σχολείο'], ['b', 50, 82, '?μπαλέτο'], ['c', 82, 82, '?6 χρονών']],
+            links: [['m', 'a', '?πηγαίνει'], ['m', 'b', '?πηγαίνει'], ['m', 'c', '?είναι']] },
+          { type: 'conceptmap', ref: 'έκδ. 6.0 σελ. 67–68', text: 'Ο χάρτης της θείας Ιουλίας για το Μουσείο Ζώων: ποια είδη ζώων συναντούν τα παιδιά;', root: 'z',
+            nodes: [['z', 50, 18, '🐾 ΖΩΑ'], ['a', 18, 75, '?🐶 ΚΑΤΟΙΚΙΔΙΑ'], ['b', 50, 75, '?🐄 ΖΩΑ ΤΗΣ ΦΑΡΜΑΣ'], ['c', 82, 75, '?🦊 ΖΩΑ ΤΟΥ ΔΑΣΟΥΣ']],
+            links: [['z', 'a'], ['z', 'b'], ['z', 'c']], bank: ['🚗 ΑΥΤΟΚΙΝΗΤΑ'] },
+          { type: 'conceptmap', ref: 'έκδ. v09 σελ. 73', text: 'Τι πηγαίνει με τη βροχή;', root: 'r',
+            nodes: [['r', 50, 50, '🌧️ Βροχή'], ['a', 18, 18, '?☂️ ομπρέλα'], ['b', 82, 18, '?👢 γαλότσες'], ['c', 18, 82, '?☁️ σύννεφα'], ['d', 82, 82, '?🧥 αδιάβροχο']],
+            links: [['r', 'a'], ['r', 'b'], ['r', 'c'], ['r', 'd']], bank: ['🕶️ γυαλιά ηλίου', '🏖️ αντηλιακό'] },
+          { type: 'info', ref: 'έκδ. v09 σελ. 73–74 · έκδ. 6.0 σελ. 68–69', text: 'Στην τάξη:', cards: [
+            ['✏️', 'Σχεδίασε τον χάρτη των ζώων με <b>μολύβι και γόμα</b> — έτσι αλλάζεις εύκολα ό,τι θέλεις. Στο τέλος βάψε τον με μαρκαδόρους.'],
+            ['👨‍👩‍👧', 'Φτιάξτε σε ομάδες χάρτες για τις τέσσερις εποχές, και ο καθένας το <b>γενεαλογικό του δέντρο</b> ή τον χάρτη «Η μέρα μου».'],
+          ] },
+        ],
+        practice: [
+          { type: 'conceptmap', ref: 'έκδ. v09 σελ. 71', text: 'Ο εννοιολογικός χάρτης του χειμώνα:', root: 'w',
+            nodes: [['w', 50, 50, '❄️ Χειμώνας'], ['a', 18, 18, '?⛄ χιονάνθρωπος'], ['b', 82, 18, '?🧣 κασκόλ'], ['c', 18, 82, '?🎄 Χριστούγεννα'], ['d', 82, 82, '?🔥 τζάκι']],
+            links: [['w', 'a'], ['w', 'b'], ['w', 'c'], ['w', 'd']], bank: ['🍉 καρπούζι', '🏊 κολύμπι'] },
+          { type: 'mcq', ref: 'εξάσκηση', text: 'Θυμάμαι:', questions: [
+            { q: 'Τι δείχνει ένας εννοιολογικός χάρτης;', options: ['Πώς πράγματα συνδέονται μεταξύ τους', 'Τον δρόμο για το σπίτι'], answer: 0 },
+            { q: 'Από πού ξεκινάμε να διαβάζουμε τον χάρτη;', options: ['Από την κύρια ιδέα', 'Από το πιο μικρό σχήμα'], answer: 0 },
+          ] },
+        ],
+      },
+      {
+        icon: '🌳', title: 'Μεγαλώνω τον εννοιολογικό μου χάρτη', sub: 'Λέξεις πάνω στις γραμμές · νέα σχήματα',
+        acts: [
+          { type: 'info', ref: 'έκδ. 6.0 σελ. 70–72', text: 'Η θεία Ιουλία έχει ιδέες:', cards: [
+            ['✍️', 'Πάνω στις γραμμές γράφουμε <b>λέξεις</b> που δείχνουν πώς συνδέονται τα σχήματα. Έτσι ο χάρτης διαβάζεται σαν πρόταση: «Τα ζώα <b>χωρίζονται σε</b> κατοικίδια».'],
+            ['➕', 'Ο χάρτης μεγαλώνει με <b>νέα σχήματα</b> και <b>νέες γραμμές</b>: «Τα κατοικίδια, <b>όπως</b> ο σκύλος».'],
+            ['✏️', 'Με μολύβι και γόμα — ή στον υπολογιστή — αλλάζουμε τον χάρτη μέχρι να είναι σωστός.'],
+          ] },
+          { type: 'conceptmap', ref: 'έκδ. 6.0 σελ. 70', text: 'Βάλε τις λέξεις πάνω στις γραμμές: τι κάνουν τα ζώα;', root: 'z', read: true,
+            nodes: [['z', 50, 15, '🐾 ΖΩΑ'], ['a', 18, 80, '🐄 ΖΩΑ ΤΗΣ ΦΑΡΜΑΣ'], ['b', 50, 80, '🦊 ΖΩΑ ΤΟΥ ΔΑΣΟΥΣ'], ['c', 82, 80, '🐶 ΚΑΤΟΙΚΙΔΙΑ']],
+            links: [['z', 'a', '?χωρίζονται σε'], ['z', 'b', '?χωρίζονται σε'], ['z', 'c', '?χωρίζονται σε']], bank: ['τρώνε'] },
+          { type: 'conceptmap', ref: 'έκδ. 6.0 σελ. 71–72', text: '«Μπορείς να τον φτιάξεις σωστά, Υπατία;» Βάλε κάθε ζώο κάτω από τη σωστή ομάδα.', root: 'z', read: true,
+            nodes: [['z', 50, 10, '🐾 ΖΩΑ'], ['a', 18, 48, '🐄 ΖΩΑ ΤΗΣ ΦΑΡΜΑΣ'], ['b', 50, 48, '🦊 ΖΩΑ ΤΟΥ ΔΑΣΟΥΣ'], ['c', 82, 48, '🐶 ΚΑΤΟΙΚΙΔΙΑ'],
+              ['d', 18, 88, '?Η ΑΓΕΛΑΔΑ'], ['e', 50, 88, '?Η ΑΛΕΠΟΥ'], ['f', 72, 88, '?Ο ΣΚΥΛΟΣ'], ['g', 93, 88, '?Η ΓΑΤΑ']],
+            links: [['z', 'a', 'χωρίζονται σε'], ['z', 'b', 'χωρίζονται σε'], ['z', 'c', 'χωρίζονται σε'], ['a', 'd', 'όπως'], ['b', 'e', 'όπως'], ['c', 'f', 'όπως'], ['c', 'g', 'όπως']] },
+          { type: 'conceptmap', ref: 'έκδ. v09 σελ. 73', text: 'Οι εποχές: ποια εποχή ταιριάζει σε κάθε εικόνα;', root: 'e',
+            nodes: [['e', 50, 50, '🗓️ Εποχές'], ['a', 33, 20, '?Άνοιξη'], ['b', 67, 20, '?Καλοκαίρι'], ['c', 33, 80, '?Φθινόπωρο'], ['d', 67, 80, '?Χειμώνας'],
+              ['p', 10, 20, '🌸🐝'], ['q', 90, 20, '☀️🍉'], ['r', 10, 80, '🍂🌰'], ['t', 90, 80, '⛄❄️']],
+            links: [['e', 'a'], ['e', 'b'], ['e', 'c'], ['e', 'd'], ['a', 'p'], ['b', 'q'], ['c', 'r'], ['d', 't']] },
+          { type: 'info', ref: 'έκδ. 6.0 σελ. 72 · έκδ. v09 σελ. 74', text: 'Στην τάξη:', cards: [
+            ['🖍️', 'Φτιάξε και βάψε τον χάρτη των ζώων με τα χρώματα που θέλεις.'],
+            ['🤔', 'Πού αλλού μπορούμε να χρησιμοποιήσουμε εννοιολογικούς χάρτες; (να οργανώσουμε τις σκέψεις μας, το πρόγραμμα της μέρας, το διάβασμα…)'],
+          ] },
+        ],
+        practice: [
+          { type: 'conceptmap', ref: 'εξάσκηση', text: 'Ο χάρτης των φρούτων: συμπλήρωσε σχήματα και λέξεις.', root: 'f', read: true,
+            nodes: [['f', 50, 15, '🧺 ΦΡΟΥΤΑ'], ['a', 25, 50, '🔴 ΚΟΚΚΙΝΑ'], ['b', 75, 50, '🟡 ΚΙΤΡΙΝΑ'], ['c', 12, 88, '?🍓 φράουλα'], ['d', 38, 88, '?🍒 κεράσι'], ['e', 75, 88, '?🍌 μπανάνα']],
+            links: [['f', 'a', 'χωρίζονται σε'], ['f', 'b', 'χωρίζονται σε'], ['a', 'c', '?όπως'], ['a', 'd', '?όπως'], ['b', 'e', '?όπως']] },
+          { type: 'mcq', ref: 'εξάσκηση', text: 'Θυμάμαι:', questions: [
+            { q: 'Τι γράφουμε πάνω στις γραμμές του χάρτη;', options: ['Λέξεις που δείχνουν πώς συνδέονται τα σχήματα', 'Τίποτα ποτέ'], answer: 0 },
+            { q: 'Πώς διαβάζεται: ΖΩΑ — χωρίζονται σε → ΚΑΤΟΙΚΙΔΙΑ;', options: ['«Τα ζώα χωρίζονται σε κατοικίδια»', '«Τα κατοικίδια τρώνε ζώα»'], answer: 0 },
+          ] },
+        ],
+      },
+      {
+        icon: '📝', title: 'Επανάληψη', sub: 'Αρχεία, φάκελοι, εννοιολογικοί χάρτες',
+        acts: [
+          { type: 'info', ref: 'έκδ. v09 σελ. 75', text: 'Ανακεφαλαίωση:', cards: [
+            ['🎬', 'Τα βίντεο, η μουσική, το κείμενο, οι φωτογραφίες και τα παιχνίδια είναι διαφορετικές μορφές <b>αρχείων</b>.'],
+            ['📁', 'Αποθηκεύω τα αρχεία μου στον υπολογιστή οργανωμένα σε <b>φακέλους</b>.'],
+            ['🗺️', 'Με έναν <b>εννοιολογικό χάρτη</b> δείχνω πώς διαφορετικά πράγματα συνδέονται μεταξύ τους.'],
+          ] },
+          { type: 'conceptmap', ref: 'έκδ. v09 σελ. 76', text: 'Συμπλήρωσε τον εννοιολογικό χάρτη για τα αρχεία.', root: 'a', read: true,
+            nodes: [['a', 50, 15, '💾 Αρχεία'], ['b', 14, 80, '?📄 κειμένου'], ['c', 38, 80, '?🖼️ εικόνας'], ['d', 62, 80, '?🎵 ήχου'], ['e', 86, 80, '?🎬 βίντεο']],
+            links: [['a', 'b', 'μπορεί να είναι'], ['a', 'c', 'μπορεί να είναι'], ['a', 'd', 'μπορεί να είναι'], ['a', 'e', 'μπορεί να είναι']], bank: ['🧸 παιχνιδιού'] },
+          { type: 'mcq', ref: 'έκδ. v09 σελ. 77', text: 'Κυκλώνω τη σωστή μορφή αρχείου.', questions: [
+            { q: '📖 Μια ιστορία που έγραψα:', options: ['ιστορία.docx', 'εικόνα.jpg', 'τραγούδι.mp3'], answer: 0 },
+            { q: '🖼️ Μια ζωγραφιά:', options: ['ιστορία.docx', 'εικόνα.jpg', 'τραγούδι.mp3'], answer: 1 },
+            { q: '🎵 Ένα τραγούδι:', options: ['ιστορία.docx', 'εικόνα.jpg', 'τραγούδι.mp3'], answer: 2 },
+          ] },
+        ],
+        practice: [
+          { type: 'match', ref: 'εξάσκηση', text: 'Γλωσσάριο: ταίριαξε.', pairs: [
+            ['💾 Αποθήκευση', 'Κρατάω τη δουλειά μου στον υπολογιστή'], ['📄 Αρχείο', 'Μια εικόνα, ένα κείμενο ή ένα βίντεο αποθηκευμένο'],
+            ['📁 Φάκελος', 'Εκεί μέσα μπαίνουν αρχεία και άλλοι φάκελοι'], ['🗺️ Εννοιολογικός χάρτης', 'Σχήματα και γραμμές που δείχνουν συνδέσεις'],
+          ] },
+        ],
+      },
+    ],
+  },
   { tab: 'Κεφ. 4', title: 'Ψηφιακός γραμματισμός – Ποντίκι & πληκτρολόγιο', lessons: [] },
 ];
 
@@ -4656,6 +4868,8 @@ const GUIDE = {
   match: 'Πατήστε κάτι στην αριστερή στήλη και μετά το ταίρι του στη δεξιά.',
   sort: 'Για κάθε κάρτα, πατήστε την ομάδα όπου ανήκει.',
   dots: 'Πατήστε τις τελείες με τη σειρά: 1, 2, 3…',
+  conceptmap: 'Πατήστε μια λέξη από τις κάρτες και μετά το διακεκομμένο κουτί του χάρτη όπου ταιριάζει.',
+  files: 'Κάντε με τη σειρά τις εργασίες δεξιά. Διπλό κλικ ανοίγει φάκελο ή αρχείο · ένα κλικ το επιλέγει · τα κουμπιά πάνω κάνουν τις ενέργειες.',
   binword: 'Βρείτε κάθε κωδικό στον πίνακα και πατήστε το γράμμα του — ή, για κωδικοποίηση, γυρίστε τους διακόπτες 0/1 και πατήστε ✔.',
   pixels: 'Διαλέξτε χρώμα από την παλέτα και πατήστε (ή σύρετε πάνω σε) τα εικονοστοιχεία. Μετά «✔ Έλεγχος».',
   password: 'Γράψτε ένα συνθηματικό για εξάσκηση (όχι τον πραγματικό σας κωδικό!) και δείτε ποιους κανόνες περνάει.',
@@ -4681,7 +4895,7 @@ const GUIDE = {
   scratch: 'Πατήστε τη σημαία 🏳️ ή τα πλήκτρα κάτω από τη σκηνή. Στα πεδία με ▾ διαλέγετε τιμή. ↺ = αρχικές θέσεις · ⬇ Scratch = το έργο για να το συνεχίσετε στο Scratch.',
 };
 const KIND_NAMES = { info: '📖 Διαβάζω', theory: '📘 Θεωρία', order: '🔢 Σειρά βημάτων', trace: '🔍 Πού θα φτάσει;', program: '🧩 Φτιάχνω πρόγραμμα',
-  pick: '🎯 Ποιο πρόγραμμα;', mcq: '❓ Ερωτήσεις', match: '🔗 Ταίριασμα', sort: '🗂️ Ταξινόμηση', dots: '✏️ Ενώνω τις τελείες', net: '🔗 Φτιάχνω δίκτυο', pixels: '🖼️ Εικονοστοιχεία', binword: '🔤 Γράμματα σε bit', password: '🔑 Συνθηματικό',
+  pick: '🎯 Ποιο πρόγραμμα;', mcq: '❓ Ερωτήσεις', match: '🔗 Ταίριασμα', sort: '🗂️ Ταξινόμηση', dots: '✏️ Ενώνω τις τελείες', net: '🔗 Φτιάχνω δίκτυο', pixels: '🖼️ Εικονοστοιχεία', binword: '🔤 Γράμματα σε bit', conceptmap: '🗺️ Εννοιολογικός χάρτης', files: '📂 Αρχεία και φάκελοι', password: '🔑 Συνθηματικό',
   counter: '🔢 Μετράμε', bits: '💡 Λάμπες', bracelet: '📿 Βραχιόλι', sticks: '🪵 Ξυλάκια',
   logic: '💡 Λογικές εκφράσεις', whois: '🔎 Βρες ποιος είναι', rulesgame: '🎮 Οι κανόνες του παιχνιδιού', edison: '🤖 Ρομπότ εδάφους', scratch: '🐱 Scratch', guess: '🔢 Μάντεψε τον αριθμό', microbit: '📟 micro:bit', stepper: '👣 Βήμα-βήμα', desktop: '🖥️ Επιφάνεια εργασίας', dress: '👕 Ντύσε τον Ήρωνα', decision: '🔀 Σχεδιάγραμμα απόφασης', board: '🎲 Επιτραπέζιο', river: '🚣 Γρίφος', caesar: '🔐 Κρυπτογράφηση' };
 
@@ -6663,6 +6877,224 @@ RENDER.pixels = (act, area) => {
   area.append(grid, side);
 };
 
+// ---- Εννοιολογικός χάρτης: nodes = [[id, x, y, κείμενο]] (x, y: 0–100), links = [[από, προς, λέξη σύνδεσης]].
+// Κείμενο που αρχίζει με «?» είναι κενό για συμπλήρωση· η σωστή απάντηση ακολουθεί το «?». bank = επιπλέον λάθος κάρτες.
+RENDER.conceptmap = (act, area) => {
+  const NS = 'http://www.w3.org/2000/svg', W = 1000, H = 600;
+  const box = el('div', 'cmap'), bank = el('div', 'cbank', '<h3>Οι κάρτες μου:</h3>');
+  const svg = document.createElementNS(NS, 'svg');
+  svg.innerHTML = '<defs><marker id="cmarr" viewBox="0 0 10 10" refX="10" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0,0 L10,5 L0,10 z" fill="#7986cb"/></marker></defs>';
+  box.appendChild(svg);
+  area.append(box, bank);
+  const P = Object.fromEntries(act.nodes.map(([id, x, y]) => [id, [x * W / 100, y * H / 100]]));
+  const slots = [];
+  // κενά-αδέρφια (ίδιες συνδέσεις μέσα και έξω) δέχονται τις απαντήσεις τους με οποιαδήποτε σειρά
+  const sig = id => act.links.filter(l => l[1] === id).map(l => 'in:' + l[0] + ':' + (l[2] || '')).concat(act.links.filter(l => l[0] === id).map(l => 'out:' + l[1])).sort().join('|');
+  const place = (cls, x, y, text, group) => {
+    const d = el('div', cls);
+    Object.assign(d.style, { left: x + 'px', top: y + 'px' });
+    if (text.startsWith('?')) { d.classList.add('slot'); d.textContent = '…'; slots.push({ el: d, ans: text.slice(1), group }); }
+    else d.innerHTML = text;
+    box.appendChild(d);
+    return d;
+  };
+  for (const [a, b, label = ''] of act.links) {
+    const l = document.createElementNS(NS, 'line');
+    Object.entries({ x1: P[a][0], y1: P[a][1], x2: P[b][0], y2: P[b][1], stroke: '#7986cb', 'stroke-width': 3 }).forEach(([k, v]) => l.setAttribute(k, v));
+    if (act.arrows) { l.setAttribute('marker-end', 'url(#cmarr)'); const dx = P[b][0] - P[a][0], dy = P[b][1] - P[a][1], len = Math.hypot(dx, dy); l.setAttribute('x2', P[b][0] - dx / len * 48); l.setAttribute('y2', P[b][1] - dy / len * 30); }
+    svg.appendChild(l);
+    if (label) place('cl', (P[a][0] + P[b][0]) / 2, (P[a][1] + P[b][1]) / 2, label);
+  }
+  for (const [id, x, y, text] of act.nodes) place('cn' + (id === act.root ? ' root' : ''), x * W / 100, y * H / 100, text, sig(id));
+  let sel = null;
+  shuffle([...slots.map(s => s.ans), ...(act.bank || [])]).forEach(w => {
+    const b = el('button', '', w);
+    b.onclick = () => { if (b.classList.contains('used')) return; if (sel) sel.classList.remove('sel'); sel = b; b.classList.add('sel'); say(''); };
+    bank.appendChild(b);
+  });
+  for (const s of slots) s.el.onclick = () => {
+    if (s.el.classList.contains('ok')) return;
+    if (!sel) return say('Πάτησε πρώτα μια κάρτα δεξιά.', 'bad');
+    const twin = slots.find(o => o !== s && o.group && o.group === s.group && !o.el.classList.contains('ok') && norm(o.ans) === norm(sel.textContent));
+    if (twin) [twin.ans, s.ans] = [s.ans, twin.ans];
+    if (norm(sel.textContent) !== norm(s.ans)) { s.el.classList.remove('no'); void s.el.offsetWidth; s.el.classList.add('no'); return say(act.hint || 'Δεν ταιριάζει εκεί. Διάβασε την πρόταση που σχηματίζεται!', 'bad'); }
+    s.el.innerHTML = s.ans; s.el.classList.add('ok');
+    sel.classList.replace('sel', 'used'); sel = null;
+    if (slots.every(x => x.el.classList.contains('ok'))) {
+      if (act.read) { // διαβάζουμε τον χάρτη: έννοια — σύνδεση → έννοια
+        const txt = id => act.nodes.find(n => n[0] === id)[3].replace(/^\?/, '').replace(/<[^>]+>/g, '');
+        bank.innerHTML = '<h3>📖 Διαβάζω τον χάρτη:</h3>';
+        bank.appendChild(el('div', 'cread', act.links.filter(l => l[2]).map(([a, b, l]) => `${txt(a)} <b>${l.replace(/^\?/, '')}</b> ${txt(b)}`).join('<br>')));
+      }
+      complete(act.doneMsg || '🎉 Μπράβο! Ο εννοιολογικός χάρτης είναι έτοιμος!');
+    } else say('✅ Σωστά!', 'good');
+  };
+};
+
+// ---- Εξερευνητής αρχείων: tree = { τοποθεσία: { φάκελος: {…}, 'αρχείο.ext': '📄 12 KB' } }, tasks = [[κείμενο, ev => …]].
+// app = { em, name, ext, fileEm } προσθέτει εφαρμογή με μενού «Αρχείο» (Αποθήκευση ως / Άνοιγμα) · bin: true = κάδος ανακύκλωσης
+RENDER.files = (act, area) => {
+  const tree = JSON.parse(JSON.stringify(act.tree)), bin = [];
+  const BIN = '🗑️ Κάδος ανακύκλωσης';
+  let path = act.start ? act.start.split('/') : [Object.keys(tree)[0]], selName = null, clip = null, mode = null, list = !!act.list, ti = 0, docName = null;
+  const tools = act.tools || ['newfolder', 'rename', 'copy', 'cut', 'paste', 'delete', 'view'];
+  const box = el('div', 'fx'), side = el('div', 'tasks');
+  area.append(box, side);
+  const folderAt = p => p.reduce((f, n) => f && f[n], tree);
+  const isDir = v => typeof v === 'object';
+  const iconOf = (n, v) => (isDir(v) ? '📁' : v.split(' ')[0]);
+  const sizeOf = v => (isDir(v) ? '' : v.split(' ').slice(1).join(' '));
+  const uniq = (f, n) => { if (!(n in f)) return n; const m = n.match(/^(.*?)(\.[^.]+)?$/); let k = 2; while (`${m[1]} (${k})${m[2] || ''}` in f) k++; return `${m[1]} (${k})${m[2] || ''}`; };
+  function event(e) {
+    if (!act.tasks || ti >= act.tasks.length || !act.tasks[ti][1](e)) return;
+    ti++; drawTasks();
+    if (ti === act.tasks.length) complete(act.doneMsg || '🎉 Μπράβο! Τα κατάφερες όλα με τα αρχεία!');
+    else say('✅ Σωστά!', 'good');
+  }
+  function drawTasks() {
+    side.innerHTML = '';
+    (act.tasks || []).forEach(([t], i) => side.appendChild(el('div', 'task' + (i < ti ? ' ok' : i === ti ? ' cur' : ''), (i < ti ? '✅ ' : `${i + 1}. `) + t)));
+  }
+  const inBin = () => path[0] === BIN;
+  function draw() {
+    box.innerHTML = '';
+    if (act.app) { // η εφαρμογή με το μενού «Αρχείο»
+      const ap = el('div', 'app', `<span style="font-size:26px">${act.app.em}</span><b>${act.app.name}</b> — <span>${docName || 'Χωρίς τίτλο'}</span>`);
+      const fileBtn = el('button', 'secondary', 'Αρχείο ▾');
+      ap.insertBefore(fileBtn, ap.children[1]);
+      fileBtn.onclick = () => {
+        if (ap.querySelector('.menu')) return ap.querySelector('.menu').remove();
+        const m = el('div', 'menu');
+        [['💾 Αποθήκευση', () => (docName ? event({ t: 'save', again: true, name: docName, path: path.join('/') }) || say('💾 Αποθηκεύτηκαν οι αλλαγές.', 'good') : (mode = 'save', draw()))],
+          ['💾 Αποθήκευση ως…', () => { mode = 'save'; draw(); }], ['📂 Άνοιγμα…', () => { mode = 'open'; draw(); }]]
+          .forEach(([t, f]) => { const b = el('button', '', t); b.onclick = () => { m.remove(); event({ t: 'menu', item: t }); f(); }; m.appendChild(b); });
+        ap.appendChild(m);
+      };
+      box.appendChild(ap);
+    }
+    const bar = el('div', 'bar');
+    const back = el('button', 'secondary', '⬅');
+    back.onclick = () => { if (path.length > 1) { path.pop(); selName = null; draw(); event({ t: 'nav', path: path.join('/') }); } };
+    bar.append(back, el('div', 'path', '📂 ' + path.join(' › ')));
+    const T = {
+      newfolder: ['📁 Νέος φάκελος', () => create(true)], newfile: ['📄 Νέο έγγραφο κειμένου', () => create(false)],
+      rename: ['✏️ Μετονομασία', () => selName && rename(selName)],
+      copy: ['📋 Αντιγραφή', () => selName && (clip = { name: selName, val: folderAt(path)[selName], from: [...path], cut: false }, event({ t: 'copy', name: selName }), say('📋 Αντιγράφηκε. Πήγαινε όπου θέλεις και πάτα «Επικόλληση».'))],
+      cut: ['✂️ Αποκοπή', () => selName && (clip = { name: selName, val: folderAt(path)[selName], from: [...path], cut: true }, event({ t: 'cut', name: selName }), say('✂️ Αποκόπηκε. Πήγαινε στον νέο φάκελο και πάτα «Επικόλληση».'), draw())],
+      paste: ['📌 Επικόλληση', paste], delete: ['🗑️ Διαγραφή', del], view: [list ? '🔲 Εικονίδια' : '☰ Λίστα', () => { list = !list; draw(); event({ t: 'view', list }); }],
+    };
+    if (!inBin() && !mode) tools.forEach(k => { const b = el('button', 'secondary', T[k][0]); b.onclick = T[k][1]; bar.appendChild(b); });
+    if (inBin()) { const b = el('button', 'secondary', '♻️ Επαναφορά'); b.onclick = restore; bar.appendChild(b); }
+    box.appendChild(bar);
+    const main = el('div', 'main'), sideL = el('div', 'side'), items = el('div', 'items' + (list ? ' list' : ''));
+    for (const loc of [...Object.keys(tree), ...(act.bin ? [BIN] : [])]) {
+      const d = el('div', path[0] === loc && path.length === 1 ? 'on' : '', (loc === BIN ? '' : '📁 ') + loc);
+      d.onclick = () => { path = [loc]; selName = null; draw(); event({ t: 'nav', path: loc }); };
+      sideL.appendChild(d);
+    }
+    const entries = inBin() ? bin.map(b => [b.name, b.val]) : Object.entries(folderAt(path));
+    if (!entries.length) items.appendChild(el('div', '', '<i style="color:#90a4ae">(Ο φάκελος είναι άδειος)</i>'));
+    for (const [n, v] of entries) {
+      const it = el('div', 'it' + (n === selName ? ' sel' : '') + (clip && clip.cut && clip.name === n && clip.from.join('/') === path.join('/') ? ' cut' : ''), `<span>${iconOf(n, v)}</span><div></div>${list ? `<small>${isDir(v) ? 'Φάκελος' : sizeOf(v)}</small>` : ''}`);
+      it.children[1].textContent = n;
+      it.dataset.n = n;
+      press(it, { onTap: () => { selName = n; box.querySelectorAll('.it').forEach(o => o.classList.toggle('sel', o === it)); if (mode === 'save' && !isDir(v)) box.querySelector('.save input').value = n.replace(/\.[^.]+$/, ''); }, onDouble: () => openItem(n, v) });
+      items.appendChild(it);
+    }
+    main.append(sideL, items);
+    box.appendChild(main);
+    if (mode) {
+      const sv = el('div', 'save');
+      if (mode === 'save') {
+        const inp = el('input'); inp.value = docName ? docName.replace(/\.[^.]+$/, '') : '';
+        inp.placeholder = 'Όνομα αρχείου'; inp.onkeydown = e => { e.stopPropagation(); if (e.key === 'Enter') ok.onclick(); };
+        const ok = el('button', '', '💾 Αποθήκευση');
+        ok.onclick = () => {
+          const nm = inp.value.trim();
+          if (!nm) return say('Γράψε ένα όνομα για το αρχείο σου.', 'bad');
+          if (inBin()) return say('Δεν αποθηκεύουμε στον κάδο ανακύκλωσης! Διάλεξε φάκελο.', 'bad');
+          const full = nm + act.app.ext;
+          folderAt(path)[full] = act.app.fileEm || '📄';
+          docName = full; mode = null; selName = full; draw();
+          say(`💾 Αποθηκεύτηκε: ${path.join(' › ')} › ${full}`, 'good');
+          event({ t: 'save', name: full, path: path.join('/') });
+        };
+        sv.append(el('span', '', 'Όνομα αρχείου:'), inp, el('b', '', act.app.ext), ok);
+        setTimeout(() => inp.focus(), 0);
+      } else sv.append(el('span', '', '📂 Βρες το αρχείο και κάνε <b>διπλό κλικ</b> για να ανοίξει.'));
+      const cancel = el('button', 'secondary', 'Άκυρο');
+      cancel.onclick = () => { mode = null; draw(); };
+      sv.appendChild(cancel);
+      box.appendChild(sv);
+    }
+  }
+  function openItem(n, v) {
+    if (inBin()) return say('Στον κάδο τα αρχεία δεν ανοίγουν — πρώτα κάνε επαναφορά.', 'bad');
+    if (isDir(v)) { path.push(n); selName = null; draw(); return event({ t: 'nav', path: path.join('/') }); }
+    if (mode === 'open') { docName = n; mode = null; draw(); say(`📂 Άνοιξε το «${n}».`, 'good'); return event({ t: 'openfile', name: n, path: path.join('/'), via: 'menu' }); }
+    say(`${iconOf(n, v)} Άνοιξε το αρχείο «${n}».`, 'good');
+    event({ t: 'openfile', name: n, path: path.join('/') });
+  }
+  function create(dir) {
+    const f = folderAt(path), n = uniq(f, dir ? 'Νέος φάκελος' : 'Νέο έγγραφο κειμένου.txt');
+    f[n] = dir ? {} : '📄 0 KB';
+    selName = n; draw();
+    event({ t: dir ? 'newfolder' : 'newfile', name: n, path: path.join('/') });
+    rename(n);
+  }
+  function rename(n) {
+    const it = [...box.querySelectorAll('.it')].find(o => o.dataset.n === n);
+    if (!it) return;
+    const inp = el('input'), ext = (n.match(/\.[^.]+$/) || [''])[0];
+    inp.value = n;
+    it.children[1].replaceWith(inp);
+    inp.focus(); inp.setSelectionRange(0, n.length - ext.length); // όπως στα Windows: η επέκταση δεν επιλέγεται
+    let doneR = false;
+    const commit = () => {
+      if (doneR) return; doneR = true;
+      const f = folderAt(path);
+      let nm = inp.value.trim() || n;
+      if (ext && !/\.[^.]+$/.test(nm)) nm += ext; // δεν χάνουμε την επέκταση
+      if (nm !== n) { if (nm in f) nm = uniq(f, nm); const v = f[n]; delete f[n]; f[nm] = v; }
+      selName = nm; draw();
+      event({ t: 'rename', from: n, name: nm, path: path.join('/') });
+    };
+    inp.onkeydown = e => { e.stopPropagation(); if (e.key === 'Enter') commit(); if (e.key === 'Escape') { doneR = true; draw(); } };
+    inp.onblur = commit;
+    say('⌨️ Γράψε το όνομα και πάτα Enter.');
+  }
+  function paste() {
+    if (!clip) return say('Πρώτα «Αντιγραφή» ή «Αποκοπή» ενός αρχείου.', 'bad');
+    const f = folderAt(path);
+    if (clip.cut && clip.from.join('/') === path.join('/')) return say('Είναι ήδη εδώ! Πήγαινε σε άλλον φάκελο.', 'bad');
+    const n = uniq(f, clip.name);
+    f[n] = JSON.parse(JSON.stringify(clip.val));
+    if (clip.cut) delete folderAt(clip.from)[clip.name];
+    event({ t: 'paste', name: n, path: path.join('/'), cut: clip.cut, from: clip.from.join('/') });
+    if (clip.cut) clip = null;
+    selName = n; draw();
+  }
+  function del() {
+    if (!selName) return say('Διάλεξε πρώτα (ένα κλικ) αυτό που θέλεις να διαγράψεις.', 'bad');
+    const f = folderAt(path), v = f[selName];
+    delete f[selName];
+    if (act.bin) bin.push({ name: selName, val: v, from: [...path] });
+    say(act.bin ? `🗑️ Το «${selName}» πήγε στον κάδο ανακύκλωσης.` : `🗑️ Το «${selName}» διαγράφηκε.`);
+    event({ t: 'delete', name: selName, path: path.join('/') });
+    selName = null; draw();
+  }
+  function restore() {
+    const i = bin.findIndex(b => b.name === selName);
+    if (i < 0) return say('Διάλεξε πρώτα (ένα κλικ) ένα αρχείο του κάδου.', 'bad');
+    const [b] = bin.splice(i, 1), f = folderAt(b.from);
+    f[uniq(f, b.name)] = b.val;
+    say(`♻️ Το «${b.name}» γύρισε στον φάκελο «${b.from.at(-1)}».`, 'good');
+    event({ t: 'restore', name: b.name, path: b.from.join('/') });
+    selName = null; draw();
+  }
+  draw(); drawTasks();
+};
+
 // ---- Γράμματα σε δυαδικό: gr5 = Α 00001 … Ω 11000 (Δ΄ έκδ. 6.0 σελ. 46) · ascii = A 01000001 …
 const CODE_TABLES = {
   gr5: [...GR].map((c, i) => [c, (i + 1).toString(2).padStart(5, '0')]),
@@ -7480,6 +7912,7 @@ for (const ch of BOOKS.flatMap(b => b.chapters)) for (const les of ch.lessons) f
   if (a.type === 'trace') console.assert(!simulate(a.grid, a.program).crash, 'trace: ' + a.text);
   if (a.type === 'sticks') console.assert(a.targets.every(t => t > 0 && t < 16), 'sticks: ' + a.text);
   if (a.type === 'pixels') { const r = a.rows.map(x => x.replace(/\s/g, '')); console.assert(r.every(x => x.length === r[0].length && x.length % a.palette[0][0].length === 0 && x.match(new RegExp(`.{${a.palette[0][0].length}}`, 'g')).every(c => a.palette.some(([p]) => p === c))), 'pixels: ' + a.text); }
+  if (a.type === 'conceptmap') console.assert(a.links.every(([x, y]) => [x, y].every(n => a.nodes.some(([m]) => m === n))) && (!a.root || a.nodes.some(([m]) => m === a.root)), 'conceptmap: ' + a.text);
   if (a.type === 'binword') console.assert([...a.word].every(c => CODE_TABLES[a.table || 'gr5'].some(([l]) => l === c)), 'binword: ' + a.word);
   if (a.type === 'net' && a.mode === 'path') { // οι κόμβοι υπάρχουν και ο προορισμός είναι προσβάσιμος χωρίς τους χαλασμένους
     const seen = new Set([a.from]), q = [a.from];
