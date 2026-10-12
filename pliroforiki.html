@@ -3326,7 +3326,7 @@ const GUIDE = {
   whois: 'Διαβάστε την περιγραφή και πατήστε την κάρτα που ταιριάζει — ή απαντήστε «Αλήθεια» / «Ψέμα» για την κάρτα με το πορτοκαλί πλαίσιο.',
   rulesgame: 'Κινήστε τον ήρωα με τα βελάκια (ή τα πλήκτρα ← ↑ → ↓). Δείτε ποιον κανόνα εφαρμόζει ο υπολογιστής σε κάθε κίνηση.',
   edison: 'Πατήστε ένα τετράγωνο για να βάλετε ένα ✋ εμπόδιο (ξανά για να το βγάλετε) και μετά «▶ Εκτέλεση».',
-  scratch: 'Πατήστε τη σημαία 🏳️ ή τα πλήκτρα κάτω από τη σκηνή. Στα άσπρα πεδία με ▾ διαλέγετε τιμή, όπως στο Scratch. ↺ = αρχικές θέσεις.',
+  scratch: 'Πατήστε τη σημαία 🏳️ ή τα πλήκτρα κάτω από τη σκηνή. Στα πεδία με ▾ διαλέγετε τιμή. ↺ = αρχικές θέσεις · ⬇ Scratch = το έργο για να το συνεχίσετε στο Scratch.',
 };
 const KIND_NAMES = { info: '📖 Διαβάζω', theory: '📘 Θεωρία', order: '🔢 Σειρά βημάτων', trace: '🔍 Πού θα φτάσει;', program: '🧩 Φτιάχνω πρόγραμμα',
   pick: '🎯 Ποιο πρόγραμμα;', mcq: '❓ Ερωτήσεις', match: '🔗 Ταίριασμα', sort: '🗂️ Ταξινόμηση', dots: '✏️ Ενώνω τις τελείες',
@@ -5241,6 +5241,195 @@ RENDER.edison = (act, area) => {
   place();
 };
 
+// ---- Εξαγωγή για το Scratch 3: αρχείο .sb3 (zip με project.json, εικόνες SVG και ήχους WAV)
+const CRC_T = [...Array(256)].map((_, n) => { let c = n; for (let k = 0; k < 8; k++) c = c & 1 ? 0xedb88320 ^ (c >>> 1) : c >>> 1; return c >>> 0; });
+const crc32 = b => { let c = ~0; for (const x of b) c = CRC_T[(c ^ x) & 255] ^ (c >>> 8); return ~c >>> 0; };
+function zipBlob(files, type) { // [[όνομα, Uint8Array]], χωρίς συμπίεση
+  const enc = new TextEncoder(), parts = [], dir = [];
+  let off = 0;
+  for (const [name, data] of files) {
+    const n = enc.encode(name), crc = crc32(data);
+    const h = new DataView(new ArrayBuffer(30));
+    h.setUint32(0, 0x04034b50, true); h.setUint16(4, 20, true); h.setUint16(6, 0x800, true);
+    h.setUint32(14, crc, true); h.setUint32(18, data.length, true); h.setUint32(22, data.length, true); h.setUint16(26, n.length, true);
+    parts.push(new Uint8Array(h.buffer), n, data);
+    const c = new DataView(new ArrayBuffer(46));
+    c.setUint32(0, 0x02014b50, true); c.setUint16(4, 20, true); c.setUint16(6, 20, true); c.setUint16(8, 0x800, true);
+    c.setUint32(16, crc, true); c.setUint32(20, data.length, true); c.setUint32(24, data.length, true); c.setUint16(28, n.length, true); c.setUint32(42, off, true);
+    dir.push(new Uint8Array(c.buffer), n);
+    off += 30 + n.length + data.length;
+  }
+  const size = dir.reduce((s, d) => s + d.length, 0), e = new DataView(new ArrayBuffer(22));
+  e.setUint32(0, 0x06054b50, true); e.setUint16(8, files.length, true); e.setUint16(10, files.length, true); e.setUint32(12, size, true); e.setUint32(16, off, true);
+  return new Blob([...parts, ...dir, new Uint8Array(e.buffer)], { type });
+}
+// cur(v): η τιμή που έχει διαλέξει ο μαθητής σε μια αναδυόμενη λίστα
+function scratchProject(act, cur) {
+  const enc = new TextEncoder(), files = [];
+  let n = 0;
+  const uid = p => p + (++n);
+  const hex = s => { let h = ''; for (let i = 0; h.length < 32; i++) h += crc32(enc.encode(s + i)).toString(16).padStart(8, '0'); return h.slice(0, 32); };
+  const xml = t => String(t).replace(/&/g, '&amp;').replace(/</g, '&lt;');
+  const asset = (data, ext, key) => { const a = hex(key); if (!files.some(f => f[0] === a + '.' + ext)) files.push([a + '.' + ext, data]); return a; };
+  const svgCostume = (name, svg, cx, cy) => { const a = asset(enc.encode(svg), 'svg', svg); return { name, dataFormat: 'svg', assetId: a, md5ext: a + '.svg', rotationCenterX: cx, rotationCenterY: cy }; };
+  const emojiCostume = (name, em) => svgCostume(name, `<svg xmlns="http://www.w3.org/2000/svg" width="64" height="64" viewBox="0 0 64 64"><text x="32" y="52" font-size="50" text-anchor="middle">${em}</text></svg>`, 32, 32);
+  const color = css => (String(css || '').match(/#[0-9a-f]{6}|#[0-9a-f]{3}\b/i) || ['#ffffff'])[0];
+  const backdrop = (name, css, text = '') => svgCostume(name, `<svg xmlns="http://www.w3.org/2000/svg" width="480" height="360" viewBox="0 0 480 360"><rect width="480" height="360" fill="${color(css)}"/>` +
+    (text ? `<text x="240" y="195" font-size="52" font-family="sans-serif" font-weight="bold" text-anchor="middle" fill="#fff">${xml(text)}</text>` : '') + '</svg>', 240, 180);
+  // σύντομο «μπιπ» ως ήχος για κάθε «παίξε ήχο»
+  const beep = name => {
+    const rate = 22050, len = 5500, buf = new DataView(new ArrayBuffer(44 + len * 2));
+    [[0, 'RIFF'], [8, 'WAVE'], [12, 'fmt '], [36, 'data']].forEach(([o, t]) => [...t].forEach((ch, i) => buf.setUint8(o + i, ch.charCodeAt(0))));
+    buf.setUint32(4, 36 + len * 2, true); buf.setUint32(16, 16, true); buf.setUint16(20, 1, true); buf.setUint16(22, 1, true);
+    buf.setUint32(24, rate, true); buf.setUint32(28, rate * 2, true); buf.setUint16(32, 2, true); buf.setUint16(34, 16, true); buf.setUint32(40, len * 2, true);
+    for (let i = 0; i < len; i++) buf.setInt16(44 + i * 2, Math.sin(i / rate * 2 * Math.PI * 660) * 8000 * (1 - i / len), true);
+    const a = asset(new Uint8Array(buf.buffer), 'wav', 'beep');
+    return { name, assetId: a, dataFormat: 'wav', format: '', rate, sampleCount: len, md5ext: a + '.wav' };
+  };
+
+  // μεταβλητές, μηνύματα, υποπρογράμματα
+  const walk = (list, f) => list.forEach(b => { if (!Array.isArray(b)) return; f(b); b.forEach(x => Array.isArray(x) && x.some(Array.isArray) && walk(x, f)); });
+  const varNames = new Set(Object.keys(act.vars || {}));
+  const msgs = new Set(), sounds = {}, procs = {};
+  for (const s of act.scripts) {
+    if (s.when.startsWith('receive:')) msgs.add(s.when.slice(8));
+    if (s.when.startsWith('define:')) procs[s.when.slice(7)] = (s.params || []).map((p, i) => [p, uid('arg')]);
+    walk(s.blocks, b => {
+      if (b[0] === 'setvar' || b[0] === 'changevar') varNames.add(cur(b[1]));
+      if (b[0] === 'broadcast') msgs.add(cur(b[1]));
+      if (b[0] === 'sound') (sounds[s.sprite] = sounds[s.sprite] || new Set()).add(cur(b[1]));
+    });
+  }
+  const varId = {}, msgId = {};
+  varNames.forEach(v => { varId[v] = uid('var'); });
+  msgs.forEach(m => { msgId[m] = uid('msg'); });
+  const spName = id => act.sprites[id].name;
+  const menuVal = t => ({ edge: '_edge_', mouse: '_mouse_', random: '_random_' })[t] || (act.sprites[t] ? spName(t) : t);
+
+  function targetBlocks(sprite) {
+    const blocks = {};
+    let params = [];
+    const add = (opcode, parent, o = {}) => { const k = uid('b'); blocks[k] = { opcode, next: null, parent, inputs: {}, fields: {}, shadow: false, topLevel: false, ...o }; return k; };
+    const menu = (opcode, field, value, parent) => [1, add(opcode, parent, { shadow: true, fields: { [field]: [value, null] } })];
+    // είσοδος: σταθερά, μεταβλητή, απάντηση, παράμετρος ή πράξη
+    function inp(v, parent, kind = 4) {
+      v = cur(v);
+      const empty = [kind, ''];
+      if (Array.isArray(v)) return [3, reporter(v, parent), empty];
+      if (v === 'answer') return [3, add('sensing_answer', parent), empty];
+      if (params.includes(v)) return [3, add('argument_reporter_string_number', parent, { fields: { VALUE: [v, null] } }), empty];
+      if (typeof v === 'string' && varId[v]) return [3, [12, v, varId[v]], empty];
+      return [1, [typeof v === 'number' ? kind : 10, String(v)]];
+    }
+    function reporter(v, parent) {
+      const [op, a, b] = v;
+      const OP = { add: ['operator_add', 'NUM1', 'NUM2'], sub: ['operator_subtract', 'NUM1', 'NUM2'], mul: ['operator_multiply', 'NUM1', 'NUM2'],
+        div: ['operator_divide', 'NUM1', 'NUM2'], join: ['operator_join', 'STRING1', 'STRING2'], rand: ['operator_random', 'FROM', 'TO'] }[op];
+      const k = add(OP[0], parent);
+      blocks[k].inputs = { [OP[1]]: inp(a, k, op === 'join' ? 10 : 4), [OP[2]]: inp(b, k, op === 'join' ? 10 : 4) };
+      return k;
+    }
+    function cond(c, parent) {
+      const [op, a, b] = c;
+      if (op === 'touching') { const k = add('sensing_touchingobject', parent); blocks[k].inputs.TOUCHINGOBJECTMENU = menu('sensing_touchingobjectmenu', 'TOUCHINGOBJECTMENU', menuVal(cur(a)), k); return k; }
+      if (op === 'not') { const k = add('operator_not', parent); blocks[k].inputs.OPERAND = [2, cond(a, k)]; return k; }
+      if (op === 'and' || op === 'or') { const k = add('operator_' + op, parent); blocks[k].inputs = { OPERAND1: [2, cond(a, k)], OPERAND2: [2, cond(b, k)] }; return k; }
+      const k = add({ eq: 'operator_equals', gt: 'operator_gt', lt: 'operator_lt' }[op], parent);
+      blocks[k].inputs = { OPERAND1: inp(a, k, 10), OPERAND2: inp(b, k, 10) };
+      return k;
+    }
+    function stmt(b, parent) {
+      const S = (opcode, inputs = () => ({}), o = {}) => { const k = add(opcode, parent, o); Object.assign(blocks[k].inputs, inputs(k)); return k; };
+      switch (b[0]) {
+        case 'move': return S('motion_movesteps', k => ({ STEPS: inp(b[1], k) }));
+        case 'changex': return S('motion_changexby', k => ({ DX: inp(b[1], k) }));
+        case 'gotoxy': return S('motion_gotoxy', k => ({ X: inp(b[1], k), Y: inp(b[2], k) }));
+        case 'turn': return S('motion_turnright', k => ({ DEGREES: inp(b[1], k) }));
+        case 'point': return S('motion_pointindirection', k => ({ DIRECTION: inp(b[1], k, 8) }));
+        case 'goto': return S('motion_goto', k => ({ TO: menu('motion_goto_menu', 'TO', menuVal(cur(b[1])), k) }));
+        case 'gotorandom': return S('motion_goto', k => ({ TO: menu('motion_goto_menu', 'TO', '_random_', k) }));
+        case 'pointto': return S('motion_pointtowards', k => ({ TOWARDS: menu('motion_pointtowards_menu', 'TOWARDS', menuVal(cur(b[1])), k) }));
+        case 'glide': return S('motion_glideto', k => ({ SECS: inp(b[1], k), TO: menu('motion_glideto_menu', 'TO', menuVal(cur(b[2])), k) }));
+        case 'say': return b[2] ? S('looks_sayforsecs', k => ({ MESSAGE: inp(b[1], k, 10), SECS: inp(b[2], k) })) : S('looks_say', k => ({ MESSAGE: inp(b[1], k, 10) }));
+        case 'costume': return S('looks_nextcostume');
+        case 'setcostume': return S('looks_switchcostumeto', k => ({ COSTUME: menu('looks_costume', 'COSTUME', cur(b[1]), k) }));
+        case 'hide': return S('looks_hide');
+        case 'show': return S('looks_show');
+        case 'backdrop': return S('looks_switchbackdropto', k => ({ BACKDROP: menu('looks_backdrops', 'BACKDROP', cur(b[1]), k) }));
+        case 'sound': return S('sound_playuntildone', k => ({ SOUND_MENU: menu('sound_sounds_menu', 'SOUND_MENU', cur(b[1]), k) }));
+        case 'wait': return S('control_wait', k => ({ DURATION: inp(b[1], k) }));
+        case 'ask': return S('sensing_askandwait', k => ({ QUESTION: inp(b[1], k, 10) }));
+        case 'setvar': return S('data_setvariableto', k => ({ VALUE: inp(b[2], k, 10) }), { fields: { VARIABLE: [cur(b[1]), varId[cur(b[1])]] } });
+        case 'changevar': return S('data_changevariableby', k => ({ VALUE: inp(b[2], k) }), { fields: { VARIABLE: [cur(b[1]), varId[cur(b[1])]] } });
+        case 'pendown': return S('pen_penDown');
+        case 'clear': return S('pen_clear');
+        case 'stopall': return S('control_stop', () => ({}), { fields: { STOP_OPTION: ['all', null] }, mutation: { tagName: 'mutation', children: [], hasnext: 'false' } });
+        case 'broadcast': return S('event_broadcast', () => ({ BROADCAST_INPUT: [1, [11, cur(b[1]), msgId[cur(b[1])]]] }));
+        case 'repeat': return S('control_repeat', k => ({ TIMES: inp(b[1], k, 6), SUBSTACK: [2, stack(b[2], k)] }));
+        case 'until': return S('control_repeat_until', k => ({ CONDITION: [2, cond(b[1], k)], SUBSTACK: [2, stack(b[2], k)] }));
+        case 'forever': return S('control_forever', k => ({ SUBSTACK: [2, stack(b[1], k)] }));
+        case 'if': return S(b[3] ? 'control_if_else' : 'control_if', k => ({ CONDITION: [2, cond(b[1], k)], SUBSTACK: [2, stack(b[2], k)], ...(b[3] ? { SUBSTACK2: [2, stack(b[3], k)] } : {}) }));
+        case 'call': {
+          const args = procs[b[1]];
+          const k = add('procedures_call', parent, { mutation: { tagName: 'mutation', children: [], proccode: b[1] + ' %s'.repeat(args.length), argumentids: JSON.stringify(args.map(a => a[1])), warp: 'false' } });
+          args.forEach(([, aid], i) => { blocks[k].inputs[aid] = inp(b[i + 2], k, 10); });
+          return k;
+        }
+      }
+    }
+    function stack(list, parent) {
+      let first = null, prev = null;
+      for (const b of list) {
+        const k = stmt(b, prev || parent);
+        if (prev) blocks[prev].next = k; else first = k;
+        prev = k;
+      }
+      return first;
+    }
+    act.scripts.filter(s => s.sprite === sprite).forEach((s, i) => {
+      const [w, arg] = s.when.split(':');
+      params = (s.params || []);
+      const pos = { topLevel: true, x: 20 + (i % 2) * 380, y: 20 + Math.floor(i / 2) * 320 };
+      let hat;
+      if (w === 'define') {
+        const args = procs[arg];
+        hat = add('procedures_definition', null, pos);
+        const proto = add('procedures_prototype', hat, { shadow: true, mutation: { tagName: 'mutation', children: [], proccode: arg + ' %s'.repeat(args.length),
+          argumentids: JSON.stringify(args.map(a => a[1])), argumentnames: JSON.stringify(args.map(a => a[0])), argumentdefaults: JSON.stringify(args.map(() => '')), warp: 'false' } });
+        args.forEach(([p, aid]) => { blocks[proto].inputs[aid] = [1, add('argument_reporter_string_number', proto, { shadow: true, fields: { VALUE: [p, null] } })]; });
+        blocks[hat].inputs.custom_block = [1, proto];
+      } else if (w === 'flag') hat = add('event_whenflagclicked', null, pos);
+      else if (w === 'click') hat = add('event_whenthisspriteclicked', null, pos);
+      else if (w === 'receive') hat = add('event_whenbroadcastreceived', null, { ...pos, fields: { BROADCAST_OPTION: [arg, msgId[arg]] } });
+      else hat = add('event_whenkeypressed', null, { ...pos, fields: { KEY_OPTION: [{ right: 'right arrow', left: 'left arrow', space: 'space' }[w], null] } });
+      blocks[hat].next = stack(s.blocks, hat);
+    });
+    return blocks;
+  }
+
+  const stage = {
+    isStage: true, name: 'Stage', variables: Object.fromEntries([...varNames].map(v => [varId[v], [v, (act.vars || {})[v] ?? 0]])), lists: {},
+    broadcasts: Object.fromEntries([...msgs].map(m => [msgId[m], m])), blocks: {}, comments: {}, currentCostume: 0,
+    costumes: [backdrop('φόντο', act.backdrop), ...Object.entries(act.backdrops || {}).map(([k, bd]) => backdrop(k, bd.bg || act.backdrop, bd.text))],
+    sounds: [], volume: 100, layerOrder: 0, tempo: 60, videoTransparency: 50, videoState: 'on', textToSpeechLanguage: null,
+  };
+  const sprites = Object.entries(act.sprites).map(([id, sp], i) => ({
+    isStage: false, name: sp.name, variables: {}, lists: {}, broadcasts: {}, blocks: targetBlocks(id), comments: {}, currentCostume: 0,
+    costumes: (sp.costumes || [sp.em]).map((em, j) => emojiCostume((sp.cnames || [])[j] || (sp.costumes ? 'ενδυμασία' + (j + 1) : sp.name), em)),
+    sounds: [...(sounds[id] || [])].map(beep), volume: 100, layerOrder: i + 1, visible: !sp.hidden, x: sp.x, y: sp.y, size: 100,
+    direction: sp.dir || 90, draggable: false, rotationStyle: sp.rotate ? 'all around' : "don't rotate",
+  }));
+  const hidden = [...(act.hiddenVars || []), ...act.scripts.flatMap(s => s.params || [])];
+  const monitors = [...varNames].filter(v => !hidden.includes(v)).map((v, i) => ({
+    id: varId[v], mode: act.sliders && act.sliders[v] ? 'slider' : 'default', opcode: 'data_variable', params: { VARIABLE: v }, spriteName: null,
+    value: (act.vars || {})[v] ?? 0, width: 0, height: 0, x: 5, y: 5 + i * 27, visible: true,
+    sliderMin: act.sliders && act.sliders[v] ? act.sliders[v][0] : 0, sliderMax: act.sliders && act.sliders[v] ? act.sliders[v][1] : 100, isDiscrete: true,
+  }));
+  const project = { targets: [stage, ...sprites], monitors, extensions: JSON.stringify(act.scripts).includes('"pendown"') || JSON.stringify(act.scripts).includes('"clear"') ? ['pen'] : [],
+    meta: { semver: '3.0.0', vm: '0.2.0', agent: 'pliroforiki.html' } };
+  return zipBlob([['project.json', enc.encode(JSON.stringify(project))], ...files], 'application/x.scratch.sb3');
+}
+
 // ---- Μίνι Scratch: σκηνή 480×360 (κέντρο 0,0, y προς τα πάνω) και σενάρια με πλακίδια
 // sprites: { id: { em, name, x, y, dir?, costumes? } } · scripts: [{ sprite, when: 'flag'|'right'|'left'|'space'|'click', blocks }]
 // πλακίδια: ['move', n] ['goto', id] ['gotoxy', x, y] ['turn', μοίρες] ['point', μοίρες] ['say', κείμενο, δευτ.] ['costume'] ['wait', δευτ.]
@@ -5295,8 +5484,17 @@ RENDER.scratch = (act, area) => {
   if (used.has('left')) evBtn('left', '⬅ πλήκτρο');
   if (used.has('right')) evBtn('right', 'πλήκτρο ➡');
   if (used.has('space')) evBtn('space', '␣ διάστημα');
-  const stopB = el('button', 'secondary', '⏹'), resetB = el('button', 'secondary', '↺ Αρχικές θέσεις');
-  btns.append(stopB, resetB);
+  const stopB = el('button', 'secondary', '⏹'), resetB = el('button', 'secondary', '↺'), dl = el('button', 'secondary', '⬇ Scratch');
+  resetB.title = 'Αρχικές θέσεις';
+  dl.title = 'Κατέβασε το έργο (.sb3) για να το ανοίξεις και να το αλλάξεις στο Scratch';
+  dl.onclick = () => {
+    const a = el('a');
+    a.href = URL.createObjectURL(scratchProject(act, raw));
+    a.download = book()[chapterIdx].lessons[lessonIdx].title + '.sb3';
+    a.click();
+    say('💾 Το έργο αποθηκεύτηκε! Στο Scratch: <b>Αρχείο → Φόρτωση από τον υπολογιστή σου</b>.', 'good');
+  };
+  btns.append(stopB, resetB, dl);
   left.append(stage, btns);
   wrap.append(left, right);
   area.appendChild(wrap);
