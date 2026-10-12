@@ -32,58 +32,43 @@ Text extraction: `pdftotext -layout <book>.pdf out.txt`, then grep the lesson ti
 
 No textbook images (licences) — emoji, SVG and simulations only.
 
-## Status
+## Status (2026-10-12)
 
-Done = in the book with activities. Lesson numbers = older edition.
+Chapter 1 (algorithms · programming · robotics) is **done for every grade**, both editions merged,
+every lesson with practice; theory pages where the lesson brings extra material.
 
-### Α΄ — Κεφ. 1 done (lessons 1–9 + Επανάληψη)
-- Κεφ. 2 (10–14 · v09 2.1.1–2.2.1): ο υπολογιστής, συσκευές, άνοιγμα/κλείσιμο, δίκτυα,
-  δίκτυα στη ζωή μας → reuse `sort`/`match`, the `desktop` simulator (power on/off).
-- Κεφ. 3 (15–18 · v09 3.1.1–3.1.2): αρχεία & φάκελοι, μορφές αρχείων, εννοιολογικός χάρτης
-  → new `conceptmap` activity (drag words onto nodes).
-- Κεφ. 4 (19–30 · v09 4.1.1–4.2.2): ποντίκι (κλικ, διπλό, δεξί, σύρε, ροδέλα), πληκτρολόγιο
-  (κεφαλαία, αριθμοί, λέξεις), ιστοσελίδες, ζωγραφική → new `mouse` and `keys` mini-games.
+| Grade | Κεφ. 1 lessons in the book | Older-edition lessons covered | Newer-edition sections covered |
+|---|---|---|---|
+| Α΄ | 9 | 1–9 | 1.1.1–1.3.3 |
+| Β΄ | 8 (+5 in Κεφ. 2) | 1–9 | 1.1–1.3 |
+| Γ΄ | 8 | 1–8 | 1.1–1.3 (Blockly, Scratch quiz, Lightbot) |
+| Δ΄ | 10 | 1–10 | 1.1–1.3 (pen shapes, data types, Blockly maze) |
+| Ε΄ | 9 | 1–11 | 1.1.1–1.3 (sensors, automation) |
+| ΣΤ΄ | 9 | 1–11 | 1.1.1–1.3.2 (computational thinking, debugging) |
 
-### Β΄ — Κεφ. 1 & 2 done
-- Κεφ. 3 (15–18 · v08 3.1.1–3.2.2): αποθήκευση/άνοιγμα αρχείων, φάκελοι, εννοιολογικοί
-  χάρτες → `desktop` save dialog task + `conceptmap`.
-- Κεφ. 4 (19–29 · v08 4.1.1–4.2.2): φυλλομετρητής, πόροι ιστοσελίδας, χαρακτήρες
-  πληκτρολογίου, επεξεργασία με ποντίκι, ζωγραφική, e-me, email → `keys`, mock browser.
-- Κεφ. 5 (30): ψηφιακή πολιτειότητα → `sort` (safe / unsafe).
+Engine pieces added for chapter 1: theory pages, practice sets, «Βρες ποιος είναι» cards, a rules
+mini-game, Έντισον obstacle robot, robot commands «💡 Άναψε φως» and «⏩ Προχώρα όσο υπάρχει άσπρο»,
+a mini-Scratch stage (events, motion, looks, sound, pen, control, sensing, operators, variables with
+sliders, messages, subprograms with parameters, ask/answer, draggable sprites) and micro:bit modes
+(birthday melody, light / sound / temperature sensors, data logging).
 
-### Γ΄ — lesson 1 done (with v09 «λογικές εκφράσεις»)
-- Κεφ. 1 next: 2 Αλήθεια ή ψέματα; · 3 Οι υπολογιστές παίρνουν αποφάσεις ·
-  4–6 Scratch & εντολή επιλογής · 7–8 ρομπότ εδάφους (v09 1.2–1.3).
-- Κεφ. 2 (9–13): ψηφιακή εικόνα (pixel grid — reuse `pixelart.html` idea), εξαρτήματα,
-  εφαρμογές, δικτύωση, κακόβουλο λογισμικό.
-- Κεφ. 3 (14–16), Κεφ. 4 (17–28), Κεφ. 5 (29–30).
+Known source issue: the newer Ε΄ edition (v08, 1.1.2) prints «12 > 15 ΑΛΗΘΗΣ» — the book uses correct examples instead.
 
-### Δ΄ — lesson 1 done
-- Κεφ. 1 next: 2 Νέα εντολή επιλογής (Αν… αλλιώς) & επανάληψης (Επανάλαβε ώσπου) ·
-  3 Ξανά και ξανά · 4 Αριθμητικές πράξεις · 5 Επανάλαβε ώσπου · 6–7 Scratch ·
-  8–10 ρομπότ (πίστα, μαύρες γραμμές, λαβύρινθος → grid robot with sensor).
-- Κεφ. 2 (11–15 · v07 2.1.1–2.2.2), Κεφ. 3 (16–19 · v07 3.1.1–3.2.1), Κεφ. 4–5 (20–30).
+### Next: chapter 2 (computers · devices · networks)
+- Α΄ (10–14): ο υπολογιστής, συσκευές, άνοιγμα/κλείσιμο (desktop simulator), δίκτυα.
+- Β΄: lessons 10–14 done; add v08 2.1.4 «Ανοίγουμε, κλείνουμε εφαρμογές» if missing.
+- Γ΄ (9–13): ψηφιακή εικόνα (pixel grid), εξαρτήματα, εφαρμογές, δικτύωση, ασφάλεια/ιοί.
+- Δ΄ (11–15 · v07 2.1.1–2.2.2): ψηφιακά δεδομένα, είδη υπολογιστών, εφαρμογές, ταξίδι δεδομένων, προστασία.
+- Ε΄ (12–15 · v08 2.1.1–2.2.2): ψηφιοποίηση κειμένου (ASCII + `bits`), υλικό & χρήστες, δίκτυα, URLs, αξιοπιστία.
+- ΣΤ΄ (12–15 · 8.02 2.1.1–2.2.2): υλικό & ρυθμίσεις, πάροχοι & πρωτόκολλα, IoT, κίνδυνοι.
 
-### Ε΄ — lessons 1–2 done (Καίσαρας, merged as one lesson)
-- Κεφ. 1 next: 3 Σύνθετες λογικές εκφράσεις (v08 1.1.2, 1.2.3 — reuse `logic`) ·
-  4–7 παιχνίδι στο Scratch, μεταβλητές, συνθήκη τέλους · 8 υποπρογράμματα ·
-  9 παράλληλες ακολουθίες · 10 μηνύματα · 11 γενέθλια.
-- Κεφ. 2 (12–15): ψηφιοποίηση κειμένου (ASCII/binary — reuse `bits`), υλικό, δίκτυα.
-- Κεφ. 3 (16–20): υπολογιστικό φύλλο (mini spreadsheet activity), ΤΝ & μηχανική μάθηση.
-- Κεφ. 4–5 (21–30).
-
-### ΣΤ΄ — lessons 1–2 done
-- Κεφ. 1 next: 3 Είσοδος/έξοδος · 4–5 υποπρογράμματα με παραμέτρους (reuse `stepper`) ·
-  6–7 Μάντεψε τον αριθμό στο Scratch, επίπεδα δυσκολίας · 8–11 αισθητήρες (micro:bit).
-- Κεφ. 2 (12–15 · 8.02 2.1.1–2.2.2), Κεφ. 3 (16–20 · 8.02 3.1.1–3.2.3: φόρμες, φίλτρα),
-  Κεφ. 4–5 (21–30).
+Then chapters 3–5 for all grades (files, concept maps, spreadsheets, digital literacy, society).
 
 ## Order of work
 
-- **Phase 0** — engine: `theory` page type + per-lesson `practice`. Retrofit all existing
+- **Phase 0** ✅ — engine: `theory` page type + per-lesson `practice`. Retrofit all existing
   lessons: practice set for every lesson, theory page where the lesson has extra info.
-- **Phase 1** — finish Κεφ. 1 (algorithms) for Γ΄, Δ΄, Ε΄, ΣΤ΄ in that order: these reuse the
-  existing engine (grid, logic, stepper, sort, mcq) so they are cheap.
+- **Phase 1** ✅ — Κεφ. 1 (algorithms) finished for Γ΄, Δ΄, Ε΄, ΣΤ΄.
 - **Phase 2** — Κεφ. 2 for all grades (computers, binary, networks, safety).
 - **Phase 3** — Κεφ. 3 (files, concept maps, spreadsheets) — needs `conceptmap` + mini sheet.
 - **Phase 4** — Κεφ. 4 digital literacy — `mouse`/`keys` games; platform-specific lessons
