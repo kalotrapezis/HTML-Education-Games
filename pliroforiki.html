@@ -41,7 +41,7 @@
 
   /* ΑΡΧΙΚΗ */
   .home-head { display: flex; align-items: center; gap: 24px; }
-  .home-head h1 { flex: 1; text-align: center; font-size: 46px; margin-right: 120px; }
+  .home-head h1 { flex: 1; text-align: center; font-size: 46px; }
   .tabs { display: flex; gap: 12px; justify-content: center; margin: 18px 0 20px; }
   .tab { background: rgba(0,0,0,0.3); box-shadow: none; font-size: 22px; padding: 12px 22px; border: 3px solid transparent; }
   .tab.on { border-color: #ffb347; background: rgba(255,179,71,0.18); }
@@ -63,6 +63,24 @@
   .lesson .ttl { font-size: 25px; color: #ffb347; }
   .lesson .sub { font-size: 17px; font-weight: normal; opacity: 0.8; margin-top: 6px; }
   .lesson .prog { font-size: 18px; margin-top: 6px; color: #b9f6ca; }
+  .planbtn { font-size: 22px; padding: 10px 18px; }
+  .planctl { display: flex; gap: 14px; justify-content: center; align-items: center; flex-wrap: wrap; font-size: 21px; margin-bottom: 12px; }
+  .planctl select { font-size: 20px; padding: 4px 8px; border-radius: 8px; }
+  .planctl .days button, .planctl .pstep button { font-size: 19px; padding: 6px 12px; margin: 0 2px; box-shadow: none; background: rgba(0,0,0,0.3); border: 2px solid transparent; }
+  .planctl .days button.on { border-color: #ffb347; background: rgba(255,179,71,0.25); }
+  .planctl label { display: flex; align-items: center; gap: 6px; cursor: pointer; } .planctl input[type=checkbox] { width: 22px; height: 22px; }
+  .plansum { display: grid; grid-template-columns: repeat(4, 1fr); gap: 14px; margin-bottom: 10px; }
+  .plansum div { background: rgba(0,0,0,0.3); border-radius: 14px; padding: 10px 16px; font-size: 18px; line-height: 1.35; }
+  .plansum b { display: block; font-size: 30px; color: #ffb347; } .plansum .ok b { color: #a5d6a7; } .plansum .bad b { color: #ef9a9a; }
+  .planmiles { grid-column: 1 / -1; display: flex; gap: 10px; flex-wrap: wrap; font-size: 17px; }
+  .planmiles span { background: rgba(255,255,255,0.12); border-radius: 10px; padding: 4px 10px; }
+  .planlist { flex: 1; min-height: 0; overflow-y: auto; background: rgba(0,0,0,0.2); border-radius: 14px; padding: 6px 14px; }
+  .planlist h3 { margin: 10px 0 4px; color: #ffb347; font-size: 22px; }
+  .prow { display: grid; grid-template-columns: 170px 1fr; gap: 14px; align-items: center; padding: 5px 8px; border-radius: 8px; font-size: 19px; }
+  .prow:nth-child(even) { background: rgba(255,255,255,0.04); }
+  .prow .d { cursor: pointer; font-family: Consolas, monospace; } .prow .d:hover { color: #ffb347; }
+  .prow.hol { opacity: 0.55; } .prow.lost { opacity: 0.6; text-decoration: line-through; } .prow.res { color: #ffe082; } .prow.free { color: #a5d6a7; }
+  .prow .l { cursor: pointer; } .prow .l:hover { text-decoration: underline; } .prow .ch { display: inline-block; min-width: 72px; font-size: 15px; opacity: 0.75; }
   .soon-box { text-align: center; font-size: 30px; opacity: 0.85; margin-top: 120px; line-height: 1.6; }
 
   /* ΔΡΑΣΤΗΡΙΟΤΗΤΑ */
@@ -544,11 +562,23 @@
     <div class="home-head">
       <a class="back" href="index.html">← Πίσω</a>
       <h1>💻 Πληροφορική Δημοτικού</h1>
+      <button class="secondary planbtn" id="planBtn">📅 Πρόγραμμα</button>
     </div>
     <div class="tabs grades" id="grades"></div>
     <div class="tabs" id="tabs"></div>
     <div class="chapter-title" id="chapterTitle"></div>
     <div class="lessons" id="lessons"></div>
+  </div>
+
+  <div class="screen" id="planScreen">
+    <div class="home-head">
+      <button class="secondary" id="planBack">← Μαθήματα</button>
+      <h1>📅 Πρόγραμμα διδασκαλίας</h1>
+    </div>
+    <div class="tabs grades" id="planGrades"></div>
+    <div class="planctl" id="planCtl"></div>
+    <div class="plansum" id="planSum"></div>
+    <div class="planlist scrollable" id="planList"></div>
   </div>
 
   <div class="screen" id="actScreen">
@@ -5963,6 +5993,138 @@ function renderHome() {
   });
 }
 
+// ============================================================================
+// ΠΡΟΓΡΑΜΜΑ ΔΙΔΑΣΚΑΛΙΑΣ: ένα μάθημα την εβδομάδα, ελληνικό σχολικό ημερολόγιο, αποθεματικό για χαμένες μέρες
+// ============================================================================
+// Κεφάλαια που δεν έχουν φτιαχτεί ακόμα: πόσα μαθήματα έχει η παλιά έκδοση (μάθημα = 1 διδακτική ώρα)
+const PLAN_TODO = [{ 3: 12 }, { 3: 10 }, { 3: 12 }, { 3: 8, 4: 3 }, { 3: 7, 4: 3 }, { 3: 7, 4: 3 }];
+const iso = d => `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}`;
+const dayAt = (y, m, d) => new Date(y, m - 1, d, 12);
+const addDays = (d, n) => new Date(d.getFullYear(), d.getMonth(), d.getDate() + n, 12);
+function orthodoxEaster(y) { // υπολογισμός Meeus (ιουλιανό) + 13 μέρες για το γρηγοριανό (1900–2099)
+  const a = y % 4, b = y % 7, c = y % 19, d = (19 * c + 15) % 30, e = (2 * a + 4 * b - d + 34) % 7, m = Math.floor((d + e + 114) / 31), day = ((d + e + 114) % 31) + 1;
+  return addDays(dayAt(y, m, day), 13);
+}
+function schoolYear(y) { // σχολικό έτος Σεπτ. y – Ιούν. y+1 (Δημοτικό)
+  let start = dayAt(y, 9, 11); while ([0, 6].includes(start.getDay())) start = addDays(start, 1);
+  let end = dayAt(y + 1, 6, 15); while ([0, 6].includes(end.getDay())) end = addDays(end, -1);
+  const E = orthodoxEaster(y + 1), hol = {};
+  const add = (from, to, label) => { for (let d = from; d <= to; d = addDays(d, 1)) hol[iso(d)] = label; };
+  add(dayAt(y, 10, 28), dayAt(y, 10, 28), '🇬🇷 28η Οκτωβρίου');
+  add(dayAt(y, 11, 17), dayAt(y, 11, 17), '📚 Πολυτεχνείο');
+  add(dayAt(y, 12, 24), dayAt(y + 1, 1, 7), '🎄 Διακοπές Χριστουγέννων');
+  add(dayAt(y + 1, 1, 30), dayAt(y + 1, 1, 30), '📖 Τριών Ιεραρχών');
+  add(addDays(E, -48), addDays(E, -48), '🪁 Καθαρά Δευτέρα');
+  add(dayAt(y + 1, 3, 25), dayAt(y + 1, 3, 25), '🇬🇷 25η Μαρτίου');
+  add(addDays(E, -6), addDays(E, 7), '🐣 Διακοπές Πάσχα');
+  add(dayAt(y + 1, 5, 1), dayAt(y + 1, 5, 1), '🌼 Πρωτομαγιά');
+  add(addDays(E, 50), addDays(E, 50), '🕊️ Αγίου Πνεύματος');
+  return { start, end, hol };
+}
+let planState = {};
+try { planState = JSON.parse(localStorage.getItem('pliro-plan') || '{}'); } catch (e) { planState = {}; }
+const planSave = () => { try { localStorage.setItem('pliro-plan', JSON.stringify(planState)); } catch (e) { /* χωρίς αποθήκευση */ } };
+function planUnits(g, noReview) { // τα μαθήματα του βιβλίου με τη σειρά, μαζί με όσα δεν έχουν φτιαχτεί ακόμα
+  const out = [];
+  BOOKS[g].chapters.forEach((ch, c) => {
+    ch.lessons.forEach((les, l) => { if (!(noReview && les.title.startsWith('Επανάληψη'))) out.push({ c, l, tab: ch.tab, icon: les.icon, title: les.title, w: les.acts.length }); });
+    for (let k = 0; k < (PLAN_TODO[g][c] || 0) && !ch.lessons.length; k++) out.push({ c, l: -1, tab: ch.tab, icon: '🚧', title: `${ch.title.split(' –')[0]} — μάθημα ${k + 1} (ετοιμάζεται)`, w: 6 });
+  });
+  for (const [c, n] of Object.entries(PLAN_TODO[g])) if (+c >= BOOKS[g].chapters.length) for (let k = 0; k < n; k++) out.push({ c: +c, l: -1, tab: 'Κεφ. ' + (+c + 1), icon: '🚧', title: `Ψηφιακές τεχνολογίες και κοινωνία — μάθημα ${k + 1} (ετοιμάζεται)`, w: 6 });
+  return out;
+}
+// κατανομή: units σε slots ώρες· αν δεν χωράνε, ενώνονται τα πιο «ελαφριά» διαδοχικά μαθήματα του ίδιου κεφαλαίου
+function planPack(units, slots) {
+  const groups = units.map(u => [u]);
+  while (groups.length > slots && groups.length > 1) {
+    let best = -1, bw = Infinity;
+    for (let i = 0; i + 1 < groups.length; i++) {
+      if (groups[i][0].c !== groups[i + 1][0].c) continue;
+      const w = [...groups[i], ...groups[i + 1]].reduce((t, u) => t + u.w, 0);
+      if (w < bw) { bw = w; best = i; }
+    }
+    if (best < 0) best = 0;
+    groups.splice(best, 2, [...groups[best], ...groups[best + 1]]);
+  }
+  return groups;
+}
+const DAYNAMES = ['Κυρ', 'Δευ', 'Τρί', 'Τετ', 'Πέμ', 'Παρ', 'Σάβ'];
+const MONTHS = ['Ιανουάριος', 'Φεβρουάριος', 'Μάρτιος', 'Απρίλιος', 'Μάιος', 'Ιούνιος', 'Ιούλιος', 'Αύγουστος', 'Σεπτέμβριος', 'Οκτώβριος', 'Νοέμβριος', 'Δεκέμβριος'];
+function renderPlan() {
+  const now = new Date(), y0 = now.getMonth() >= 6 ? now.getFullYear() : now.getFullYear() - 1;
+  const year = planState.year || y0;
+  const st = planState[gradeIdx] = Object.assign({ day: 1, lost: 12, worst: false, noReview: false, marked: [] }, planState[gradeIdx]);
+  const grades = $('planGrades');
+  grades.innerHTML = '';
+  BOOKS.forEach((b, i) => { const t = el('button', 'tab' + (i === gradeIdx ? ' on' : ''), b.grade); t.onclick = () => { gradeIdx = i; history.replaceState(null, '', b.hash); renderPlan(); }; grades.appendChild(t); });
+  // ρυθμίσεις
+  const ctl = $('planCtl');
+  ctl.innerHTML = '';
+  const ysel = el('select');
+  for (const yy of [y0 - 1, y0, y0 + 1]) { const o = el('option', '', `${yy}–${String(yy + 1).slice(2)}`); o.value = yy; o.selected = yy === year; ysel.appendChild(o); }
+  ysel.onchange = () => { planState.year = +ysel.value; planSave(); renderPlan(); };
+  const days = el('span', 'days', 'Μάθημα κάθε: ');
+  [1, 2, 3, 4, 5].forEach(d => { const b = el('button', d === st.day ? 'on' : '', DAYNAMES[d]); b.onclick = () => { st.day = d; planSave(); renderPlan(); }; days.appendChild(b); });
+  const step = el('span', 'pstep', 'Χαμένες σχολικές μέρες: ');
+  const minus = el('button', '', '−'), plus = el('button', '', '+');
+  minus.onclick = () => { st.lost = Math.max(0, st.lost - 1); planSave(); renderPlan(); };
+  plus.onclick = () => { st.lost = Math.min(40, st.lost + 1); planSave(); renderPlan(); };
+  step.append(minus, el('b', '', ` ${st.lost} `), plus);
+  const chk = (label, k) => { const l = el('label', '', `<input type="checkbox"${st[k] ? ' checked' : ''}> ${label}`); l.firstChild.onchange = () => { st[k] = l.firstChild.checked; planSave(); renderPlan(); }; return l; };
+  ctl.append(el('span', '', 'Σχολικό έτος: '), ysel, days, step, chk('χειρότερη περίπτωση', 'worst'), chk('χωρίς τις επαναλήψεις', 'noReview'));
+  // ημερολόγιο
+  const { start, end, hol } = schoolYear(year);
+  const rows = [];
+  for (let d = start; d <= end; d = addDays(d, 1)) if (d.getDay() === st.day) rows.push({ d, key: iso(d), hol: hol[iso(d)], lost: st.marked.includes(iso(d)) });
+  const free = rows.filter(r => !r.hol && !r.lost);
+  // μία ώρα την εβδομάδα: από τις χαμένες σχολικές μέρες, περίπου μία στις πέντε πέφτει στη μέρα της Πληροφορικής
+  const reserve = Math.min(free.length, st.worst ? st.lost : Math.round(st.lost / 5));
+  const slots = free.length - reserve;
+  const units = planUnits(gradeIdx, st.noReview);
+  const groups = planPack(units, slots);
+  const merged = units.length - groups.length;
+  const spare = slots - groups.length;
+  let gi = 0;
+  free.forEach((r, i) => { if (i < slots) { r.group = groups[gi++]; if (!r.group) r.spare = true; } else r.res = true; });
+  // σύνοψη
+  const sum = $('planSum');
+  const built = units.filter(u => u.l >= 0).length;
+  const fits = units.length <= slots;
+  sum.innerHTML = `<div>📆 Ώρες στο έτος<b>${free.length}</b>${DAYNAMES[st.day]} από ${start.toLocaleDateString('el-GR')} ως ${end.toLocaleDateString('el-GR')}, χωρίς αργίες${st.marked.length ? ` και ${st.marked.length} σημειωμένες` : ''}</div>
+    <div>🛟 Αποθεματικό<b>${reserve}</b>${st.worst ? `κάθε χαμένη μέρα = μία ώρα Πληροφορικής` : `${st.lost} χαμένες μέρες ≈ ${reserve} ${DAYNAMES[st.day]}`}</div>
+    <div>📚 Ύλη<b>${units.length}</b>μαθήματα: ${built} έτοιμα στο βιβλίο${units.length - built ? `, ${units.length - built} ετοιμάζονται` : ''} · το νέο βιβλίο προτείνει 30 ώρες</div>
+    <div class="${fits ? 'ok' : 'bad'}">⏱️ Ρυθμός<b>${fits ? (spare ? `+${spare} ελεύθερες` : 'ακριβώς') : `−${merged} ώρες`}</b>${fits ? '1 μάθημα την εβδομάδα — χωράει!' : `ενώνουμε ${merged} ζευγάρια μαθημάτων (⚡)`}</div>`;
+  const miles = el('div', 'planmiles');
+  const lastOf = {};
+  free.forEach(r => (r.group || []).forEach(u => { lastOf[u.tab] = r.d; }));
+  for (const [tab, d] of Object.entries(lastOf)) miles.appendChild(el('span', '', `🏁 ${tab}: ως ${d.getDate()} ${MONTHS[d.getMonth()].slice(0, 3)}.`));
+  sum.appendChild(miles);
+  // λίστα ανά μήνα
+  const list = $('planList');
+  list.innerHTML = '<div style="opacity:.75;font-size:17px;margin-top:6px">💡 Πάτα μια ημερομηνία για να τη σημειώσεις ως χαμένη (εκδρομή, γιορτή, πολιούχος, εκλογές…) — το πρόγραμμα ξαναμοιράζεται αμέσως.</div>';
+  let month = -1;
+  for (const r of rows) {
+    if (r.d.getMonth() !== month) { month = r.d.getMonth(); list.appendChild(el('h3', '', `${MONTHS[month]} ${r.d.getFullYear()}`)); }
+    const row = el('div', 'prow' + (r.hol ? ' hol' : r.lost ? ' lost' : r.res ? ' res' : r.spare ? ' free' : ''));
+    const dd = el('div', 'd', `${r.lost ? '✖' : r.hol ? '·' : '○'} ${DAYNAMES[r.d.getDay()]} ${String(r.d.getDate()).padStart(2, '0')}/${String(r.d.getMonth() + 1).padStart(2, '0')}`);
+    dd.title = 'Πάτα για να σημειώσεις ότι αυτή τη μέρα δεν θα γίνει μάθημα (εκδρομή, γιορτή, πολιούχος…)';
+    if (!r.hol) dd.onclick = () => { st.marked = r.lost ? st.marked.filter(k => k !== r.key) : [...st.marked, r.key]; planSave(); renderPlan(); };
+    const what = el('div');
+    if (r.hol) what.textContent = r.hol;
+    else if (r.lost) what.textContent = '✖ Χαμένη μέρα (πάτα την ημερομηνία για να την επαναφέρεις)';
+    else if (r.res) what.textContent = '🛟 Αποθεματικό για χαμένες ώρες — αν δεν χρειαστεί: επανάληψη ή project';
+    else if (r.spare) what.textContent = '✨ Ελεύθερη ώρα: επανάληψη, project ή τα «Στην τάξη»';
+    else r.group.forEach((u, k) => {
+      if (k) what.appendChild(el('span', '', ' ⚡ + '));
+      const s = el('span', 'l', `<span class="ch">${u.tab}</span>${u.icon} ${u.title}`);
+      if (u.l >= 0) s.onclick = () => { chapterIdx = u.c; openLesson(u.l); };
+      what.appendChild(s);
+    });
+    row.append(dd, what);
+    list.appendChild(row);
+  }
+}
+
 function showScreen(id) {
   for (const s of document.querySelectorAll('.screen')) s.classList.remove('active');
   $(id).classList.add('active');
@@ -9126,6 +9288,8 @@ RENDER.scratch = (act, area) => {
 // ΠΛΟΗΓΗΣΗ & ΣΚΗΝΗ
 // ============================================================================
 $('homeBtn').onclick = () => { runId++; renderHome(); showScreen('homeScreen'); };
+$('planBtn').onclick = () => { renderPlan(); showScreen('planScreen'); };
+$('planBack').onclick = () => { renderHome(); showScreen('homeScreen'); };
 $('prevBtn').onclick = () => { if (actIdx > 0) { actIdx--; renderAct(); } };
 $('nextBtn').onclick = () => {
   const les = book()[chapterIdx].lessons[lessonIdx];
@@ -9136,11 +9300,13 @@ $('nextBtn').onclick = () => {
 function fitStage() { $('stage').style.setProperty('--s', Math.min(innerWidth / 1600, innerHeight / 900)); }
 addEventListener('resize', fitStage);
 // χωρίς κύλιση/ζουμ της σελίδας — εκτός από τον χώρο σεναρίων του Scratch, που κυλάει μόνος του
-addEventListener('wheel', e => { if (!e.target.closest?.('.scripts')) e.preventDefault(); }, { passive: false });
-addEventListener('touchmove', e => { if (!e.target.closest?.('.scripts')) e.preventDefault(); }, { passive: false });
+addEventListener('wheel', e => { if (!e.target.closest?.('.scripts, .scrollable')) e.preventDefault(); }, { passive: false });
+addEventListener('touchmove', e => { if (!e.target.closest?.('.scripts, .scrollable')) e.preventDefault(); }, { passive: false });
 addEventListener('gesturestart', e => e.preventDefault());
 addEventListener('keydown', e => { if ((e.ctrlKey || e.metaKey) && ['+', '-', '=', '0'].includes(e.key)) e.preventDefault(); });
 
+// ορθόδοξο Πάσχα: γνωστές ημερομηνίες
+console.assert(['2025-04-20', '2026-04-12', '2027-05-02', '2028-04-16', '2030-04-28'].every(d => iso(orthodoxEaster(+d.slice(0, 4))) === d), 'Πάσχα');
 // έλεγχος δεδομένων: κάθε άσκηση του βιβλίου πρέπει να λύνεται
 for (const ch of BOOKS.flatMap(b => b.chapters)) for (const les of ch.lessons) for (const a of les.acts) {
   if (a.type === 'order') console.assert(firstMistake(orderRules(a), a.steps.map((_, i) => i)) === null, 'σειρά: ' + a.title);
