@@ -281,6 +281,17 @@
   .fx .items.list .it span { font-size: 26px; } .fx .items.list .it small { margin-left: auto; color: #607d8b; }
   .fx .it small { color: #607d8b; } .fx .it input { width: 120px; font-size: 16px; }
   .fx .save { background: #e3f2fd; display: flex; gap: 10px; padding: 8px 12px; align-items: center; } .fx .save input { flex: 1; font-size: 20px; padding: 4px 8px; }
+  .sh { width: 960px; display: flex; flex-direction: column; gap: 8px; flex: none; }
+  .sh .fbar { display: flex; gap: 6px; align-items: center; flex-wrap: wrap; }
+  .sh .fbar .nm { width: 70px; background: #fff; color: #263238; border-radius: 6px; padding: 6px; text-align: center; font: bold 20px Consolas, monospace; }
+  .sh .fbar input { flex: 1; min-width: 260px; font: 22px Consolas, monospace; padding: 6px 10px; border-radius: 6px; border: 2px solid #90a4ae; }
+  .sh .fbar button { font-size: 18px; padding: 6px 10px; }
+  .sh table { align-self: flex-start; border-collapse: collapse; background: #fff; color: #263238; font-size: 19px; user-select: none; touch-action: none; }
+  .sh th { background: #eceff1; color: #546e7a; font-weight: normal; padding: 3px 6px; border: 1px solid #cfd8dc; min-width: 36px; }
+  .sh td { border: 1px solid #cfd8dc; height: 34px; padding: 0 6px; white-space: nowrap; overflow: hidden; max-width: 210px; cursor: cell; }
+  .sh td.num { text-align: right; } .sh td.err { color: #c62828; }
+  .sh td.in { background: #e3f2fd; } .sh td.act { outline: 3px solid #1565c0; outline-offset: -2px; }
+  .sh .chart { background: #fff; border-radius: 10px; color: #263238; display: flex; align-items: center; justify-content: center; }
   .pixside { width: 520px; display: flex; flex-direction: column; gap: 16px; font-size: 24px; }
   .pal { display: flex; gap: 10px; flex-wrap: wrap; }
   .pal button { min-width: 110px; font: bold 22px Consolas, monospace; border: 4px solid transparent; }
@@ -4662,7 +4673,239 @@ const BOOK_E = [
       },
     ],
   },
-  { tab: 'Κεφ. 3', title: 'Δεδομένα – Αρχεία', lessons: [] },
+  {
+    tab: 'Κεφ. 3', title: 'Δεδομένα – Αρχεία – Υπολογιστικό φύλλο',
+    lessons: [
+      {
+        icon: '📋', title: 'Συγκέντρωση δεδομένων και ιδιότητες αρχείων', sub: 'Πηγές δεδομένων · είδη αρχείων · επεκτάσεις · ιδιότητες',
+        acts: [
+          { type: 'info', ref: 'έκδ. 6.0 σελ. 60–61', text: 'Διαβάζουμε μαζί:', cards: [
+            ['❓', 'Πολλές ερωτήσεις απαντιούνται με <b>επεξεργασία δεδομένων</b>: πού γίνονται συχνά σεισμοί, πού βρέχει σπάνια, τι αγοράζουμε τα Χριστούγεννα…'],
+            ['📈', 'Μπορούμε να πάρουμε <b>δημοσιευμένα δεδομένα</b> (π.χ. από την Ελληνική Στατιστική Αρχή) ή να συγκεντρώσουμε <b>δικά μας</b>: παρατηρώντας και καταγράφοντας, ή με ένα <b>ερωτηματολόγιο</b>.'],
+            ['📊', 'Το <b>υπολογιστικό φύλλο</b> οργανώνει τα δεδομένα σε πίνακες, φτιάχνει διαγράμματα, κάνει υπολογισμούς και μας βοηθά να απαντάμε σε ερωτήσεις.'],
+          ] },
+          { type: 'theory', ref: 'έκδ. v08 σελ. 63–64', text: 'Η ταυτότητα ενός αρχείου:', sections: [
+            ['🪪 Ιδιότητες', 'Κάθε αρχείο έχει όνομα, τύπο, μέγεθος, θέση (διαδρομή), ημερομηνία δημιουργίας και τροποποίησης.', ['Δεξί κλικ στο αρχείο → «Ιδιότητες»']],
+            ['🗂️ Τρία είδη αρχείων', '<b>Εκτελέσιμα</b>: εντολές προγράμματος που τρέχουν μόλις τα ανοίξουμε. <b>Συστήματος</b>: τα χρησιμοποιεί το λειτουργικό σύστημα. <b>Δεδομένων</b>: όσα φτιάχνουμε με τις εφαρμογές.', []],
+            ['🏷️ Επέκταση', 'Το όνομα έχει δύο μέρη με μια τελεία: όνομα που διαλέγουμε + επέκταση που μπαίνει αυτόματα από το λογισμικό.', ['εργασία<b>.doc</b> → κείμενο · σελίδα<b>.php</b> → ιστοσελίδα · <b>*.jpg</b> στην αναζήτηση → όλες οι εικόνες']],
+          ] },
+          { type: 'sort', ref: 'έκδ. v08 σελ. 63', text: 'Τι είδους αρχείο είναι;', bins: ['⚙️ Εκτελέσιμο', '🧩 Συστήματος', '📄 Δεδομένων'], items: [
+            ['⚙️', 'setup.exe', 0], ['🎮', 'παιχνίδι.exe', 0], ['🧩', 'kernel32.dll', 1], ['🧩', 'driver.sys', 1],
+            ['📄', 'εργασία.docx', 2], ['🖼️', 'εκδρομή.jpg', 2], ['📊', 'βαθμοί.ods', 2],
+          ] },
+          { type: 'match', ref: 'έκδ. v08 σελ. 64 (Πίνακας 1)', text: 'Επεκτάσεις και είδη αρχείων:', pairs: [
+            ['.doc / .odt', 'Κείμενο'], ['.xlsx / .ods', 'Υπολογιστικό φύλλο'], ['.pptx / .odp', 'Παρουσίαση'], ['.php / .html', 'Ιστοσελίδα'], ['.exe', 'Εκτελέσιμο πρόγραμμα'], ['.dll', 'Αρχείο συστήματος'],
+          ] },
+          { type: 'files', tools: ['props', 'view'], start: 'Έγγραφα', ref: 'έκδ. 6.0 σελ. 62–63 · έκδ. v08 σελ. 65', text: 'Βρες τις ιδιότητες των αρχείων της έρευνας της Υπατίας.',
+            tree: { 'Έγγραφα': { 'Έρευνα': { 'Ερωτηματολόγιο.odt': '📄 28 KB|14/10/2026', 'Απαντήσεις.ods': '📊 64 KB|21/10/2026', 'Διάγραμμα.png': '🖼️ 1,8 MB|22/10/2026' } }, 'Εικόνες': {} },
+            tasks: [
+              ['Άνοιξε τον φάκελο «Έρευνα».', ev => ev.t === 'nav' && /Έρευνα$/.test(ev.path)],
+              ['Επίλεξε το «Ερωτηματολόγιο» και πάτα <b>ℹ️ Ιδιότητες</b>. Πότε δημιουργήθηκε;', ev => ev.t === 'props' && isName(ev, 'ερωτηματολογιο')],
+              ['Δες τις ιδιότητες του «Απαντήσεις.ods». Ποιο είναι μεγαλύτερο;', ev => ev.t === 'props' && isName(ev, 'απαντησεις')],
+            ] },
+          { type: 'mcq', ref: 'έκδ. 6.0 σελ. 62–63', text: 'Από τις ιδιότητες:', questions: [
+            { q: 'Ποιο αρχείο είναι μεγαλύτερο: το ερωτηματολόγιο (28 KB) ή το υπολογιστικό φύλλο (64 KB);', options: ['Το ερωτηματολόγιο', 'Το υπολογιστικό φύλλο'], answer: 1 },
+            { q: 'Θέλω να βρω όλες τις εικόνες του δίσκου. Τι γράφω στην αναζήτηση;', options: ['*.jpg', 'εικόνες', '.exe'], answer: 0 },
+            { q: 'Ποια ιδιότητα ΔΕΝ υπάρχει σε ένα αρχείο;', options: ['Μέγεθος', 'Ημερομηνία δημιουργίας', 'Αγαπημένο χρώμα'], answer: 2 },
+          ] },
+        ],
+        practice: [
+          { type: 'sort', ref: 'εξάσκηση', text: 'Πώς θα συγκεντρώσεις τα δεδομένα;', bins: ['🔎 Δημοσιευμένα δεδομένα', '👀 Παρατήρηση', '📋 Ερωτηματολόγιο'], items: [
+            ['🌍', 'Πόσοι κάτοικοι έχει η Ευρώπη', 0], ['🌋', 'Πόσοι σεισμοί έγιναν πέρσι στην Ελλάδα', 0],
+            ['👟', 'Τι χρώμα παπούτσια φοράνε σήμερα τα παιδιά της τάξης', 1], ['🐦', 'Πόσα πουλιά έρχονται στην αυλή κάθε πρωί', 1],
+            ['👩‍🚒', 'Τι επάγγελμα θέλουν να κάνουν οι συμμαθητές μου', 2], ['⚽', 'Ποιο είναι το αγαπημένο άθλημα της τάξης', 2],
+          ] },
+        ],
+      },
+      {
+        icon: '🧮', title: 'Το υπολογιστικό φύλλο: κελιά και πίνακες', sub: 'Στήλες, γραμμές, ενεργό κελί, περιοχή κελιών',
+        acts: [
+          { type: 'info', ref: 'έκδ. 6.0 σελ. 64–66 · έκδ. v08 σελ. 67–68', text: 'Διαβάζουμε μαζί:', cards: [
+            ['📊', 'Το <b>υπολογιστικό φύλλο</b> (Calc, Excel, Google Sheets) οργανώνει, επεξεργάζεται και παρουσιάζει κυρίως αριθμητικά δεδομένα.'],
+            ['🔲', '<b>Στήλες</b> A, B, C… και <b>γραμμές</b> 1, 2, 3… σχηματίζουν <b>κελιά</b>. Το όνομα του κελιού: γράμμα στήλης + αριθμός γραμμής, π.χ. <b>B3</b>. Το <b>ενεργό κελί</b> έχει έντονο περίγραμμα.'],
+            ['⌨️', 'Γράφουμε στο ενεργό κελί και πατάμε <b>Enter</b> (ή <b>Esc</b> για ακύρωση). Οι αριθμοί στοιχίζονται <b>δεξιά</b>, οι λέξεις <b>αριστερά</b>. <b>Περιοχή κελιών</b>: γειτονικά κελιά, π.χ. A2:B3.'],
+          ] },
+          { type: 'sheet', cols: 4, rows: 6, widths: { A: 260, B: 130 }, ref: 'έκδ. 6.0 σελ. 64–66', text: 'Βοήθησε την Υπατία και τον Ήρωνα: τα παιδιά ψήφισαν για την εκδρομή.',
+            tasks: [
+              ['Κάνε κλικ στο κελί <b>B3</b>.', ev => ev.t === 'select' && ev.ref === 'B3'],
+              ['Στο <b>A1</b> γράψε τον τίτλο <b>Εκδρομή</b>.', ev => /εκδρομ/.test(norm(String(ev.val('A1') || '')))],
+              ['Στο <b>A2</b> γράψε <b>Αρχαιολογικό Μουσείο</b> και στο <b>B2</b> τους ψήφους: <b>12</b>.', ev => /μουσει/.test(norm(String(ev.val('A2') || ''))) && ev.val('B2') === 12],
+              ['Στο <b>A3</b> γράψε <b>Πινακοθήκη</b> και στο <b>B3</b>: <b>10</b>.', ev => /πινακοθ/.test(norm(String(ev.val('A3') || ''))) && ev.val('B3') === 10],
+              ['Σύρε από το <b>A2</b> ως το <b>B3</b> για να επιλέξεις την περιοχή <b>A2:B3</b>.', ev => ev.t === 'range' && ev.from === 'A2' && ev.to === 'B3'],
+            ], doneMsg: '🎉 Μπράβο! Έφτιαξες τον πρώτο σου πίνακα δεδομένων!' },
+          { type: 'mcq', ref: 'έκδ. 6.0 σελ. 66', text: 'Πώς ονομάζονται;', questions: [
+            { q: 'Η στήλη με το γράμμα στην κορυφή λέγεται στήλη…', options: ['A', '1', 'A1'], answer: 0 },
+            { q: 'Το κελί στη στήλη C και στη γραμμή 4 λέγεται…', options: ['4C', 'C4', 'Γ4'], answer: 1 },
+            { q: 'Το κελί με το έντονο μαύρο περίγραμμα λέγεται…', options: ['ενεργό κελί', 'περιοχή κελιών', 'γραμμή εισαγωγής'], answer: 0 },
+            { q: 'Ποια κελιά έχει η περιοχή A2:B3;', options: ['A2, B3', 'A2, A3, B2, B3', 'A2, A3'], answer: 1 },
+          ] },
+          { type: 'info', ref: 'έκδ. 6.0 σελ. 65 · έκδ. v08 σελ. 68–69', text: 'Χρήσιμα κόλπα:', cards: [
+            ['✏️', 'Διόρθωση: <b>διπλό κλικ</b> στο κελί ή <b>F2</b> ή γράφω στη γραμμή εισαγωγής. Σβήσιμο: <b>Delete</b>.'],
+            ['↔️', 'Μεγάλη λέξη; Σέρνω τη γραμμή ανάμεσα στα ονόματα των στηλών ή κάνω διπλό κλικ για αυτόματο πλάτος. <b>Δεξί κλικ</b> στο όνομα γραμμής → «Εισαγωγή γραμμής».'],
+          ] },
+        ],
+        practice: [
+          { type: 'sheet', cols: 3, rows: 6, widths: { A: 220 }, ref: 'εξάσκηση', text: 'Ο πίνακας του κυλικείου:',
+            cells: { A1: 'Ημέρα', B1: 'Ποσό (€)', A2: 'Δευτέρα', A3: 'Τρίτη', A4: 'Τετάρτη' },
+            tasks: [
+              ['Γράψε τα ποσά: <b>B2</b> 35, <b>B3</b> 42, <b>B4</b> 28.', ev => ev.val('B2') === 35 && ev.val('B3') === 42 && ev.val('B4') === 28],
+              ['Πρόσθεσε στο <b>A5</b> την ημέρα <b>Πέμπτη</b>.', ev => /πεμπτη/.test(norm(String(ev.val('A5') || '')))],
+            ] },
+        ],
+      },
+      {
+        icon: '➕', title: 'Τύποι και συναρτήσεις', sub: '= + − * / · SUM, AVERAGE, MAX, MIN · αυτόματη αντιγραφή',
+        acts: [
+          { type: 'info', ref: 'έκδ. 6.0 σελ. 67–68 · έκδ. v08 σελ. 68, 71', text: 'Διαβάζουμε μαζί:', cards: [
+            ['🟰', 'Οι <b>τύποι</b> αρχίζουν πάντα με <b>=</b>. Σύμβολα: <b>+</b> πρόσθεση, <b>−</b> αφαίρεση, <b>*</b> πολλαπλασιασμός, <b>/</b> διαίρεση. Π.χ. <code>=A3+B3</code>.'],
+            ['👆', 'Αντί να γράφω αριθμούς, <b>κάνω κλικ στα κελιά</b>. Αν αλλάξει ένας αριθμός, το αποτέλεσμα αλλάζει <b>αυτόματα</b>!'],
+            ['Σ', '<b>Συναρτήσεις</b>: <code>=SUM(B2:B3)</code> άθροισμα · <code>AVERAGE</code> μέσος όρος · <code>MAX</code> μεγαλύτερος · <code>MIN</code> μικρότερος · <code>COUNTIF</code> πόσες φορές υπάρχει κάτι.'],
+          ] },
+          { type: 'sheet', cols: 5, rows: 5, widths: { A: 190, D: 220 }, ref: 'έκδ. 6.0 σελ. 67–69', text: 'Πόσα θα πληρώσει κάθε παιδί για το λεωφορείο της εκδρομής;',
+            cells: { A1: 'Εκδρομή', A2: 'Μουσείο', B2: 12, A3: 'Πινακοθήκη', B3: 10, A4: 'Σύνολο', D2: 'Λεωφορείο (€)', E2: 110, D3: 'Κόστος ανά παιδί' },
+            tasks: [
+              ['Κάνε κλικ στο <b>B4</b>, πάτα <b>Σ</b> και μετά <b>Enter</b>. Πόσα παιδιά ψήφισαν;', ev => ev.val('B4') === 22 && /SUM/.test(ev.raw('B4'))],
+              ['Στο <b>E3</b> γράψε τύπο: <b>=</b>, κλικ στο E2, <b>/</b>, κλικ στο B4, Enter.', ev => ev.val('E3') === 5 && ev.raw('E3').startsWith('=')],
+              ['Έγινε έκπτωση! Άλλαξε το <b>E2</b> σε <b>88</b>. Τι έγινε στο E3;', ev => ev.val('E2') === 88 && ev.val('E3') === 4],
+            ], doneMsg: '🎉 Μπράβο! Ο τύπος χρησιμοποιεί τα κελιά, γι’ αυτό το αποτέλεσμα άλλαξε μόνο του σε 4 €.' },
+          { type: 'sheet', cols: 4, rows: 10, widths: { A: 220, D: 150 }, ref: 'έκδ. v08 σελ. 70', text: 'Τα ψώνια για ένα πάρτι γενεθλίων: είναι αρκετά τα 100 €;',
+            cells: { A1: 'Είδος', B1: 'Τεμάχια', C1: 'Τιμή (€)', D1: 'Κόστος (€)', A2: 'Πατατάκια', B2: 10, C2: '0,30', A3: 'Πίτσα', B3: 4, C3: '10,99', A4: 'Κέικ', B4: 10, C4: '0,38',
+              A5: 'Αναψυκτικά', B5: 8, C5: 2, A6: 'Πιατάκια', B6: 6, C6: '1,50', A7: 'Ποτηράκια', B7: 10, C7: 1, A8: 'Διακοσμητικά', B8: 4, C8: '0,80', A9: 'Συνολικό κόστος', A10: 'Υπόλοιπο από 100 €' },
+            tasks: [
+              ['Στο <b>D2</b> γράψε <b>=B2*C2</b>.', ev => Math.abs(ev.val('D2') - 3) < 1e-9 && ev.raw('D2').startsWith('=')],
+              ['Πάτα στο D2, μετά <b>⬇ Συμπλήρωση</b> και μετά στο <b>D8</b>: ο τύπος αντιγράφεται!', ev => ev.t === 'fill' && Math.abs(ev.val('D8') - 3.2) < 1e-9],
+              ['Στο <b>D9</b> βρες το συνολικό κόστος με <b>Σ</b> (ή =SUM(D2:D8)).', ev => Math.abs(ev.val('D9') - 88.96) < 1e-6],
+              ['Στο <b>D10</b> γράψε τύπο για τα ρέστα: <b>=100-D9</b>.', ev => Math.abs(ev.val('D10') - 11.04) < 1e-6 && ev.raw('D10').startsWith('=')],
+            ], doneMsg: '🎉 Μπράβο! Τα 100 € φτάνουν και περισσεύουν 11,04 €.' },
+          { type: 'match', ref: 'έκδ. v08 σελ. 71', text: 'Τι κάνει κάθε συνάρτηση;', pairs: [
+            ['=SUM(B2:B6)', 'Το άθροισμα των αριθμών'], ['=AVERAGE(B2:B6)', 'Ο μέσος όρος'], ['=MAX(B2:B6)', 'Ο μεγαλύτερος αριθμός'], ['=MIN(B2:B6)', 'Ο μικρότερος αριθμός'], ['=COUNTIF(A1:D9;"Κ")', 'Πόσα κελιά έχουν το «Κ»'],
+          ] },
+        ],
+        practice: [
+          { type: 'sheet', cols: 6, rows: 4, widths: { A: 120 }, ref: 'έκδ. v08 σελ. 81', text: 'Μέσος όρος: τέσσερις βαθμοί για κάθε παιδί.',
+            cells: { A1: 'Όνομα', B1: 'Αρ. 1', C1: 'Αρ. 2', D1: 'Αρ. 3', E1: 'Αρ. 4', F1: 'Μέσος όρος', A2: 'Νίκος', B2: 18, C2: 16, D2: 20, E2: 14, A3: 'Ελένη', B3: 19, C3: 17, D3: 15, E3: 17, A4: 'Γιάννης', B4: 12, C4: 20, D4: 16, E4: 16 },
+            tasks: [
+              ['Στο <b>F2</b> γράψε <b>=AVERAGE(B2:E2)</b>.', ev => ev.val('F2') === 17],
+              ['Συμπλήρωσε τον τύπο ως το <b>F4</b> με ⬇ Συμπλήρωση.', ev => ev.val('F3') === 17 && ev.val('F4') === 16],
+            ] },
+          { type: 'mcq', ref: 'εξάσκηση', text: 'Θυμάμαι:', questions: [
+            { q: 'Με ποιο σύμβολο αρχίζει κάθε τύπος;', options: ['=', '+', '#'], answer: 0 },
+            { q: 'Ποιο είναι το σύμβολο του πολλαπλασιασμού;', options: ['x', '*', ':'], answer: 1 },
+            { q: 'Γιατί είναι καλύτερο το =E2/B4 από το =110/22;', options: ['Γιατί αλλάζει μόνο του αν αλλάξουν τα κελιά', 'Γιατί είναι πιο μικρό'], answer: 0 },
+          ] },
+        ],
+      },
+      {
+        icon: '📊', title: 'Διαγράμματα και έρευνες', sub: 'Στήλες, πίτα, γραμμής · COUNTIF · ποσοστά',
+        acts: [
+          { type: 'info', ref: 'έκδ. 6.0 σελ. 71–72 · έκδ. v08 σελ. 71', text: 'Διαβάζουμε μαζί:', cards: [
+            ['📊', 'Το <b>ραβδόγραμμα</b> (διάγραμμα στήλη) δείχνει τα δεδομένα σε στήλες: <b>συγκρίνουμε</b> τα ύψη τους.'],
+            ['🥧', 'Η <b>πίτα</b> (κυκλικό διάγραμμα) δείχνει το <b>μέρος σε σχέση με το σύνολο</b>. Το <b>υπόμνημα</b> εξηγεί τα χρώματα· οι <b>ετικέτες δεδομένων</b> δείχνουν τους αριθμούς.'],
+            ['📈', 'Το <b>γράφημα γραμμής</b> δείχνει πώς αλλάζει κάτι με τον χρόνο. Το <b>εικονόγραμμα</b> χρησιμοποιεί σύμβολα (π.χ. 🚗 = 1.000 αυτοκίνητα).'],
+          ] },
+          { type: 'sheet', charts: true, cols: 2, rows: 7, widths: { A: 240, B: 110 }, ref: 'έκδ. 6.0 σελ. 61, 72', text: '«Τι κάνεις στον ελεύθερο χρόνο σου;» — οι απαντήσεις 50 παιδιών.',
+            cells: { A1: 'Ελεύθερος χρόνος', B1: 'Παιδιά', A2: 'Μουσική', B2: 10, A3: 'Τηλεόραση', B3: 6, A4: 'Παιχνίδι', B4: 16, A5: 'Βόλτα', B5: 14, A6: 'Βιβλίο', B6: 4, A7: 'Σύνολο' },
+            tasks: [
+              ['Στο <b>B7</b> βρες το σύνολο με <b>Σ</b>.', ev => ev.val('B7') === 50],
+              ['Σύρε από το <b>A2</b> ως το <b>B6</b> και πάτα <b>📊 Στήλες</b>.', ev => ev.t === 'chart' && ev.kind === 'bar' && ev.from === 'A2' && ev.to === 'B6'],
+              ['Τώρα πάτα <b>🥧 Πίτα</b> για τα ίδια δεδομένα.', ev => ev.t === 'chart' && ev.kind === 'pie'],
+            ] },
+          { type: 'mcq', ref: 'έκδ. 6.0 σελ. 72', text: 'Κοίτα τα διαγράμματα και απάντησε.', questions: [
+            { q: 'Τι προτιμούν περισσότερο τα παιδιά;', options: ['Βόλτα', 'Παιχνίδι', 'Μουσική'], answer: 1 },
+            { q: 'Πόσα παιδιά προτιμούν τη βόλτα;', options: ['14', '16', '10'], answer: 0 },
+            { q: 'Πόσα περισσότερα παιδιά προτιμούν το παιχνίδι από το βιβλίο;', options: ['12', '4', '20'], answer: 0, explain: '16 − 4 = 12.' },
+          ] },
+          { type: 'match', ref: 'έκδ. v08 σελ. 71, 73', text: 'Ποιο διάγραμμα ταιριάζει;', pairs: [
+            ['📈 Οι πωλήσεις ενός καταστήματος στα 4 τρίμηνα του έτους', 'Γράφημα γραμμής'], ['🥧 Τι ποσοστό της τάξης προτιμά κάθε φρούτο', 'Κυκλικό διάγραμμα (πίτα)'],
+            ['📊 Ποια τάξη μάζεψε τα περισσότερα καπάκια', 'Ραβδόγραμμα'], ['🚗 Πόσα αυτοκίνητα πουλήθηκαν (σύμβολα)', 'Εικονόγραμμα'],
+          ] },
+          { type: 'sheet', cols: 10, rows: 13, widths: { A: 130, B: 70, C: 80, D: 46, E: 46, F: 46, G: 46, H: 46, I: 46, J: 46 }, ref: 'έκδ. v08 σελ. 69, 72', text: '50 άνθρωποι απάντησαν τι χρώμα έχει το αυτοκίνητό τους: Ασημί (Α), Κόκκινο (Κ), Μπλε (Μ), Λευκό (Λ), Άλλο (Χ).',
+            cells: { A1: 'Κ', B1: 'Χ', C1: 'Α', D1: 'Κ', E1: 'Α', F1: 'Μ', G1: 'Λ', H1: 'Α', I1: 'Α', J1: 'Κ', A2: 'Χ', B2: 'Χ', C2: 'Α', D2: 'Λ', E2: 'Μ', F2: 'Λ', G2: 'Α', H2: 'Κ', I2: 'Κ', J2: 'Α',
+              A3: 'Α', B3: 'Χ', C3: 'Χ', D3: 'Μ', E3: 'Α', F3: 'Κ', G3: 'Α', H3: 'Μ', I3: 'Λ', J3: 'Χ', A4: 'Α', B4: 'Μ', C4: 'Μ', D4: 'Α', E4: 'Α', F4: 'Χ', G4: 'Α', H4: 'Κ', I4: 'Χ', J4: 'Α',
+              A5: 'Α', B5: 'Α', C5: 'Κ', D5: 'Α', E5: 'Μ', F5: 'Λ', G5: 'Α', H5: 'Κ', I5: 'Α', J5: 'Χ',
+              A7: 'Χρώμα', B7: 'Πλήθος', C7: '%', A8: 'Ασημί', A9: 'Κόκκινο', B9: '=COUNTIF(A1:J5;"Κ")', A10: 'Μπλε', B10: '=COUNTIF(A1:J5;"Μ")', A11: 'Λευκό', B11: '=COUNTIF(A1:J5;"Λ")', A12: 'Άλλο', B12: '=COUNTIF(A1:J5;"Χ")', A13: 'Σύνολο' },
+            tasks: [
+              ['Στο <b>B8</b> μέτρησε τα ασημί: <b>=COUNTIF(A1:J5;"Α")</b>', ev => ev.val('B8') === 20],
+              ['Στο <b>B13</b> βρες το σύνολο με <b>Σ</b>: είναι 50;', ev => ev.val('B13') === 50],
+              ['Στο <b>C8</b> το ποσοστό: <b>=B8/B13*100</b>', ev => ev.val('C8') === 40],
+              ['Συμπλήρωσε τον τύπο του C8 ως το <b>C12</b>… Τι λάθος βλέπεις;', ev => ev.t === 'fill' && ev.to === 'C12'],
+            ], doneMsg: '💡 Το B13 «κατέβηκε» κι αυτό (B14, B15…). Γι’ αυτό γράφουμε <b>B$13</b>: το $ «κλειδώνει» τη γραμμή. Δοκίμασε =B8/B$13*100 και ξανά Συμπλήρωση!' },
+        ],
+        practice: [
+          { type: 'mcq', ref: 'έκδ. v08 σελ. 73', text: 'Fashion Shop: πωλήσεις T-shirts — 1ο τρίμηνο 7.832, 2ο 9.332, 3ο 4.332, 4ο 2.842.', questions: [
+            { q: 'Ποιο διάγραμμα δείχνει καλύτερα πώς αλλάζουν οι πωλήσεις μέσα στο έτος;', options: ['Γραμμής', 'Πίτα', 'Εικονόγραμμα'], answer: 0 },
+            { q: 'Σε ποιο τρίμηνο πούλησε τα περισσότερα T-shirts;', options: ['1ο', '2ο', '4ο'], answer: 1 },
+          ] },
+        ],
+      },
+      {
+        icon: '🤖', title: 'Τεχνητή νοημοσύνη και μηχανική μάθηση', sub: 'Μοντέλα · εκπαίδευση με δεδομένα · chatbots',
+        acts: [
+          { type: 'info', ref: 'έκδ. 6.0 σελ. 73 · έκδ. v08 σελ. 74', text: 'Διαβάζουμε μαζί:', cards: [
+            ['🎵', 'Η εφαρμογή μουσικής προτείνει στον Ήρωνα τραγούδια που του αρέσουν. Πώς; Καταγράφει τις επιλογές των χρηστών και <b>μαθαίνει</b> από αυτές.'],
+            ['🧠', 'Η <b>τεχνητή νοημοσύνη</b> σχεδιάζει «έξυπνα» συστήματα που μιμούνται την ανθρώπινη σκέψη: λύνουν προβλήματα, παίρνουν αποφάσεις, μαθαίνουν.'],
+            ['🧩', 'Ένα <b>μοντέλο</b> είναι μια απλοποιημένη αναπαράσταση της πραγματικότητας (πρόγνωση καιρού, ηλιακό σύστημα, δομή της ύλης). Η δημιουργία του λέγεται <b>μοντελοποίηση</b>.'],
+          ] },
+          { type: 'theory', ref: 'έκδ. 6.0 σελ. 74 · έκδ. v08 σελ. 77–78', text: 'Πώς μαθαίνει μια μηχανή;', sections: [
+            ['📚 Πολλά παραδείγματα', 'Της δίνουμε πολλά δεδομένα με την <b>απάντηση</b>: «αυτή είναι γάτα», «αυτός είναι σκύλος».', []],
+            ['🔍 Βρίσκει μοτίβα', 'Εντοπίζει τα <b>κοινά στοιχεία</b>: το μέγεθος των ματιών, τα αυτιά… Αυτό λέγεται <b>μηχανική μάθηση</b>.', []],
+            ['🆕 Αποφασίζει μόνη της', 'Σε μια νέα φωτογραφία ψάχνει τα μοτίβα και αποφασίζει. Όσο περισσότερα και πιο σωστά παραδείγματα, τόσο καλύτερες αποφάσεις.', ['Εφαρμογές: φίλτρα spam, αναγνώριση ομιλίας και γραφής (OCR), μηχανές αναζήτησης, AutoDraw.']],
+          ] },
+          { type: 'mltrain', ref: 'έκδ. v08 σελ. 78 (δωρικός ή ιωνικός;)', text: 'Είσαι ο δάσκαλος! Μάθε στη μηχανή να ξεχωρίζει τους κίονες: το <b>απλό</b> κιονόκρανο είναι δωρικό, το <b>ελικοειδές</b> (με σπείρες) ιωνικό.',
+            classes: ['🏛️ Δωρικός', '🌀 Ιωνικός'],
+            train: [['🏛️', 'Παρθενώνας — απλό κιονόκρανο', 'απλό', 0], ['🏛️', 'Ναός του Ποσειδώνα στο Σούνιο — απλό κιονόκρανο', 'απλό', 0], ['🏛️', 'Ναός του Ηφαίστου — απλό κιονόκρανο', 'απλό', 0],
+              ['🌀', 'Ερέχθειο — κιονόκρανο με σπείρες', 'ελικοειδές', 1], ['🌀', 'Ναός της Αθηνάς Νίκης — κιονόκρανο με σπείρες', 'ελικοειδές', 1], ['🌀', 'Ναός της Άρτεμης στην Έφεσο — κιονόκρανο με σπείρες', 'ελικοειδές', 1]],
+            test: [['❓', 'Ναός του Απόλλωνα στην Κόρινθο — απλό κιονόκρανο', 'απλό', 0], ['❓', 'Ναός του Διονύσου στην Πέργαμο — κιονόκρανο με σπείρες', 'ελικοειδές', 1], ['❓', 'Ναός της Ήρας στην Ολυμπία — απλό κιονόκρανο', 'απλό', 0]] },
+          { type: 'mcq', ref: 'έκδ. 6.0 σελ. 74–75 (παιχνίδι)', text: 'Το κανάλι παιδικών ταινιών: τι να προτείνουμε στη νέα συνδρομήτρια;', questions: [
+            { q: 'Στη Μαρίνα αρέσει «Ο μικρός πρίγκιπας». Σε ποιους παλιούς συνδρομητές άρεσε επίσης; Ποια άλλη ταινία άρεσε στους περισσότερους από αυτούς;',
+              html: '<table class="numtable"><tr><th></th><th>Μικρός πρίγκιπας</th><th>Αλίκη</th><th>Πινόκιο</th><th>Άρης</th></tr><tr><td>Νίκος</td><td>👍</td><td>👍</td><td>👎</td><td>—</td></tr><tr><td>Ελένη</td><td>👍</td><td>👍</td><td>—</td><td>👎</td></tr><tr><td>Κώστας</td><td>👎</td><td>—</td><td>👍</td><td>👍</td></tr></table>',
+              options: ['Η Αλίκη στη χώρα των θαυμάτων', 'Πινόκιο', 'Περιπέτεια στον πλανήτη Άρη'], answer: 0, explain: 'Στον Νίκο και στην Ελένη αρέσει κι ο Μικρός πρίγκιπας — και στους δύο αρέσει η Αλίκη. Μάλλον έχουν ίδιο γούστο με τη Μαρίνα!' },
+          ] },
+          { type: 'info', ref: 'έκδ. v08 σελ. 77–78 · έκδ. 6.0 σελ. 73–74', text: 'Chatbots — με προσοχή:', cards: [
+            ['💬', 'Τα <b>chatbots</b> (π.χ. ο ψηφιακός βοηθός mAigov) συνομιλούν μαζί μας με κείμενο ή φωνή, σαν άνθρωπος.'],
+            ['⚠️', 'Μπορεί να κάνουν <b>λάθη</b> και να δώσουν λάθος πληροφορίες! Ελέγχουμε τις απαντήσεις, ρωτάμε πολλές πηγές και δεν δίνουμε προσωπικά στοιχεία.'],
+            ['🎨', 'Δοκιμάστε το <b>AutoDraw</b>: σχεδιάστε κάτι και δείτε τι «καταλαβαίνει» η μηχανή.'],
+          ] },
+        ],
+        practice: [
+          { type: 'sort', ref: 'εξάσκηση', text: 'Χρησιμοποιεί τεχνητή νοημοσύνη;', bins: ['🤖 Ναι, μαθαίνει από δεδομένα', '🔧 Όχι, ακολουθεί σταθερές οδηγίες'], items: [
+            ['🎵', 'Η εφαρμογή που μου προτείνει τραγούδια', 0], ['📨', 'Το φίλτρο που πετάει τα spam', 0], ['🗣️', 'Ο βοηθός που καταλαβαίνει τη φωνή μου', 0],
+            ['🧮', 'Η αριθμομηχανή', 1], ['⏰', 'Το ξυπνητήρι που χτυπάει στις 7:00', 1],
+          ] },
+          { type: 'mcq', ref: 'εξάσκηση', text: 'Θυμάμαι:', questions: [
+            { q: 'Τι χρειάζεται μια μηχανή για να μάθει καλά;', options: ['Πολλά και σωστά παραδείγματα', 'Μια μεγάλη οθόνη'], answer: 0 },
+            { q: 'Ένα chatbot μού απάντησε. Τι κάνω;', options: ['Το πιστεύω πάντα', 'Ελέγχω την απάντηση και σε άλλες πηγές'], answer: 1 },
+          ] },
+        ],
+      },
+      {
+        icon: '📝', title: 'Επανάληψη κεφαλαίου', sub: 'Αρχεία, υπολογιστικό φύλλο, τεχνητή νοημοσύνη',
+        acts: [
+          { type: 'info', ref: 'έκδ. v08 σελ. 80', text: 'Ανακεφαλαίωση:', cards: [
+            ['🪪', 'Οι <b>ιδιότητες</b> αρχείων και φακέλων δείχνουν τύπο, μέγεθος, προέλευση και ημερομηνία.'],
+            ['📊', 'Στο <b>υπολογιστικό φύλλο</b> γράφουμε αριθμούς, κείμενα και τύπους, υπολογίζουμε αυτόματα, ταξινομούμε και φτιάχνουμε γραφήματα.'],
+            ['🤖', 'Η <b>τεχνητή νοημοσύνη</b> και η <b>μηχανική μάθηση</b> μαθαίνουν από δεδομένα· τα <b>chatbots</b> είναι μία εφαρμογή τους.'],
+          ] },
+          { type: 'sheet', cols: 4, rows: 6, ref: 'έκδ. v08 σελ. 81', text: 'Πρόσθεση και αφαίρεση με τύπους.',
+            cells: { A1: 'Αριθμός 1', B1: 'Αριθμός 2', C1: 'Άθροισμα', D1: 'Διαφορά', A2: 25, B2: 13, A3: 40, B3: 18, A4: 102, B4: 57 },
+            tasks: [
+              ['Στο <b>C2</b>: <b>=A2+B2</b> και στο <b>D2</b>: <b>=A2-B2</b>.', ev => ev.val('C2') === 38 && ev.val('D2') === 12],
+              ['Συμπλήρωσε τους δύο τύπους ως τη γραμμή <b>4</b>.', ev => ev.val('C4') === 159 && ev.val('D4') === 45],
+            ] },
+          { type: 'match', ref: 'έκδ. v08 σελ. 82 (Γλωσσάριο)', text: 'Γλωσσάριο:', pairs: [
+            ['🧮 Συνάρτηση', 'Τύπος που κάνει μια εργασία στα δεδομένα'], ['➗ Μέσος όρος', 'Άθροισμα τιμών διά το πλήθος τους'],
+            ['📈 Γράφημα', 'Οπτική απεικόνιση δεδομένων'], ['🧩 Μοντέλο', 'Ψηφιακή αναπαράσταση ενός συστήματος ή φαινομένου'], ['💬 Chatbot', 'Πρόγραμμα που συνομιλεί με ανθρώπους'],
+          ] },
+        ],
+        practice: [
+          { type: 'mcq', ref: 'εξάσκηση', text: 'Τι θυμάμαι;', questions: [
+            { q: 'Ποιος τύπος βρίσκει τον μεγαλύτερο βαθμό στα B2:B20;', options: ['=MAX(B2:B20)', '=SUM(B2:B20)', '=MIN(B2:B20)'], answer: 0 },
+            { q: 'Ποια επέκταση έχει ένα υπολογιστικό φύλλο του Calc;', options: ['.ods', '.mp3', '.exe'], answer: 0 },
+          ] },
+        ],
+      },
+    ],
+  },
   { tab: 'Κεφ. 4', title: 'Ψηφιακός γραμματισμός', lessons: [] },
 ];
 
@@ -5408,6 +5651,8 @@ const GUIDE = {
   match: 'Πατήστε κάτι στην αριστερή στήλη και μετά το ταίρι του στη δεξιά.',
   sort: 'Για κάθε κάρτα, πατήστε την ομάδα όπου ανήκει.',
   dots: 'Πατήστε τις τελείες με τη σειρά: 1, 2, 3…',
+  mltrain: 'Πρώτα «διδάξτε» τη μηχανή: πείτε της τι είναι κάθε παράδειγμα. Μετά δείτε αν βρίσκει μόνη της τα νέα.',
+  sheet: 'Πατήστε ένα κελί, γράψτε στη γραμμή εισαγωγής και πατήστε Enter. Οι τύποι ξεκινούν με =. Σύρετε πάνω στα κελιά για να επιλέξετε περιοχή.',
   conceptmap: 'Πατήστε μια λέξη από τις κάρτες και μετά το διακεκομμένο κουτί του χάρτη όπου ταιριάζει.',
   files: 'Κάντε με τη σειρά τις εργασίες δεξιά. Διπλό κλικ ανοίγει φάκελο ή αρχείο · ένα κλικ το επιλέγει · τα κουμπιά πάνω κάνουν τις ενέργειες.',
   binword: 'Βρείτε κάθε κωδικό στον πίνακα και πατήστε το γράμμα του — ή, για κωδικοποίηση, γυρίστε τους διακόπτες 0/1 και πατήστε ✔.',
@@ -5435,7 +5680,7 @@ const GUIDE = {
   scratch: 'Πατήστε τη σημαία 🏳️ ή τα πλήκτρα κάτω από τη σκηνή. Στα πεδία με ▾ διαλέγετε τιμή. ↺ = αρχικές θέσεις · ⬇ Scratch = το έργο για να το συνεχίσετε στο Scratch.',
 };
 const KIND_NAMES = { info: '📖 Διαβάζω', theory: '📘 Θεωρία', order: '🔢 Σειρά βημάτων', trace: '🔍 Πού θα φτάσει;', program: '🧩 Φτιάχνω πρόγραμμα',
-  pick: '🎯 Ποιο πρόγραμμα;', mcq: '❓ Ερωτήσεις', match: '🔗 Ταίριασμα', sort: '🗂️ Ταξινόμηση', dots: '✏️ Ενώνω τις τελείες', net: '🔗 Φτιάχνω δίκτυο', pixels: '🖼️ Εικονοστοιχεία', binword: '🔤 Γράμματα σε bit', conceptmap: '🗺️ Εννοιολογικός χάρτης', files: '📂 Αρχεία και φάκελοι', password: '🔑 Συνθηματικό',
+  pick: '🎯 Ποιο πρόγραμμα;', mcq: '❓ Ερωτήσεις', match: '🔗 Ταίριασμα', sort: '🗂️ Ταξινόμηση', dots: '✏️ Ενώνω τις τελείες', net: '🔗 Φτιάχνω δίκτυο', pixels: '🖼️ Εικονοστοιχεία', binword: '🔤 Γράμματα σε bit', conceptmap: '🗺️ Εννοιολογικός χάρτης', sheet: '📊 Υπολογιστικό φύλλο', mltrain: '🤖 Εκπαιδεύω μια μηχανή', files: '📂 Αρχεία και φάκελοι', password: '🔑 Συνθηματικό',
   counter: '🔢 Μετράμε', bits: '💡 Λάμπες', bracelet: '📿 Βραχιόλι', sticks: '🪵 Ξυλάκια',
   logic: '💡 Λογικές εκφράσεις', whois: '🔎 Βρες ποιος είναι', rulesgame: '🎮 Οι κανόνες του παιχνιδιού', edison: '🤖 Ρομπότ εδάφους', scratch: '🐱 Scratch', guess: '🔢 Μάντεψε τον αριθμό', microbit: '📟 micro:bit', stepper: '👣 Βήμα-βήμα', desktop: '🖥️ Επιφάνεια εργασίας', dress: '👕 Ντύσε τον Ήρωνα', decision: '🔀 Σχεδιάγραμμα απόφασης', board: '🎲 Επιτραπέζιο', river: '🚣 Γρίφος', caesar: '🔐 Κρυπτογράφηση' };
 
@@ -7471,6 +7716,201 @@ RENDER.conceptmap = (act, area) => {
   };
 };
 
+// ---- Υπολογιστικό φύλλο: cells = { A1: 'κείμενο', B2: 12, C3: '=B2*2' }, tasks = [[κείμενο, ev => …]] (ev.val('B4'), ev.raw('B4'))
+// Τύποι: + − * / ( ), αναφορές κελιών, SUM AVERAGE MAX MIN COUNT COUNTIF. Δέχεται και ελληνικό πληκτρολόγιο (Α3+Β3, ΣΘΜ = SUM).
+const SHEET_GR = { Α: 'A', Β: 'B', Ψ: 'C', Δ: 'D', Ε: 'E', Φ: 'F', Γ: 'G', Η: 'H', Ι: 'I', Ξ: 'J', Κ: 'K', Λ: 'L', Μ: 'M', Ν: 'N', Ο: 'O', Π: 'P', Ρ: 'R', Σ: 'S', Τ: 'T', Θ: 'U', Ω: 'V', Χ: 'X', Υ: 'Y', Ζ: 'Z' };
+const sheetLatin = t => t.replace(/"[^"]*"|[^"]+/g, m => (m[0] === '"' ? m : [...m.normalize('NFD').replace(/[̀-ͯ]/g, '')].map(c => SHEET_GR[c.toUpperCase()] || c).join('')));
+const sheetKey = v => [...String(v).normalize('NFD').replace(/[̀-ͯ]/g, '')].map(c => SHEET_GR[c.toUpperCase()] || c.toUpperCase()).join(''); // «Κ» = «K»
+function sheetEval(src, get) { // μικρός αναλυτής χωρίς eval()
+  const t = (sheetLatin(src).toUpperCase().match(/"[^"]*"|\$?[A-Z]+\$?\d+(?::\$?[A-Z]+\$?\d+)?|\d+(?:[.,]\d+)?|[A-Z]+|[-+*/();,:<>=]/g) || []).map(x => (x[0] === '"' ? x : x.replace(/\$/g, ''))); // το $ «κλειδώνει» μόνο στη συμπλήρωση
+  let i = 0;
+  const peek = () => t[i], eat = x => { if (t[i] !== x) throw 0; i++; };
+  const cellsOf = r => { const [a, b] = r.split(':'), ca = a.match(/([A-Z]+)(\d+)/), cb = (b || a).match(/([A-Z]+)(\d+)/), out = [];
+    for (let c = ca[1].charCodeAt(0); c <= cb[1].charCodeAt(0); c++) for (let n = +ca[2]; n <= +cb[2]; n++) out.push(String.fromCharCode(c) + n); return out; };
+  const nums = args => args.flat().filter(v => typeof v === 'number');
+  const F = { SUM: a => nums(a).reduce((x, y) => x + y, 0), AVERAGE: a => { const n = nums(a); if (!n.length) throw 0; return n.reduce((x, y) => x + y, 0) / n.length; },
+    MAX: a => Math.max(...nums(a)), MIN: a => Math.min(...nums(a)), COUNT: a => nums(a).length,
+    COUNTIF: a => a[0].filter(v => sheetKey(v) === sheetKey(a[1])).length };
+  function arg() { const x = peek(); if (/^[A-Z]+\d+:[A-Z]+\d+$/.test(x)) { i++; return cellsOf(x).map(get); } if (x && x[0] === '"') { i++; return x.slice(1, -1); } return expr(); }
+  function factor() {
+    const x = peek();
+    if (x === '-') { i++; return -factor(); }
+    if (x === '(') { i++; const v = expr(); eat(')'); return v; }
+    if (/^\d/.test(x)) { i++; return parseFloat(x.replace(',', '.')); }
+    if (/^[A-Z]+\d+$/.test(x)) { i++; const v = get(x); if (v === '' || v == null) return 0; if (typeof v !== 'number') throw 0; return v; }
+    if (/^[A-Z]+$/.test(x) && F[x]) { i++; eat('('); const a = [arg()]; while (peek() === ';' || peek() === ',') { i++; a.push(arg()); } eat(')'); return F[x](a); }
+    throw 0;
+  }
+  function term() { let v = factor(); while (peek() === '*' || peek() === '/') { const o = t[i++], w = factor(); if (o === '/' && w === 0) throw 0; v = o === '*' ? v * w : v / w; } return v; }
+  function expr() { let v = term(); while (peek() === '+' || peek() === '-') v = t[i++] === '+' ? v + term() : v - term(); return v; }
+  const v = expr();
+  if (i < t.length || !isFinite(v)) throw 0;
+  return v;
+}
+RENDER.sheet = (act, area) => {
+  const C = act.cols || 5, R = act.rows || 8, L = [...'ABCDEFGHIJ'].slice(0, C);
+  const raw = Object.fromEntries(Object.entries(act.cells || {}).map(([k, v]) => [k, String(v)]));
+  let cur = 'A1', sel = null, ti = 0, val = {}, fillMode = false, editing = false; // editing: ο μαθητής γράφει τώρα στη γραμμή εισαγωγής
+  const box = el('div', 'sh'), side = el('div', 'tasks');
+  area.append(box, side);
+  const parseInput = s => { const t = s.trim(); return /^-?\d+(?:[.,]\d+)?$/.test(t) ? parseFloat(t.replace(',', '.')) : t; };
+  function recalc() {
+    val = {};
+    const busy = new Set();
+    const get = ref => {
+      if (ref in val) return val[ref];
+      const r = raw[ref] || '';
+      if (!r.startsWith('=')) return (val[ref] = r === '' ? '' : parseInput(r));
+      if (busy.has(ref)) throw 0; // κυκλική αναφορά
+      busy.add(ref);
+      try { val[ref] = sheetEval(r.slice(1), get); } catch (e) { val[ref] = '#ΣΦΑΛΜΑ'; }
+      busy.delete(ref);
+      return val[ref];
+    };
+    for (const c of L) for (let n = 1; n <= R; n++) { try { get(c + n); } catch (e) { val[c + n] = '#ΣΦΑΛΜΑ'; } }
+  }
+  const fmt = v => (typeof v === 'number' ? v.toLocaleString('el-GR', { maximumFractionDigits: 2 }) : v);
+  const nameBox = el('div', 'nm'), inp = el('input'), ok = el('button', '', '✔');
+  const bar = el('div', 'fbar');
+  bar.append(nameBox, el('b', '', 'fx'), inp, ok);
+  const btn = (label, fn) => { const b = el('button', 'secondary', label); b.onclick = fn; bar.appendChild(b); };
+  btn('Σ', () => { // προτείνει άθροισμα για τους αριθμούς πάνω από το ενεργό κελί
+    const c = cur[0]; let n = +cur.slice(1) - 1, end = n;
+    while (n >= 1 && typeof val[c + n] === 'number') n--;
+    if (end === n) return say('Σ: πάτησε ένα κελί κάτω από μια στήλη με αριθμούς.', 'bad');
+    inp.value = `=SUM(${c}${n + 1}:${c}${end})`; editing = true; inp.focus(); say('Πάτα Enter για να δεχτείς το άθροισμα.');
+  });
+  btn('⬇ Συμπλήρωση', () => { fillMode = true; say('⬇ Πάτα το τελευταίο κελί (πιο κάτω στην ίδια στήλη) μέχρι όπου θα αντιγραφεί ο τύπος.'); });
+  if (act.charts) { btn('📊 Στήλες', () => chart('bar')); btn('🥧 Πίτα', () => chart('pie')); }
+  const table = el('table'), chartBox = el('div', 'chart');
+  box.append(bar, table);
+  const cellEl = {};
+  table.innerHTML = '<tr><th></th>' + L.map(c => `<th style="width:${(act.widths || {})[c] || 150}px">${c}</th>`).join('') + '</tr>';
+  for (let n = 1; n <= R; n++) {
+    const tr = el('tr', '', `<th>${n}</th>`);
+    for (const c of L) { const td = el('td'); td.dataset.ref = c + n; cellEl[c + n] = td; tr.appendChild(td); }
+    table.appendChild(tr);
+  }
+  if (act.charts) box.appendChild(chartBox);
+  const inRange = (ref, [a, b]) => { const c = ref[0], n = +ref.slice(1); return c >= a[0] && c <= b[0] && n >= +a.slice(1) && n <= +b.slice(1); };
+  const norm2 = (a, b) => [String.fromCharCode(Math.min(a.charCodeAt(0), b.charCodeAt(0))) + Math.min(+a.slice(1), +b.slice(1)), String.fromCharCode(Math.max(a.charCodeAt(0), b.charCodeAt(0))) + Math.max(+a.slice(1), +b.slice(1))];
+  function draw() {
+    for (const [ref, td] of Object.entries(cellEl)) {
+      const v = val[ref];
+      td.textContent = v === undefined ? '' : fmt(v);
+      td.className = (typeof v === 'number' ? 'num' : v === '#ΣΦΑΛΜΑ' ? 'err' : '') + (sel && inRange(ref, sel) ? ' in' : '') + (ref === cur ? ' act' : '');
+    }
+    nameBox.textContent = sel && sel[0] !== sel[1] ? `${sel[0]}:${sel[1]}` : cur;
+    if (!editing) inp.value = raw[cur] || '';
+  }
+  function event(e) {
+    e.val = r => val[sheetLatin(r)]; e.raw = r => raw[sheetLatin(r)] || '';
+    if (!act.tasks || ti >= act.tasks.length || !act.tasks[ti][1](e)) return;
+    ti++; drawTasks();
+    if (ti === act.tasks.length) complete(act.doneMsg || '🎉 Μπράβο! Τα κατάφερες στο υπολογιστικό φύλλο!');
+    else say('✅ Σωστά!', 'good');
+  }
+  function drawTasks() { side.innerHTML = ''; (act.tasks || []).forEach(([t], i) => side.appendChild(el('div', 'task' + (i < ti ? ' ok' : i === ti ? ' cur' : ''), (i < ti ? '✅ ' : `${i + 1}. `) + t))); }
+  function commit(move = true) {
+    const ref = cur, s = inp.value.trim();
+    if (s) raw[ref] = s.startsWith('=') ? '=' + sheetLatin(s.slice(1)).toUpperCase().replace(/"([^"]*)"/g, (m, q) => m) : s; else delete raw[ref];
+    recalc();
+    if (val[ref] === '#ΣΦΑΛΜΑ') say('⚠️ Ο τύπος έχει λάθος. Έλεγξε τα ονόματα των κελιών και τις παρενθέσεις.', 'bad'); else say('');
+    if (move && +ref.slice(1) < R) cur = ref[0] + (+ref.slice(1) + 1);
+    sel = null; editing = false; draw();
+    event({ t: 'enter', ref, input: s });
+  }
+  inp.oninput = () => { editing = true; };
+  inp.onkeydown = e => { e.stopPropagation(); if (e.key === 'Enter') commit(); if (e.key === 'Escape') { editing = false; inp.value = raw[cur] || ''; inp.blur(); } };
+  ok.onclick = () => commit(false);
+  function fillTo(target) {
+    const src = raw[cur] || '';
+    if (target[0] !== cur[0] || +target.slice(1) <= +cur.slice(1)) return say('Διάλεξε κελί πιο κάτω, στην ίδια στήλη.', 'bad');
+    for (let n = +cur.slice(1) + 1; n <= +target.slice(1); n++) {
+      const d = n - +cur.slice(1);
+      raw[cur[0] + n] = src.startsWith('=') ? src.replace(/([A-Z])(\$?)(\d+)/g, (m, c, dol, k) => c + dol + (dol ? k : +k + d)) : src;
+    }
+    recalc(); sel = norm2(cur, target); draw();
+    say(src.startsWith('=') ? '⬇ Ο τύπος αντιγράφηκε — και τα κελιά του άλλαξαν μόνα τους σε κάθε γραμμή!' : '⬇ Αντιγράφηκε.', 'good');
+    event({ t: 'fill', from: cur, to: target });
+  }
+  let down = null;
+  const refAt = e => { const td = document.elementFromPoint(e.clientX, e.clientY); return td && td.dataset && td.dataset.ref; };
+  table.onpointerdown = e => {
+    const ref = refAt(e); if (!ref) return;
+    if (fillMode) { fillMode = false; return fillTo(ref); }
+    if (editing && inp.value.startsWith('=')) { // στη μέση ενός τύπου: το κλικ βάζει το όνομα του κελιού
+      e.preventDefault(); inp.value += ref; return;
+    }
+    editing = false; cur = ref; sel = [ref, ref]; down = ref; draw(); event({ t: 'select', ref });
+  };
+  table.onpointermove = e => { if (!down) return; const ref = refAt(e); if (ref) { sel = norm2(down, ref); draw(); } };
+  table.onpointerup = table.onpointerleave = () => { if (down && sel && sel[0] !== sel[1]) event({ t: 'range', from: sel[0], to: sel[1] }); if (down && (!sel || sel[0] === sel[1])) setTimeout(() => { inp.focus(); inp.select(); }, 0); down = null; };
+  function chart(kind) {
+    if (!sel || sel[0] === sel[1]) return say('Πρώτα σύρε πάνω στα κελιά για να επιλέξεις τα δεδομένα (π.χ. ονόματα και αριθμούς).', 'bad');
+    const [a, b] = sel, rows = [];
+    for (let n = +a.slice(1); n <= +b.slice(1); n++) { const v = val[b[0] + n], l = val[a[0] + n]; if (typeof v === 'number') rows.push([a[0] === b[0] ? String(n) : String(l), v]); }
+    if (!rows.length) return say('Η περιοχή δεν έχει αριθμούς.', 'bad');
+    const W = 900, H = 230, colors = ['#1e88e5', '#e53935', '#43a047', '#fb8c00', '#8e24aa', '#00acc1', '#6d4c41', '#fdd835', '#546e7a'];
+    let svg = `<svg viewBox="0 0 ${W} ${H}" width="${W}" height="${H}" font-family="Segoe UI, sans-serif">`;
+    if (kind === 'bar') {
+      const max = Math.max(...rows.map(r => r[1]), 0) || 1, bw = Math.min(90, (W - 80) / rows.length - 16);
+      rows.forEach(([l, v], k) => { const h = v / max * (H - 70), x = 60 + k * ((W - 80) / rows.length);
+        svg += `<rect x="${x}" y="${H - 35 - h}" width="${bw}" height="${h}" fill="${colors[k % 9]}"/><text x="${x + bw / 2}" y="${H - 40 - h}" text-anchor="middle" font-size="17">${fmt(v)}</text><text x="${x + bw / 2}" y="${H - 12}" text-anchor="middle" font-size="16">${escHTML(l)}</text>`; });
+      svg += `<line x1="50" y1="${H - 35}" x2="${W - 10}" y2="${H - 35}" stroke="#90a4ae"/>`;
+    } else {
+      const tot = rows.reduce((x, r) => x + r[1], 0) || 1; let ang = -Math.PI / 2;
+      rows.forEach(([l, v], k) => { const a2 = ang + v / tot * 2 * Math.PI, cx = 200, cy = H / 2, r = 100, big = a2 - ang > Math.PI ? 1 : 0, mid = (ang + a2) / 2;
+        svg += rows.length === 1 ? `<circle cx="${cx}" cy="${cy}" r="${r}" fill="${colors[0]}"/>` : `<path d="M${cx},${cy} L${cx + r * Math.cos(ang)},${cy + r * Math.sin(ang)} A${r},${r} 0 ${big} 1 ${cx + r * Math.cos(a2)},${cy + r * Math.sin(a2)} Z" fill="${colors[k % 9]}" stroke="#fff" stroke-width="2"/>`;
+        svg += `<text x="${cx + 65 * Math.cos(mid)}" y="${cy + 65 * Math.sin(mid) + 6}" text-anchor="middle" font-size="17" fill="#fff" font-weight="bold">${fmt(v)}</text>`;
+        svg += `<rect x="360" y="${20 + k * 24}" width="16" height="16" fill="${colors[k % 9]}"/><text x="384" y="${34 + k * 24}" font-size="17">${escHTML(l)}</text>`; ang = a2; });
+    }
+    chartBox.innerHTML = svg + '</svg>';
+    event({ t: 'chart', kind, from: a, to: b });
+  }
+  recalc(); draw(); drawTasks();
+};
+
+// ---- Μηχανική μάθηση: classes = [ετικέτες], train/test = [[emoji, περιγραφή, χαρακτηριστικό, σωστή κλάση]].
+// Ο μαθητής «εκπαιδεύει» δίνοντας ετικέτες· το μοντέλο προβλέπει τα νέα από την πλειοψηφία των ετικετών για το ίδιο χαρακτηριστικό.
+RENDER.mltrain = (act, area) => {
+  const box = el('div', 'sort');
+  area.appendChild(box);
+  let labels = [], k = 0;
+  const train = shuffle([...act.train]);
+  function teach() {
+    if (k >= train.length) return test();
+    const [em, text] = train[k];
+    box.innerHTML = '';
+    box.appendChild(el('div', 'count', `🎓 Εκπαίδευση: παράδειγμα ${k + 1} από ${train.length} — πες στη μηχανή τι είναι!`));
+    const card = el('div', 'item', `<span class="em">${em}</span><span></span>`);
+    card.lastChild.textContent = text;
+    const bins = el('div', 'bins');
+    act.classes.forEach((c, i) => { const b = el('button', '', c); b.style.background = ['#1565c0', '#6a1b9a', '#00838f'][i]; b.onclick = () => { labels.push(i); k++; teach(); }; bins.appendChild(b); });
+    box.append(card, bins);
+  }
+  function test() {
+    const votes = {};
+    train.forEach((x, i) => { (votes[x[2]] = votes[x[2]] || act.classes.map(() => 0))[labels[i]]++; });
+    let right = 0;
+    const rows = act.test.map(([em, text, f, ans]) => {
+      const v = votes[f];
+      const guess = v ? v.indexOf(Math.max(...v)) : -1;
+      if (guess === ans) right++;
+      return `<tr><td style="font-size:34px">${em}</td><td>${escHTML(text)}</td><td>${guess < 0 ? '🤷 Δεν ξέρω' : act.classes[guess]}</td><td>${guess === ans ? '✅' : '❌'}</td></tr>`;
+    });
+    box.innerHTML = `<div class="count">🧪 Δοκιμή: η μηχανή βλέπει νέα παραδείγματα που δεν της δείξαμε ποτέ</div>
+      <table class="trace"><tr><th></th><th>Νέο παράδειγμα</th><th>Η μηχανή λέει</th><th></th></tr>${rows.join('')}</table>
+      <div style="font-size:28px">Ακρίβεια: <b>${Math.round(right / act.test.length * 100)}%</b></div>`;
+    if (right === act.test.length) return complete(act.doneMsg || '🎉 Μπράβο, δάσκαλε! Η μηχανή έμαθε από τα παραδείγματά σου και τα βρήκε όλα!');
+    say('😬 Η μηχανή έκανε λάθη — έμαθε από λάθος ετικέτες ή από λίγα παραδείγματα. Εκπαίδευσέ την ξανά!', 'bad');
+    const again = el('button', '', '🔁 Εκπαίδευση από την αρχή');
+    again.onclick = () => { labels = []; k = 0; say(''); teach(); };
+    box.appendChild(again);
+  }
+  teach();
+};
+
 // ---- Εξερευνητής αρχείων: tree = { τοποθεσία: { φάκελος: {…}, 'αρχείο.ext': '📄 12 KB' } }, tasks = [[κείμενο, ev => …]].
 // app = { em, name, ext, fileEm } προσθέτει εφαρμογή με μενού «Αρχείο» (Αποθήκευση ως / Άνοιγμα) · bin: true = κάδος ανακύκλωσης
 RENDER.files = (act, area) => {
@@ -7482,8 +7922,11 @@ RENDER.files = (act, area) => {
   area.append(box, side);
   const folderAt = p => p.reduce((f, n) => f && f[n], tree);
   const isDir = v => typeof v === 'object';
-  const iconOf = (n, v) => (isDir(v) ? '📁' : v.split(' ')[0]);
-  const sizeOf = v => (isDir(v) ? '' : v.split(' ').slice(1).join(' '));
+  const meta = v => v.split('|')[0]; // 'εικονίδιο μέγεθος|ημερομηνία'
+  const iconOf = (n, v) => (isDir(v) ? '📁' : meta(v).split(' ')[0]);
+  const sizeOf = v => (isDir(v) ? '' : meta(v).split(' ').slice(1).join(' '));
+  const TYPES = { txt: 'Κείμενο', odt: 'Κείμενο', docx: 'Κείμενο', doc: 'Κείμενο', pdf: 'Έγγραφο PDF', jpg: 'Εικόνα', png: 'Εικόνα', gif: 'Κινούμενη εικόνα', mp3: 'Ήχος', wav: 'Ήχος', mp4: 'Βίντεο', avi: 'Βίντεο',
+    ods: 'Υπολογιστικό φύλλο', xlsx: 'Υπολογιστικό φύλλο', odp: 'Παρουσίαση', pptx: 'Παρουσίαση', exe: 'Εκτελέσιμο πρόγραμμα', dll: 'Αρχείο συστήματος', php: 'Ιστοσελίδα', html: 'Ιστοσελίδα' };
   const uniq = (f, n) => { if (!(n in f)) return n; const m = n.match(/^(.*?)(\.[^.]+)?$/); let k = 2; while (`${m[1]} (${k})${m[2] || ''}` in f) k++; return `${m[1]} (${k})${m[2] || ''}`; };
   function event(e) {
     e.here = inBin() ? [] : Object.keys(folderAt(path) || {}); // τι υπάρχει τώρα στον τρέχοντα φάκελο
@@ -7522,7 +7965,10 @@ RENDER.files = (act, area) => {
       rename: ['✏️ Μετονομασία', () => selName && rename(selName)],
       copy: ['📋 Αντιγραφή', () => selName && (clip = { name: selName, val: folderAt(path)[selName], from: [...path], cut: false }, event({ t: 'copy', name: selName }), say('📋 Αντιγράφηκε. Πήγαινε όπου θέλεις και πάτα «Επικόλληση».'))],
       cut: ['✂️ Αποκοπή', () => selName && (clip = { name: selName, val: folderAt(path)[selName], from: [...path], cut: true }, event({ t: 'cut', name: selName }), say('✂️ Αποκόπηκε. Πήγαινε στον νέο φάκελο και πάτα «Επικόλληση».'), draw())],
-      paste: ['📌 Επικόλληση', paste], delete: ['🗑️ Διαγραφή', del], view: [list ? '🔲 Εικονίδια' : '☰ Λίστα', () => { list = !list; draw(); event({ t: 'view', list }); }],
+      paste: ['📌 Επικόλληση', paste], delete: ['🗑️ Διαγραφή', del],
+      props: ['ℹ️ Ιδιότητες', () => { if (!selName) return say('Διάλεξε πρώτα (ένα κλικ) ένα αρχείο.', 'bad'); const v = folderAt(path)[selName], ext = (selName.match(/\.([^.]+)$/) || [, ''])[1].toLowerCase();
+        event({ t: 'props', name: selName });
+        say(isDir(v) ? `ℹ️ <b>${selName}</b> · Φάκελος · ${Object.keys(v).length} στοιχεία · Θέση: ${path.join(' › ')}` : `ℹ️ <b>${selName}</b> · Τύπος: ${TYPES[ext] || ext} · Μέγεθος: <b>${sizeOf(v) || '—'}</b> · Δημιουργήθηκε: <b>${v.split('|')[1] || '—'}</b> · Θέση: ${path.join(' › ')}`); }], view: [list ? '🔲 Εικονίδια' : '☰ Λίστα', () => { list = !list; draw(); event({ t: 'view', list }); }],
     };
     if (!inBin() && !mode) tools.forEach(k => { const b = el('button', 'secondary', T[k][0]); b.onclick = T[k][1]; bar.appendChild(b); });
     if (inBin()) { const b = el('button', 'secondary', '♻️ Επαναφορά'); b.onclick = restore; bar.appendChild(b); }
@@ -8453,6 +8899,7 @@ for (const ch of BOOKS.flatMap(b => b.chapters)) for (const les of ch.lessons) f
   if (a.type === 'trace') console.assert(!simulate(a.grid, a.program).crash, 'trace: ' + a.text);
   if (a.type === 'sticks') console.assert(a.targets.every(t => t > 0 && t < 16), 'sticks: ' + a.text);
   if (a.type === 'pixels') { const r = a.rows.map(x => x.replace(/\s/g, '')); console.assert(r.every(x => x.length === r[0].length && x.length % a.palette[0][0].length === 0 && x.match(new RegExp(`.{${a.palette[0][0].length}}`, 'g')).every(c => a.palette.some(([p]) => p === c))), 'pixels: ' + a.text); }
+  if (a.type === 'sheet') for (const v of Object.values(a.cells || {})) if (String(v).startsWith('=')) { try { sheetEval(String(v).slice(1), r => { const x = (a.cells || {})[r]; return typeof x === 'number' ? x : 0; }); } catch (e) { console.assert(false, 'sheet formula: ' + v); } }
   if (a.type === 'conceptmap') console.assert(a.links.every(([x, y]) => [x, y].every(n => a.nodes.some(([m]) => m === n))) && (!a.root || a.nodes.some(([m]) => m === a.root)), 'conceptmap: ' + a.text);
   if (a.type === 'binword') console.assert([...a.word].every(c => CODE_TABLES[a.table || 'gr5'].some(([l]) => l === c)), 'binword: ' + a.word);
   if (a.type === 'net' && a.mode === 'path') { // οι κόμβοι υπάρχουν και ο προορισμός είναι προσβάσιμος χωρίς τους χαλασμένους
