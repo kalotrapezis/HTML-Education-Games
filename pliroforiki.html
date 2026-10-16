@@ -4004,6 +4004,242 @@ const scrHTML = blocks => '<div style="text-align:left;font-weight:normal">' + b
 }).join('') + '</div>';
 
 // ======================== Γ΄ ΤΑΞΗ ========================
+// ======================== Γ΄ ΤΑΞΗ — ιστότοποι για τα Κεφ. 4–5 (όλοι φανταστικοί, μόνο για εξάσκηση) ========================
+const C_FOOT = t => `<p style="margin-top:26px;font-size:15px;color:#607d8b;border-top:1px solid #cfd8dc;padding-top:6px">${t}</p>`;
+// --- Ο ιστότοπος ενός σχολείου (Μάθημα 18ο–19ο)
+const C_SCH_MENU = '<div class="menu"><a data-go="sc-home">🏠 Αρχική</a><a data-go="sc-hours">🕗 Ώρες λειτουργίας</a><a data-go="sc-news">📢 Ανακοινώσεις</a><a data-go="sc-act">🎭 Δράσεις</a><a data-go="sc-prog">🌱 Εκπαιδευτικά προγράμματα</a><a data-go="sc-class">📚 Υλικό τάξεων</a><a data-go="sc-teach">👩‍🏫 Εκπαιδευτικοί</a><a data-go="sc-contact">☎️ Επικοινωνία</a></div>';
+const C_SCH_FOOT = C_FOOT('© 1ο Δημοτικό Σχολείο Ανατολής — ο ιστότοπος ανήκει στο σχολείο · https://dim-anatolis.sch.gr');
+const C_SCHOOL = {
+  'sc-home': { url: 'dim-anatolis.sch.gr', title: '1ο Δημοτικό Σχολείο Ανατολής', icon: '🏫', html: `${C_SCH_MENU}<h1>🏫 1ο Δημοτικό Σχολείο Ανατολής</h1>
+    <p>Καλώς ήρθατε στον δικτυακό τόπο του σχολείου μας! Διαλέξτε από το μενού την ιστοσελίδα που θέλετε να δείτε — με όποια σειρά θέλετε.</p>
+    <div class="row"><div class="card">📢 <b>Τελευταία ανακοίνωση:</b><br><a data-go="sc-news">Εκδρομή στο Πλανητάριο</a></div><div class="card">🎭 <b>Νέα δράση:</b><br><a data-go="sc-act">Η θεατρική μας ομάδα</a></div><div class="card">📚 <b>Για τους μαθητές:</b><br><a data-go="sc-class">Υλικό τάξεων</a></div></div>
+    <p style="text-align:center;font-size:60px">🏫 🌳 ⚽ 🎨</p>${C_SCH_FOOT}` },
+  'sc-hours': { url: 'dim-anatolis.sch.gr/ores', title: 'Ώρες λειτουργίας', icon: '🕗', html: `${C_SCH_MENU}<h1>🕗 Ώρες λειτουργίας</h1><p>🔔 Πρώτο κουδούνι: <b>8:15</b></p><p>🏠 Σχόλασμα: <b>13:15</b></p><p>🍽️ Ολοήμερο: 13:15 – 16:00</p>${C_SCH_FOOT}` },
+  'sc-news': { url: 'dim-anatolis.sch.gr/anakoinoseis', title: 'Ανακοινώσεις', icon: '📢', html: `${C_SCH_MENU}<h1>📢 Ανακοινώσεις</h1><p><small>Η πιο πρόσφατη είναι πρώτη.</small></p>
+    <div class="card"><b>12 Μαρτίου — Εκδρομή στο Πλανητάριο</b><p>Οι τάξεις Γ΄ και Δ΄ θα επισκεφθούν το Πλανητάριο την Παρασκευή. 🔭</p></div><br>
+    <div class="card"><b>5 Μαρτίου — Γιορτή της 25ης Μαρτίου</b><p>Η γιορτή θα γίνει στην αυλή του σχολείου στις 11:00.</p></div><br>
+    <div class="card"><b>20 Φεβρουαρίου — Αποκριάτικο πάρτι</b><p>Ελάτε μασκαρεμένοι! 🎭</p></div>${C_SCH_FOOT}` },
+  'sc-act': { url: 'dim-anatolis.sch.gr/draseis', title: 'Δράσεις', icon: '🎭', html: `${C_SCH_MENU}<h1>🎭 Δράσεις</h1><div class="row"><div class="card">🎤 Χορωδία</div><div class="card">🎭 Θεατρική ομάδα</div><div class="card">♟️ Σκάκι</div></div>${C_SCH_FOOT}` },
+  'sc-prog': { url: 'dim-anatolis.sch.gr/programmata', title: 'Εκπαιδευτικά προγράμματα', icon: '🌱', html: `${C_SCH_MENU}<h1>🌱 Εκπαιδευτικά προγράμματα</h1><div class="row"><div class="card">♻️ Ανακύκλωση στο σχολείο</div><div class="card">🚦 Οδική ασφάλεια</div><div class="card">🍎 Τρώω σωστά</div></div>${C_SCH_FOOT}` },
+  'sc-class': { url: 'dim-anatolis.sch.gr/yliko', title: 'Υλικό τάξεων', icon: '📚', html: `${C_SCH_MENU}<h1>📚 Υλικό τάξεων</h1><p>Διάλεξε τάξη:</p><div class="row"><div class="card"><a>Α΄ τάξη</a></div><div class="card"><a>Β΄ τάξη</a></div><div class="card"><a data-go="sc-c3">Γ΄ τάξη</a></div><div class="card"><a>Δ΄ τάξη</a></div><div class="card"><a>Ε΄ τάξη</a></div><div class="card"><a>ΣΤ΄ τάξη</a></div></div>${C_SCH_FOOT}` },
+  'sc-c3': { url: 'dim-anatolis.sch.gr/yliko/g-taxi', title: 'Υλικό Γ΄ τάξης', icon: '📚', html: `${C_SCH_MENU}<h1>📚 Υλικό τάξεων › Γ΄ τάξη</h1><div class="row"><div class="card">📖 Γλώσσα: Το ποίημα της άνοιξης</div><div class="card">➕ Μαθηματικά: Προβλήματα με χρήματα</div><div class="card">💻 Πληροφορική: Φτιάχνω κινούμενα σχέδια</div></div>${C_SCH_FOOT}` },
+  'sc-teach': { url: 'dim-anatolis.sch.gr/ekpaideutikoi', title: 'Εκπαιδευτικοί', icon: '👩‍🏫', html: `${C_SCH_MENU}<h1>👩‍🏫 Εκπαιδευτικοί</h1><p>👩‍💼 Διευθύντρια: κ. Ελένη Παππά</p><p>👨‍🏫 Γ΄ τάξη: κ. Νίκος Αλεξίου</p><p>💻 Πληροφορική: κ. Άννα Σταύρου</p>${C_SCH_FOOT}` },
+  'sc-contact': { url: 'dim-anatolis.sch.gr/epikoinonia', title: 'Επικοινωνία', icon: '☎️', html: `${C_SCH_MENU}<h1>☎️ Επικοινωνία</h1><p>📍 Οδός Πλατάνων 10, Ανατολή</p><p>☎️ Τηλέφωνο: <b>210 1234567</b></p><p>✉️ mail@dim-anatolis.sch.gr</p>${C_SCH_FOOT}` },
+};
+// --- Ένας φανταστικός ιστότοπος πολιτισμού με μενού και υπομενού (Μάθημα 19ο · 4.1.1)
+const C_SUM = 'style="list-style:none;cursor:pointer;padding:4px 12px;background:rgba(255,255,255,0.15);border-radius:8px"';
+const C_K_MENU = `<div class="menu"><a data-go="k-home">🏠 Αρχική</a>
+  <details style="color:#fff"><summary ${C_SUM}>🎟️ Επίσκεψη ▾</summary><a data-go="k-hours">Ωράριο λειτουργίας</a> <a data-go="k-tickets">Εισιτήρια</a></details>
+  <details style="color:#fff"><summary ${C_SUM}>🎬 Θεάματα ▾</summary><a data-go="k-tholos">Θόλος</a> <a data-go="k-theatre">Θέατρο</a></details>
+  <details style="color:#fff"><summary ${C_SUM}>ℹ️ Πληροφορίες ▾</summary><a data-go="k-id">Ταυτότητα</a> <a data-go="k-contact">Επικοινωνία</a></details></div>`;
+const C_K_TOP = '<p style="text-align:right;font-size:15px;margin:0 0 6px"><a data-go="k-hours">🕗 Ωράριο</a> · <a>🌐 English</a> · <a>🔎 Αναζήτηση</a></p>';
+const C_K_FOOT = C_FOOT('© Ίδρυμα Πολιτισμού «Πύλη του Χρόνου» — ιδιοκτήτης του ιστότοπου');
+const C_KOSMOS = {
+  'k-home': { url: 'www.pyli-xronou.gr', title: 'Πύλη του Χρόνου — Κέντρο Πολιτισμού', icon: '⏳', kw: 'πύλη χρόνου κέντρο πολιτισμού μουσείο θόλος ιστορία', desc: 'Κέντρο Πολιτισμού: ταξίδι στην ιστορία με τη Θόλο και το Θέατρο.',
+    html: `${C_K_TOP}${C_K_MENU}<h1>⏳ Πύλη του Χρόνου</h1><p>Κέντρο Πολιτισμού: ταξιδέψτε στην ιστορία της Ελλάδας με εικονική πραγματικότητα! Πατήστε μια επιλογή του μενού: θα ανοίξει ένα <b>υπομενού</b>.</p>
+    <p style="text-align:center;font-size:60px">🏛️ 🎭 🌌 🏺</p>${C_K_FOOT}` },
+  'k-hours': { url: 'www.pyli-xronou.gr/orario', title: 'Ωράριο λειτουργίας', icon: '🕗', html: `${C_K_TOP}${C_K_MENU}<h1>🕗 Επίσκεψη › Ωράριο λειτουργίας</h1><p>Τρίτη – Παρασκευή: 9:00 – 16:00</p><p>Σάββατο – Κυριακή: 10:00 – 18:00</p><p>Δευτέρα: κλειστά</p>${C_K_FOOT}` },
+  'k-tickets': { url: 'www.pyli-xronou.gr/eisitiria', title: 'Εισιτήρια', icon: '🎟️', html: `${C_K_TOP}${C_K_MENU}<h1>🎟️ Επίσκεψη › Εισιτήρια</h1><p>Μαθητές: 3 € · Ενήλικες: 6 € · Σχολικές ομάδες: δωρεάν την Τετάρτη.</p>${C_K_FOOT}` },
+  'k-tholos': { url: 'www.pyli-xronou.gr/tholos', title: 'Θόλος', icon: '🌌', html: `${C_K_TOP}${C_K_MENU}<h1>🌌 Θεάματα › Θόλος</h1><p>Η <b>Θόλος</b> είναι ένα στρογγυλό θέατρο σαν μισή μπάλα. Κάθεσαι μέσα και γύρω σου, σε όλο το ταβάνι, βλέπεις ταινίες <b>εικονικής πραγματικότητας</b>: περπατάς στην αρχαία αγορά σαν να είσαι εκεί!</p><p style="text-align:center;font-size:70px">🌌</p>${C_K_FOOT}` },
+  'k-theatre': { url: 'www.pyli-xronou.gr/theatro', title: 'Θέατρο', icon: '🎭', html: `${C_K_TOP}${C_K_MENU}<h1>🎭 Θεάματα › Θέατρο</h1><p>Στο Θέατρο βλέπουμε ταινίες για την ιστορία με γυαλιά τριών διαστάσεων (3D). 🕶️</p>${C_K_FOOT}` },
+  'k-id': { url: 'www.pyli-xronou.gr/taytotita', title: 'Ταυτότητα', icon: 'ℹ️', html: `${C_K_TOP}${C_K_MENU}<h1>ℹ️ Πληροφορίες › Ταυτότητα</h1><p>Η «Πύλη του Χρόνου» ανήκει στο <b>Ίδρυμα Πολιτισμού «Πύλη του Χρόνου»</b>, έναν οργανισμό που φροντίζει για τη γνωριμία των παιδιών με την ιστορία. Το Ίδρυμα είναι ο <b>ιδιοκτήτης</b> του ιστότοπου.</p>${C_K_FOOT}` },
+  'k-contact': { url: 'www.pyli-xronou.gr/epikoinonia', title: 'Επικοινωνία', icon: '☎️', html: `${C_K_TOP}${C_K_MENU}<h1>☎️ Πληροφορίες › Επικοινωνία</h1><p>✉️ info@pyli-xronou.gr</p>${C_K_FOOT}` },
+};
+// --- Η μηχανή αναζήτησης «Ψάχνω» (Μάθημα 20ό–21ο · 4.1.3)
+const C_PSAXNO = {
+  'q-home': { url: 'www.psaxno.gr', title: 'Ψάχνω — μηχανή αναζήτησης', icon: '🔎', html: '<div class="brsearch"><div class="brlogo">🔎 Ψάχνω</div><div data-search></div></div><p style="text-align:center">Γράψε <b>λέξεις-κλειδιά</b> και πάτα 🔎 ή Enter.</p>' },
+};
+const C_HERO = Object.fromEntries([
+  ['q-hrak', '💪', 'Ηρακλής: ο ήρωας της ελληνικής μυθολογίας', 'ηρακλής ήρωας μυθολογία ημίθεος', 'Ο Ηρακλής ήταν ο πιο δυνατός ήρωας της ελληνικής μυθολογίας, γιος του Δία και της Αλκμήνης.', 'www.mythologia-paidia.gr/iraklis'],
+  ['q-athloi', '🦁', 'Οι 12 άθλοι του Ηρακλή', 'ηρακλής άθλοι ήρωας μυθολογία λέων νεμέας ύδρα', 'Ο λέων της Νεμέας, η Λερναία Ύδρα και άλλοι δέκα δύσκολοι άθλοι που έκανε ο ήρωας.', 'www.mythologia-paidia.gr/athloi'],
+  ['q-team', '🏀', 'Αθλητικός Σύλλογος «Ηρακλής»', 'ηρακλής ομάδα μπάσκετ ποδόσφαιρο αγώνες', 'Πρόγραμμα αγώνων και νέα της ομάδας μπάσκετ.', 'www.as-iraklis.gr'],
+  ['q-cake', '🎂', 'Ζαχαροπλαστείο «Ο Ηρακλής»', 'ηρακλής γλυκά τούρτες', 'Οι πιο δυνατές τούρτες της πόλης!', 'www.zaxaroplasteio-iraklis.gr'],
+  ['q-street', '🗺️', 'Οδός Ηρακλέους — χάρτης', 'ηρακλής οδός δρόμος χάρτης', 'Βρες στον χάρτη την οδό Ηρακλέους.', 'www.xartes-poleis.gr/irakleous'],
+].map(([k, em, t, kw, d, u]) => [k, { url: u, title: t, icon: em, kw, desc: d, html: `<h1>${em} ${t}</h1><p style="font-size:90px;margin:0;text-align:center">${em}</p><p>${d}</p>` }]));
+const C_STARS = Object.fromEntries([
+  ['q-toy', '⭐', 'Αστεράκια που φωσφορίζουν για το ταβάνι', 'αστέρια αστεράκια ουρανός δωμάτιο παιχνίδια', 'Αγόρασε ΤΩΡΑ με έκπτωση 50%! Κάνε το δωμάτιό σου ουρανό!', 'www.paixnidadiko-shop.gr', true],
+  ['q-astro', '🔭', 'Τα αστέρια του ουρανού — Αστρονομία για παιδιά', 'αστέρια αστέρι ουράνια σώματα ουρανός ήλιος αστρονομία', 'Τα αστέρια είναι τεράστιες μπάλες από φωτιά, σαν τον Ήλιο, πολύ μακριά από τη Γη.', 'www.astronomia-paidia.gr', false],
+  ['q-movie', '🎬', 'Τα αστέρια του σινεμά: τι φόρεσαν χθες', 'αστέρια σταρ ηθοποιοί σινεμά', 'Οι διάσημοι ηθοποιοί στο κόκκινο χαλί.', 'www.koutsompolia.gr', false],
+  ['q-fish', '🌊', 'Ο αστερίας: ένα αστέρι της θάλασσας', 'αστέρια αστερίας θάλασσα ζώα', 'Ο αστερίας είναι θαλάσσιο ζώο με πέντε χέρια.', 'www.zoa-thalassas.gr/asterias', false],
+  ['q-blog', '💡', 'Ο Τάκης γράφει: τα αστέρια είναι λαμπάκια!', 'αστέρια ουρανός νύχτα', 'Νομίζω ότι τα αστέρια είναι λαμπάκια που ανάβει κάποιος κάθε βράδυ.', 'takis-grafei.blog.gr', false],
+  ['q-enc', '📚', 'Αστέρι — Μικρή Εγκυκλοπαίδεια', 'αστέρια αστέρι ουράνια σώματα ήλιος γαλαξίας', 'Αστέρι είναι ένα ουράνιο σώμα που φωτίζει μόνο του. Το πιο κοντινό μας αστέρι είναι ο Ήλιος.', 'www.mikri-egkyklopaideia.gr/asteri', false],
+].map(([k, em, t, kw, d, u, ad]) => [k, { url: u, title: t, icon: em, kw, desc: d, ad, html: `<h1>${em} ${t}</h1><p style="font-size:90px;margin:0;text-align:center">${em}</p><p>${d}</p>` }]));
+// --- Μικρή Εγκυκλοπαίδεια: ιστότοπος με δική του γραμμή αναζήτησης (4.1.3 δραστ. 3)
+const C_ENC = {
+  'e-home': { url: 'www.mikri-egkyklopaideia.gr', title: 'Μικρή Εγκυκλοπαίδεια', icon: '📚', html: '<div class="brsearch"><div class="brlogo">📚 Μικρή Εγκυκλοπαίδεια</div><div data-search></div></div><p>Μια εγκυκλοπαίδεια στο Διαδίκτυο, με <b>γραμμή αναζήτησης</b> για τα δικά της άρθρα. Ψάξε το αγαπημένο σου άθλημα ή χόμπι!</p>' },
+  ...Object.fromEntries([
+    ['e-foot', '⚽', 'Ποδόσφαιρο', 'ποδόσφαιρο μπάλα άθλημα', 'Ομαδικό άθλημα: δύο ομάδες των 11 παικτών προσπαθούν να βάλουν γκολ.'],
+    ['e-bask', '🏀', 'Καλαθοσφαίριση (μπάσκετ)', 'μπάσκετ καλαθοσφαίριση άθλημα', 'Δύο ομάδες των 5 παικτών ρίχνουν την μπάλα στο καλάθι.'],
+    ['e-swim', '🏊', 'Κολύμβηση', 'κολύμβηση κολύμπι άθλημα πισίνα', 'Κολυμπάμε σε πισίνα ή θάλασσα με διάφορα στυλ: πεταλούδα, ύπτιο, πρόσθιο, ελεύθερο.'],
+    ['e-chess', '♟️', 'Σκάκι', 'σκάκι πιόνια χόμπι', 'Παιχνίδι στρατηγικής για δύο παίκτες, σε σκακιέρα με 64 τετράγωνα.'],
+    ['e-paint', '🎨', 'Ζωγραφική', 'ζωγραφική χρώματα χόμπι', 'Η τέχνη να δημιουργούμε εικόνες με χρώματα, μολύβια και πινέλα.'],
+    ['e-dance', '💃', 'Χορός', 'χορός μουσική χόμπι', 'Κινούμαστε στον ρυθμό της μουσικής: παραδοσιακοί χοροί, μπαλέτο, μοντέρνος χορός.'],
+  ].map(([k, em, t, kw, d]) => [k, { url: 'www.mikri-egkyklopaideia.gr/' + k.slice(2), title: t + ' — Μικρή Εγκυκλοπαίδεια', icon: em, kw, desc: d, html: `<h1>${em} ${t}</h1><p style="font-size:90px;margin:0;text-align:center">${em}</p><p>${d}</p>` }])),
+};
+// --- Ψάχνω + το φανταστικό «Μουσείο των Υπολογιστών» (Επανάληψη)
+const C_MUS_MENU = '<div class="menu"><a data-go="m-home">🏠 Αρχική</a><a data-go="m-exh">🖥️ Εκθέματα</a><a data-go="m-visit">📍 Πού βρισκόμαστε</a><a data-go="m-id">ℹ️ Ταυτότητα</a></div>';
+const C_MUSEUM = {
+  'm-home': { url: 'www.mouseio-ypologiston.gr', title: 'Το Μουσείο των Υπολογιστών', icon: '🖥️', kw: 'μουσείο υπολογιστών υπολογιστής πληροφορική εκθέματα', desc: 'Από τον άβακα ως τα σημερινά κινητά: η ιστορία των υπολογιστών.', html: `${C_MUS_MENU}<h1>🖥️ Το Μουσείο των Υπολογιστών</h1><p>Από τον άβακα ως τα σημερινά κινητά: γνώρισε την ιστορία των υπολογιστών!</p><p style="text-align:center;font-size:60px">🧮 💾 🖥️ 📱</p>${C_FOOT('© Σύλλογος Φίλων της Πληροφορικής — ιδιοκτήτης του ιστότοπου')}` },
+  'm-exh': { url: 'www.mouseio-ypologiston.gr/ekthemata', title: 'Εκθέματα', icon: '🖥️', html: `${C_MUS_MENU}<h1>🖥️ Εκθέματα</h1><div class="row"><div class="card">🧮 Άβακας</div><div class="card">⌨️ Παλιές γραφομηχανές</div><div class="card">💾 Δισκέτες</div><div class="card">🖥️ Ο πρώτος οικιακός υπολογιστής</div></div>` },
+  'm-visit': { url: 'www.mouseio-ypologiston.gr/pou', title: 'Πού βρισκόμαστε', icon: '📍', html: `${C_MUS_MENU}<h1>📍 Πού βρισκόμαστε</h1><p>Οδός Αλγορίθμων 1 — δίπλα στην πλατεία του Byte! 😀</p>` },
+  'm-id': { url: 'www.mouseio-ypologiston.gr/taytotita', title: 'Ταυτότητα', icon: 'ℹ️', html: `${C_MUS_MENU}<h1>ℹ️ Ταυτότητα</h1><p>Το μουσείο και ο ιστότοπός του ανήκουν στον <b>Σύλλογο Φίλων της Πληροφορικής</b>.</p>` },
+  'm-game': { url: 'www.paixnidia-online.gr/ypologistes', title: 'Παιχνίδια με υπολογιστές — παίξε τώρα!', icon: '🎮', kw: 'υπολογιστών υπολογιστής παιχνίδια', desc: 'Κατέβασε δωρεάν παιχνίδια!', ad: true, html: '<h1>🎮 Παιχνίδια online</h1><p>Διαφήμιση: αυτή η σελίδα πλήρωσε για να βγαίνει πρώτη.</p>' },
+};
+// --- Ιστολόγια: blogs.sch.gr και το ιστολόγιο ενός σχολείου (Μάθημα 24ο · 4.1.4)
+const C_BLOG_HEAD = '<div style="background:linear-gradient(90deg,#2e7d32,#66bb6a);color:#fff;border-radius:10px;padding:10px 16px;margin-bottom:8px"><b style="font-size:26px">🌿 Δημοτικό Σχολείο Ανεμόμυλων Λασιθίου</b><br><small>Το ιστολόγιο του σχολείου μας · κεφαλίδα</small></div>';
+const C_BLOG_FOOT = '<div style="background:#eceff1;border-radius:10px;padding:8px 14px;margin-top:16px;font-size:15px">Υποσέλιδο: © Δημοτικό Σχολείο Ανεμόμυλων · Φιλοξενείται στα Ιστολόγια του ΠΣΔ · <a>Επικοινωνία</a></div>';
+const C_BLOGS = {
+  'b-home': { url: 'blogs.sch.gr', title: 'Ιστολόγια ΠΣΔ', icon: '📰', html: '<div class="brsearch"><div class="brlogo">📰 Ιστολόγια του ΠΣΔ</div><div data-search></div></div><p>Εδώ φιλοξενούνται τα ιστολόγια σχολείων, εκπαιδευτικών και μαθητών. Ψάξε π.χ. τα σχολεία μιας περιοχής.</p>' },
+  ...Object.fromEntries([
+    ['b-kind', '🧸', 'Νηπιαγωγείο Ελιάς Λασιθίου', 'λασίθι λασιθίου κρήτη νηπιαγωγείο'],
+    ['b-gym', '🎒', 'Γυμνάσιο Πευκών Λασιθίου', 'λασίθι λασιθίου κρήτη γυμνάσιο'],
+    ['b-evros', '🌻', 'Δημοτικό Σχολείο Ηλιοτρόπιου Έβρου', 'έβρος έβρου θράκη δημοτικό σχολείο'],
+  ].map(([k, em, t, kw]) => [k, { url: `blogs.sch.gr/${k.slice(2)}`, title: t, icon: em, kw, desc: 'Ιστολόγιο σχολείου', html: `<h1>${em} ${t}</h1><p>Καλώς ήρθατε στο ιστολόγιό μας!</p>` }])),
+  'b-anem': { url: 'blogs.sch.gr/anemomyloi', title: 'Δημοτικό Σχολείο Ανεμόμυλων Λασιθίου', icon: '🌿', kw: 'λασίθι λασιθίου κρήτη δημοτικό σχολείο', desc: 'Το ιστολόγιο του Δημοτικού Σχολείου Ανεμόμυλων.',
+    html: `${C_BLOG_HEAD}<div class="menu"><a data-go="b-anem">🏠 Αρχική</a><a>Το σχολείο μας</a><a>Οι τάξεις μας</a></div>
+    <div style="display:flex;gap:14px"><div style="flex:3">
+      <div data-post="p1"><small>📅 15 Μαρτίου · ✍️ Γ΄ τάξη · 📂 Εκδρομές</small><h2>Επίσκεψη στους ανεμόμυλους</h2><p>Σήμερα είδαμε πώς οι ανεμόμυλοι αλέθουν το σιτάρι με τη δύναμη του αέρα! 🌬️</p></div>
+      <div data-post="p2"><small>📅 2 Μαρτίου · ✍️ Δ΄ τάξη · 📂 Πληροφορική</small><h2>Φτιάξαμε κινούμενα σχέδια</h2><p>Ζωγραφίσαμε έναν βάτραχο σε έξι εικόνες και… πήδηξε! 🐸</p></div>
+      <div data-post="p3"><small>📅 18 Φεβρουαρίου · ✍️ Ε΄ τάξη · 📂 Περιβάλλον</small><h2>Φυτέψαμε δέντρα</h2><p>Δέκα νέα δεντράκια στην αυλή μας! 🌳</p></div>
+      <div data-post="p4"><small>📅 3 Φεβρουαρίου · ✍️ Α΄ τάξη · 📂 Περιβάλλον</small><h2>Ταΐσαμε τα πουλιά</h2><p>Φτιάξαμε ταΐστρες για τα πουλάκια του χειμώνα! 🐦</p></div>
+    </div><div style="flex:1;background:#f1f8e9;border-radius:10px;padding:8px 12px;font-size:16px"><b>Πλευρικό μενού</b><p>📂 <b>Κατηγορίες</b><br>Εκδρομές (1)<br>Πληροφορική (1)<br>Περιβάλλον (1)</p><p>🗓️ <b>Ιστορικό</b><br>Μάρτιος (2)<br>Φεβρουάριος (2)</p><p>🕗 Ρολόι · ☀️ Ο καιρός</p></div></div>${C_BLOG_FOOT}` },
+};
+// --- Η ψηφιακή πλατφόρμα e-me (Μαθήματα 23ο–27ο · 4.1.2, 4.2.1) — απλή προσομοίωση
+const C_EME_MENU = '<div class="menu" style="background:#f9a825"><a data-go="eme-home">🐝 Αρχική</a><a data-go="eme-profile">👤 Προφίλ</a><a data-go="eme-hives">🐝 Κυψέλες</a><a data-go="eme-blogs">📰 Ιστολόγια</a><a data-go="eme-msg">💬 Μηνύματα</a><a data-go="eme-set">⚙️ Ρυθμίσεις</a></div>';
+const C_EME_AV = ['🦊', '🐼', '🦁', '🐸', '🦄', '🐙'];
+const C_EME = {
+  'eme-home': { url: 'e-me.edu.gr', title: 'e-me — Αρχική', icon: '🐝', html: `${C_EME_MENU}<h1>🐝 Καλώς ήρθες στην e-me!</h1><p>Η ψηφιακή εκπαιδευτική πλατφόρμα για μαθητές και εκπαιδευτικούς. Συνδέθηκες με τον λογαριασμό σου στο ΠΣΔ.</p>
+    <div class="row"><div class="card" style="text-align:center"><a data-go="eme-profile" class="big" style="text-decoration:none">👤</a><br><a data-go="eme-profile">Προφίλ</a></div><div class="card" style="text-align:center"><a data-go="eme-hives" class="big" style="text-decoration:none">🐝</a><br><a data-go="eme-hives">Κυψέλες</a></div>
+    <div class="card" style="text-align:center"><a data-go="eme-blogs" class="big" style="text-decoration:none">📰</a><br><a data-go="eme-blogs">e-me blogs</a></div><div class="card" style="text-align:center"><a data-go="eme-msg" class="big" style="text-decoration:none">💬</a><br><a data-go="eme-msg">Μηνύματα</a></div><div class="card" style="text-align:center"><a data-go="eme-set" class="big" style="text-decoration:none">⚙️</a><br><a data-go="eme-set">Ρυθμίσεις</a></div></div>` },
+  'eme-profile': { url: 'e-me.edu.gr/profile', title: 'e-me — Το προφίλ μου', icon: '👤', html: `${C_EME_MENU}<h1>👤 Το προφίλ μου</h1><div class="card"><p style="font-size:70px;margin:0">👤</p><p>Όνομα χρήστη: <b>mathitis3</b></p><p>Συστήσου: <i>(κενό)</i></p><p>Το μότο μου: <i>(κενό)</i></p><p><a data-go="eme-edit">✏️ Επεξεργασία</a></p></div>` },
+  'eme-edit': { url: 'e-me.edu.gr/profile/edit', title: 'e-me — Επεξεργασία προφίλ', icon: '✏️', html: `${C_EME_MENU}<h1>✏️ Επεξεργασία προφίλ</h1>
+    <div data-form="profile" data-need="about,motto" data-ok="💾 Το προφίλ σου αποθηκεύτηκε!">
+    <p>📷 <b>Εικόνα προφίλ — Επιλογή Avatar:</b><br>${C_EME_AV.map(a => `<label style="font-size:40px;margin-right:12px"><input type="radio" name="avatar" value="${a}">${a}</label>`).join('')}<label style="font-size:22px"><input type="radio" name="avatar" value="upload">📤 Μεταφόρτωση εικόνας (το άβαταρ που έφτιαξα)</label></p>
+    <p>💬 <b>Συστήσου</b> *<br><textarea name="about" rows="2" style="width:90%" placeholder="Λίγα λόγια για σένα, χωρίς προσωπικές πληροφορίες"></textarea></p>
+    <p>⭐ <b>Γράψε το μότο σου</b> *<br><input name="motto" style="width:60%" placeholder="π.χ. Πάντα χαμογελώ!"></p>
+    <button data-submit>💾 Αποθήκευση</button></div>` },
+  'eme-hives': { url: 'e-me.edu.gr/hives', title: 'e-me — Κυψέλες', icon: '🐝', html: `${C_EME_MENU}<h1>🐝 Οι κυψέλες μου</h1><div class="row"><div class="card">🐝 <a data-go="eme-wall">Γ1 — Η τάξη μας</a></div><div class="card">🐝 <a>Χορωδία του σχολείου</a></div></div>` },
+  'eme-wall': { url: 'e-me.edu.gr/hive/g1/wall', title: 'Κυψέλη Γ1 — Τοίχος', icon: '🧱', html: `${C_EME_MENU}<h1>🧱 Κυψέλη «Γ1 — Η τάξη μας» › Τοίχος</h1>
+    <div data-form="wallpost" data-need="body" data-append="wall" data-ok="📌 Η ανάρτησή σου μπήκε στον τοίχο!"><input type="hidden" name="author" value="Εγώ"><input name="body" style="width:70%" placeholder="Γράψε μια νέα ανάρτηση…"> <button data-submit>📌 Ανάρτηση</button></div>
+    <div id="wall"><div data-post="w1"><b>👩‍🏫 Κα Άννα:</b> Παιδιά, ποιο ζώο θα θέλατε να φροντίζει η τάξη μας; Γράψτε τη γνώμη σας στα σχόλια! 🐢🐟🐹</div>
+    <div data-post="w2"><b>Νίκος:</b> Ανέβασα τη ζωγραφιά μου με το κινούμενο σχέδιο! <div style="font-size:50px">🐸</div></div></div>` },
+  'eme-blogs': { url: 'blogs.e-me.edu.gr', title: 'e-me blogs', icon: '📰', html: `${C_EME_MENU}<h1>📰 e-me blogs</h1><div class="row"><div class="card">📚 <a data-go="eme-myblogs">Τα ιστολόγιά μου</a></div><div class="card">➕ <a>Δημιουργία ιστολογίων</a></div></div><p>Πρόσφατα άρθρα από όλα τα ιστολόγια της e-me…</p>` },
+  'eme-myblogs': { url: 'blogs.e-me.edu.gr/my', title: 'Τα ιστολόγιά μου', icon: '📚', html: `${C_EME_MENU}<h1>📚 Τα ιστολόγιά μου</h1><p>Συμμετέχεις σε <b>δύο</b> ιστολόγια:</p><div class="row"><div class="card">👤 <a data-go="eme-myblog">Το ιστολόγιο του mathitis3</a><br><small>Ιστολόγιο χρήστη — συντάκτης: μόνο εσύ</small></div><div class="card">🐝 <a data-go="eme-hiveblog">Ιστολόγιο κυψέλης Γ1</a><br><small>Ιστολόγιο κυψέλης — συντάκτες: όλα τα μέλη</small></div></div>` },
+  'eme-myblog': { url: 'blogs.e-me.edu.gr/mathitis3', title: 'Το ιστολόγιο του mathitis3', icon: '👤', html: `${C_EME_MENU}<h1>👤 Το ιστολόγιο του mathitis3</h1><p>Ιστολόγιο χρήστη: εδώ γράφω μόνο εγώ τις σκέψεις, τις ιδέες και τα έργα μου.</p><div class="card"><small>📅 1 Μαρτίου</small><h2>Η ζωγραφιά μου</h2><p>Ζωγράφισα έναν ήλιο στο Tux Paint! ☀️</p></div>` },
+  'eme-hiveblog': { url: 'blogs.e-me.edu.gr/hive-g1', title: 'Ιστολόγιο κυψέλης Γ1', icon: '🐝', html: `${C_EME_MENU}<h1>🐝 Ιστολόγιο κυψέλης Γ1</h1><p>Συνεργατικό ιστολόγιο: γράφουν όλα τα μέλη της κυψέλης.</p><div class="card"><small>📅 5 Μαρτίου · ✍️ Ελένη</small><h2>Η εκδρομή μας</h2><p>Πήγαμε στο Πλανητάριο! 🔭</p></div>` },
+  'eme-msg': { url: 'e-me.edu.gr/messages', title: 'e-me — Μηνύματα', icon: '💬', html: `${C_EME_MENU}<h1>💬 Μηνύματα και κλήσεις</h1><p>Οι επαφές μου: 🟢 Νίκος (συνδεδεμένος) · 🟢 Ελένη (συνδεδεμένη) · ⚪ Γιάννης (εκτός σύνδεσης)</p>
+    <div class="card" data-form="msg" data-need="to,body" data-ok="✉️ Το μήνυμα στάλθηκε!"><b>✉️ Νέο μήνυμα κειμένου</b><br>Προς: <select name="to"><option value="">— διάλεξε —</option><option>Νίκος</option><option>Ελένη</option><option>Νίκος και Ελένη</option></select><br><input name="body" style="width:80%" placeholder="Γράψε το μήνυμά σου…"> <button data-submit>📨 Αποστολή</button></div><br>
+    <div class="row"><div class="card" data-video="audio">📞 Κλήση ήχου με τον Νίκο</div><div class="card" data-video="videocall">🎥 Βιντεοκλήση με την Ελένη</div></div>` },
+  'eme-set': { url: 'e-me.edu.gr/settings', title: 'e-me — Ρυθμίσεις', icon: '⚙️', html: `${C_EME_MENU}<h1>⚙️ Ρυθμίσεις — το περιβάλλον εργασίας μου</h1>
+    <div data-form="settings" data-need="theme,bg,font" data-ok="⚙️ Οι ρυθμίσεις σου αποθηκεύτηκαν!">
+    <p>🎨 Θέμα εμφάνισης: <select name="theme"><option value="">— διάλεξε —</option><option>Φωτεινό</option><option>Σκοτεινό</option><option>Θάλασσα</option></select></p>
+    <p>🖼️ Εικόνα φόντου: <select name="bg"><option value="">— διάλεξε —</option><option>🏔️ Βουνά</option><option>🌊 Θάλασσα</option><option>🌌 Αστέρια</option></select></p>
+    <p>🔤 Γραμματοσειρά: <select name="font"><option value="">— διάλεξε —</option><option>Μεγάλα γράμματα</option><option>Κανονικά γράμματα</option></select></p>
+    <p><label><input type="checkbox" name="apps"> Θέλω να αλλάξω τη θέση των εφαρμογών (apps)</label></p>
+    <button data-submit>💾 Αποθήκευση</button></div>` },
+};
+// --- Δημιουργία άβαταρ (4.1.2 δραστ. 2) — φανταστικός ιστότοπος αντί του πραγματικού
+const C_SEL = (name, label, opts) => `<p>${label}: <select name="${name}"><option value="">— διάλεξε —</option>${opts.map(o => `<option>${o}</option>`).join('')}</select></p>`;
+const C_AVATAR = {
+  'av-home': { url: 'www.ftiaxno-avatar.gr', title: 'Φτιάχνω άβαταρ', icon: '🎭', html: `<h1>🎭 Φτιάχνω το άβαταρ μου</h1><p>Ένα άβαταρ είναι μια εικόνα που φτιάχνω για να με «παρουσιάζει», αντί για μια πραγματική φωτογραφία μου.</p>
+    <div class="card" data-form="avatar" data-need="face,hair,clothes,bg" data-ok="⬇️ Το άβαταρ σου αποθηκεύτηκε στον υπολογιστή (στον φάκελο Λήψεις)!">
+    ${C_SEL('face', '😀 Πρόσωπο', ['😀 χαμογελαστό', '😎 με γυαλιά ηλίου', '🤓 με γυαλιά', '🥳 γιορτινό'])}${C_SEL('hair', '💇 Μαλλιά', ['κοντά', 'μακριά', 'σγουρά', 'κοτσιδάκια'])}
+    ${C_SEL('clothes', '👕 Ρούχα', ['👕 μπλουζάκι', '🧥 μπουφάν', '👗 φόρεμα', '🦸 στολή ήρωα'])}${C_SEL('bg', '🖼️ Φόντο', ['🌈 ουράνιο τόξο', '🌊 θάλασσα', '🌳 δάσος', '🌌 διάστημα'])}
+    <button data-submit>⬇️ Download (Λήψη)</button></div>` },
+};
+// --- Ιστολόγιο με άρθρα για τα ζώα: στοιχεία άρθρου, προσθήκη άρθρου (Μάθημα 25ο)
+const C_ART = {
+  'a-bear': { url: 'blogs.e-me.edu.gr/hive-g1/kafe-arkouda', title: 'Η καφέ αρκούδα', icon: '🐻', html: `<div class="card"><h1>🐻 Η καφέ αρκούδα</h1><small>📅 Δημοσιεύτηκε: 20 Νοεμβρίου · 📂 Κατηγορία: <a data-go="a-cat">Ζώα του δάσους</a> · 🏷️ Ετικέτα: <a data-go="a-tag">δάσος</a></small>
+    <p style="font-size:80px;margin:0;text-align:center">🐻🌲</p><p>Η καφέ αρκούδα ζει στα δάση της Πίνδου και της Ροδόπης. Τρώει καρπούς, μέλι, ρίζες και ψάρια. Τον χειμώνα πέφτει σε χειμέρια νάρκη.</p>
+    <div data-video="bear">🎬 Βίντεο: η αρκούδα στο δάσος</div><p>🔗 Δες και: <a data-go="a-link">Ο Αρκτούρος — φροντίζουμε τις αρκούδες</a></p></div>` },
+  'a-cat': { url: 'blogs.e-me.edu.gr/hive-g1/category/zoa-dasous', title: 'Κατηγορία: Ζώα του δάσους', icon: '📂', html: '<h1>📂 Κατηγορία: Ζώα του δάσους</h1><p>Τα άρθρα με κοινό θέμα:</p><div class="card">🐻 <a data-go="a-bear">Η καφέ αρκούδα</a></div><br><div class="card">🦊 Η αλεπού</div><br><div class="card">🐿️ Ο σκίουρος</div>' },
+  'a-tag': { url: 'blogs.e-me.edu.gr/hive-g1/tag/dasos', title: 'Ετικέτα: δάσος', icon: '🏷️', html: '<h1>🏷️ Ετικέτα: δάσος</h1><p>Όλα τα άρθρα με την ετικέτα «δάσος»:</p><div class="card">🐻 <a data-go="a-bear">Η καφέ αρκούδα</a></div><br><div class="card">🌲 Γιατί είναι σημαντικά τα δάση</div><br><div class="card">🍄 Τα μανιτάρια</div>' },
+  'a-link': { url: 'www.arktouros-paidia.gr', title: 'Φροντίζουμε τις αρκούδες', icon: '🐾', html: '<h1>🐾 Φροντίζουμε τις αρκούδες</h1><p>Μια ιστοσελίδα με σχετικό θέμα: ο σύνδεσμος μέσα στο άρθρο μάς έφερε εδώ.</p>' },
+  'a-blog': { url: 'blogs.e-me.edu.gr/hive-g1', title: 'Ιστολόγιο κυψέλης Γ1 — Πίνακας ελέγχου', icon: '🐝', html: `<h1>🐝 Ιστολόγιο κυψέλης Γ1 › Πίνακας ελέγχου</h1>
+    <div class="card" data-form="article" data-need="title,body,media,cat,tags" data-append="arts" data-ok="📰 Το άρθρο σου δημοσιεύτηκε! Είναι πρώτο-πρώτο, γιατί είναι το πιο πρόσφατο.">
+    <b>➕ Προσθήκη άρθρου</b><input type="hidden" name="author" value="✍️ Εγώ">
+    <p>1. Τίτλος *<br><input name="title" style="width:80%"></p><p>2. Κείμενο *<br><textarea name="body" rows="2" style="width:90%"></textarea></p>
+    <p>3. Εικόνα *: <select name="media"><option value="">— διάλεξε —</option><option>🐶</option><option>🐬</option><option>🌳</option><option>🦋</option></select>
+    &nbsp; 4. Κατηγορία *: <select name="cat"><option value="">— διάλεξε —</option><option>Κατοικίδια ζώα</option><option>Ζώα του δάσους</option><option>Τα ζώα της θάλασσας</option></select>
+    &nbsp; 5. Ετικέτα *: <input name="tags" style="width:20%"></p><button data-submit>📰 Δημοσίευση</button></div>
+    <h2>Τα άρθρα του ιστολογίου</h2><div id="arts"><div data-post="old1"><b>✍️ Ελένη: Ο σκίουρος</b> <small>📅 20 Νοεμβρίου · 🏷️ δάσος</small><p>Ο σκίουρος κρύβει καρύδια για τον χειμώνα. 🐿️</p></div></div>` },
+};
+// --- Ιστολόγιο «Τα ζώα μας» με πλευρικό μενού: αναζήτηση, άρθρα με ημερομηνία, κατηγορίες, ιστορικό (Μάθημα 26ο · 4.1.4)
+const C_Z_SIDE = `<div style="flex:1;background:#e3f2fd;border-radius:10px;padding:8px 12px;font-size:16px;min-width:220px"><b>Πλευρικό μενού</b><div data-search></div>
+  <p>📰 <b>Άρθρα</b><br><a data-go="z-cow">Αγελάδα</a> <small>10 Ιανουαρίου 2024</small><br><a data-go="z-dolphin">Δελφίνι</a> <small>9 Ιανουαρίου 2024</small><br><a data-go="z-cat">Η γάτα</a> <small>23 Δεκεμβρίου 2023</small><br><a data-go="z-parrot">Παπαγάλος</a> <small>22 Δεκεμβρίου 2023</small></p>
+  <p>📂 <b>Κατηγορίες</b><br><a data-go="z-pets">Κατοικίδια ζώα (2)</a><br><a data-go="z-sea">Τα ζώα της θάλασσας (1)</a><br><a data-go="z-farm">Ζώα της φάρμας (1)</a><br><a data-go="z-forest">Ζώα του δάσους (1)</a></p>
+  <p>🗓️ <b>Ιστορικό</b><br><a data-go="z-jan">Ιανουάριος 2024 (2)</a><br><a data-go="z-dec">Δεκέμβριος 2023 (2)</a><br><a data-go="z-nov">Νοέμβριος 2023 (1)</a></p></div>`;
+const C_Z_ARTS = [['z-cow', '🐄', 'Αγελάδα', '10 Ιανουαρίου 2024', 'z-farm', 'Ζώα της φάρμας', 'Η αγελάδα μάς δίνει γάλα, από το οποίο φτιάχνουμε τυρί και γιαούρτι.'],
+  ['z-dolphin', '🐬', 'Δελφίνι', '9 Ιανουαρίου 2024', 'z-sea', 'Τα ζώα της θάλασσας', 'Το δελφίνι είναι θηλαστικό: βγαίνει στην επιφάνεια για να ανασάνει.'],
+  ['z-cat', '🐱', 'Η γάτα', '23 Δεκεμβρίου 2023', 'z-pets', 'Κατοικίδια ζώα', 'Η γάτα κοιμάται πολλές ώρες την ημέρα και της αρέσει να παίζει με κουβάρια.'],
+  ['z-parrot', '🦜', 'Παπαγάλος', '22 Δεκεμβρίου 2023', 'z-pets', 'Κατοικίδια ζώα', 'Ο παπαγάλος μπορεί να μάθει να λέει λέξεις!'],
+  ['z-squirrel', '🐿️', 'Ο σκίουρος', '20 Νοεμβρίου 2023', 'z-forest', 'Ζώα του δάσους', 'Ο σκίουρος μαζεύει καρύδια και τα κρύβει για τον χειμώνα.']];
+const C_Z_PAGE = (h, body) => `<div style="background:#1565c0;color:#fff;border-radius:10px;padding:8px 16px;margin-bottom:8px"><b style="font-size:24px">🐾 Τα ζώα μας</b> <small>— ιστολόγιο της Γ΄ τάξης</small></div><div style="display:flex;gap:14px"><div style="flex:3">${h}${body}</div>${C_Z_SIDE}</div>`;
+const C_Z_LIST = (title, arts) => C_Z_PAGE(`<h1>${title}</h1>`, arts.map(([k, em, t, d]) => `<div class="card">${em} <a data-go="${k}">${t}</a> <small>📅 ${d}</small></div><br>`).join(''));
+const C_ZOOBLOG = {
+  'z-home': { url: 'ta-zoa-mas.blogs.sch.gr', title: 'Τα ζώα μας — ιστολόγιο', icon: '🐾', html: C_Z_PAGE('<p><small>Τα άρθρα με τη σειρά: το πιο πρόσφατο πρώτο.</small></p>', C_Z_ARTS.map(([k, em, t, d, ck, c, txt]) => `<div class="card"><small>📅 ${d} · 📂 ${c}</small><h2>${em} <a data-go="${k}">${t}</a></h2><p>${txt}</p></div><br>`).join('')) },
+  ...Object.fromEntries(C_Z_ARTS.map(([k, em, t, d, ck, c, txt], i) => [k, { url: 'ta-zoa-mas.blogs.sch.gr/' + k.slice(2), title: t, icon: em, kw: (t + ' ' + c).toLowerCase(), desc: `${d} · ${txt}`,
+    html: C_Z_PAGE(`<p style="font-size:15px">${i ? `<a data-go="${C_Z_ARTS[i - 1][0]}">« Επόμενο άρθρο</a>` : ''} ${i < C_Z_ARTS.length - 1 ? ` · <a data-go="${C_Z_ARTS[i + 1][0]}">Προηγούμενο άρθρο »</a>` : ''}</p>`,
+      `<div data-post="${k}"><small>📅 ${d} · 📂 <a data-go="${ck}">${c}</a></small><h1>${em} ${t}</h1><p style="font-size:80px;margin:0;text-align:center">${em}</p><p>${txt}</p>${k === 'z-cat' ? '<p style="background:#fff8e1;border-radius:8px;padding:4px 10px">💬 <b>Νίκος:</b> Η δική μου γάτα κοιμάται πάνω στο πληκτρολόγιο! 😀</p>' : ''}</div>`) }])),
+  'z-pets': { url: 'ta-zoa-mas.blogs.sch.gr/category/katoikidia', title: 'Κατηγορία: Κατοικίδια ζώα', icon: '📂', html: C_Z_LIST('📂 Κατοικίδια ζώα', C_Z_ARTS.filter(a => a[4] === 'z-pets')) },
+  'z-sea': { url: 'ta-zoa-mas.blogs.sch.gr/category/thalassa', title: 'Κατηγορία: Τα ζώα της θάλασσας', icon: '📂', html: C_Z_LIST('📂 Τα ζώα της θάλασσας', C_Z_ARTS.filter(a => a[4] === 'z-sea')) },
+  'z-farm': { url: 'ta-zoa-mas.blogs.sch.gr/category/farma', title: 'Κατηγορία: Ζώα της φάρμας', icon: '📂', html: C_Z_LIST('📂 Ζώα της φάρμας', C_Z_ARTS.filter(a => a[4] === 'z-farm')) },
+  'z-forest': { url: 'ta-zoa-mas.blogs.sch.gr/category/dasos', title: 'Κατηγορία: Ζώα του δάσους', icon: '📂', html: C_Z_LIST('📂 Ζώα του δάσους', C_Z_ARTS.filter(a => a[4] === 'z-forest')) },
+  'z-jan': { url: 'ta-zoa-mas.blogs.sch.gr/2024/01', title: 'Ιστορικό: Ιανουάριος 2024', icon: '🗓️', html: C_Z_LIST('🗓️ Ιανουάριος 2024', C_Z_ARTS.slice(0, 2)) },
+  'z-dec': { url: 'ta-zoa-mas.blogs.sch.gr/2023/12', title: 'Ιστορικό: Δεκέμβριος 2023', icon: '🗓️', html: C_Z_LIST('🗓️ Δεκέμβριος 2023', C_Z_ARTS.slice(2, 4)) },
+  'z-nov': { url: 'ta-zoa-mas.blogs.sch.gr/2023/11', title: 'Ιστορικό: Νοέμβριος 2023', icon: '🗓️', html: C_Z_LIST('🗓️ Νοέμβριος 2023', C_Z_ARTS.slice(4)) },
+};
+// --- Φωτόδεντρο (Μάθημα 28ο · 4.2.2) — απλή προσομοίωση
+const C_PH_MENU = '<div class="menu" style="background:#2e7d32"><a data-go="ph-home">🌳 Φωτόδεντρο</a><a data-go="ph-lor">🧩 Μαθησιακά Αντικείμενα</a><a data-go="ph-vid">🎬 Εκπαιδευτικά Βίντεο</a><a>📂 e-yliko</a><a>🏛️ Πολιτισμός</a><a>💿 Edusoft</a><a>🦊 Αίσωπος</a></div>';
+const C_PH_LO = [['ph-tile', '🟦', 'Tile-tap', 'παιχνίδι', 'tile tap παιχνίδι γράμματα αριθμοί χρώματα σχήματα ζώα', 'Παιχνίδι: πατάω τα πλακάκια και μαθαίνω γράμματα, αριθμούς, χρώματα, σχήματα και ζώα.'],
+  ['ph-kb', '⌨️', 'Εξάσκηση στο Ελληνικό Πληκτρολόγιο', 'παιχνίδι', 'εξάσκηση ελληνικό πληκτρολόγιο πληκτρολόγηση', 'Εφαρμογή: γράφω γρήγορα και σωστά με το ελληνικό πληκτρολόγιο.'],
+  ['ph-shak', '🔤', 'Βρες τα «χαμένα παιδιά» του Σαίξπηρ!', 'κρυπτόλεξο', 'σαίξπηρ κρυπτόλεξο λέξεις γλώσσα', 'Κρυπτόλεξο: βρίσκω κρυμμένες λέξεις μέσα στα γράμματα.'],
+  ['ph-paint', '🖍️', 'Ζωγραφική για μικρά παιδιά', 'εφαρμογή', 'ζωγραφική εφαρμογή χρώματα', 'Εφαρμογή ζωγραφικής με μολύβι, χρώματα και πάχος γραμμής.'],
+  ['ph-word', '📝', 'Ο μικρός κειμενογράφος', 'εφαρμογή', 'κειμενογράφος κείμενο εφαρμογή γράφω', 'Εφαρμογή κειμενογράφου: γράφω και μορφοποιώ ένα μικρό κείμενο.'],
+  ['ph-tangram', '🔷', 'Παίζοντας με tangram', 'παιχνίδι', 'tangram τάγκραμ παιχνίδι σχήματα', 'Παιχνίδι: φτιάχνω σχήματα με τα 7 κομμάτια του tangram.'],
+  ['ph-dev', '🖥️', 'Οι συσκευές του υπολογιστή', 'βίντεο', 'συσκευές υπολογιστή βίντεο ποντίκι οθόνη', 'Βίντεο: γνωρίζω την οθόνη, το πληκτρολόγιο, το ποντίκι και τον εκτυπωτή.'],
+  ['ph-quiz', '❓', 'Κουίζ: ασφαλής στο Διαδίκτυο', 'κουίζ', 'κουίζ διαδίκτυο ασφάλεια', 'Κουίζ: απαντώ σε ερωτήσεις για την ασφάλεια στο Διαδίκτυο.']];
+const C_PH_LIST = list => '<div class="row">' + list.map(([k, em, t, ty]) => `<div class="card">${em} <a data-go="${k}">${t}</a><br><small>${ty}</small></div>`).join('') + '</div>';
+const C_PHOTO = {
+  'ph-home': { url: 'photodentro.edu.gr', title: 'Φωτόδεντρο', icon: '🌳', html: `${C_PH_MENU}<h1>🌳 Φωτόδεντρο</h1><p>Ο <b>Εθνικός Συσσωρευτής Εκπαιδευτικού Περιεχομένου</b>: ψηφιακό εκπαιδευτικό υλικό για το σχολείο. Αποτελείται από επιμέρους <b>αποθετήρια</b>:</p>
+    <div class="row"><div class="card">🧩 <a data-go="ph-lor">Μαθησιακά Αντικείμενα</a></div><div class="card">🎬 <a data-go="ph-vid">Εκπαιδευτικά Βίντεο</a></div><div class="card">📂 e-yliko χρηστών</div><div class="card">🏛️ Φωτόδεντρο Πολιτισμός</div><div class="card">💿 Edusoft</div><div class="card">🦊 Αίσωπος</div></div>` },
+  'ph-lor': { url: 'photodentro.edu.gr/lor', title: 'Φωτόδεντρο — Μαθησιακά Αντικείμενα', icon: '🧩', html: `${C_PH_MENU}<h1>🧩 Μαθησιακά Αντικείμενα</h1><div data-search></div>
+    <p><b>Ανά τύπο:</b> <a data-go="ph-t-game">🎮 Παιχνίδι</a> · <a data-go="ph-t-quiz">❓ Κουίζ</a> · <a data-go="ph-t-video">🎬 Βίντεο</a> · <a>🧪 Πείραμα</a> · <a>🖥️ Προσομοίωση</a> · <a>📊 Παρουσίαση</a></p>
+    <p><b>Ανά θεματική περιοχή:</b> <a data-go="ph-s-ict">💻 Πληροφορική και ΤΠΕ</a> · <a data-go="ph-s-lang">📖 Γλώσσα</a> · <a>➕ Μαθηματικά</a> · <a>🌱 Μελέτη Περιβάλλοντος</a></p>` },
+  'ph-vid': { url: 'photodentro.edu.gr/video', title: 'Φωτόδεντρο — Εκπαιδευτικά Βίντεο', icon: '🎬', html: `${C_PH_MENU}<h1>🎬 Εκπαιδευτικά Βίντεο</h1>${C_PH_LIST(C_PH_LO.filter(l => l[3] === 'βίντεο'))}` },
+  'ph-t-game': { url: 'photodentro.edu.gr/lor?type=game', title: 'Τύπος: Παιχνίδι', icon: '🎮', html: `${C_PH_MENU}<h1>🎮 Μαθησιακά Αντικείμενα › Παιχνίδι</h1>${C_PH_LIST(C_PH_LO.filter(l => l[3] === 'παιχνίδι'))}` },
+  'ph-t-quiz': { url: 'photodentro.edu.gr/lor?type=quiz', title: 'Τύπος: Κουίζ', icon: '❓', html: `${C_PH_MENU}<h1>❓ Μαθησιακά Αντικείμενα › Κουίζ</h1>${C_PH_LIST(C_PH_LO.filter(l => l[3] === 'κουίζ'))}` },
+  'ph-t-video': { url: 'photodentro.edu.gr/lor?type=video', title: 'Τύπος: Βίντεο', icon: '🎬', html: `${C_PH_MENU}<h1>🎬 Μαθησιακά Αντικείμενα › Βίντεο</h1>${C_PH_LIST(C_PH_LO.filter(l => l[3] === 'βίντεο'))}` },
+  'ph-s-ict': { url: 'photodentro.edu.gr/lor?subject=tpe', title: 'Θεματική περιοχή: Πληροφορική και ΤΠΕ', icon: '💻', html: `${C_PH_MENU}<h1>💻 Πληροφορική και ΤΠΕ</h1>${C_PH_LIST(C_PH_LO.filter(l => ['ph-kb', 'ph-paint', 'ph-word', 'ph-dev', 'ph-quiz'].includes(l[0])))}` },
+  'ph-s-lang': { url: 'photodentro.edu.gr/lor?subject=glossa', title: 'Θεματική περιοχή: Γλώσσα', icon: '📖', html: `${C_PH_MENU}<h1>📖 Γλώσσα</h1>${C_PH_LIST(C_PH_LO.filter(l => ['ph-shak', 'ph-tile'].includes(l[0])))}` },
+  ...Object.fromEntries(C_PH_LO.map(([k, em, t, ty, kw, d]) => [k, { url: 'photodentro.edu.gr/lo/' + k.slice(3), title: t, icon: em, kw, desc: `${ty} · ${d}`, html: `${C_PH_MENU}<h1>${em} ${t}</h1><p><b>Τύπος:</b> ${ty}</p><p>${d}</p><div data-video="${k}">${em} ${t}</div>` }])),
+};
+// --- Ανοικτή Βιβλιοθήκη (Μάθημα 28ο · 4.2.3) — απλή προσομοίωση
+const C_OB_MENU = '<div class="menu" style="background:#6d4c41"><a data-go="ob-home">📚 Αρχική</a><a data-go="ob-lit">📖 Λογοτεχνία</a><a data-go="ob-col">🗂️ Συλλογές</a><a data-go="ob-audio">🎧 Audio Books</a><a>🎭 Θέατρο</a><a>🏛️ Πολιτισμός</a></div>';
+const C_OB_BOOKS = [['ob-dark', '🌙', 'Ένα διαφορετικό σκοτάδι', 'Λίνα Κατσή', 'ob-kids', 'διαφορετικό σκοτάδι παραμύθι κατσή', 'Ένα παραμύθι για το σκοτάδι και για το πώς βλέπουμε τον κόσμο.', '📖 Διάβασε online'],
+  ['ob-grand', '📒', 'Το παλιό τετράδιο της γιαγιάς', 'παραμύθι για την κρητική διατροφή', 'ob-food', 'παλιό τετράδιο γιαγιάς διατροφή κρητική παραμύθι', 'Ένα παραμύθι που μιλάει για την κρητική διατροφή.', '📖 Διάβασε online'],
+  ['ob-gold', '✨', 'Η Χρυσή', 'παραμύθι από την Κέα', 'ob-akids', 'χρυσή παραμύθι κέα ηχητικό audio', 'Ένα παραμύθι από την Κέα σε αφήγηση — το ακούς!', '🎧 Άκουσε την αφήγηση'],
+  ['ob-rob', '🏝️', 'Ροβινσώνας Κρούσος', 'Ντάνιελ Ντεφόε', 'ob-kids', 'ροβινσώνας ροβινσών κρούσος κρούσσος ντεφόε νησί', 'Ένας ναυαγός ζει μόνος του σε ένα έρημο νησί.', '📖 Διάβασε online']];
+const C_OB_LIST = cat => '<div class="row">' + C_OB_BOOKS.filter(b => b[4] === cat).map(([k, em, t, a]) => `<div class="card" style="text-align:center"><span class="big">${em}</span><br><a data-go="${k}">${t}</a><br><small>${a}</small></div>`).join('') + '<div class="card" style="text-align:center"><span class="big">📕</span><br>…και άλλα βιβλία</div></div>';
+const C_OPENBOOK = {
+  'ob-home': { url: 'www.openbook.gr', title: 'Ανοικτή Βιβλιοθήκη', icon: '📚', html: `${C_OB_MENU}<h1>📚 Ανοικτή Βιβλιοθήκη</h1><p>Χιλιάδες ελληνικά <b>ψηφιακά βιβλία (e-books)</b>, ελεύθερα και νόμιμα, με δωρεάν πρόσβαση. Και <b>ακουστικά βιβλία</b> (audio books)!</p><div data-search></div>` },
+  'ob-lit': { url: 'www.openbook.gr/logotexnia', title: 'Λογοτεχνία', icon: '📖', html: `${C_OB_MENU}<h1>📖 Λογοτεχνία</h1><div class="row"><div class="card"><a data-go="ob-kids">🧸 Παιδική Λογοτεχνία</a></div><div class="card"><a>📜 Ποίηση</a></div><div class="card"><a>📘 Μυθιστόρημα</a></div></div>` },
+  'ob-kids': { url: 'www.openbook.gr/logotexnia/paidiki', title: 'Παιδική Λογοτεχνία', icon: '🧸', html: `${C_OB_MENU}<h1>📖 Λογοτεχνία › 🧸 Παιδική Λογοτεχνία</h1>${C_OB_LIST('ob-kids')}` },
+  'ob-col': { url: 'www.openbook.gr/syllogi', title: 'Συλλογές', icon: '🗂️', html: `${C_OB_MENU}<h1>🗂️ Συλλογές</h1><div class="row"><div class="card"><a data-go="ob-food">🥗 Διατροφή</a></div><div class="card"><a>🌍 Περιβάλλον</a></div><div class="card"><a>🏛️ Μύθοι</a></div></div>` },
+  'ob-food': { url: 'www.openbook.gr/syllogi/diatrofi', title: 'Συλλογή: Διατροφή', icon: '🥗', html: `${C_OB_MENU}<h1>🗂️ Συλλογές › 🥗 Διατροφή</h1>${C_OB_LIST('ob-food')}` },
+  'ob-audio': { url: 'www.openbook.gr/audiobooks', title: 'Audio Books', icon: '🎧', html: `${C_OB_MENU}<h1>🎧 Audio Books</h1><div class="row"><div class="card"><a data-go="ob-akids">🧒 Παιδική-Εφηβική Λογοτεχνία</a></div><div class="card"><a>📜 Ποίηση</a></div></div>` },
+  'ob-akids': { url: 'www.openbook.gr/audiobooks/paidiki-efiviki', title: 'Audio Books: Παιδική-Εφηβική Λογοτεχνία', icon: '🎧', html: `${C_OB_MENU}<h1>🎧 Audio Books › 🧒 Παιδική-Εφηβική Λογοτεχνία</h1>${C_OB_LIST('ob-akids')}` },
+  ...Object.fromEntries(C_OB_BOOKS.map(([k, em, t, a, , kw, d, btn]) => [k, { url: 'www.openbook.gr/' + k.slice(3), title: t, icon: em, kw, desc: `${a} · ${d}`,
+    html: `${C_OB_MENU}<h1>${em} ${t}</h1><p>✍️ <b>${a}</b></p><p><b>Περιγραφή:</b> ${d}</p><p style="font-size:90px;margin:0;text-align:center">${em}</p><div data-video="${k}">${btn}</div>` }])),
+};
+// --- Κινούμενα σχέδια: καρέ 300×200 με θέσεις σε ποσοστά (Μάθημα 22ο · 4.1.5)
+const C_GRASS = '<div style="position:absolute;left:0;right:0;bottom:0;height:14%;background:#8bc34a"></div>';
+const C_HEARTS = ['#e53935', '#fb8c00', '#fdd835', '#43a047', '#1e88e5', '#8e24aa'].map(c => `<span style="position:absolute;left:37%;top:8%;color:${c};font-size:1.9em;line-height:1">♥</span>`);
+const C_FROG = [[4, 62], [20, 34], [36, 16], [52, 16], [66, 34], [80, 62]].map(([l, t]) => `${C_GRASS}<span style="position:absolute;left:${l}%;top:${t}%">🐸</span>`);
+const C_FLOWER = [['🟤', 0.4, 68], ['🌱', 0.6, 62], ['🌱', 0.9, 52], ['🌿', 1.2, 40], ['🌷', 1.5, 26], ['🌷', 1.9, 10]].map(([e, s, t]) => `${C_GRASS}<span style="position:absolute;left:38%;top:${t}%;font-size:${s}em;line-height:1">${e}</span>`);
+const C_BALL = [[4, 6], [18, 62], [34, 26], [50, 62], [64, 42], [80, 62]].map(([l, t]) => `<div style="position:absolute;left:0;right:0;bottom:0;height:8%;background:#a1887f"></div><span style="position:absolute;left:${l}%;top:${t}%">⚽</span>`);
+const C_ROCKET = [70, 56, 42, 28, 14, 0].map((t, i) => `<div style="position:absolute;inset:0;background:#0d1b4c"></div><span style="position:absolute;left:12%;top:8%;font-size:0.5em">⭐</span><span style="position:absolute;left:75%;top:30%;font-size:0.4em">✨</span><span style="position:absolute;left:40%;top:${t}%">🚀</span>${i ? `<span style="position:absolute;left:42%;top:${Math.min(t + 26, 72)}%;font-size:0.6em">🔥</span>` : ''}`);
+
 const BOOK_C = [
   {
     tab: 'Κεφ. 1', title: 'Αλγοριθμική – Προγραμματισμός – Ρομποτική',
@@ -4867,7 +5103,869 @@ const BOOK_C = [
       },
     ],
   },
-  { tab: 'Κεφ. 4', title: 'Ψηφιακός γραμματισμός', lessons: [] },
+  {
+    tab: 'Κεφ. 4', title: 'Ψηφιακός γραμματισμός',
+    lessons: [
+      {
+        icon: '⌨️', title: 'Περισσότερα εργαλεία στο πληκτρολόγιο', sub: 'Shift · αλλαγή γλώσσας · Tab · παράγραφος',
+        acts: [
+          { type: 'info', ref: 'έκδ. 7.0 σελ. 69–70 · έκδ. v09 σελ. 70', text: '«Μπορώ να κάνω περισσότερα με το πληκτρολόγιο.» «Τέλεια, ανυπομονώ να μου δείξεις!»', cards: [
+            ['⌨️', 'Θυμάμαι την αφίσα: <b>⌫</b> σβήνω · <b>΄</b> τόνος · <b>⇪</b> κεφαλαία · <b>↵ Enter</b> νέα παράγραφος · <b>, .</b> κόμμα και τελεία · <b>κενό</b> ανάμεσα στις λέξεις.'],
+            ['🌐', 'Τα πλήκτρα έχουν <b>ελληνικά</b> αλλά και <b>αγγλικά</b> γράμματα (λατινικούς χαρακτήρες). Τη <b>γλώσσα</b> του πληκτρολογίου τη βλέπω κάτω ή πάνω στην οθόνη, δίπλα στην ώρα (ΕΛ / EN). Την αλλάζω με <b>Alt + Shift</b> ή από το εικονίδιο της γλώσσας.'],
+            ['⇧', 'Με το <b>Shift</b> γράφω <b>ένα κεφαλαίο</b> γράμμα ή ό,τι είναι στο <b>πάνω μέρος</b> ενός πλήκτρου: κρατάω πατημένο το Shift και πατάω το 1 → <b>!</b>'],
+          ] },
+          { type: 'mcq', ref: 'έκδ. 7.0 σελ. 69–70', text: 'Σκέψου και συζήτησε με την ομάδα σου:', questions: [
+            { q: 'Γιατί τα πλήκτρα έχουν και αγγλικά γράμματα;', options: ['Για στολίδι', 'Για να γράφουμε και σε άλλες γλώσσες — π.χ. αγγλικά ή μια διεύθυνση ιστοσελίδας', 'Επειδή χάλασαν τα ελληνικά'], answer: 1 },
+            { q: 'Πού βλέπω σε ποια γλώσσα γράφει τώρα το πληκτρολόγιο;', options: ['Δίπλα στην ώρα, κάτω ή πάνω στην οθόνη (ΕΛ / EN)', 'Πάνω στο ποντίκι', 'Στο πλήκτρο Enter'], answer: 0 },
+            { q: 'Με ποια πλήκτρα αλλάζω γλώσσα;', options: ['Ctrl + Enter', 'Κενό + Backspace', 'Alt + Shift'], answer: 2 },
+            { q: 'Ποιος άλλος τρόπος υπάρχει για να αλλάξω γλώσσα;', options: ['Να κλείσω τον υπολογιστή', 'Να διαλέξω τη γλώσσα από το εικονίδιό της δίπλα στην ώρα'], answer: 1 },
+          ] },
+          { type: 'theory', ref: 'έκδ. 7.0 σελ. 70–71', text: 'Τα πλήκτρα Shift και Tab:', sections: [
+            ['⇧ Shift + γράμμα', 'Κρατάω πατημένο το <b>Shift</b> και πατάω ένα γράμμα: γράφεται <b>κεφαλαίο</b>. Το αφήνω και συνεχίζω με πεζά. Έτσι αρχίζω μια πρόταση ή ένα όνομα.', ['⇧ + μ → Μ · Μαρία']],
+            ['⇧ Shift + πάνω σύμβολο', 'Πολλά πλήκτρα έχουν <b>δύο</b> σύμβολα. Το κάτω το γράφω κανονικά, το <b>πάνω</b> με το Shift πατημένο.', ['⇧ + 1 → ! · ⇧ + 2 → @']],
+            ['↹ Tab', 'Το <b>Tab</b> πηγαίνει τον κέρσορα στο <b>επόμενο πεδίο</b> μιας φόρμας. Στον κειμενογράφο βάζει <b>εσοχή</b> στην αρχή της παραγράφου.', ['Όνομα: ____ ↹ Υπερδύναμη: ____']],
+          ] },
+          { type: 'mcq', ref: 'έκδ. 7.0 σελ. 71', text: 'Κοίτα προσεκτικά το πληκτρολόγιο: τι θα εμφανιστεί; (Το Caps Lock είναι κλειστό.)', questions: [
+            { q: '⇧ Shift + 1', options: ['1', '!', '?'], answer: 1 },
+            { q: '⇧ Shift + α', options: ['α', 'Α'], answer: 1 },
+            { q: '⇧ Shift + 2', options: ['@', '2', '#'], answer: 0 },
+            { q: 'Μόνο το 5, χωρίς Shift', options: ['%', '5'], answer: 1 },
+            { q: '⇧ Shift + 3', options: ['3', '!', '#'], answer: 2 },
+          ] },
+          { type: 'keys', ref: 'έκδ. 7.0 σελ. 70 (Άσκηση – γράφω σύμβολα, γράμματα και αριθμούς)', text: 'Γράψε τις προτάσεις: κεφαλαίο στην αρχή και τελεία στο τέλος!', words: [
+            ['👧', 'Η Μαρία παίζει.', 'Για κάθε κεφαλαίο: κράτα το <b>Shift</b> στο πληκτρολόγιό σου — ή εδώ άναψε το <b>⇪</b>, γράψε το γράμμα και σβήσ’ το ξανά. Γράψε: <b>Η Μαρία παίζει.</b>'],
+            ['🐶', 'Ο Νίκος έχει σκύλο.'],
+            ['🌧️', 'Σήμερα βρέχει, κάνει κρύο.'],
+            ['❓', 'Πού είναι η μπάλα;', 'Το ελληνικό ερωτηματικό είναι το <b>;</b> Γράψε: <b>Πού είναι η μπάλα;</b>'],
+          ] },
+          { type: 'keys', ref: 'έκδ. 7.0 σελ. 69 (Παράγραφος)', text: 'Με το Enter αρχίζω νέα παράγραφο.', lines: true, words: [
+            ['📝', 'Μου αρέσει το σχολείο.\nΕκεί έχω φίλους.', 'Γράψε την πρώτη πρόταση, πάτα <b>↵ Enter</b> και γράψε τη δεύτερη από κάτω: <b>Μου αρέσει το σχολείο.</b> ↵ <b>Εκεί έχω φίλους.</b>'],
+          ] },
+          { type: 'browser', ref: 'έκδ. 7.0 σελ. 71 (Το πλήκτρο Tab)', text: 'Συμπλήρωσε τη φόρμα: με το Tab πηγαίνεις στο επόμενο πεδίο!', start: 'f', pages: { f: { url: 'www.i-taxi-mas.gr/iroas', title: 'Η κάρτα του ήρωά μου', icon: '🦸', html: `<h1>🦸 Η κάρτα του ήρωά μου</h1><p>Φτιάξε έναν φανταστικό ήρωα! Κάνε κλικ στο πρώτο πεδίο, γράψε και πάτα <b>Tab ↹</b> για να πας στο επόμενο.</p>
+            <div class="card" data-form="hero" data-need="name,power,pet" data-ok="🦸 Η κάρτα του ήρωα είναι έτοιμη!"><p>Όνομα ήρωα *: <input name="name"></p><p>Υπερδύναμη *: <input name="power"></p><p>Ζωάκι-βοηθός *: <input name="pet"></p><button data-submit>✔ Έτοιμο</button></div>` } }, tasks: [
+            ['Συμπλήρωσε και τα τρία πεδία — από το ένα στο άλλο με το <b>Tab ↹</b> (σε ταμπλέτα: με ένα άγγιγμα) — και πάτα «✔ Έτοιμο».', ev => ev.t === 'submit' && ev.form === 'hero'],
+          ] },
+          { type: 'editor', ref: 'έκδ. 7.0 σελ. 71', text: 'Άνοιξε τον κειμενογράφο και γράψε μια μικρή παράγραφο με όσα έμαθες για το πληκτρολόγιο.', tools: ['undo', 'bold', 'size'], tasks: [
+            ['Γράψε μια πρόταση που αρχίζει με <b>κεφαλαίο</b> (Shift) και τελειώνει με <b>τελεία</b>.', ev => /[Α-ΩΆΈΉΊΌΎΏ][^\n]*\./.test(ev.text)],
+            ['Γράψε ένα <b>θαυμαστικό !</b> (Shift + 1).', ev => ev.text.includes('!')],
+            ['Πάτα <b>Enter</b> και γράψε μια δεύτερη παράγραφο.', ev => ev.text.split('\n').filter(s => s.trim()).length >= 2],
+            ['Άλλαξε γλώσσα (<b>Alt + Shift</b>) και γράψε μια αγγλική λέξη, π.χ. <b>Hello</b>.', ev => /[a-z]{3,}/i.test(ev.text)],
+          ], doneMsg: '🎉 Μπράβο! Κεφαλαία, σύμβολα, παράγραφοι και δύο γλώσσες!' },
+          { type: 'info', ref: 'έκδ. 7.0 σελ. 69–71', text: 'Στην τάξη:', cards: [
+            ['🗺️', 'Παίξτε <b>κυνήγι θησαυρού</b> για το πληκτρολόγιο: ο ένας λέει ένα πλήκτρο (Tab, Shift, Alt, Caps Lock…) και ο άλλος το βρίσκει στο πραγματικό πληκτρολόγιο.'],
+            ['🌐', 'Βρείτε στον υπολογιστή σας πού φαίνεται η γλώσσα του πληκτρολογίου και αλλάξτε τη με <b>Alt + Shift</b>.'],
+          ] },
+        ],
+        practice: [
+          { type: 'keys', mode: 'keyname', ref: 'εξάσκηση', text: 'Θυμάμαι την αφίσα: βρες το πλήκτρο!', questions: [
+            ['Πάτα το πλήκτρο που <b>σβήνει</b>.', '⌫'], ['Πάτα το πλήκτρο του <b>τόνου</b>.', '΄'], ['Πάτα το πλήκτρο για <b>νέα παράγραφο</b>.', '↵'],
+            ['Πάτα το <b>κόμμα</b>.', ','], ['Πάτα την <b>τελεία</b>.', '.'], ['Πάτα το ελληνικό <b>ερωτηματικό</b> «;».', ';'],
+          ] },
+          { type: 'match', ref: 'εξάσκηση', text: 'Ταίριαξε το πλήκτρο με αυτό που κάνει.', pairs: [
+            ['⇧ Shift', 'Ένα κεφαλαίο ή το πάνω σύμβολο'], ['⇪ Caps Lock', 'Όλα τα γράμματα κεφαλαία'], ['↹ Tab', 'Επόμενο πεδίο ή εσοχή'],
+            ['Alt + Shift', 'Αλλαγή γλώσσας'], ['↵ Enter', 'Νέα παράγραφος'], ['⌫ Backspace', 'Σβήνει ό,τι είναι πριν από τον κέρσορα'],
+          ] },
+          { type: 'mcq', ref: 'εξάσκηση', text: 'Τι θα γίνει αν…', questions: [
+            { q: '…το Caps Lock είναι <b>αναμμένο</b> και πατάω Shift + α;', options: ['Α', 'α'], answer: 1, explain: 'Το Shift κάνει το «ανάποδο» από το Caps Lock: με αναμμένο Caps Lock, το Shift γράφει πεζό.' },
+            { q: '…πατάω Tab σε μια φόρμα;', options: ['Σβήνεται η φόρμα', 'Ο κέρσορας πάει στο επόμενο πεδίο'], answer: 1 },
+            { q: '…γράφω «υπολογιστής» αλλά η γλώσσα είναι στα αγγλικά (EN);', options: ['Θα γραφτούν λατινικά γράμματα: ypologisths', 'Θα γραφτεί σωστά στα ελληνικά'], answer: 0, explain: 'Πρώτα αλλάζω γλώσσα με Alt + Shift.' },
+          ] },
+          { type: 'keys', ref: 'εξάσκηση', text: 'Μια πρόταση με κόμματα:', words: [['🏖️', 'Ο ήλιος, η θάλασσα, το παγωτό.'], ['🎒', 'Στην τσάντα έχω βιβλία, μολύβια και ένα μήλο.']] },
+        ],
+      },
+      {
+        icon: '🌐', title: 'Δικτυακός τόπος και ιστοσελίδες', sub: 'Ένας ιστότοπος έχει πολλές ιστοσελίδες',
+        acts: [
+          { type: 'info', ref: 'έκδ. 7.0 σελ. 72–73 · έκδ. v09 σελ. 71, 73', text: '«Στο Διαδίκτυο βρίσκουμε πληροφορίες για πολλά πράγματα.» «Ναι, και δικτυακούς τόπους για να παίξουμε ή να βρούμε προϊόντα και υπηρεσίες!»', cards: [
+            ['📖', 'Ένα βιβλίο έχει πολλές σελίδες, που τις διαβάζω <b>με τη σειρά</b>. Ένας <b>δικτυακός τόπος</b> ή <b>ιστότοπος</b> (website) έχει πολλές <b>ιστοσελίδες</b> (webpages): βλέπω όποια θέλω, <b>με όποια σειρά θέλω</b>.'],
+            ['🔗', 'Οι ιστοσελίδες ενός δικτυακού τόπου <b>συνδέονται μεταξύ τους</b> και έχουν πληροφορίες για ένα <b>κοινό θέμα</b> ή σκοπό. Μία από αυτές είναι η <b>αρχική σελίδα</b>.'],
+            ['💻', 'Για να δω μια ιστοσελίδα χρειάζομαι μια <b>ψηφιακή συσκευή με σύνδεση στο Διαδίκτυο</b> και μια εφαρμογή <b>φυλλομετρητή</b> ή περιηγητή (browser), π.χ. Chrome ή Firefox.'],
+          ] },
+          { type: 'browser', ref: 'έκδ. 7.0 σελ. 73', text: 'Επισκέψου τον δικτυακό τόπο ενός σχολείου και δες διάφορες ιστοσελίδες.', pages: C_SCHOOL, tasks: [
+            ['Γράψε στη γραμμή διευθύνσεων <b>dim-anatolis.sch.gr</b> και πάτα Enter.', ev => ev.t === 'go' && ev.page === 'sc-home' && ev.via === 'address'],
+            ['Από το μενού άνοιξε τις <b>🕗 Ώρες λειτουργίας</b>.', ev => ev.t === 'go' && ev.page === 'sc-hours'],
+            ['Τώρα διάλεξε <b>εσύ</b> όποια άλλη ιστοσελίδα θέλεις από το μενού.', ev => ev.t === 'go' && ev.via === 'link' && !['sc-home', 'sc-hours'].includes(ev.page)],
+            ['Και μία ακόμα — με όποια σειρά θέλεις!', ev => ev.t === 'go' && ev.via === 'link' && ev.page !== 'sc-home'],
+            ['Άνοιξε το <b>📚 Υλικό τάξεων</b> και μετά τη <b>Γ΄ τάξη</b>: μια ιστοσελίδα κάτω από μια άλλη!', ev => ev.t === 'go' && ev.page === 'sc-c3'],
+            ['Γύρισε στην <b>αρχική σελίδα</b> με το «🏠 Αρχική» του μενού.', ev => ev.t === 'go' && ev.page === 'sc-home' && ev.via === 'link'],
+          ], doneMsg: '🎉 Μπράβο! Είδες πολλές ιστοσελίδες του ίδιου δικτυακού τόπου — με τη σειρά που διάλεξες εσύ!' },
+          { type: 'mcq', ref: 'έκδ. 7.0 σελ. 73', text: 'Σκέψου και συζήτησε στην τάξη σου:', questions: [
+            { q: 'Ποια ιστοσελίδα είδατε πρώτα;', options: ['Τις Ανακοινώσεις', 'Την αρχική σελίδα του σχολείου'], answer: 1 },
+            { q: 'Τι πληροφορίες είχαν οι «Ώρες λειτουργίας»;', options: ['Πότε χτυπάει το πρώτο κουδούνι και πότε σχολάμε', 'Το τηλέφωνο του σχολείου'], answer: 0 },
+            { q: 'Θα μπορούσατε να διαλέξετε να δείτε κάποια άλλη ιστοσελίδα;', options: ['Όχι, πάντα με τη σειρά, όπως στο βιβλίο', 'Ναι, όποια θέλουμε, με όποια σειρά θέλουμε'], answer: 1 },
+            { q: 'Όλες αυτές οι ιστοσελίδες έχουν κοινό θέμα…', options: ['τα ζώα', 'το ποδόσφαιρο', 'το σχολείο'], answer: 2 },
+          ] },
+          { type: 'sort', ref: 'έκδ. 7.0 σελ. 74', text: 'Σχεδιάγραμμα: σε ποιον δικτυακό τόπο ανήκει κάθε ιστοσελίδα;', bins: ['🏛️ Μουσείο', '⚽ Αθλητική ομάδα', '🛒 Κατάστημα'], items: [
+            ['🏺', 'Εκθέματα', 0], ['🖼️', 'Περιοδικές εκθέσεις', 0], ['🏟️', 'Πρόγραμμα αγώνων', 1], ['👕', 'Οι παίκτες μας', 1], ['🏆', 'Τα τρόπαιά μας', 1], ['🧺', 'Καλάθι αγορών', 2], ['🏷️', 'Προσφορές', 2], ['🚚', 'Αποστολή προϊόντων', 2],
+          ] },
+          { type: 'info', ref: 'έκδ. 7.0 σελ. 73–74', text: 'Στην τάξη:', cards: [
+            ['🏫', 'Επισκεφτείτε όλοι μαζί τον <b>πραγματικό</b> δικτυακό τόπο του σχολείου σας και δείτε διάφορες ιστοσελίδες.'],
+            ['✏️', 'Φτιάξτε στο χαρτί ένα <b>σχεδιάγραμμα</b> με τις ιστοσελίδες ενός δικτυακού τόπου για ένα μουσείο, μια διάσημη τραγουδίστρια, μια αθλητική ομάδα ή ένα κατάστημα.'],
+          ] },
+        ],
+        practice: [
+          { type: 'match', ref: 'εξάσκηση', text: 'Ταίριαξε:', pairs: [
+            ['🌐 Δικτυακός τόπος', 'Πολλές ιστοσελίδες με κοινό θέμα'], ['📄 Ιστοσελίδα', 'Μία σελίδα στο Διαδίκτυο'], ['🏠 Αρχική σελίδα', 'Η πρώτη σελίδα ενός ιστότοπου'],
+            ['🧭 Φυλλομετρητής', 'Η εφαρμογή για να βλέπω ιστοσελίδες'], ['📖 Βιβλίο', 'Σελίδες που διαβάζω με τη σειρά'],
+          ] },
+          { type: 'mcq', ref: 'εξάσκηση', text: 'Τι θα γίνει αν…', questions: [
+            { q: '…έχω ταμπλέτα αλλά <b>δεν</b> έχω σύνδεση στο Διαδίκτυο; Θα δω τον ιστότοπο του σχολείου;', options: ['Ναι, πάντα', 'Όχι, χρειάζομαι σύνδεση στο Διαδίκτυο'], answer: 1 },
+            { q: '…θέλω να δω τις «Ανακοινώσεις» πριν από τις «Ώρες λειτουργίας»;', options: ['Τις διαλέγω από το μενού: η σειρά είναι δική μου', 'Δεν γίνεται, πρέπει πρώτα τις Ώρες'], answer: 0 },
+            { q: 'Ένας δικτυακός τόπος για μια τραγουδίστρια θα είχε την ιστοσελίδα…', options: ['«Πρόγραμμα αγώνων»', '«Καλάθι αγορών»', '«Τα τραγούδια μου»'], answer: 2 },
+          ] },
+        ],
+      },
+      {
+        icon: '🏛️', title: 'Τα χαρακτηριστικά ενός δικτυακού τόπου', sub: 'Διεύθυνση · ιδιοκτήτης · δομή · μενού επιλογών',
+        acts: [
+          { type: 'info', ref: 'έκδ. 7.0 σελ. 75–76 · έκδ. v09 σελ. 71–73', text: '«Ο δικτυακός τόπος του σχολείου μας έχει πολλές ιστοσελίδες.» «Ναι, ας τις δούμε μέσα από το μενού.»', cards: [
+            ['🏠', 'Η <b>διεύθυνση</b> (URL) είναι <b>μοναδική</b> και δείχνει πού βρίσκεται ο ιστότοπος στον παγκόσμιο ιστό (www). Μ’ αυτήν πηγαίνω στην αρχική του σελίδα. Π.χ. ενός σχολείου: <b>https://dim.city.sch.gr/</b>'],
+            ['👤', 'Ο <b>ιδιοκτήτης</b> κατέχει και διαχειρίζεται τον ιστότοπο: μια εταιρεία, μια οργάνωση ή ένα άτομο. Τον βρίσκω στην αρχική σελίδα (συχνά κάτω-κάτω) ή μέσα από το μενού.'],
+            ['🧭', 'Το <b>μενού επιλογών</b> έχει υπερσυνδέσμους προς τις ιστοσελίδες. Συχνά μια επιλογή ανοίγει ένα μικρότερο μενού, το <b>υπομενού</b>.'],
+          ] },
+          { type: 'theory', ref: 'έκδ. 7.0 σελ. 76 · έκδ. v09 σελ. 72–74', text: 'Η δομή ενός δικτυακού τόπου και η αξιοπιστία του:', sections: [
+            ['➡️ Γραμμική δομή', 'Βλέπω τις ιστοσελίδες <b>με τη σειρά</b>, όπως σε ένα βιβλίο — π.χ. η βιογραφία ενός ανθρώπου.', ['Παιδικά χρόνια → Σχολείο → Τα έργα του']],
+            ['🌳 Δομή δέντρου', 'Κατηγορίες με <b>υποκατηγορίες</b>, σαν δέντρο με κλαδιά — π.χ. ένα σχολείο ή ένα κατάστημα (Ρούχα › μπλούζες, παντελόνια…). Για άλλο προϊόν γυρίζω συνήθως στην προηγούμενη σελίδα.', ['Υλικό τάξεων › Γ΄ τάξη › Πληροφορική']],
+            ['🔗 Πολλοί δρόμοι, πολλές διευθύνσεις', 'Σε μια ιστοσελίδα φτάνω συχνά από <b>δύο δρόμους</b>. Και κάθε ιστοσελίδα έχει τη <b>δική της διεύθυνση</b>.', ['www.pyli-xronou.gr/orario']],
+            ['✅ Αξιοπιστία', 'Το πόσο αξιόπιστες είναι οι πληροφορίες ενός ιστότοπου εξαρτάται από το πόσο αξιόπιστος είναι ο <b>ιδιοκτήτης</b> του.', ['μουσείο, ίδρυμα, σχολείο → αξιόπιστοι φορείς']],
+          ] },
+          { type: 'browser', ref: 'έκδ. v09 σελ. 72–74 (δραστ. 1–2)', text: 'Επισκέψου τον ιστότοπο του Κέντρου Πολιτισμού «Πύλη του Χρόνου».', pages: C_KOSMOS, tasks: [
+            ['Γράψε τη διεύθυνση <b>www.pyli-xronou.gr</b> και πάτα Enter.', ev => ev.t === 'go' && ev.page === 'k-home' && ev.via === 'address'],
+            ['Πάτα <b>🎟️ Επίσκεψη ▾</b> στο μενού: άνοιξε ένα <b>υπομενού</b>! Διάλεξε «Ωράριο λειτουργίας».', ev => ev.t === 'go' && ev.page === 'k-hours'],
+            ['Γύρισε στην αρχική με το <b>⬅</b> του φυλλομετρητή.', ev => ev.t === 'go' && ev.via === 'back' && ev.page === 'k-home'],
+            ['Βρες έναν <b>δεύτερο δρόμο</b> για το ωράριο: τον σύνδεσμο «🕗 Ωράριο» πάνω δεξιά.', ev => ev.t === 'go' && ev.page === 'k-hours'],
+            ['Βρες την περιγραφή της <b>Θόλου</b> (στα Θεάματα ▾).', ev => ev.t === 'go' && ev.page === 'k-tholos'],
+            ['Ποιος είναι ο <b>ιδιοκτήτης</b>; Άνοιξε Πληροφορίες ▾ › <b>Ταυτότητα</b>.', ev => ev.t === 'go' && ev.page === 'k-id'],
+          ], doneMsg: '🎉 Βρήκες διεύθυνση, μενού και υπομενού, και τον ιδιοκτήτη! (Τον γράφει και το υποσέλιδο, κάτω-κάτω.)' },
+          { type: 'browser', ref: 'έκδ. v09 σελ. 74', text: 'Κάθε ιστοσελίδα έχει τη δική της διεύθυνση. Κοίτα τη γραμμή διευθύνσεων!', start: 'k-home', pages: C_KOSMOS, tasks: [
+            ['Άνοιξε το <b>Θέατρο</b> (Θεάματα ▾). Πώς άλλαξε η διεύθυνση;', ev => ev.t === 'go' && ev.page === 'k-theatre'],
+            ['Γράψε εσύ τη διεύθυνση <b>www.pyli-xronou.gr/eisitiria</b> και πάτα Enter.', ev => ev.t === 'go' && ev.page === 'k-tickets' && ev.via === 'address'],
+            ['Πάτα το κουμπί πλοήγησης <b>⬅ Πίσω</b>…', ev => ev.t === 'go' && ev.via === 'back'],
+            ['…και μετά το <b>➡ Μπροστά</b>.', ev => ev.t === 'go' && ev.via === 'forward'],
+          ] },
+          { type: 'browser', ref: 'έκδ. 7.0 σελ. 77 · έκδ. v09 σελ. 74 (δραστ. 3)', text: 'Με την ομάδα σου: πλοηγηθείτε στο μενού του σχολικού ιστότοπου για να απαντήσετε στις ερωτήσεις που ακολουθούν.', start: 'sc-home', pages: C_SCHOOL, tasks: [
+            ['Μέτρησε τις επιλογές του <b>μενού</b> και άνοιξε τις <b>📢 Ανακοινώσεις</b>: ποια είναι η πιο πρόσφατη;', ev => ev.t === 'go' && ev.page === 'sc-news'],
+            ['Άνοιξε την <b>☎️ Επικοινωνία</b>: ποιο είναι το τηλέφωνο;', ev => ev.t === 'go' && ev.page === 'sc-contact'],
+            ['Βρες ποιος/ποια διδάσκει <b>Πληροφορική</b>.', ev => ev.t === 'go' && ev.page === 'sc-teach'],
+          ] },
+          { type: 'mcq', ref: 'έκδ. 7.0 σελ. 77', text: 'Απαντήστε για τον ιστότοπο του σχολείου:', questions: [
+            { q: 'Ποια είναι η διεύθυνση του δικτυακού τόπου;', options: ['www.pyli-xronou.gr', 'dim-anatolis.sch.gr', 'www.ta-zoa.gr'], answer: 1 },
+            { q: 'Πόσες επιλογές έχει το μενού (μαζί με την Αρχική);', options: ['4', '8', '12'], answer: 1 },
+            { q: 'Ποιος είναι ο τίτλος της τελευταίας ανακοίνωσης;', options: ['Αποκριάτικο πάρτι', 'Γιορτή της 25ης Μαρτίου', 'Εκδρομή στο Πλανητάριο'], answer: 2 },
+            { q: 'Ποιο είναι το τηλέφωνο του σχολείου;', options: ['210 1234567', '210 7654321'], answer: 0 },
+            { q: 'Ποιος είναι ο ιδιοκτήτης του ιστότοπου;', options: ['Ένα κατάστημα', 'Το ίδιο το σχολείο'], answer: 1, explain: 'Το γράφει το υποσέλιδο, κάτω-κάτω σε κάθε σελίδα.' },
+          ] },
+          { type: 'info', ref: 'έκδ. v09 σελ. 72–74 · έκδ. 7.0 σελ. 77', text: 'Στην τάξη:', cards: [
+            ['🏛️', 'Επισκεφθείτε με τον/την εκπαιδευτικό τον <b>Ελληνικό Κόσμο</b> (hellenic-cosmos.gr) και το <b>Μουσείο της Ακρόπολης</b> (theacropolismuseum.gr): βρείτε διεύθυνση, ιδιοκτήτη, μενού επιλογών και δομή.'],
+            ['🔎', 'Στον ιστότοπο του σχολείου σας βρείτε το κεντρικό και τα πλευρικά μενού, αλλά και ειδικά κουμπιά: γραμμή αναζήτησης, κουμπί γλώσσας, πλαίσιο σύνδεσης.'],
+            ['👨‍👩‍👧', 'Με την οικογένειά σας δείτε ιστότοπους ανάλογα με τα ενδιαφέροντά σας. Μετά σχεδιάστε στο χαρτί τον <b>δικό σας</b> δικτυακό τόπο!'],
+          ] },
+        ],
+        practice: [
+          { type: 'sort', ref: 'εξάσκηση', text: 'Γραμμική δομή ή δομή δέντρου;', bins: ['➡️ Γραμμική', '🌳 Δέντρο'], items: [
+            ['📜', 'Η ζωή του Μεγάλου Αλεξάνδρου, σελίδα-σελίδα', 0], ['📚', 'Ένα παραμύθι σε 5 ιστοσελίδες, με «Επόμενη ▶»', 0], ['🍰', 'Μια συνταγή: 1ο βήμα, 2ο βήμα, 3ο βήμα', 0],
+            ['🏫', 'Σχολείο: Υλικό τάξεων › Γ΄ τάξη › Πληροφορική', 1], ['🛒', 'Κατάστημα: Ρούχα › Μπλούζες › Κόκκινη μπλούζα', 1], ['🏛️', 'Μουσείο: Επίσκεψη › Ωράριο, Εισιτήρια', 1],
+          ] },
+          { type: 'match', ref: 'εξάσκηση', text: 'Τα χαρακτηριστικά ενός δικτυακού τόπου:', pairs: [
+            ['🏠 Διεύθυνση (URL)', 'Πού βρίσκεται ο ιστότοπος'], ['👤 Ιδιοκτήτης', 'Ποιος τον κατέχει και τον διαχειρίζεται'], ['🌳 Δομή', 'Πώς συνδέονται οι ιστοσελίδες μεταξύ τους'], ['🧭 Μενού επιλογών', 'Υπερσύνδεσμοι προς τις ιστοσελίδες'], ['▾ Υπομενού', 'Ένα μικρό μενού μέσα σε μια επιλογή'],
+          ] },
+          { type: 'mcq', ref: 'εξάσκηση', text: 'Σκέψου:', questions: [
+            { q: 'Η διεύθυνση www.pyli-xronou.gr/tholos είναι…', options: ['μιας ιστοσελίδας μέσα στον ιστότοπο www.pyli-xronou.gr', 'ενός εντελώς άλλου ιστότοπου'], answer: 0 },
+            { q: 'Θέλω πληροφορίες για ένα μουσείο. Ποιος ιστότοπος είναι πιο αξιόπιστος;', options: ['Ένα άγνωστο ιστολόγιο', 'Ο ιστότοπος του ίδιου του μουσείου'], answer: 1, explain: 'Η αξιοπιστία εξαρτάται από τον ιδιοκτήτη: το μουσείο γνωρίζει καλύτερα τα δικά του εκθέματα.' },
+          ] },
+        ],
+      },
+      {
+        icon: '🔎', title: 'Μηχανές αναζήτησης', sub: 'Παγκόσμιος ιστός · λέξεις-κλειδιά · αποτελέσματα',
+        acts: [
+          { type: 'info', ref: 'έκδ. 7.0 σελ. 78–80 · έκδ. v09 σελ. 79', text: '«Ας βρούμε τη διεύθυνση και το ωράριο του μουσείου.» «Θα χρησιμοποιήσουμε μια μηχανή αναζήτησης!»', cards: [
+            ['🌍', 'Ο <b>παγκόσμιος ιστός</b> είναι το σύνολο όλων των ιστοσελίδων που υπάρχουν. Επιτρέπει στους ανθρώπους να μοιράζονται πληροφορίες και να επικοινωνούν από οπουδήποτε στον κόσμο.'],
+            ['🔎', 'Μια <b>μηχανή αναζήτησης</b> (π.χ. η Αναζήτηση Google) είναι μια ιστοσελίδα που με βοηθάει να βρω δικτυακούς τόπους. Ελέγχει τις ιστοσελίδες του ιστού και μου δίνει <b>αποτελέσματα</b> σχετικά με την ερώτησή μου.'],
+            ['🔑', 'Στο <b>πλαίσιο αναζήτησης</b> γράφω <b>λέξεις-κλειδιά</b> (keywords), φράσεις ή ερωτήσεις και πατάω Enter. Τα αποτελέσματα είναι ιστοσελίδες, φωτογραφίες, βίντεο, ειδήσεις.'],
+          ] },
+          { type: 'mcq', ref: 'έκδ. 7.0 σελ. 78–79', text: 'Θέλω να απαντήσω σε μια ερώτηση. Πού μπορώ να ψάξω ή να ρωτήσω;', questions: [
+            { q: 'Ποιο από αυτά <b>δεν</b> μπορεί να μου δώσει απαντήσεις;', options: ['Η εφημερίδα', 'Ένα άδειο τετράδιο', 'Ο/Η εκπαιδευτικός'], answer: 1 },
+            { q: 'Η οικογένεια, οι φίλοι, η τηλεόραση και τα βιβλία…', options: ['μπορούν όλα να με βοηθήσουν να βρω απαντήσεις', 'δεν ξέρουν ποτέ τίποτα'], answer: 0 },
+            { q: 'Δεν ξέρουμε τη διεύθυνση του ιστότοπου του μουσείου. Πώς θα τη βρούμε;', options: ['Με το πλήκτρο Caps Lock', 'Με μια μηχανή αναζήτησης'], answer: 1 },
+          ] },
+          { type: 'browser', ref: 'έκδ. v09 σελ. 80 (δραστ. 1)', text: 'Ψάξε πληροφορίες για τον Ηρακλή στη μηχανή αναζήτησης «Ψάχνω».', start: 'q-home', pages: { ...C_PSAXNO, ...C_HERO }, engine: 'www.psaxno.gr', logo: '🔎 Ψάχνω', tasks: [
+            ['Γράψε στο πλαίσιο αναζήτησης τη λέξη <b>Ηρακλής</b> και πάτα 🔎.', ev => ev.t === 'search' && norm(ev.q).includes('ηρακλ')],
+            ['Κοίτα τα αποτελέσματα: υπάρχει και μια ομάδα μπάσκετ, ένα ζαχαροπλαστείο… Ψάξε τώρα <b>Ηρακλής ήρωας μυθολογίας</b>.', ev => ev.t === 'search' && norm(ev.q).includes('ηρω') && norm(ev.q).includes('μυθολογ')],
+            ['Τα πιο σχετικά ανέβηκαν πρώτα! Άνοιξε το αποτέλεσμα «<b>Ηρακλής: ο ήρωας της ελληνικής μυθολογίας</b>».', ev => ev.t === 'go' && ev.page === 'q-hrak'],
+            ['Γύρισε στα αποτελέσματα με το <b>⬅</b>.', ev => ev.t === 'go' && ev.via === 'back' && ev.page === '?'],
+            ['Άνοιξε και το αποτέλεσμα για τους <b>12 άθλους</b>.', ev => ev.t === 'go' && ev.page === 'q-athloi'],
+          ], doneMsg: '🎉 Μπράβο! Με περισσότερες και πιο ακριβείς λέξεις-κλειδιά βρήκες γρήγορα αυτό που ήθελες.' },
+          { type: 'theory', ref: 'έκδ. v09 σελ. 79–80 · έκδ. 7.0 σελ. 80–81', text: 'Πώς δουλεύουν οι λέξεις-κλειδιά;', sections: [
+            ['1️⃣ Μία λέξη', 'Μία λέξη φέρνει <b>πάρα πολλά</b> αποτελέσματα — χιλιάδες ή και εκατομμύρια — και κάποια άσχετα.', ['«Ηρακλής» → ήρωας, ομάδα, ζαχαροπλαστείο, οδός…']],
+            ['2️⃣ Περισσότερες λέξεις', 'Με λέξεις που περιγράφουν το θέμα <b>με σαφήνεια και ακρίβεια</b>, τα αποτελέσματα <b>περιορίζονται</b>.', ['«Ηρακλής ήρωας» → λιγότερα', '«Ηρακλής ήρωας μυθολογίας» → ακόμα λιγότερα']],
+            ['👀 Διαβάζω και ελέγχω', 'Μετά το Enter ή το «Αναζήτηση» εμφανίζονται ιστοσελίδες, βίντεο, εικόνες, ειδήσεις. Είναι πολύ σημαντικό να <b>διαβάζω και να ελέγχω</b> τα αποτελέσματα που βλέπω.', []],
+          ] },
+          { type: 'mcq', ref: 'έκδ. 7.0 σελ. 81', text: 'Ποιες λέξεις-κλειδιά θα δώσεις στη μηχανή αναζήτησης για…', questions: [
+            { q: '…το ωράριο λειτουργίας του Εθνικού Αρχαιολογικού Μουσείου της Αθήνας;', options: ['μουσείο', 'ωράριο Εθνικού Αρχαιολογικού Μουσείου Αθήνας', 'πότε'], answer: 1 },
+            { q: '…τη σημαία της Ελλάδας;', options: ['σημαία Ελλάδας', 'χρώματα', 'ήλιος θάλασσα'], answer: 0 },
+            { q: '…τον μέσο όρο ζωής της γάτας;', options: ['γάτα παιχνίδια', 'ζώα', 'πόσα χρόνια ζει μια γάτα'], answer: 2 },
+            { q: '…την απόσταση της Γης από τη Σελήνη;', options: ['φεγγάρι ποίημα', 'απόσταση Γης Σελήνης', 'μακριά'], answer: 1 },
+            { q: '…το τηλέφωνο του σχολείου σου;', options: ['τηλέφωνο', 'σχολείο', 'τηλέφωνο και το όνομα του σχολείου μου'], answer: 2 },
+          ] },
+          { type: 'info', ref: 'έκδ. 7.0 σελ. 79–80 · έκδ. v09 σελ. 80', text: 'Στην τάξη:', cards: [
+            ['🔎', 'Σε μια πραγματική μηχανή αναζήτησης ψάξτε «Ηρακλής», μετά «Ηρακλής ήρωας», μετά «Ηρακλής ήρωας μυθολογίας». Πόσα αποτελέσματα βγήκαν κάθε φορά; Τι συμπεραίνετε;'],
+            ['🗓️', 'Δείτε εικόνες από διάφορες μηχανές αναζήτησης και την ιστοριογραμμή τους. Έχετε χρησιμοποιήσει ποτέ κάποια;'],
+          ] },
+        ],
+        practice: [
+          { type: 'sort', ref: 'εξάσκηση', text: 'Θέλω να μάθω πόσα πόδια έχει η αράχνη. Καλές ή κακές λέξεις-κλειδιά;', bins: ['👍 Σαφείς', '👎 Ασαφείς'], colors: ['#2e7d32', '#c62828'], items: [
+            ['🕷️', 'πόδια αράχνης', 0], ['🕷️', 'πόσα πόδια έχει η αράχνη', 0], ['🕷️', 'αράχνη αριθμός ποδιών', 0],
+            ['❓', 'ζώα', 1, 'Πολύ γενικό: θα βγουν χιλιάδες σελίδες για όλα τα ζώα.'], ['❓', 'πόδια', 1, 'Πόδια ποιου; Λείπει το θέμα!'], ['❓', 'θέλω να μάθω κάτι', 1],
+          ] },
+          { type: 'match', ref: 'εξάσκηση', text: 'Ταίριαξε:', pairs: [
+            ['🌍 Παγκόσμιος ιστός', 'Όλες οι ιστοσελίδες μαζί'], ['🔎 Μηχανή αναζήτησης', 'Ιστοσελίδα που βρίσκει ιστότοπους'], ['🔑 Λέξεις-κλειδιά', 'Οι λέξεις που γράφω για να ψάξω'],
+            ['📋 Αποτελέσματα', 'Ό,τι μου δείχνει η μηχανή αναζήτησης'], ['⬜ Πλαίσιο αναζήτησης', 'Εκεί που γράφω τις λέξεις'],
+          ] },
+          { type: 'mcq', ref: 'εξάσκηση', text: 'Τι θα γίνει αν…', questions: [
+            { q: '…προσθέσω κι άλλες σωστές λέξεις-κλειδιά;', options: ['Δεν θα βγει τίποτα ποτέ', 'Τα αποτελέσματα θα περιοριστούν και θα είναι πιο σχετικά'], answer: 1 },
+            { q: '…γράψω «Ηρακλης» χωρίς τόνο;', options: ['Συνήθως θα βρω πάλι αποτελέσματα', 'Δεν θα βρω τίποτα'], answer: 0 },
+          ] },
+        ],
+      },
+      {
+        icon: '✅', title: 'Επιλέγω το κατάλληλο αποτέλεσμα', sub: 'Περιγραφή · πηγή · σύγκριση · «Χορηγούμενο»',
+        acts: [
+          { type: 'info', ref: 'έκδ. 7.0 σελ. 82–83', text: '«Εμφανίστηκαν πάρα πολλά αποτελέσματα. Πώς θα επιλέξω το κατάλληλο;» «Θα σου δείξω!»', cards: [
+            ['📊', 'Για το Εθνικό Αρχαιολογικό Μουσείο βγήκαν περίπου <b>850.000</b> αποτελέσματα! Μπορώ να διαλέξω και <b>κατηγορία</b>: εικόνες, βίντεο, ειδήσεις, <b>χάρτες</b> (για τη διαδρομή από το σπίτι μου ως το μουσείο).'],
+            ['🥇', 'Τα πρώτα αποτελέσματα μπαίνουν σε σειρά ανάλογα με το πόσο <b>σχετικά</b> είναι με τις λέξεις μου, πόσοι τα έχουν <b>επισκεφτεί</b> και σε πόσες άλλες σελίδες αναφέρονται. Πρέπει να ξέρω να διαλέγω!'],
+            ['📢', 'Κάποια αποτελέσματα γράφουν <b>«Χορηγούμενο»</b>: είναι <b>διαφημίσεις</b>. Κάποιος πλήρωσε για να βγαίνουν πρώτα — δεν είναι τα πιο σχετικά.'],
+          ] },
+          { type: 'theory', ref: 'έκδ. 7.0 σελ. 83 · έκδ. v09 σελ. 79', text: 'Συμβουλές για σωστή αναζήτηση:', sections: [
+            ['🔑 Κλειδιά και 👀 προεπισκόπηση', 'Γράφω λέξεις που σχετίζονται <b>άμεσα</b> με το θέμα. Διαβάζω προσεκτικά την <b>περιγραφή</b> κάτω από κάθε αποτέλεσμα: μου δίνει μια ιδέα για το περιεχόμενο.', []],
+            ['🏛️ Πηγή και εγκυρότητα', 'Ελέγχω <b>από πού</b> έρχεται η πληροφορία. Προτιμώ <b>αξιόπιστες πηγές</b>, όπως πανεπιστήμια, εφημερίδες, εγκυκλοπαίδειες.', ['📚 εγκυκλοπαίδεια ✅ · 💭 «νομίζω ότι…» ❌']],
+            ['⚖️ Σύγκριση · 📍 συγκεκριμένοι τόποι', '<b>Δεν</b> διαλέγω το πρώτο χωρίς να δω και τα άλλα: τα συγκρίνω για να βρω το πιο ολοκληρωμένο. Αν ξέρω αξιόπιστους ιστότοπους, ψάχνω μόνο σε αυτούς.', []],
+            ['📖 Προσεκτική ανάγνωση', 'Διαβάζω προσεκτικά ό,τι διάλεξα, για να βεβαιωθώ ότι έχει αυτό που χρειάζομαι.', []],
+          ] },
+          { type: 'browser', ref: 'έκδ. v09 σελ. 80 (δραστ. 2)', text: 'Ψάξε πληροφορίες για τα αστέρια ως ουράνια σώματα.', start: 'q-home', pages: { ...C_PSAXNO, ...C_STARS }, engine: 'www.psaxno.gr', logo: '🔎 Ψάχνω',
+            tasks: (() => { const seen = new Set(), rel = ev => ev.t === 'go' && ['q-astro', 'q-enc'].includes(ev.page) && seen.add(ev.page); return [
+              ['Ψάξε τη λέξη <b>αστέρια</b>.', ev => ev.t === 'search' && norm(ev.q).includes('αστερ')],
+              ['Είναι όλα για τα αστέρια του ουρανού; Το πρώτο γράφει «<b>Χορηγούμενο</b>»: είναι διαφήμιση! Διάβασε τις περιγραφές και άνοιξε ένα <b>σχετικό και αξιόπιστο</b> αποτέλεσμα.', ev => !!rel(ev)],
+              ['Γύρισε στα αποτελέσματα με το <b>⬅</b>.', ev => ev.t === 'go' && ev.via === 'back' && ev.page === '?'],
+              ['<b>Σύγκρινε</b>: άνοιξε και το <b>άλλο</b> σχετικό και αξιόπιστο αποτέλεσμα.', ev => !!rel(ev) && seen.size === 2],
+              ['Ψάξε τώρα <b>αστέρια ουράνια σώματα</b>: τα σχετικά ανεβαίνουν ψηλότερα.', ev => ev.t === 'search' && norm(ev.q).includes('ουραν')],
+            ]; })(), doneMsg: '🔭 Μπράβο! Διάλεξες με προσοχή — όχι απλώς το πρώτο αποτέλεσμα.' },
+          { type: 'sort', ref: 'έκδ. 7.0 σελ. 83', text: 'Ψάχνω πληροφορίες για τα αστέρια του ουρανού. Ποιο αποτέλεσμα θα διάλεγα;', bins: ['✅ Σχετικό και αξιόπιστο', '❌ Άσχετο ή αναξιόπιστο'], colors: ['#2e7d32', '#c62828'], items: [
+            ['📚', 'Αστέρι — Μικρή Εγκυκλοπαίδεια', 0], ['🔭', 'Αστρονομία για παιδιά — από ένα αστεροσκοπείο', 0], ['🏛️', 'Πανεπιστήμιο: Τι είναι τα αστέρια;', 0],
+            ['⭐', 'Χορηγούμενο: αστεράκια για το ταβάνι, έκπτωση 50%!', 1, 'Είναι διαφήμιση: θέλει να μου πουλήσει κάτι.'], ['🎬', 'Τα αστέρια του σινεμά', 1, 'Άλλο θέμα: ηθοποιοί, όχι ουράνια σώματα.'],
+            ['💡', '«Νομίζω ότι τα αστέρια είναι λαμπάκια» — ένα ιστολόγιο', 1, 'Μια γνώμη χωρίς στοιχεία δεν είναι αξιόπιστη πηγή.'], ['🌊', 'Ο αστερίας της θάλασσας', 1, 'Ζώο της θάλασσας, όχι αστέρι του ουρανού.'],
+          ] },
+          { type: 'browser', ref: 'έκδ. v09 σελ. 79–80 (δραστ. 3)', text: 'Πολλοί ιστότοποι έχουν τη δική τους γραμμή αναζήτησης. Ψάξε στη Μικρή Εγκυκλοπαίδεια!', start: 'e-home', pages: C_ENC, engine: 'www.mikri-egkyklopaideia.gr/search', logo: '📚 Μικρή Εγκυκλοπαίδεια', tasks: [
+            ['Γράψε στη γραμμή αναζήτησης της εγκυκλοπαίδειας το αγαπημένο σου <b>άθλημα</b> ή <b>χόμπι</b> (π.χ. κολύμβηση, σκάκι, χορός) και πάτα 🔎.', ev => ev.t === 'search'],
+            ['Άνοιξε ένα αποτέλεσμα και διάβασε τι γράφει.', ev => ev.t === 'go' && ev.via === 'link' && /^e-/.test(ev.page) && ev.page !== 'e-home'],
+            ['Γύρισε πίσω και ψάξε ένα <b>δεύτερο</b> θέμα.', ev => ev.t === 'search'],
+          ], doneMsg: '🎤 Μπράβο! Παρουσίασε σύντομα στην τάξη τι βρήκες.' },
+          { type: 'mcq', ref: 'έκδ. 7.0 σελ. 84', text: 'Ομαδική εργασία: ψάξατε για τα δικαιώματα των παιδιών, τα ολυμπιακά αθλήματα ή τα μνημεία της Ελλάδας.', questions: [
+            { q: 'Στην πρώτη σελίδα βλέπετε ένα αποτέλεσμα που δεν έχει σχέση. Τι κάνετε;', options: ['Το ανοίγουμε οπωσδήποτε', 'Το προσπερνάμε και διαλέγουμε ένα σχετικό'], answer: 1 },
+            { q: 'Πώς περιορίζετε τα αποτελέσματα;', options: ['Προσθέτουμε πιο ακριβείς λέξεις-κλειδιά', 'Γράφουμε μόνο μία λέξη'], answer: 0 },
+            { q: 'Ποια ιστοσελίδα για τα ολυμπιακά αθλήματα είναι πιο έγκυρη;', options: ['Το σχόλιο ενός αγνώστου', 'Ο ιστότοπος της Ολυμπιακής Επιτροπής', 'Μια διαφήμιση για αθλητικά παπούτσια'], answer: 1, explain: 'Προτιμάμε τον επίσημο φορέα: γνωρίζει και ελέγχει τις πληροφορίες.' },
+            { q: 'Τι σημαίνει «Χορηγούμενο» δίπλα σε ένα αποτέλεσμα;', options: ['Ότι είναι το πιο σωστό', 'Ότι είναι διαφήμιση'], answer: 1 },
+          ] },
+          { type: 'info', ref: 'έκδ. 7.0 σελ. 82–83', text: 'Στην τάξη:', cards: [
+            ['🎬', 'Δείτε το βίντεο του Κέντρου Ασφαλούς Διαδικτύου για την αναζήτηση πληροφοριών στο Διαδίκτυο και συζητήστε τις συμβουλές του.'],
+            ['🗺️', 'Σε μια πραγματική μηχανή αναζήτησης ψάξτε ένα μουσείο και ανοίξτε την κατηγορία «Χάρτες»: πώς πάμε εκεί από το σχολείο;'],
+          ] },
+        ],
+        practice: [
+          { type: 'match', ref: 'εξάσκηση', text: 'Οι συμβουλές για σωστή αναζήτηση:', pairs: [
+            ['🔑 Κλειδιά αναζήτησης', 'Λέξεις που σχετίζονται άμεσα με το θέμα'], ['👀 Προεπισκόπηση', 'Διαβάζω την περιγραφή κάθε αποτελέσματος'], ['🏛️ Πηγή', 'Ελέγχω από πού έρχεται η πληροφορία'],
+            ['⚖️ Σύγκριση', 'Δεν διαλέγω αμέσως το πρώτο'], ['📢 Χορηγούμενο', 'Διαφήμιση που πλήρωσε για να βγαίνει πρώτη'],
+          ] },
+          { type: 'mcq', ref: 'εξάσκηση', text: 'Τι θα γίνει αν…', questions: [
+            { q: '…ανοίγω πάντα μόνο το πρώτο αποτέλεσμα;', options: ['Θα βρίσκω πάντα το καλύτερο', 'Μπορεί να πέσω σε διαφήμιση ή σε λιγότερο σχετική σελίδα'], answer: 1 },
+            { q: 'Για μια εργασία για το ηλιακό σύστημα ψάχνω «Ήλιος». Η περιγραφή γράφει «Ταβέρνα Ο Ήλιος — μενού». Το ανοίγω;', options: ['Όχι, η περιγραφή δείχνει ότι είναι άσχετο', 'Ναι, έχει τη λέξη Ήλιος'], answer: 0 },
+            { q: 'Δύο σελίδες λένε διαφορετικά πράγματα. Τι κάνω;', options: ['Πιστεύω την πρώτη', 'Ψάχνω και μια τρίτη αξιόπιστη πηγή και ρωτάω τον/την εκπαιδευτικό'], answer: 1 },
+          ] },
+        ],
+      },
+      {
+        icon: '🎬', title: 'Φτιάχνω κινούμενα σχέδια', sub: 'Εικόνες που αλλάζουν γρήγορα · Tux Paint · Scratch Jr',
+        acts: [
+          { type: 'info', ref: 'έκδ. 7.0 σελ. 85 · έκδ. v09 σελ. 87', text: '«Ας δημιουργήσουμε ένα κινούμενο σχέδιο!»', cards: [
+            ['🎞️', 'Τα <b>κινούμενα σχέδια</b> (animation) είναι η πολύ γρήγορη προβολή μιας σειράς από εικόνες, που δίνει την εντύπωση της <b>κίνησης</b>.'],
+            ['🔍', 'Οι εικόνες <b>διαφέρουν ελάχιστα</b> μεταξύ τους. Όταν τις βλέπουμε τη μία μετά την άλλη πολύ γρήγορα, νομίζουμε ότι βλέπουμε <b>βίντεο</b>.'],
+            ['👸', 'Ήξερες ότι… Το <b>1937</b> ο Γουόλτ Ντίσνεϊ έφερε στη μεγάλη οθόνη την πρώτη ταινία κινουμένων σχεδίων μεγάλου μήκους: τη <b>Χιονάτη και τους επτά νάνους</b>.'],
+          ] },
+          { type: 'order', ref: 'έκδ. 7.0 σελ. 86–87', title: 'Κινούμενο σχέδιο στο Tux Paint', text: 'Βάλε τα βήματα στη σειρά.', steps: [
+            ['🐧', 'Ανοίγω το Tux Paint με διπλό κλικ και διαλέγω άσπρο χαρτί.'], ['🖌️', 'Με το πινέλο ζωγραφίζω μια κόκκινη καρδιά και τη γεμίζω κόκκινη με το Γέμισμα.'], ['💾', 'Αποθηκεύω την πρώτη εικόνα.'],
+            ['🪣', 'Γεμίζω την καρδιά με άλλο χρώμα και την αποθηκεύω ως νέα εικόνα — ώσπου να έχω έξι.'], ['📂', 'Πατάω Άνοιγμα → Προβολή διαφανειών, διαλέγω τη σειρά των εικόνων και τη μεγαλύτερη ταχύτητα.'],
+            ['▶️', 'Πατάω Αναπαραγωγή — ή GIF, για να φτιάξω την κινούμενη εικόνα στον φάκελο Εικόνες.'],
+          ], before: 'chain' },
+          { type: 'anim', ref: 'έκδ. 7.0 σελ. 86–87', text: 'Η καρδιά που αλλάζει χρώματα! Φτιάξε το κινούμενο σχέδιο από τις έξι εικόνες.', frames: C_HEARTS, tasks: [
+            ['Πάτα τις εικόνες με τη σειρά του <b>ουράνιου τόξου</b>: 🔴 κόκκινο, 🟠 πορτοκαλί, 🟡 κίτρινο, 🟢 πράσινο, 🔵 μπλε, 🟣 μωβ. (Λάθος; Πάτα το καρέ στη γραμμή χρόνου για να το βγάλεις.)', ev => ev.t === 'add' && ev.ok],
+            ['Πάτα <b>▶ Αναπαραγωγή</b>.', ev => ev.t === 'play' && ev.ok],
+            ['Σύρε την <b>ταχύτητα</b> στη μεγαλύτερη τιμή (12 καρέ/δευτ.).', ev => ev.t === 'speed' && ev.fps >= 12],
+            ['Πάτα ξανά ▶: η καρδιά αλλάζει χρώματα σαν φωτάκι!', ev => ev.t === 'play' && ev.fps >= 12],
+          ], doneMsg: '❤️ Μπράβο! Έξι εικόνες, γρήγορα η μία μετά την άλλη: ένα κινούμενο σχέδιο!' },
+          { type: 'anim', ref: 'έκδ. 7.0 σελ. 87', text: 'Ένα βατραχάκι που πηδάει! Οι εικόνες διαφέρουν ελάχιστα: βρες τη σωστή σειρά.', frames: C_FROG, fps: 5, tasks: [
+            ['Βάλε τις εικόνες στη γραμμή χρόνου: ο βάτραχος ξεκινάει <b>αριστερά</b>, ανεβαίνει ψηλά και προσγειώνεται <b>δεξιά</b>.', ev => ev.t === 'add' && ev.ok],
+            ['Πάτα ▶ για να δεις το πήδημα.', ev => ev.t === 'play' && ev.ok],
+            ['Βγάλε το <b>τελευταίο</b> καρέ από τη γραμμή χρόνου (πάτησέ το).', ev => ev.t === 'remove'],
+            ['Πάτα ▶: ο βάτραχος δεν προσγειώνεται ποτέ!', ev => ev.t === 'play' && !ev.ok],
+            ['Ξαναβάλε το καρέ που λείπει και πάτα ▶.', ev => ev.t === 'play' && ev.ok],
+          ], doneMsg: '🐸 Κουάξ! Αν λείπει μια εικόνα ή είναι σε λάθος θέση, η κίνηση «κόβεται».' },
+          { type: 'info', ref: 'έκδ. v09 σελ. 87–91', text: 'Κινούμενα σχέδια με το Scratch Jr:', cards: [
+            ['🐱', 'Στο <b>Scratch Jr</b> (scratchjr.org) δίνουμε σε έναν ήρωα <b>πλακίδια εντολών</b> (blocks): ο Tic χορεύει, τα ζωάκια της φάρμας μιλάνε, το διαστημόπλοιο εκτοξεύεται!'],
+            ['➕', 'Για να προσθέσω ήρωα ή σκηνή πατάω το <b>+</b>. Για να διαγράψω ένα αντικείμενο το πατάω <b>παρατεταμένα</b> και μετά το κόκκινο <b>Χ</b>. Δοκιμάζω το έργο με το <b>πράσινο σημαιάκι</b>.'],
+            ['🎬', 'Ένα έργο μπορεί να έχει <b>πολλές σκηνές</b> (στη δεξιά στήλη): ο ήρωας πηγαίνει από τη μία σκηνή στην επόμενη.'],
+          ] },
+          { type: 'order', ref: 'έκδ. v09 σελ. 91–93 (Πάω στο σχολείο)', title: 'Πάω στο σχολείο', text: 'Το έργο στο Scratch Jr έχει τρεις σκηνές. Βάλε τα γεγονότα στη σειρά.', steps: [
+            ['🏠', '1η σκηνή: το παιδί είναι στο δωμάτιό του το πρωί και λέει κάτι.'], ['🚌', '2η σκηνή: στη γειτονιά ανεβαίνει στο λεωφορείο, που ξεκινάει.'],
+            ['🏫', '3η σκηνή: στην τάξη χαιρετάει τον/τη δάσκαλο/α και τους φίλους του.'], ['💬', 'Όλοι μαζί κάνουν έναν μικρό διάλογο.'],
+          ], before: 'chain' },
+          { type: 'mcq', ref: 'έκδ. v09 σελ. 88–90', text: 'Θυμάμαι το Scratch Jr:', questions: [
+            { q: 'Με τι δοκιμάζω το έργο μου;', options: ['Με το πράσινο σημαιάκι', 'Με το κόκκινο Χ', 'Με το +'], answer: 0 },
+            { q: 'Πώς διαγράφω τον Tic;', options: ['Με διπλό κλικ', 'Τον πατάω παρατεταμένα και μετά το κόκκινο Χ'], answer: 1 },
+            { q: 'Πού βρίσκω έτοιμα έργα για ιδέες, όπως τη φάρμα;', options: ['Στις ρυθμίσεις του υπολογιστή', 'Στα δειγματικά έργα (sample projects)'], answer: 1 },
+            { q: 'Πώς προσθέτω έναν νέο ήρωα ή μια σκηνή;', options: ['Με το +', 'Με το Backspace'], answer: 0 },
+          ] },
+        ],
+        practice: [
+          { type: 'anim', ref: 'εξάσκηση', text: 'Ένα λουλούδι που μεγαλώνει: από τον σπόρο ως το μεγάλο λουλούδι!', frames: C_FLOWER, tasks: [
+            ['Βάλε τις εικόνες στη σωστή σειρά: πρώτα ο <b>σπόρος</b>, στο τέλος το <b>μεγάλο λουλούδι</b>.', ev => ev.t === 'add' && ev.ok],
+            ['Πάτα ▶ και δες το να μεγαλώνει.', ev => ev.t === 'play' && ev.ok],
+          ] },
+          { type: 'anim', ref: 'εξάσκηση', text: 'Μια μπάλα που αναπηδάει — κάθε φορά λίγο πιο χαμηλά!', frames: C_BALL, fps: 6, tasks: [
+            ['Βάλε τις εικόνες στη σειρά: η μπάλα πέφτει από <b>ψηλά αριστερά</b> και προχωράει δεξιά.', ev => ev.t === 'add' && ev.ok],
+            ['Πάτα ▶.', ev => ev.t === 'play' && ev.ok],
+          ] },
+          { type: 'mcq', ref: 'εξάσκηση', text: 'Τι θα γίνει αν…', questions: [
+            { q: '…οι εικόνες είναι πολύ διαφορετικές μεταξύ τους;', options: ['Η κίνηση θα γίνει πιο ομαλή', 'Η κίνηση δεν θα μοιάζει φυσική — θα «πηδάει»'], answer: 1 },
+            { q: '…βάλω πολύ μικρή ταχύτητα (1 καρέ/δευτ.);', options: ['Θα βλέπω μία-μία τις εικόνες, σαν φωτογραφίες', 'Θα μοιάζει με γρήγορο βίντεο'], answer: 0 },
+            { q: 'Θέλω ένα ανθρωπάκι που χορεύει. Τι ζωγραφίζω;', options: ['Μία μόνο εικόνα', 'Πολλές εικόνες, με το ανθρωπάκι σε λίγο διαφορετική στάση κάθε φορά'], answer: 1 },
+          ] },
+        ],
+      },
+      {
+        icon: '👤', title: 'Το προφίλ μου και ο ψηφιακός μου χαρακτήρας', sub: 'Λογαριασμός · προφίλ · άβαταρ · προσωπικά δεδομένα',
+        acts: [
+          { type: 'info', ref: 'έκδ. v09 σελ. 76 · έκδ. 7.0 σελ. 88', text: '«Ήρωνα, βοήθησέ με να δημιουργήσω τον ψηφιακό μου χαρακτήρα.» «Έλα να σου δείξω, είναι πολύ απλό!»', cards: [
+            ['🔐', 'Σε πολλές εφαρμογές του Διαδικτύου φτιάχνουμε <b>λογαριασμό χρήστη</b>. Παίρνουμε <b>στοιχεία σύνδεσης</b>: <b>όνομα χρήστη</b> (username) και <b>κωδικό πρόσβασης</b> (password). Τα κρατάω ασφαλή και δεν τα λέω σε άλλους!'],
+            ['👤', 'Αποκτούμε και ένα <b>προφίλ χρήστη</b>: όνομα, εικόνα, βιογραφικά στοιχεία, στοιχεία επικοινωνίας, προσωπικές ρυθμίσεις.'],
+            ['🐝', 'Στην <b>e-me</b> συνδέομαι με τα στοιχεία μου στο <b>ΠΣΔ</b>. Στο προφίλ μου βάζω <b>εικόνα</b>, το <b>μότο</b> μου και μια σύντομη <b>περιγραφή</b> που <b>δεν</b> αποκαλύπτει προσωπικές πληροφορίες. Για αλλαγές πατάω το <b>✏️ μολύβι</b>.'],
+          ] },
+          { type: 'theory', ref: 'έκδ. 7.0 σελ. 89–90 · έκδ. v09 σελ. 77', text: 'Ο ψηφιακός χαρακτήρας και τα προσωπικά δεδομένα:', sections: [
+            ['🎭 Άβαταρ', 'Ο <b>ψηφιακός χαρακτήρας</b> ή <b>άβαταρ</b> (avatar) είναι μια εικόνα ή ένας εικονικός χαρακτήρας που με αντιπροσωπεύει σε συνομιλίες, παιχνίδια και πλατφόρμες, <b>αντί για μια πραγματική φωτογραφία</b>. Μπορεί να είναι και ένα ψευδώνυμο.', ['🦊 αντί για 📸']],
+            ['📷 Στην e-me', 'Πατάω τη <b>φωτογραφική μηχανή</b> κάτω δεξιά στην εικόνα του προφίλ → <b>Επιλογή Avatar</b> → διαλέγω εικόνα. Ή <b>Μεταφόρτωση εικόνας</b>, για μια ζωγραφιά ή ένα άβαταρ που έφτιαξα.', []],
+            ['🛡️ Προσωπικά δεδομένα', 'Πληροφορίες που αποκαλύπτουν <b>ποιοι είμαστε</b>: όνομα, διεύθυνση, τηλέφωνο, σχολείο. Δεν τις δίνω σε αγνώστους, ειδικά στο Διαδίκτυο. Έτσι <b>προστατεύω τον εαυτό μου</b>!', ['🏠 διεύθυνση ❌ · ☎️ τηλέφωνο ❌ · ⚽ «μου αρέσει το ποδόσφαιρο» ✅']],
+          ] },
+          { type: 'sort', ref: 'έκδ. 7.0 σελ. 89–90', text: 'Τι μπορώ να γράψω στην περιγραφή του προφίλ μου;', bins: ['✅ Μπορώ να το γράψω', '⛔ Προσωπικό δεδομένο — όχι!'], colors: ['#2e7d32', '#c62828'], items: [
+            ['🐶', 'Αγαπώ τα ζώα', 0], ['⭐', 'Μότο: «Πάντα χαμογελώ!»', 0], ['🎨', 'Μου αρέσει η ζωγραφική', 0], ['📚', 'Διαβάζω κόμικς', 0],
+            ['🏠', 'Μένω στην οδό Ακακιών 5', 1, 'Η διεύθυνση του σπιτιού είναι προσωπικό δεδομένο.'], ['☎️', 'Το κινητό μου είναι 69…', 1],
+            ['🏫', 'Πηγαίνω στο 2ο Δημοτικό της πόλης μου', 1, 'Και το σχολείο μας λέει πού μπορεί να μας βρει κάποιος.'], ['🔑', 'Ο κωδικός μου είναι…', 1, 'Τον κωδικό δεν τον λέω σε κανέναν!'],
+          ] },
+          { type: 'browser', ref: 'έκδ. v09 σελ. 77 (δραστ. 1–3) · έκδ. 7.0 σελ. 89', text: 'Φτιάξε το άβαταρ σου και βάλ’ το στο προφίλ σου στην e-me.', start: 'av-home', pages: { ...C_AVATAR, ...C_EME }, bookmarks: ['eme-home'], tasks: [
+            ['Διάλεξε πρόσωπο, μαλλιά, ρούχα και φόντο και πάτα <b>⬇️ Download</b> για να αποθηκεύσεις το άβαταρ.', ev => ev.t === 'submit' && ev.form === 'avatar'],
+            ['Πήγαινε στην <b>e-me</b> με τον σελιδοδείκτη 🐝.', ev => ev.t === 'go' && ev.page === 'eme-home'],
+            ['Άνοιξε το <b>👤 Προφίλ</b> σου.', ev => ev.t === 'go' && ev.page === 'eme-profile'],
+            ['Πάτα το <b>✏️ Επεξεργασία</b>.', ev => ev.t === 'go' && ev.page === 'eme-edit'],
+            ['Διάλεξε εικόνα (ένα άβαταρ ή «📤 Μεταφόρτωση»), γράψε μια σύντομη περιγραφή <b>χωρίς προσωπικές πληροφορίες</b> (όχι τηλέφωνα, διευθύνσεις) και το μότο σου. Πάτα 💾.', ev => ev.t === 'submit' && ev.form === 'profile' && !!ev.values.avatar && !/\d{4,}/.test(ev.values.about + ev.values.motto)],
+          ], doneMsg: '🎉 Το προφίλ σου είναι έτοιμο — και ασφαλές!' },
+          { type: 'mcq', ref: 'έκδ. v09 σελ. 76–78', text: 'Θυμάμαι:', questions: [
+            { q: 'Ποια είναι τα στοιχεία σύνδεσης;', options: ['Εικόνα και μότο', 'Όνομα χρήστη και κωδικός πρόσβασης', 'Τηλέφωνο και διεύθυνση'], answer: 1 },
+            { q: 'Ένας συμμαθητής μού ζητάει τον κωδικό μου στο ΠΣΔ. Τι κάνω;', options: ['Του τον λέω, είναι φίλος μου', 'Δεν τον λέω: τα στοιχεία σύνδεσης τα κρατάω ασφαλή'], answer: 1 },
+            { q: 'Γιατί βάζω άβαταρ αντί για φωτογραφία μου;', options: ['Για να προστατεύω τα προσωπικά μου δεδομένα', 'Γιατί οι φωτογραφίες χαλάνε τους υπολογιστές'], answer: 0 },
+            { q: 'Πού πατάω για να αλλάξω το προφίλ μου στην e-me;', options: ['Στο ⌫ Backspace', 'Στο ✏️ μολύβι'], answer: 1 },
+          ] },
+          { type: 'info', ref: 'έκδ. 7.0 σελ. 89–90 · έκδ. v09 σελ. 77', text: 'Στην τάξη:', cards: [
+            ['🐝', 'Συνδεθείτε στην πραγματική e-me (e-me.edu.gr) με τα στοιχεία σας στο ΠΣΔ — ο/η εκπαιδευτικός ελέγχει πρώτα ότι τα ξέρετε. Συμπληρώστε «Συστήσου» και «Γράψε το μότο σου».'],
+            ['🖌️', 'Ζωγραφίστε την εικόνα του προφίλ σας σε ένα πρόγραμμα ζωγραφικής, αποθηκεύστε την και μεταφορτώστε τη. Ή φτιάξτε άβαταρ στο <b>Avatar Maker</b> (avatarmaker.com) και πατήστε Download.'],
+          ] },
+        ],
+        practice: [
+          { type: 'match', ref: 'εξάσκηση', text: 'Ταίριαξε:', pairs: [
+            ['👤 Όνομα χρήστη', 'Το όνομα με το οποίο συνδέομαι'], ['🔑 Κωδικός πρόσβασης', 'Μυστική λέξη για τη σύνδεση'], ['🪪 Προφίλ χρήστη', 'Όνομα, εικόνα, περιγραφή, ρυθμίσεις'],
+            ['🎭 Άβαταρ', 'Ψηφιακός χαρακτήρας αντί για φωτογραφία'], ['📤 Μεταφόρτωση', 'Ανεβάζω ένα αρχείο στην πλατφόρμα'], ['⬇️ Λήψη (Download)', 'Κατεβάζω ένα αρχείο στον υπολογιστή μου'],
+          ] },
+          { type: 'mcq', ref: 'εξάσκηση', text: 'Τι θα γίνει αν…', questions: [
+            { q: '…γράψω τη διεύθυνσή μου στο προφίλ;', options: ['Δεν θα τη δει κανείς ποτέ', 'Μπορεί να τη δουν και άγνωστοι'], answer: 1, explain: 'Ό,τι γράφω στο Διαδίκτυο μπορεί να το δουν πολλοί. Τα προσωπικά δεδομένα τα κρατάμε για εμάς.' },
+            { q: 'Η Ελένη ζωγράφισε η ίδια την εικόνα του προφίλ της. Τι διαλέγει στην e-me;', options: ['Μεταφόρτωση εικόνας', 'Επιλογή Avatar'], answer: 0 },
+          ] },
+        ],
+      },
+      {
+        icon: '📰', title: 'Τα ιστολόγια', sub: 'Ιστολόγιο χρήστη · ιστολόγιο κυψέλης · η δομή ενός ιστολογίου',
+        acts: [
+          { type: 'info', ref: 'έκδ. 7.0 σελ. 91 · έκδ. v09 σελ. 82', text: '«Ξέρεις τι είναι τα ιστολόγια;» «Ναι, και θα σου πω περισσότερα!»', cards: [
+            ['📰', 'Το <b>ιστολόγιο</b> (blog, από το weblog) είναι ένας ιστότοπος οργανωμένος με <b>ημερολογιακό τρόπο</b>: οι δημοσιεύσεις του, τα <b>άρθρα</b> ή <b>αναρτήσεις</b>, εμφανίζονται από το <b>πιο πρόσφατο</b> στο πιο παλιό.'],
+            ['📔', 'Λειτουργεί σαν <b>διαδικτυακό ημερολόγιο</b>: γράφω σκέψεις, εμπειρίες, εικόνες και ιστορίες με μια ημερομηνία. Όμως ό,τι δημοσιεύω μπορεί να το δει <b>οποιοσδήποτε</b> χρήστης του Διαδικτύου!'],
+            ['✍️', 'Όποιος γράφει σε ιστολόγια λέγεται <b>blogger</b> και η διαδικασία <b>blogging</b>. Υπάρχουν πολλά <b>είδη</b> ιστολογίων, ανάλογα με το θέμα — π.χ. ένα εκπαιδευτικό ιστολόγιο δίνει συμβουλές για τη μάθηση.'],
+          ] },
+          { type: 'theory', ref: 'έκδ. 7.0 σελ. 92–93', text: 'Τα ιστολόγια της e-me (e-me blogs):', sections: [
+            ['👤 Ιστολόγιο χρήστη', 'Το <b>προσωπικό</b> ιστολόγιο ενός μαθητή ή εκπαιδευτικού. Συντάκτης είναι <b>μόνο ο δημιουργός</b> του. Δείχνει τις σκέψεις, τις ιδέες και τα έργα του. Κάθε μέλος της e-me έχει ένα, έτοιμο.', []],
+            ['🐝 Ιστολόγιο κυψέλης', 'Το <b>συνεργατικό</b> ιστολόγιο μιας κυψέλης. Συντάκτες είναι <b>όλα τα μέλη</b>: μαθητές και εκπαιδευτικοί έχουν τα <b>ίδια δικαιώματα</b>. Δείχνει τη δουλειά όλης της κυψέλης.', []],
+            ['📚 Τα ιστολόγιά μου', 'Στα e-me blogs πατάω <b>Τα ιστολόγιά μου</b> για να δω όλα τα ιστολόγια όπου συμμετέχω και <b>Δημιουργία ιστολογίων</b> για ένα νέο. Τα διαχειρίζομαι από τον <b>πίνακα ελέγχου</b>.', []],
+          ] },
+          { type: 'browser', ref: 'έκδ. 7.0 σελ. 93–94', text: 'Βρες τα ιστολόγιά σου στην e-me.', start: 'eme-home', pages: C_EME, tasks: [
+            ['Άνοιξε τα <b>📰 e-me blogs</b>.', ev => ev.t === 'go' && ev.page === 'eme-blogs'],
+            ['Πάτα <b>Τα ιστολόγιά μου</b>: σε πόσα ιστολόγια συμμετέχεις;', ev => ev.t === 'go' && ev.page === 'eme-myblogs'],
+            ['Άνοιξε το <b>ιστολόγιο χρήστη</b> — το προσωπικό σου.', ev => ev.t === 'go' && ev.page === 'eme-myblog'],
+            ['Γύρισε πίσω (⬅) και άνοιξε το <b>ιστολόγιο της κυψέλης</b> σου.', ev => ev.t === 'go' && ev.page === 'eme-hiveblog'],
+          ] },
+          { type: 'sort', ref: 'έκδ. 7.0 σελ. 92', text: 'Ιστολόγιο χρήστη ή ιστολόγιο κυψέλης;', bins: ['👤 Ιστολόγιο χρήστη', '🐝 Ιστολόγιο κυψέλης'], items: [
+            ['✍️', 'Γράφει μόνο ο δημιουργός του', 0], ['👥', 'Γράφουν όλα τα μέλη μαζί', 1], ['💭', 'Οι δικές μου σκέψεις και ζωγραφιές', 0],
+            ['🏆', 'Η δουλειά όλης της τάξης για ένα πρόγραμμα', 1], ['🎁', 'Το έχει έτοιμο κάθε μέλος της e-me', 0], ['⚖️', 'Μαθητές και εκπαιδευτικοί έχουν τα ίδια δικαιώματα', 1],
+          ] },
+          { type: 'browser', ref: 'έκδ. v09 σελ. 83 (δραστ. 1–2)', text: 'Στα Ιστολόγια του ΠΣΔ: βρες σχολεία του Λασιθίου και εξερεύνησε ένα σχολικό ιστολόγιο.', start: 'b-home', pages: C_BLOGS, engine: 'blogs.sch.gr/search', logo: '📰 Ιστολόγια του ΠΣΔ', tasks: [
+            ['Ψάξε <b>Λασίθι</b> στη γραμμή αναζήτησης.', ev => ev.t === 'search' && norm(ev.q).includes('λασιθ')],
+            ['Από τα αποτελέσματα άνοιξε το ιστολόγιο του <b>Δημοτικού Σχολείου Ανεμόμυλων</b>.', ev => ev.t === 'go' && ev.page === 'b-anem'],
+            ['Κύλισε προς τα κάτω ως το <b>υποσέλιδο</b>.', ev => ev.t === 'scroll'],
+          ], doneMsg: '🎉 Είδες την κεφαλίδα, το μενού, τις αναρτήσεις με ημερομηνία, το πλευρικό μενού και το υποσέλιδο!' },
+          { type: 'mcq', ref: 'έκδ. v09 σελ. 83', text: 'Η δομή ενός ιστολογίου: τι είδες στο ιστολόγιο του σχολείου;', questions: [
+            { q: 'Πώς λέγεται το πάνω μέρος, με το όνομα του ιστολογίου;', options: ['Υποσέλιδο', 'Κεφαλίδα', 'Πλευρικό μενού'], answer: 1 },
+            { q: 'Ποια ανάρτηση ήταν πρώτη-πρώτη;', options: ['Η πιο πρόσφατη: «Επίσκεψη στους ανεμόμυλους»', 'Η πιο παλιά: «Ταΐσαμε τα πουλιά»'], answer: 0 },
+            { q: 'Πού ήταν οι Κατηγορίες και το Ιστορικό;', options: ['Στο υποσέλιδο', 'Στο πλευρικό μενού'], answer: 1 },
+            { q: 'Ποιες πρόσθετες λειτουργίες είχε το πλευρικό μενού;', options: ['Ρολόι και καιρό', 'Τίποτα'], answer: 0 },
+            { q: 'Σε τι διαφέρει ένα ιστολόγιο από ένα ιδιωτικό ημερολόγιο;', options: ['Σε τίποτα, είναι κρυφά και τα δύο', 'Ό,τι γράφω στο ιστολόγιο μπορεί να το δει οποιοσδήποτε'], answer: 1 },
+          ] },
+          { type: 'info', ref: 'έκδ. 7.0 σελ. 94 · έκδ. v09 σελ. 83', text: 'Στην τάξη:', cards: [
+            ['🔐', 'Συνδεθείτε στην e-me με τα στοιχεία του ΠΣΔ, βρείτε τα ιστολόγιά σας και τα ιστολόγια των κυψελών σας και δείτε τα άρθρα τους.'],
+            ['🏫', 'Επισκεφθείτε το ιστολόγιο του σχολείου σας στο blogs.sch.gr και βρείτε κεφαλίδα, υποσέλιδο, μενού και πρόσθετα: ρολόι, ημερολόγιο, «σαν σήμερα», καιρό.'],
+          ] },
+        ],
+        practice: [
+          { type: 'match', ref: 'εξάσκηση', text: 'Ταίριαξε:', pairs: [
+            ['📰 Ιστολόγιο (blog)', 'Ιστότοπος με άρθρα κατά ημερομηνία'], ['✍️ Blogger', 'Αυτός που γράφει σε ιστολόγιο'], ['📌 Ανάρτηση', 'Μια δημοσίευση πληροφοριών στο Διαδίκτυο'],
+            ['🔝 Κεφαλίδα', 'Το πάνω μέρος, με το όνομα'], ['🔚 Υποσέλιδο', 'Το κάτω μέρος της σελίδας'],
+          ] },
+          { type: 'mcq', ref: 'εξάσκηση', text: 'Τι θα γίνει αν…', questions: [
+            { q: '…δημοσιεύσω σήμερα ένα νέο άρθρο;', options: ['Θα πάει τελευταίο', 'Θα εμφανιστεί πρώτο-πρώτο'], answer: 1 },
+            { q: '…θέλω να γράψω για την εκδρομή μαζί με τους συμμαθητές μου; Ποιο ιστολόγιο διαλέγουμε;', options: ['Το ιστολόγιο της κυψέλης μας', 'Το προσωπικό ιστολόγιο ενός παιδιού'], answer: 0 },
+          ] },
+        ],
+      },
+      {
+        icon: '✍️', title: 'Τα άρθρα ενός ιστολογίου', sub: 'Τίτλος · κατηγορία · ετικέτες · ημερομηνία · δημοσίευση',
+        acts: [
+          { type: 'info', ref: 'έκδ. 7.0 σελ. 95 · έκδ. v09 σελ. 82', text: '«Τι μπορεί να περιέχει ένα άρθρο ιστολογίου;» «Κείμενο, εικόνες, βίντεο, ιστοσελίδες και πολλά ακόμα!»', cards: [
+            ['📄', 'Ένα ιστολόγιο αποτελείται από <b>άρθρα</b>. Οργανώνονται <b>χρονολογικά</b> (κατά την ημερομηνία που γράφτηκαν) ή και <b>θεματικά</b> (κατά το θέμα τους).'],
+            ['🎬', 'Ένα άρθρο έχει <b>κείμενο</b>, <b>ήχο</b>, <b>εικόνες</b>, <b>φωτογραφίες</b>, <b>βίντεο</b> και <b>συνδέσμους</b> προς ιστοσελίδες με σχετικό θέμα.'],
+            ['🏷️', 'Τα στοιχεία του: ο <b>τίτλος</b>, η <b>κατηγορία</b> (μια ομάδα άρθρων με κοινό θέμα), οι <b>ετικέτες</b> (χαρακτηριστικές λέξεις), η <b>ημερομηνία</b> δημοσίευσης — και συχνά ο <b>συγγραφέας</b>.'],
+          ] },
+          { type: 'browser', ref: 'έκδ. 7.0 σελ. 95', text: 'Δες το άρθρο για την καφέ αρκούδα και εξερεύνησε τα στοιχεία του.', start: 'a-bear', pages: C_ART, tasks: [
+            ['Δες το <b>βίντεο</b> του άρθρου (▶).', ev => ev.t === 'video' && ev.id === 'bear'],
+            ['Πάτα την <b>κατηγορία</b> του άρθρου: ποια άλλα άρθρα έχει;', ev => ev.t === 'go' && ev.page === 'a-cat'],
+            ['Γύρισε στο άρθρο (⬅) και πάτα την <b>ετικέτα</b> του.', ev => ev.t === 'go' && ev.page === 'a-tag'],
+            ['Γύρισε στο άρθρο και άνοιξε τον <b>σύνδεσμο</b> προς τη σχετική ιστοσελίδα.', ev => ev.t === 'go' && ev.page === 'a-link'],
+          ] },
+          { type: 'mcq', ref: 'έκδ. 7.0 σελ. 95', text: 'Τα στοιχεία του άρθρου «Η καφέ αρκούδα»:', questions: [
+            { q: 'Ποιος είναι ο τίτλος;', options: ['Ζώα του δάσους', 'Η καφέ αρκούδα', 'δάσος'], answer: 1 },
+            { q: 'Ποια είναι η κατηγορία;', options: ['Ζώα του δάσους', '20 Νοεμβρίου'], answer: 0 },
+            { q: 'Ποια είναι η ετικέτα;', options: ['Η καφέ αρκούδα', 'βίντεο', 'δάσος'], answer: 2 },
+            { q: 'Πότε δημοσιεύτηκε;', options: ['Σήμερα', '20 Νοεμβρίου'], answer: 1 },
+          ] },
+          { type: 'order', ref: 'έκδ. 7.0 σελ. 96', title: 'Προσθέτω ένα νέο άρθρο', text: 'Πίνακας ελέγχου → «Προσθήκη άρθρου». Βάλε τα βήματα στη σειρά.', steps: [
+            ['🔤', 'Γράφω τον τίτλο.'], ['📝', 'Γράφω το κείμενο.'], ['🖼️', 'Προσθέτω, αν θέλω, πολυμέσα (εικόνα, ήχο, βίντεο).'], ['📂', 'Διαλέγω την κατηγορία.'],
+            ['🏷️', 'Γράφω μια ετικέτα.'], ['👁️', 'Στην «προεπισκόπηση αλλαγών» βλέπω πώς θα φαίνεται.'], ['📰', 'Πατάω «Δημοσίευση».'],
+          ], before: 'chain' },
+          { type: 'browser', ref: 'έκδ. 7.0 σελ. 96 · έκδ. v09 σελ. 84–85 (δραστ. 5)', text: 'Δημιούργησε ένα νέο άρθρο στο ιστολόγιο της κυψέλης σου.', start: 'a-blog', pages: C_ART, tasks: [
+            ['Γράψε <b>τίτλο</b> και <b>κείμενο</b> για ένα ζώο που αγαπάς, διάλεξε <b>εικόνα</b> και <b>κατηγορία</b>, γράψε μια <b>ετικέτα</b> και πάτα «📰 Δημοσίευση».', ev => ev.t === 'submit' && ev.form === 'article'],
+            ['Το άρθρο σου μπήκε <b>πρώτο</b>, γιατί είναι το πιο πρόσφατο! Πάτα 🤍 στο δικό σου άρθρο.', ev => ev.t === 'like' && /^new/.test(ev.post)],
+          ], doneMsg: '📰 Μπράβο, blogger! Δημοσίευσες το πρώτο σου άρθρο.' },
+          { type: 'info', ref: 'έκδ. 7.0 σελ. 96 · έκδ. v09 σελ. 84–85', text: 'Στην τάξη:', cards: [
+            ['🐝', 'Συνδεθείτε στην e-me, μπείτε στον πίνακα ελέγχου του ιστολογίου της κυψέλης σας και δημιουργήστε ένα νέο άρθρο με λίγο κείμενο και μια εικόνα.'],
+            ['🎤', 'Μετά τη δημοσίευση, παρουσιάστε στην τάξη την ανάρτησή σας.'],
+          ] },
+        ],
+        practice: [
+          { type: 'sort', ref: 'εξάσκηση', text: 'Τίτλος, κατηγορία, ετικέτα ή ημερομηνία;', bins: ['🔤 Τίτλος', '📂 Κατηγορία', '🏷️ Ετικέτα', '📅 Ημερομηνία'], items: [
+            ['🦔', 'Ο σκαντζόχοιρος', 0], ['🦊', 'Η πονηρή αλεπού', 0], ['🌲', 'Ζώα του δάσους', 1], ['🐶', 'Κατοικίδια ζώα', 1],
+            ['🏷️', 'αγκάθια', 2], ['🏷️', 'νύχτα', 2], ['📅', '3 Δεκεμβρίου 2023', 3], ['📅', '15 Μαρτίου 2024', 3],
+          ] },
+          { type: 'mcq', ref: 'εξάσκηση', text: 'Τι θα γίνει αν…', questions: [
+            { q: '…δεν διαλέξω κατηγορία;', options: ['Το άρθρο δεν θα έχει ημερομηνία', 'Θα είναι πιο δύσκολο να το βρουν όσοι ψάχνουν άρθρα με το ίδιο θέμα'], answer: 1 },
+            { q: 'Πώς βλέπω πώς θα φαίνεται το άρθρο πριν το δημοσιεύσω;', options: ['Με την «προεπισκόπηση αλλαγών»', 'Με το Caps Lock'], answer: 0 },
+            { q: 'Ποια ετικέτα ταιριάζει σε ένα άρθρο για τα δελφίνια;', options: ['βουνό', 'θάλασσα', 'αυτοκίνητα'], answer: 1 },
+          ] },
+        ],
+      },
+      {
+        icon: '💬', title: 'Αναζητώ και σχολιάζω άρθρα', sub: 'Πλευρικό μενού · ιστορικό · κατηγορίες · σχόλια και απαντήσεις',
+        acts: [
+          { type: 'info', ref: 'έκδ. 7.0 σελ. 97–98 · έκδ. v09 σελ. 84', text: '«Μπορώ να βρω και να σχολιάσω ένα άρθρο;» «Ναι, βέβαια, με διάφορους τρόπους!»', cards: [
+            ['🗓️', 'Τα άρθρα δημοσιεύονται με <b>ημερολογιακή σειρά</b>: το πιο πρόσφατο είναι πάνω-πάνω. Για τα παλιότερα κατεβαίνω με τη <b>ροδέλα</b>. Μπορώ να πάω και στο <b>προηγούμενο</b> ή στο <b>επόμενο</b> άρθρο.'],
+            ['📑', 'Το <b>πλευρικό μενού</b> μένει ορατό στο πλάι και έχει: <b>κατηγορίες</b>, τα <b>τελευταία άρθρα</b> με ημερομηνία, <b>ιστορικό</b> ανά μήνα, <b>αναζήτηση</b>, ετικέτες και σημαντικές σελίδες («Σχετικά με εμάς», «Επικοινωνία»).'],
+            ['💬', 'Σχολιάζω ένα άρθρο αν έχω <b>συνδεθεί</b> (στην e-me με τα στοιχεία του ΠΣΔ) και ο <b>διαχειριστής</b> επιτρέπει σχόλια. Μπορώ να <b>απαντήσω</b> σε ένα σχόλιο — και ξεκινάει μια <b>συζήτηση</b>!'],
+          ] },
+          { type: 'browser', ref: 'έκδ. 7.0 σελ. 97–99 · έκδ. v09 σελ. 84 (δραστ. 3–4)', text: 'Στο ιστολόγιο «Τα ζώα μας»: βρες και σχολίασε άρθρα.', start: 'z-home', pages: C_ZOOBLOG, engine: 'ta-zoa-mas.blogs.sch.gr/search', logo: '🐾 Τα ζώα μας — αναζήτηση', tasks: [
+            ['Βρες το άρθρο της <b>20ής Νοεμβρίου</b>: στο πλευρικό μενού πάτα <b>Ιστορικό › Νοέμβριος 2023</b>.', ev => ev.t === 'go' && ev.page === 'z-nov'],
+            ['Άνοιξε το άρθρο «<b>Ο σκίουρος</b>».', ev => ev.t === 'go' && ev.page === 'z-squirrel'],
+            ['Πάτα «<b>« Επόμενο άρθρο</b>» πάνω αριστερά: πας στο αμέσως πιο καινούριο.', ev => ev.t === 'go' && ev.page === 'z-parrot'],
+            ['Από τις <b>Κατηγορίες</b> πάτα «Κατοικίδια ζώα» και άνοιξε το άρθρο «<b>Η γάτα</b>».', ev => ev.t === 'go' && ev.page === 'z-cat'],
+            ['Γράψε ένα ευγενικό <b>σχόλιο</b> στο άρθρο για τη γάτα.', ev => ev.t === 'comment' && ev.post === 'z-cat'],
+            ['<b>Απάντησε</b> στο σχόλιο του Νίκου: γράψε ένα σχόλιο που αρχίζει με «<b>Νίκο,</b>».', ev => ev.t === 'comment' && norm(ev.text).startsWith('νικο')],
+          ], doneMsg: '💬 Μπράβο! Βρήκες άρθρα από το ιστορικό και τις κατηγορίες και ξεκίνησες μια συζήτηση.' },
+          { type: 'mcq', ref: 'έκδ. 7.0 σελ. 98 (Άσκηση πολλαπλής επιλογής – το πλευρικό μενού)', text: 'Κοίτα το πλευρικό μενού του ιστολογίου «Τα ζώα μας»:', questions: [
+            { q: 'Ποιο είναι το πιο πρόσφατο άρθρο;', options: ['Παπαγάλος', 'Αγελάδα (10 Ιανουαρίου 2024)', 'Η γάτα'], answer: 1 },
+            { q: 'Πόσα άρθρα έχει η κατηγορία «Κατοικίδια ζώα»;', options: ['1', '4', '2'], answer: 2 },
+            { q: 'Ποιο άρθρο ανήκει στα «Τα ζώα της θάλασσας»;', options: ['Δελφίνι', 'Αγελάδα'], answer: 0 },
+            { q: 'Πότε δημοσιεύτηκε το άρθρο «Η γάτα»;', options: ['9 Ιανουαρίου 2024', '23 Δεκεμβρίου 2023', '22 Δεκεμβρίου 2023'], answer: 1 },
+            { q: 'Ποιος είναι ο πιο εύκολος τρόπος να βρω τα άρθρα ενός μήνα;', options: ['Να διαβάσω όλα τα άρθρα ένα-ένα', 'Το «Ιστορικό» στο πλευρικό μενού'], answer: 1 },
+          ] },
+          { type: 'info', ref: 'έκδ. 7.0 σελ. 99 · έκδ. v09 σελ. 84', text: 'Στην τάξη:', cards: [
+            ['🐝', 'Μπείτε στην e-me και σχολιάστε τουλάχιστον ένα άρθρο και ένα σχόλιο στο ιστολόγιο της κυψέλης σας. Μπορείτε να σχολιάσετε και ιστολόγια όπου δεν συμμετέχετε — αρκεί να έχετε συνδεθεί!'],
+            ['💡', 'Σκεφτείτε με την ομάδα σας ένα θέμα για το δικό σας ιστολόγιο. Τι κατηγορίες θα έχει; Τι θα προσφέρει σε όσους το διαβάζουν;'],
+            ['🌍', 'Τα ιστολόγια της e-me είναι <b>ανοιχτά και δημόσια</b>, ακόμα και για όσους δεν είναι μέλη: δείχνουν τη δουλειά μαθητών, εκπαιδευτικών και σχολείων και μοιράζονται ιδέες και καλές πρακτικές.'],
+          ] },
+        ],
+        practice: [
+          { type: 'order', ref: 'εξάσκηση', title: 'Από το πιο πρόσφατο στο πιο παλιό', text: 'Με ποια σειρά θα εμφανιστούν τα άρθρα στο ιστολόγιο;', steps: [
+            ['⛄', 'Ο χιονάνθρωπος — 15 Φεβρουαρίου 2024'], ['🎭', 'Η αποκριά — 2 Φεβρουαρίου 2024'], ['🎄', 'Τα Χριστούγεννα — 20 Δεκεμβρίου 2023'], ['🍂', 'Η εκδρομή — 5 Νοεμβρίου 2023'], ['🎒', 'Η πρώτη μέρα στο σχολείο — 11 Σεπτεμβρίου 2023'],
+          ], before: 'chain' },
+          { type: 'browser', ref: 'εξάσκηση', text: 'Ψάξε με την αναζήτηση του πλευρικού μενού.', start: 'z-home', pages: C_ZOOBLOG, engine: 'ta-zoa-mas.blogs.sch.gr/search', logo: '🐾 Τα ζώα μας — αναζήτηση', tasks: [
+            ['Γράψε <b>δελφίνι</b> στην αναζήτηση του πλευρικού μενού και πάτα 🔎.', ev => ev.t === 'search' && norm(ev.q).includes('δελφιν')],
+            ['Άνοιξε το άρθρο από τα αποτελέσματα.', ev => ev.t === 'go' && ev.page === 'z-dolphin'],
+            ['Πάτα 🤍 «Μου αρέσει».', ev => ev.t === 'like' && ev.post === 'z-dolphin'],
+          ] },
+          { type: 'mcq', ref: 'εξάσκηση', text: 'Τι θα γίνει αν…', questions: [
+            { q: '…ο διαχειριστής δεν επιτρέπει σχόλια;', options: ['Θα σχολιάσω κανονικά', 'Δεν θα μπορώ να σχολιάσω το άρθρο'], answer: 1 },
+            { q: 'Ποιο σχόλιο ταιριάζει σε ένα άρθρο;', options: ['«Ωραίο άρθρο! Ήξερες ότι οι γάτες βλέπουν στο σκοτάδι;»', '«Βαρετό! Χάλια!»'], answer: 0 },
+          ] },
+        ],
+      },
+      {
+        icon: '🐝', title: 'Η e-me: κυψέλες, τοίχος και επικοινωνία', sub: 'Ρυθμίσεις · τοίχος · μηνύματα · κλήσεις',
+        acts: [
+          { type: 'info', ref: 'έκδ. v09 σελ. 95–96 · έκδ. 7.0 σελ. 100', text: '«Ας αλλάξουμε το προσωπικό μας περιβάλλον εργασίας στην e-me!» «Ναι, και μετά να σου δείξω πώς επικοινωνούμε.»', cards: [
+            ['🐝', 'Η <b>e-me</b> (e-me.edu.gr) είναι μια ψηφιακή εκπαιδευτική πλατφόρμα για μαθητές και εκπαιδευτικούς: ένα <b>ασφαλές</b> περιβάλλον συνεργασίας και μάθησης. Συνδέομαι με τον λογαριασμό μου στο <b>ΠΣΔ</b>.'],
+            ['🧱', 'Ο βασικός χώρος συνεργασίας λέγεται <b>κυψέλη</b> — μπορώ να είμαι σε πολλές. Κάθε κυψέλη έχει έναν <b>τοίχο</b>, για να επικοινωνώ με όλα τα μέλη της.'],
+            ['⚙️', 'Από τις <b>Ρυθμίσεις</b> της αρχικής σελίδας προσαρμόζω το περιβάλλον στις ανάγκες μου: <b>θέμα εμφάνισης</b>, <b>εικόνα φόντου</b>, <b>γραμματοσειρά</b>, <b>θέση των εφαρμογών</b> (apps).'],
+          ] },
+          { type: 'browser', ref: 'έκδ. 7.0 σελ. 100–101 · έκδ. v09 σελ. 96–97 (δραστ. 1–2)', text: 'Διαμόρφωσε την e-me σου και μίλησε στον τοίχο της κυψέλης.', start: 'eme-home', pages: C_EME, tasks: [
+            ['Άνοιξε τις <b>⚙️ Ρυθμίσεις</b>, διάλεξε θέμα, φόντο και γραμματοσειρά και πάτα 💾.', ev => ev.t === 'submit' && ev.form === 'settings'],
+            ['Πήγαινε στις <b>🐝 Κυψέλες</b> και μπες στην κυψέλη «Γ1 — Η τάξη μας».', ev => ev.t === 'go' && ev.page === 'eme-wall'],
+            ['<b>Αντίδρασε</b> στην ανάρτηση της κας Άννας με 🤍.', ev => ev.t === 'like' && ev.post === 'w1'],
+            ['<b>Σχολίασε</b>: ποιο ζώο θα ήθελες να φροντίζει η τάξη σας;', ev => ev.t === 'comment' && ev.post === 'w1'],
+            ['Δημιούργησε μια <b>νέα ανάρτηση</b> στον τοίχο.', ev => ev.t === 'submit' && ev.form === 'wallpost'],
+          ], doneMsg: '🐝 Μπράβο! Διαμόρφωσες το περιβάλλον σου και μίλησες με την κυψέλη σου.' },
+          { type: 'theory', ref: 'έκδ. 7.0 σελ. 101–102', text: 'Ο τοίχος και η επικοινωνία στην e-me:', sections: [
+            ['🧱 Τι κάνω στον τοίχο', '1) Δημιουργώ νέα ανάρτηση. 2) Διαβάζω μια ανάρτηση (με το βέλος διαβάζω περισσότερα). 3) Τη σχολιάζω. 4) Αντιδρώ. 5) Βλέπω τα σχόλια των άλλων. Στις αναρτήσεις μπαίνουν βίντεο, εικόνες, αρχεία, υλικό από το Φωτόδεντρο.', []],
+            ['💬 Ένας προς πολλούς', 'Με <b>μηνύματα κειμένου</b> μιλάω με ένα ή με πολλά μέλη μαζί — αρκεί να είναι στις <b>επαφές</b> μου. Για ζωντανή μετάδοση ήχου ή βίντεο σε πολλούς: η εφαρμογή <b>ΠΣΔ Τηλεδιασκέψεις</b> από το e-me store.', []],
+            ['📞 Ένας προς έναν', '<b>Κλήση ήχου</b> ή <b>βιντεοκλήση</b> κάνω με μια επαφή που είναι <b>ενεργή</b> (συνδεδεμένη) — αν το υποστηρίζει η συσκευή μου.', []],
+          ] },
+          { type: 'browser', ref: 'έκδ. 7.0 σελ. 103', text: 'Επικοινώνησε με τις επαφές σου στην e-me.', start: 'eme-msg', pages: C_EME, tasks: [
+            ['Στείλε ένα μήνυμα κειμένου σε <b>ένα</b> άτομο (στον Νίκο ή στην Ελένη).', ev => ev.t === 'submit' && ev.form === 'msg' && ['Νίκος', 'Ελένη'].includes(ev.values.to)],
+            ['Στείλε ένα μήνυμα σε <b>περισσότερα</b> άτομα μαζί.', ev => ev.t === 'submit' && ev.form === 'msg' && ev.values.to === 'Νίκος και Ελένη'],
+            ['Κάνε μια <b>κλήση ήχου</b> με τον Νίκο (▶).', ev => ev.t === 'video' && ev.id === 'audio'],
+            ['Κάνε μια <b>βιντεοκλήση</b> με την Ελένη.', ev => ev.t === 'video' && ev.id === 'videocall'],
+          ] },
+          { type: 'sort', ref: 'έκδ. 7.0 σελ. 102', text: 'Ένας προς έναν ή ένας προς πολλούς;', bins: ['👤↔👤 Ένας προς έναν', '👤→👥 Ένας προς πολλούς'], items: [
+            ['📞', 'Κλήση ήχου', 0], ['🎥', 'Βιντεοκλήση', 0], ['✉️', 'Μήνυμα κειμένου σε όλη την ομάδα', 1], ['📡', 'Τηλεδιάσκεψη με την εφαρμογή ΠΣΔ Τηλεδιασκέψεις', 1], ['🧱', 'Ανάρτηση στον τοίχο της κυψέλης', 1],
+          ] },
+          { type: 'mcq', ref: 'έκδ. 7.0 σελ. 103 (Άσκηση πολλαπλής επιλογής για την e-me) · έκδ. v09 σελ. 97–98', text: 'Τι θυμάμαι για την e-me;', questions: [
+            { q: 'Πώς λέγεται ο βασικός χώρος συνεργασίας;', options: ['Κυψέλη', 'Φωλιά', 'Αυλή'], answer: 0 },
+            { q: 'Με ποιον μπορώ να κάνω βιντεοκλήση;', options: ['Με όποιον θέλω', 'Με μια επαφή μου που είναι συνδεδεμένη'], answer: 1 },
+            { q: 'Πού φτιάχνει κουίζ, σταυρόλεξα και παρουσιάσεις ο/η εκπαιδευτικός;', options: ['Στις ρυθμίσεις', 'Στο e-me content'], answer: 1 },
+            { q: 'Πού μου αναθέτει εργασίες ο/η εκπαιδευτικός;', options: ['Στο e-me assignments', 'Στο θέμα εμφάνισης'], answer: 0 },
+            { q: 'Πού φυλάω τα δικά μου ψηφιακά έργα;', options: ['Στον τοίχο μιας άλλης κυψέλης', 'Στον ατομικό μου φάκελο (e-portfolio)'], answer: 1 },
+          ] },
+          { type: 'info', ref: 'έκδ. v09 σελ. 97–98 · έκδ. 7.0 σελ. 101–103', text: 'Στην τάξη:', cards: [
+            ['🧱', 'Ζητήστε από τον διαχειριστή της κυψέλης να αναρτήσει ένα θέμα στον τοίχο και ξεκινήστε μια συζήτηση. Δείτε στο τέλος τη συζήτηση που δημιουργήθηκε.'],
+            ['📂', 'Στα <b>Αρχεία</b> της κυψέλης: ανοίξτε έναν φάκελο, κατεβάστε ένα αρχείο και μεταφορτώστε μια δική σας εικόνα. Λύστε ένα κουίζ του e-me content.'],
+            ['📡', 'Προσθέστε δύο συμμαθητές στις επαφές σας και, με τον/την εκπαιδευτικό, δοκιμάστε μια τηλεδιάσκεψη με την εφαρμογή ΠΣΔ Τηλεδιασκέψεις.'],
+          ] },
+        ],
+        practice: [
+          { type: 'match', ref: 'εξάσκηση', text: 'Ταίριαξε:', pairs: [
+            ['🎨 Θέμα εμφάνισης', 'Τα χρώματα της e-me μου'], ['🖼️ Εικόνα φόντου', 'Η εικόνα πίσω από τις εφαρμογές'], ['🧱 Τοίχος', 'Αναρτήσεις και σχόλια της κυψέλης'],
+            ['🐝 Κυψέλη', 'Ο χώρος συνεργασίας μιας ομάδας'], ['📒 e-portfolio', 'Ο ατομικός μου φάκελος με τα έργα μου'],
+          ] },
+          { type: 'mcq', ref: 'εξάσκηση', text: 'Τι θα γίνει αν…', questions: [
+            { q: '…ο Γιάννης είναι εκτός σύνδεσης; Μπορώ να του κάνω βιντεοκλήση;', options: ['Ναι, πάντα', 'Όχι, οι κλήσεις γίνονται με ενεργές επαφές — του στέλνω μήνυμα'], answer: 1 },
+            { q: '…θέλω να μιλήσω με βίντεο με 20 συμμαθητές μαζί;', options: ['Χρησιμοποιώ την εφαρμογή ΠΣΔ Τηλεδιασκέψεις', 'Κάνω μια βιντεοκλήση ένας προς έναν'], answer: 0 },
+          ] },
+        ],
+      },
+      {
+        icon: '🌳', title: 'Εκπαιδευτικά αποθετήρια', sub: 'Φωτόδεντρο · Ανοικτή Βιβλιοθήκη · e-books και audio books',
+        acts: [
+          { type: 'info', ref: 'έκδ. 7.0 σελ. 104–105 · έκδ. v09 σελ. 100–101', text: '«Ήρωνα, θες να δούμε κι άλλα εκπαιδευτικά αποθετήρια;» «Ναι, πολύ καλή ιδέα!»', cards: [
+            ['📚', 'Θυμάμαι: τα <b>διαδραστικά βιβλία</b> τα διαβάζω σε ψηφιακή συσκευή, μαζί με διαδραστικά μαθησιακά αντικείμενα. Η <b>Εκπαιδευτική Τηλεόραση</b> παρουσιάζει πάνω από 600 εκπομπές τον χρόνο.'],
+            ['🌳', 'Το <b>Φωτόδεντρο</b> (photodentro.edu.gr) είναι η κεντρική e-υπηρεσία του Υπουργείου Παιδείας για ψηφιακό εκπαιδευτικό υλικό: ο <b>Εθνικός Συσσωρευτής Εκπαιδευτικού Περιεχομένου</b>. Έχει πολλά <b>αποθετήρια</b>: Μαθησιακά Αντικείμενα, Εκπαιδευτικά Βίντεο, e-yliko, Πολιτισμός, Edusoft, «Αίσωπος».'],
+            ['🔎', 'Ψάχνω υλικό με τη <b>γραμμή αναζήτησης</b>, ανά <b>τύπο</b> (παιχνίδι, βίντεο, κουίζ, πείραμα, προσομοίωση, παρουσίαση…) ή ανά <b>θεματική περιοχή</b>. Με τον λογαριασμό του ΠΣΔ φτιάχνω προφίλ και οργανώνω το υλικό σε <b>συλλογές</b>.'],
+          ] },
+          { type: 'browser', ref: 'έκδ. v09 σελ. 101 (δραστ. 1–3) · έκδ. 7.0 σελ. 105–106', text: 'Βρες μαθησιακά αντικείμενα στο Φωτόδεντρο.', start: 'ph-home', pages: C_PHOTO, engine: 'photodentro.edu.gr/search', logo: '🌳 Φωτόδεντρο — αναζήτηση', tasks: [
+            ['Μπες στο αποθετήριο <b>Μαθησιακά Αντικείμενα</b>.', ev => ev.t === 'go' && ev.page === 'ph-lor'],
+            ['Ψάξε το παιχνίδι <b>Tile-tap</b> στη γραμμή αναζήτησης.', ev => ev.t === 'search' && norm(ev.q).includes('tile')],
+            ['Άνοιξέ το και πάτα ▶ για να παίξεις.', ev => ev.t === 'video' && ev.id === 'ph-tile'],
+            ['Ψάξε τώρα την εφαρμογή «<b>Εξάσκηση στο Ελληνικό Πληκτρολόγιο</b>» και άνοιξέ τη.', ev => ev.t === 'go' && ev.page === 'ph-kb'],
+            ['Γύρισε στα Μαθησιακά Αντικείμενα και διάλεξε τον τύπο <b>🎮 Παιχνίδι</b>.', ev => ev.t === 'go' && ev.page === 'ph-t-game'],
+            ['Γύρισε πάλι και διάλεξε τη θεματική περιοχή <b>📖 Γλώσσα</b>: άνοιξε το κρυπτόλεξο «Βρες τα “χαμένα παιδιά” του Σαίξπηρ!».', ev => ev.t === 'go' && ev.page === 'ph-shak'],
+          ], doneMsg: '🌳 Μπράβο! Βρήκες υλικό με την αναζήτηση, ανά τύπο και ανά θεματική περιοχή.' },
+          { type: 'sort', ref: 'έκδ. 7.0 σελ. 105 · έκδ. v09 σελ. 100', text: 'Τι τύπος μαθησιακού αντικειμένου είναι;', bins: ['🎮 Παιχνίδι', '🎬 Βίντεο', '❓ Κουίζ', '🧪 Πείραμα'], items: [
+            ['🔷', 'Φτιάχνω σχήματα με το tangram', 0], ['🟦', 'Tile-tap: πατάω πλακάκια και μαθαίνω', 0], ['🖥️', 'Μια ταινία για το πώς δουλεύει ο εκτυπωτής', 1], ['🌋', 'Ένα ηφαίστειο σε ταινία', 1],
+            ['✅', '10 ερωτήσεις για το Διαδίκτυο', 2], ['❓', 'Σωστό ή λάθος για τα ζώα', 2], ['🧲', 'Δοκιμάζω ποια αντικείμενα τραβάει ο μαγνήτης', 3], ['🧊', 'Βάζω πάγο στον ήλιο και βλέπω τι γίνεται', 3],
+          ] },
+          { type: 'info', ref: 'έκδ. v09 σελ. 103 · έκδ. 7.0 σελ. 106', text: 'Μια φανταστική βιβλιοθήκη στο Διαδίκτυο:', cards: [
+            ['📚', 'Η <b>Ανοικτή Βιβλιοθήκη</b> (openbook.gr) ιδρύθηκε το <b>2010</b>. Είναι ένα αποθετήριο με χιλιάδες ελληνικά <b>ψηφιακά βιβλία</b> (e-books), <b>ελεύθερα και νόμιμα</b>, με δωρεάν πρόσβαση.'],
+            ['🗂️', 'Βρίσκω βιβλία μέσα από τις <b>κατηγορίες</b>: λογοτεχνία, θέατρο, εκπαίδευση, πολιτισμός… Υπάρχουν και <b>ακουστικά βιβλία</b> (audio books), για να ακούσω την αφήγησή τους.'],
+            ['📲', 'Τα διαβάζω <b>απευθείας στον φυλλομετρητή</b> ή τα <b>κατεβάζω</b> στη συσκευή μου, για να τα διαβάσω και χωρίς σύνδεση στο Διαδίκτυο.'],
+          ] },
+          { type: 'browser', ref: 'έκδ. v09 σελ. 103–104 (δραστ. 1–3) · έκδ. 7.0 σελ. 107', text: 'Βρες και διάβασε παραμύθια στην Ανοικτή Βιβλιοθήκη.', start: 'ob-home', pages: C_OPENBOOK, engine: 'www.openbook.gr/search', logo: '📚 Ανοικτή Βιβλιοθήκη — αναζήτηση', tasks: [
+            ['Πάτα <b>📖 Λογοτεχνία</b> και μετά <b>Παιδική Λογοτεχνία</b>.', ev => ev.t === 'go' && ev.page === 'ob-kids'],
+            ['Άνοιξε το παραμύθι της Λίνας Κατσή «<b>Ένα διαφορετικό σκοτάδι</b>» και πάτα ▶ για να το διαβάσεις.', ev => ev.t === 'video' && ev.id === 'ob-dark'],
+            ['Από τις <b>🗂️ Συλλογές</b> διάλεξε τη <b>Διατροφή</b>.', ev => ev.t === 'go' && ev.page === 'ob-food'],
+            ['Άνοιξε «<b>Το παλιό τετράδιο της γιαγιάς</b>» και διάβασε την περιγραφή του.', ev => ev.t === 'go' && ev.page === 'ob-grand'],
+            ['Πήγαινε στα <b>🎧 Audio Books</b> › Παιδική-Εφηβική Λογοτεχνία και άκουσε «<b>Η Χρυσή</b>».', ev => ev.t === 'video' && ev.id === 'ob-gold'],
+          ], doneMsg: '📚 Μπράβο! Διάβασες και άκουσες βιβλία στην Ανοικτή Βιβλιοθήκη.' },
+          { type: 'mcq', ref: 'έκδ. v09 σελ. 103 · έκδ. 7.0 σελ. 106', text: 'Συζητάμε στην τάξη:', questions: [
+            { q: 'Μια διαφορά του ψηφιακού από το έντυπο παραμύθι είναι ότι…', options: ['το ψηφιακό δεν έχει ποτέ εικόνες', 'το ψηφιακό το διαβάζω σε οθόνη και μπορεί να έχει και αφήγηση'], answer: 1 },
+            { q: 'Μια ομοιότητα είναι ότι…', options: ['και τα δύο έχουν τίτλο, συγγραφέα και ιστορία', 'και τα δύο χρειάζονται μπαταρία'], answer: 0 },
+            { q: 'Πόσο κοστίζουν τα βιβλία της Ανοικτής Βιβλιοθήκης;', options: ['10 € το καθένα', 'Τίποτα — είναι ελεύθερα και νόμιμα'], answer: 1 },
+            { q: 'Τι είναι ένα audio book;', options: ['Βιβλίο που το ακούω σε αφήγηση', 'Βιβλίο ζωγραφικής'], answer: 0 },
+          ] },
+          { type: 'info', ref: 'έκδ. 7.0 σελ. 104–107', text: 'Στην τάξη:', cards: [
+            ['🔎', 'Στο πραγματικό Φωτόδεντρο ψάξτε: μια εφαρμογή ζωγραφικής, μια εφαρμογή κειμενογράφου, ένα tangram, ένα βίντεο για τις συσκευές του υπολογιστή, ένα κουίζ για το Διαδίκτυο. Παίξτε και το παζλ για το Φωτόδεντρο!'],
+            ['📝', 'Διαβάστε μαζί ένα παιδικό βιβλίο από την Ανοικτή Βιβλιοθήκη. Γράψτε σε κειμενογράφο περίληψη, συναισθήματα και τι σας έκανε εντύπωση, εκτυπώστε, ζωγραφίστε και φτιάξτε μια <b>αφίσα-κολάζ</b> για την τάξη — με καρδούλες και emoticons!'],
+          ] },
+        ],
+        practice: [
+          { type: 'sort', ref: 'εξάσκηση', text: 'Πού θα το βρω;', bins: ['🌳 Φωτόδεντρο', '📚 Ανοικτή Βιβλιοθήκη', '📺 Εκπαιδευτική Τηλεόραση'], items: [
+            ['🎮', 'Ένα εκπαιδευτικό παιχνίδι με γράμματα', 0], ['🧪', 'Μια προσομοίωση πειράματος', 0], ['❓', 'Ένα κουίζ για τα ζώα', 0],
+            ['📖', 'Ένα παιδικό μυθιστόρημα σε e-book', 1], ['🎧', 'Ένα παραμύθι σε αφήγηση (audio book)', 1], ['🎭', 'Ένα θεατρικό έργο για να το διαβάσω', 1], ['📺', 'Μια εκπομπή για τον κύκλο του νερού', 2],
+          ] },
+          { type: 'browser', ref: 'εξάσκηση', text: 'Ψάξε στο Φωτόδεντρο ένα βίντεο και ένα κουίζ.', start: 'ph-lor', pages: C_PHOTO, engine: 'photodentro.edu.gr/search', logo: '🌳 Φωτόδεντρο — αναζήτηση', tasks: [
+            ['Βρες το βίντεο «<b>Οι συσκευές του υπολογιστή</b>» (με αναζήτηση ή από τον τύπο Βίντεο).', ev => ev.t === 'go' && ev.page === 'ph-dev'],
+            ['Βρες ένα <b>κουίζ για το Διαδίκτυο</b>.', ev => ev.t === 'go' && ev.page === 'ph-quiz'],
+          ] },
+          { type: 'mcq', ref: 'εξάσκηση', text: 'Τι θα γίνει αν…', questions: [
+            { q: '…κατεβάσω ένα βιβλίο της Ανοικτής Βιβλιοθήκης στην ταμπλέτα μου;', options: ['Θα σβηστεί από τη βιβλιοθήκη', 'Θα μπορώ να το διαβάζω και χωρίς Διαδίκτυο'], answer: 1 },
+            { q: '…θέλω υλικό μόνο για την Πληροφορική; Τι διαλέγω στο Φωτόδεντρο;', options: ['Θεματική περιοχή: Πληροφορική και ΤΠΕ', 'Τύπο: Βίντεο'], answer: 0 },
+          ] },
+        ],
+      },
+      {
+        icon: '📝', title: 'Επανάληψη', sub: 'Ιστότοποι, αναζήτηση, ιστολόγια, κινούμενα σχέδια, e-me, αποθετήρια',
+        acts: [
+          { type: 'info', ref: 'έκδ. v09 σελ. 106', text: 'Ανακεφαλαίωση:', cards: [
+            ['🌐', 'Αναγνωρίζω τα χαρακτηριστικά ενός <b>ιστότοπου</b> (διεύθυνση, ιδιοκτήτης, δομή, μενού επιλογών) και ενός <b>προφίλ χρήστη</b> (όνομα, εικόνα, βιογραφικά, στοιχεία επικοινωνίας, ρυθμίσεις).'],
+            ['🔎', 'Κάνω <b>αναζήτηση</b> με λέξεις-κλειδιά. Εντοπίζω, σχολιάζω και δημοσιεύω <b>αναρτήσεις σε ιστολόγιο</b>. Φτιάχνω <b>κινούμενα σχέδια</b>.'],
+            ['🐝', 'Χρησιμοποιώ την πλατφόρμα <b>e-me</b>, το <b>Φωτόδεντρο</b> και την <b>Ανοικτή Βιβλιοθήκη</b>.'],
+          ] },
+          { type: 'browser', ref: 'έκδ. v09 σελ. 106 (1, 3)', text: 'Ψάξε ένα μουσείο για τους υπολογιστές και βρες τα βασικά χαρακτηριστικά του ιστότοπού του.', start: 'q-home', pages: { ...C_PSAXNO, ...C_MUSEUM }, engine: 'www.psaxno.gr', logo: '🔎 Ψάχνω', tasks: [
+            ['Ψάξε <b>μουσείο υπολογιστών</b>.', ev => ev.t === 'search' && norm(ev.q).includes('μουσει')],
+            ['Προσοχή στο «Χορηγούμενο»! Άνοιξε το σχετικό αποτέλεσμα: «<b>Το Μουσείο των Υπολογιστών</b>».', ev => ev.t === 'go' && ev.page === 'm-home'],
+            ['Από το <b>μενού</b> βρες τα εκθέματα.', ev => ev.t === 'go' && ev.page === 'm-exh'],
+            ['Βρες <b>πού βρίσκεται</b> το μουσείο.', ev => ev.t === 'go' && ev.page === 'm-visit'],
+            ['Ποιος είναι ο <b>ιδιοκτήτης</b>; Άνοιξε την Ταυτότητα.', ev => ev.t === 'go' && ev.page === 'm-id'],
+            ['Βάλε έναν <b>σελιδοδείκτη</b> ☆, για να ξαναβρείς εύκολα τον ιστότοπο.', ev => ev.t === 'bookmark'],
+          ] },
+          { type: 'browser', ref: 'έκδ. v09 σελ. 106 (4)', text: 'Πήγαινε στο ιστολόγιο ενός σχολείου και βρες την πιο πρόσφατη ανάρτηση.', start: 'b-home', pages: C_BLOGS, engine: 'blogs.sch.gr/search', logo: '📰 Ιστολόγια του ΠΣΔ', tasks: [
+            ['Ψάξε τα σχολεία του <b>Λασιθίου</b> και άνοιξε το Δημοτικό Σχολείο Ανεμόμυλων.', ev => ev.t === 'go' && ev.page === 'b-anem'],
+            ['Γράψε ένα σχόλιο στην <b>πιο πρόσφατη</b> ανάρτηση.', ev => ev.t === 'comment' && ev.post === 'p1'],
+          ] },
+          { type: 'anim', ref: 'έκδ. v09 σελ. 106 (5) · σελ. 91 (Το διαστημόπλοιο)', text: 'Το διαστημόπλοιο εκτοξεύεται! Φτιάξε το κινούμενο σχέδιο.', frames: C_ROCKET, tasks: [
+            ['Βάλε τις εικόνες στη σειρά: ο πύραυλος ξεκινάει από <b>κάτω</b> και ανεβαίνει ως <b>πάνω</b>.', ev => ev.t === 'add' && ev.ok],
+            ['Ανέβασε την ταχύτητα (8 καρέ/δευτ. ή πιο πολύ) και πάτα ▶.', ev => ev.t === 'play' && ev.ok && ev.fps >= 8],
+          ], doneMsg: '🚀 Τέλεια! Το διαστημόπλοιο εκτοξεύθηκε!' },
+          { type: 'browser', ref: 'έκδ. v09 σελ. 106 (6)', text: 'Βρες στην Ανοικτή Βιβλιοθήκη το βιβλίο του Ντάνιελ Ντεφόε για τον Ροβινσώνα Κρούσο.', start: 'ob-home', pages: C_OPENBOOK, engine: 'www.openbook.gr/search', logo: '📚 Ανοικτή Βιβλιοθήκη — αναζήτηση', tasks: [
+            ['Ψάξε <b>Ροβινσώνας</b> στη γραμμή αναζήτησης.', ev => ev.t === 'search' && norm(ev.q).includes('ροβινσ')],
+            ['Άνοιξε το βιβλίο και πάτα ▶ για να το διαβάσεις.', ev => ev.t === 'video' && ev.id === 'ob-rob'],
+          ] },
+          { type: 'mcq', ref: 'έκδ. v09 σελ. 106', text: 'Τι θυμάμαι;', questions: [
+            { q: 'Τι είναι το https://dim-anatolis.sch.gr;', options: ['Ο ιδιοκτήτης ενός ιστότοπου', 'Η διεύθυνση (URL) ενός ιστότοπου', 'Ένα άβαταρ'], answer: 1 },
+            { q: 'Σε ένα ιστολόγιο, ποια ανάρτηση βλέπω πρώτη;', options: ['Την πιο παλιά', 'Την πιο πρόσφατη'], answer: 1 },
+            { q: 'Ένα κινούμενο σχέδιο είναι…', options: ['μία μεγάλη ζωγραφιά', 'εικόνες που διαφέρουν ελάχιστα και εναλλάσσονται γρήγορα', 'ένα πλήκτρο'], answer: 1 },
+            { q: 'Τι γράφω στο προφίλ μου;', options: ['Ένα μότο και τι μου αρέσει', 'Τη διεύθυνση και το τηλέφωνό μου'], answer: 0 },
+            { q: 'Πού βρίσκω δωρεάν ελληνικά e-books;', options: ['Στην Ανοικτή Βιβλιοθήκη', 'Στο Tux Paint', 'Στο Caps Lock'], answer: 0 },
+          ] },
+          { type: 'info', ref: 'έκδ. v09 σελ. 106', text: 'Στην τάξη:', cards: [
+            ['🔬', 'Επισκεφθείτε τον ιστότοπο του Κέντρου Διάδοσης Επιστημών και Μουσείου Τεχνολογίας <b>ΝΟΗΣΙΣ</b> (noesis.edu.gr) και βρείτε διεύθυνση, ιδιοκτήτη, μενού επιλογών και δομή.'],
+            ['🎭', 'Φτιάξτε ένα άβαταρ στο Avatar Maker, ψάξτε στην Αναζήτηση Google πληροφορίες για το Ελληνικό Μουσείο Πληροφορικής και φτιάξτε στο Scratch Jr ένα κινούμενο σχέδιο με έναν μικρό διάλογο δύο ηρώων.'],
+          ] },
+        ],
+        practice: [
+          { type: 'match', ref: 'εξάσκηση', text: 'Γλωσσάριο: ταίριαξε.', pairs: [
+            ['📰 Ιστολόγιο', 'Ιστότοπος όπου οι πληροφορίες οργανώνονται ημερολογιακά'], ['🎬 Κινούμενο σχέδιο', 'Εικόνες που εναλλάσσονται γρήγορα και δίνουν την εντύπωση της κίνησης'],
+            ['🧭 Πλοήγηση', 'Η επίσκεψη σε ιστότοπους και ιστοσελίδες'], ['🔎 Μηχανή αναζήτησης', 'Ιστοσελίδα που με βοηθάει να βρω ιστότοπους'],
+            ['🎭 Άβαταρ', 'Ψηφιακός χαρακτήρας για την εικόνα του προφίλ'], ['🌳 Αποθετήριο', 'Χώρος με ψηφιακό εκπαιδευτικό υλικό'],
+          ] },
+          { type: 'keys', ref: 'εξάσκηση', text: 'Γράψε τις λέξεις του κεφαλαίου:', words: [['🌐', 'ιστότοπος'], ['📰', 'ιστολόγιο'], ['🔎', 'αναζήτηση'], ['🎭', 'άβαταρ'], ['🐝', 'κυψέλη']] },
+        ],
+      },
+    ],
+  },
+  {
+    tab: 'Κεφ. 5', title: 'Ψηφιακές τεχνολογίες και κοινωνία',
+    lessons: [
+      {
+        icon: '🪑', title: 'Η κυρία Εργονομία', sub: 'Η σωστή στάση στον υπολογιστή, στην ταμπλέτα και στο κινητό',
+        acts: [
+          { type: 'info', ref: 'έκδ. v09 σελ. 107', text: '«Παιδιά, με θυμάστε; Είμαι ο ΨΗ-ΠΟ, ο Ψηφιακός Πολίτης! Ελάτε να σας συστήσω την κυρία Εργονομία.»', cards: [
+            ['🧒', 'Ο <b>ΨΗ-ΠΟ</b> (Ψηφιακός Πολίτης) είναι ένα παιδί σαν κι εσάς, που του αρέσει πολύ η τεχνολογία. Τον γνωρίσαμε στη Β΄ τάξη.'],
+            ['👩‍🔬', 'Η <b>Εργονομία</b> είναι η επιστήμη που φροντίζει το περιβάλλον εργασίας μας να είναι κατάλληλο, ώστε να είμαστε <b>υγιείς</b>, <b>χαρούμενοι</b> και <b>αποδοτικοί</b>!'],
+            ['📚', 'Οι συμβουλές της ισχύουν στον υπολογιστή, στο λάπτοπ, στην ταμπλέτα, στο κινητό — αλλά και όταν <b>διαβάζουμε</b> ή <b>γράφουμε</b>.'],
+          ] },
+          { type: 'theory', ref: 'έκδ. v09 σελ. 109–110', text: 'Η σωστή στάση:', sections: [
+            ['💪 Χέρια, πληκτρολόγιο, ποντίκι', 'Λυγίζω τον αγκώνα: τα χέρια κάνουν ένα <b>«ξαπλωτό Γ»</b> και το σώμα μένει όρθιο, χωρίς καμπούρα. Το πληκτρολόγιο είναι <b>μπροστά</b> μου, ελαφρώς ανασηκωμένο, το ποντίκι <b>δίπλα</b>. Οι καρποί στηρίζονται σε <b>μαξιλαράκι</b>.', []],
+            ['👀 Μάτια και οθόνη', 'Τα μάτια σε <b>ευθεία</b> με το <b>πάνω μέρος</b> της οθόνης, σε απόσταση <b>τουλάχιστον 60 εκατοστά</b>.', ['👀 ↔ 🖥️ ≥ 60 εκ.']],
+            ['🪑 Καρέκλα και πόδια', 'Η καρέκλα <b>στηρίζει την πλάτη</b> και ανεβοκατεβαίνει — αλλιώς βάζω <b>μαξιλάρια</b>. Τα γόνατα κάνουν <b>ανάποδο «Γ»</b>. Τα πόδια <b>δεν κρέμονται ποτέ</b>: βάζω σκαμπό ή <b>υποπόδιο</b>.', []],
+            ['📱 Ταμπλέτα και κινητό', '<b>Δεν σκύβω πολύ</b> — όχι πάνω από 15 μοίρες. Σκύψιμο 60 μοιρών κουράζει την πλάτη σαν να κουβαλάω τσάντα <b>27 κιλών</b>! Κάθε <b>μισή ώρα</b> σηκώνομαι για περπάτημα ή άσκηση.', ['15° ✅ · 60° = 🎒 27 κιλά ❌']],
+          ] },
+          { type: 'sort', ref: 'έκδ. v09 σελ. 108–109 (Ανακαλύπτω – Συζητώ – Μαθαίνω)', text: 'Σωστή ή λάθος στάση μπροστά στις συσκευές;', bins: ['✅ Σωστά', '❌ Λάθος'], colors: ['#2e7d32', '#c62828'], items: [
+            ['💪', 'Οι αγκώνες λυγισμένοι σαν «ξαπλωτό Γ»', 0], ['👀', 'Τα μάτια στο ύψος του πάνω μέρους της οθόνης', 0], ['🦶', 'Τα πόδια ακουμπάνε σε υποπόδιο', 0], ['🖱️', 'Το ποντίκι δίπλα στο πληκτρολόγιο', 0],
+            ['🐢', 'Καμπουριάζω και πλησιάζω τη μύτη στην οθόνη', 1, 'Η οθόνη θέλει απόσταση τουλάχιστον 60 εκατοστά και την πλάτη ίσια.'], ['🦵', 'Τα πόδια μου κρέμονται από την καρέκλα', 1, 'Όταν κρέμονται, δυσκολεύεται η κυκλοφορία του αίματος.'],
+            ['📱', 'Σκύβω πολύ το κεφάλι πάνω από το κινητό', 1, 'Πάνω από 15 μοίρες κουράζει τον αυχένα και τη σπονδυλική στήλη.'], ['💻', 'Το λάπτοπ στα γόνατα και σκύβω από πάνω του', 1, 'Έτσι σκύβω πολύ και κουράζω την πλάτη και τον αυχένα.'],
+          ] },
+          { type: 'mcq', ref: 'έκδ. v09 σελ. 109–110', text: 'Τι λέει η κυρία Εργονομία;', questions: [
+            { q: 'Πόσο μακριά από την οθόνη κάθομαι;', options: ['Τουλάχιστον 60 εκατοστά', '10 εκατοστά', '5 μέτρα'], answer: 0 },
+            { q: 'Πόσο μπορώ να σκύβω πάνω από την ταμπλέτα;', options: ['Όσο θέλω', 'Όχι πάνω από 15 μοίρες'], answer: 1 },
+            { q: 'Σκύψιμο 60 μοιρών κουράζει την πλάτη σαν τσάντα…', options: ['1 κιλού', '100 κιλών', '27 κιλών'], answer: 2 },
+            { q: 'Κάθε πότε σηκώνομαι για περπάτημα ή άσκηση;', options: ['Κάθε μισή ώρα μπροστά στις συσκευές', 'Μία φορά τη μέρα'], answer: 0 },
+            { q: 'Τι τρώω και τι πίνω;', options: ['Γλυκά και σνακ', 'Φρούτα, λαχανικά — και πίνω νερό'], answer: 1 },
+          ] },
+          { type: 'info', ref: 'έκδ. v09 σελ. 109–110', text: 'Στην τάξη:', cards: [
+            ['🎬', 'Δείτε στο Φωτόδεντρο τα εκπαιδευτικά βίντεο «Εργονομία» και «Εργονομική Εργασία».'],
+            ['🪑', 'Αναστοχασμός: το θρανίο σας ή ο χώρος μελέτης στο σπίτι ακολουθεί τις συμβουλές της κυρίας Εργονομίας; Προτείνετε λύσεις για πιο εργονομική θέση στο σχολείο.'],
+            ['🖨️', 'Εκτυπώστε την αφίσα με τη σωστή στάση και αναρτήστε τη στο εργαστήριο και σε άλλα σημεία του σχολείου, για να ενημερωθούν όλοι!'],
+          ] },
+        ],
+        practice: [
+          { type: 'match', ref: 'εξάσκηση', text: 'Ταίριαξε:', pairs: [
+            ['💪 Αγκώνες', 'Ξαπλωτό «Γ»'], ['🦵 Γόνατα', 'Ανάποδο «Γ»'], ['👀 Μάτια', 'Στο ύψος του πάνω μέρους της οθόνης'],
+            ['🦶 Πέλματα', 'Στο πάτωμα ή σε υποπόδιο'], ['🤲 Καρποί', 'Σε μαξιλαράκι ή στη βάση του πληκτρολογίου'], ['🪑 Καρέκλα', 'Στηρίζει την πλάτη και ανεβοκατεβαίνει'],
+          ] },
+          { type: 'mcq', ref: 'εξάσκηση', text: 'Τι κάνω αν…', questions: [
+            { q: '…η καρέκλα μου είναι πολύ χαμηλή;', options: ['Σηκώνω τους ώμους ψηλά', 'Βάζω ένα μαξιλάρι για να διορθώσω τη στάση μου'], answer: 1 },
+            { q: '…τα πέλματά μου δεν φτάνουν στο πάτωμα;', options: ['Βάζω υποπόδιο ή σκαμπό', 'Τίποτα, ας κρέμονται'], answer: 0 },
+            { q: '…γράφω τα μαθήματά μου στο χαρτί; Ισχύουν οι συμβουλές;', options: ['Όχι, μόνο για υπολογιστές', 'Ναι, ισχύουν και όταν διαβάζω ή γράφω'], answer: 1 },
+          ] },
+        ],
+      },
+      {
+        icon: '🩺', title: 'Η υπερβολική χρήση του Διαδικτύου', sub: 'Σωματική και ψυχική υγεία · «μέτρον άριστον»',
+        acts: [
+          { type: 'info', ref: 'έκδ. 7.0 σελ. 109–110 · έκδ. v09 σελ. 111', text: '«Ήρωνα, ξέρεις ότι η υπερβολική χρήση του Διαδικτύου μπορεί να βλάψει το σώμα μας;» «Φυσικά, Υπατία μου — αλλά και την ψυχική μας υγεία!»', cards: [
+            ['🎨', 'Το Διαδίκτυο μπορεί να είναι <b>δημιουργικό</b>: για να μάθω, να αναζητήσω πληροφορίες, να δημιουργήσω κάτι δικό μου (π.χ. μια αφίσα), να βοηθηθώ στις εργασίες μου, να διασκεδάσω.'],
+            ['⏰', 'Η <b>υπερβολική χρήση</b> αφορά όλες τις ώρες που περνάω στο Διαδίκτυο, με <b>οποιαδήποτε</b> συσκευή. Δεν περνάω απεριόριστο χρόνο χωρίς κανόνες: <b>συμφωνώ</b> τον χρόνο με τους γονείς και τους δασκάλους μου και κάνω <b>συχνά διαλείμματα</b>.'],
+            ['🏛️', 'Ο <b>Κλεόβουλος</b>, ποιητής και ένας από τους επτά σοφούς της αρχαιότητας (6ος αιώνας π.Χ.), έλεγε <b>«μέτρον ἄριστον»</b>: να κρατάμε το μέτρο στη ζωή μας.'],
+          ] },
+          { type: 'theory', ref: 'έκδ. 7.0 σελ. 110–112 · έκδ. v09 σελ. 113', text: 'Πώς το καταλαβαίνω;', sections: [
+            ['🖐️ Καρπιαίος σωλήνας · 👁️ ξηροφθαλμία', 'Σύνδρομο καρπιαίου σωλήνα: <b>μούδιασμα στα δάχτυλα</b> και, μετά από καιρό, έντονος πόνος. Ξηροφθαλμία: τα μάτια δεν κάνουν αρκετά δάκρυα — <b>τσούζουν, κοκκινίζουν</b>.', []],
+            ['🤕 Πονοκέφαλοι · 🍔 φαγητό · 🧼 υγιεινή', 'Ημικρανίες από άγχος και μυϊκή κούραση. Πόνοι στη μέση, στην πλάτη, στον αυχένα. Πρόχειρο φαγητό μπροστά στην οθόνη (λίγες βιταμίνες, απότομη αύξηση βάρους). Ξεχνάω πλύσιμο, δόντια, μπάνιο.', []],
+            ['😴 Ύπνος', 'Η χρήση τη νύχτα αλλάζει τις ώρες του ύπνου: νυστάζω το πρωί και δεν προλαβαίνω το πρώτο κουδούνι!', []],
+            ['😟 Ψυχική υγεία', 'Μελαγχολία, οργή, άγχος και ανησυχία όταν δεν είμαι συνδεδεμένος. Ενοχές και ψέματα στους γονείς για τον χρόνο μου. Νιώθω ότι δεν με καταλαβαίνουν. Αδιαφορώ για φίλους και οικογένεια — αρνούμαι ακόμα και το σινεμά!', []],
+          ] },
+          { type: 'sort', ref: 'έκδ. v09 σελ. 113 · έκδ. 7.0 σελ. 110–112', text: 'Σωματικό ή ψυχικό σύμπτωμα;', bins: ['🩺 Σωματικό', '💭 Ψυχικό'], items: [
+            ['👁️', 'Τα μάτια τσούζουν και κοκκινίζουν', 0], ['🤕', 'Συχνοί και δυνατοί πονοκέφαλοι', 0], ['🖐️', 'Μούδιασμα στα δάχτυλα και πόνος στον καρπό', 0], ['😴', 'Δεν κοιμάμαι καλά και νυστάζω το πρωί', 0],
+            ['😠', 'Νευριάζω και ανησυχώ όταν δεν μπορώ να συνδεθώ', 1], ['🤥', 'Λέω ψέματα για τον χρόνο που περνάω στο Διαδίκτυο', 1], ['🙈', 'Δεν θέλω να βγω με τους φίλους μου', 1], ['🔁', 'Σκέφτομαι και μιλάω συνέχεια για όσα κάνω στον ψηφιακό κόσμο', 1],
+          ] },
+          { type: 'match', ref: 'έκδ. 7.0 σελ. 110–111', text: 'Ταίριαξε το πρόβλημα με το πώς το καταλαβαίνω.', pairs: [
+            ['🖐️ Σύνδρομο καρπιαίου σωλήνα', 'Μούδιασμα στα δάχτυλα και μετά πόνος'], ['👁️ Ξηροφθαλμία', 'Τα μάτια δεν κάνουν αρκετά δάκρυα'], ['🤕 Ημικρανίες', 'Πονοκέφαλοι από άγχος και μυϊκή κούραση'],
+            ['🍟 Παραμέληση γευμάτων', 'Λίγες βιταμίνες ή απότομη αύξηση βάρους'], ['🧼 Παραμέληση υγιεινής', 'Ξεχνάω πλύσιμο, βούρτσισμα δοντιών, μπάνιο'],
+          ] },
+          { type: 'mcq', ref: 'έκδ. v09 σελ. 111–113', text: '«Οι φίλοι του ΨΗ-ΠΟ ανησυχούν: έχουν μέρες να τον συναντήσουν!» Πάμε να τον αναζητήσουμε;', questions: [
+            { q: 'Ο ΨΗ-ΠΟ δεν βγαίνει πια να παίξει και περνάει όλη τη μέρα στην ταμπλέτα. Τι μπορεί να του συμβαίνει;', options: ['Κάνει υπερβολική χρήση του Διαδικτύου', 'Έχει πολλή δουλειά για το σχολείο'], answer: 0 },
+            { q: 'Ο ΨΗ-ΠΟ λέει στη μαμά του ότι έπαιζε «μόνο λίγο», ενώ έπαιζε τρεις ώρες. Αυτό είναι…', options: ['σωματικό σύμπτωμα', 'ψυχικό σύμπτωμα: λέει ψέματα για τον χρόνο του'], answer: 1 },
+            { q: 'Τα μάτια του ΨΗ-ΠΟ τσούζουν και κοκκινίζουν. Πώς λέγεται αυτό;', options: ['Ξηροφθαλμία', 'Σύνδρομο καρπιαίου σωλήνα'], answer: 0 },
+            { q: 'Τι θα συμβουλεύατε τον ΨΗ-ΠΟ;', options: ['Να παίζει περισσότερο, για να τελειώσει το παιχνίδι', 'Να βάλει όριο χρόνου με τους γονείς του, να κάνει διαλείμματα και να βγει με τους φίλους του', 'Να μην κοιμάται'], answer: 1 },
+          ] },
+          { type: 'info', ref: 'έκδ. v09 σελ. 112 · έκδ. 7.0 σελ. 110, 112', text: 'Στην τάξη:', cards: [
+            ['🎬', 'Δείτε το βίντεο του Saferinternet4kids «Εθισμός στο διαδίκτυο για μικρά παιδιά» και τη βιντεοπαρουσίαση για τα προβλήματα σωματικής και ψυχικής υγείας.'],
+            ['💭', 'Αναστοχασμός: εσείς «χάνεστε» στον ψηφιακό κόσμο; Αν ναι, τι είναι αυτό που σας κάνει να «ξεχνιέστε» εκεί;'],
+            ['🏛️', 'Αναζητήστε στο Διαδίκτυο περισσότερα για τον Κλεόβουλο και το «μέτρον άριστον».'],
+          ] },
+        ],
+        practice: [
+          { type: 'sort', ref: 'εξάσκηση', text: 'Υγιεινή ή ανθυγιεινή συνήθεια;', bins: ['😀 Υγιεινή', '😟 Ανθυγιεινή'], colors: ['#2e7d32', '#c62828'], items: [
+            ['🍎', 'Τρώω ένα φρούτο στο διάλειμμα', 0], ['🚶', 'Σηκώνομαι και περπατάω κάθε μισή ώρα', 0], ['⚽', 'Παίζω μπάλα με τους φίλους μου', 0],
+            ['🥤', 'Σνακ μπροστά στην οθόνη αντί για φαγητό', 1], ['🌙', 'Ταμπλέτα στο κρεβάτι τα μεσάνυχτα', 1], ['🪥', 'Ξεχνάω να βουρτσίσω τα δόντια μου γιατί παίζω', 1],
+          ] },
+          { type: 'mcq', ref: 'εξάσκηση', text: 'Τι θα γίνει αν…', questions: [
+            { q: '…παίζω στο κινητό ως αργά τη νύχτα;', options: ['Θα ξυπνήσω πιο ξεκούραστος', 'Θα νυστάζω το πρωί και ίσως αργήσω στο σχολείο'], answer: 1 },
+            { q: 'Ποια χρήση του Διαδικτύου είναι δημιουργική;', options: ['Φτιάχνω μια αφίσα για την εργασία μου', 'Κοιτάζω βίντεο το ένα μετά το άλλο για ώρες'], answer: 0 },
+            { q: '«Μέτρον ἄριστον» σημαίνει…', options: ['να μην κάνουμε ποτέ τίποτα', 'να κρατάμε το μέτρο'], answer: 1 },
+          ] },
+        ],
+      },
+      {
+        icon: '⏱️', title: 'Κανόνες και όρια', sub: 'Χρόνος οθόνης · διαλείμματα · τρεις βασικοί κανόνες',
+        acts: [
+          { type: 'info', ref: 'έκδ. 7.0 σελ. 113', text: '«Ήρωνα, υπάρχουν κανόνες και όρια για τις ψηφιακές συσκευές;» «Μα φυσικά, Υπατία μου!»', cards: [
+            ['⏱️', 'Ο <b>χρόνος ενασχόλησης</b> με ψηφιακές συσκευές είναι ο <b>συνολικός</b> χρόνος που περνάω μπροστά σε οθόνες: ταμπλέτα, υπολογιστής, κινητό ή άλλη συσκευή — όλες μαζί!'],
+            ['👨‍👩‍👧', 'Τους <b>κανόνες</b> τους ορίζω <b>μαζί με τους γονείς</b> μου. Στόχος: <b>έως δύο ώρες την ημέρα</b>, με <b>τακτικά διαλείμματα</b>.'],
+            ['⚖️', 'Έτσι προστατεύω την <b>υγεία</b> μου και κρατάω <b>ισορροπία</b> ανάμεσα στην ψηφιακή και στην πραγματική ζωή.'],
+          ] },
+          { type: 'theory', ref: 'έκδ. 7.0 σελ. 113', text: 'Τρεις βασικοί κανόνες για το Διαδίκτυο:', sections: [
+            ['1️⃣ Γίνεται δημόσιο', 'Ό,τι <b>αναρτώ</b> (upload), δηλαδή ό,τι μοιράζομαι στο Διαδίκτυο, γίνεται αυτόματα <b>«δημόσιο»</b>.', ['📸 ανεβάζω μια φωτογραφία → μπορεί να τη δουν πολλοί']],
+            ['2️⃣ Μένει για πάντα', 'Ό,τι αναρτώ, <b>εκεί θα μείνει για πάντα</b>. Γι’ αυτό σκέφτομαι πριν ανεβάσω κάτι.', []],
+            ['3️⃣ Δεν είναι όλα σωστά', 'Ό,τι διαβάζω στο Διαδίκτυο <b>δεν σημαίνει ότι είναι σωστό ή αξιόπιστο</b>.', ['💡 «τα αστέρια είναι λαμπάκια» ❌']],
+          ] },
+          { type: 'mcq', ref: 'έκδ. 7.0 σελ. 113 · έκδ. v09 σελ. 110', text: 'Μετράμε τον χρόνο οθόνης όλων των συσκευών μαζί. Όριο: 2 ώρες = 120 λεπτά.', questions: [
+            { q: 'Η Ελένη είδε 30 λεπτά ταμπλέτα, 40 λεπτά τηλεόραση και 20 λεπτά υπολογιστή. Πόσος ήταν ο χρόνος οθόνης της;', options: ['40 λεπτά', '90 λεπτά', '120 λεπτά'], answer: 1, explain: '30 + 40 + 20 = 90 λεπτά: κάτω από τις 2 ώρες. 👍' },
+            { q: 'Ο Νίκος έπαιξε 60 λεπτά στην κονσόλα και 80 λεπτά στο κινητό. Ξεπέρασε το όριο;', options: ['Ναι, 140 λεπτά είναι πάνω από 120', 'Όχι, κάθε συσκευή μετράει χωριστά'], answer: 0, explain: 'Μετράμε όλες τις συσκευές μαζί: 60 + 80 = 140 λεπτά.' },
+            { q: 'Έχω ήδη 100 λεπτά οθόνης σήμερα. Πόσα λεπτά μού μένουν ως το όριο;', options: ['100 λεπτά', '0 λεπτά', '20 λεπτά'], answer: 2 },
+            { q: 'Κάθε πότε κάνω διάλειμμα;', options: ['Ποτέ', 'Τακτικά — π.χ. σηκώνομαι κάθε μισή ώρα'], answer: 1 },
+          ] },
+          { type: 'sort', ref: 'έκδ. 7.0 σελ. 114', text: 'Ο χρόνος μου έχει «ποιότητα»; Δημιουργώ ή είμαι μόνο θεατής;', bins: ['🛠️ Δημιουργώ', '👀 Μόνο κοιτάζω'], items: [
+            ['🎬', 'Φτιάχνω ένα κινούμενο σχέδιο', 0], ['📰', 'Γράφω ένα άρθρο στο ιστολόγιο της κυψέλης', 0], ['🎨', 'Ζωγραφίζω την εικόνα του προφίλ μου', 0], ['🔎', 'Ψάχνω πληροφορίες για την εργασία μου και τις γράφω', 0],
+            ['📺', 'Βλέπω βίντεο το ένα μετά το άλλο', 1], ['📱', 'Κάνω κύλιση σε αναρτήσεις για ώρες', 1], ['🎮', 'Ξαναπαίζω συνέχεια το ίδιο παιχνίδι', 1],
+          ] },
+          { type: 'mcq', ref: 'έκδ. 7.0 σελ. 114', text: 'Ο Ήρωνας και η Υπατία θέλουν να βάλουν όρια στον εαυτό τους. Βοήθησέ τους με την ομάδα σου:', questions: [
+            { q: 'Ποιοι ορίζουν τους κανόνες για τη χρήση του Διαδικτύου στο σπίτι;', options: ['Εγώ μόνος/μόνη μου, χωρίς να ρωτήσω', 'Η οικογένεια μαζί'], answer: 1 },
+            { q: 'Σε ποιους ιστότοπους, εφαρμογές και ταινίες έχω πρόσβαση;', options: ['Σε όσα έχουμε συμφωνήσει ότι είναι κατάλληλα για την ηλικία μου', 'Σε ό,τι βρω'], answer: 0 },
+            { q: '«Χρησιμοποιώ υπεύθυνα το Διαδίκτυο» σημαίνει…', options: ['δίνω το τηλέφωνό μου σε όποιον ρωτήσει', 'δεν μοιράζομαι προσωπικές πληροφορίες, όπως διεύθυνση και τηλέφωνο'], answer: 1 },
+            { q: 'Ποια είναι μια «ζώνη χωρίς τεχνολογία»;', options: ['Το μεσημεριανό τραπέζι και τα παιχνίδια στο προαύλιο', 'Το εργαστήριο Πληροφορικής'], answer: 0 },
+          ] },
+          { type: 'sort', ref: 'έκδ. v09 σελ. 113 (Ο Γιωργάκης συμβουλεύει)', text: 'Ο Γιωργάκης, μαθητής της Γ΄ Δημοτικού, τελείωσε την ενότητα και μας συμβουλεύει! Ποιες συμβουλές θα έδινες κι εσύ;', bins: ['👍 Καλή συμβουλή', '👎 Κακή συμβουλή'], colors: ['#2e7d32', '#c62828'], items: [
+            ['⏰', 'Συμφώνησε με τους γονείς σου πόση ώρα θα παίζεις', 0], ['☕', 'Κάνε διαλείμματα και κουνήσου', 0], ['⚽', 'Βγες να παίξεις με τους φίλους σου', 0], ['🍽️', 'Στο τραπέζι αφήνουμε τις συσκευές μακριά', 0],
+            ['🌙', 'Παίζε στο κρεβάτι πριν κοιμηθείς', 1, 'Η οθόνη τη νύχτα χαλάει τον ύπνο.'], ['🤐', 'Μην πεις σε κανέναν πόση ώρα παίζεις', 1, 'Τα ψέματα για τον χρόνο μας είναι σημάδι εθισμού. Μιλάμε ανοιχτά με την οικογένεια.'],
+          ] },
+          { type: 'info', ref: 'έκδ. 7.0 σελ. 114', text: 'Στην τάξη:', cards: [
+            ['👥', 'Με την ομάδα σας γράψτε με λίγα λόγια τις προτάσεις σας για κάθε προβληματισμό: τι χρειάζομαι από το Διαδίκτυο, ποιοι είναι οι κανόνες της οικογένειας και του σχολείου, σε ποιους ιστότοπους έχω πρόσβαση, τα προσωπικά δεδομένα, οι ζώνες χωρίς τεχνολογία, η «ποιότητα» του χρόνου μου. Τι πιστεύετε τελικά ως ομάδα;'],
+          ] },
+        ],
+        practice: [
+          { type: 'match', ref: 'εξάσκηση', text: 'Ταίριαξε:', pairs: [
+            ['⏱️ Χρόνος οθόνης', 'Όλη η ώρα σε όλες τις οθόνες μαζί'], ['2️⃣ Δύο ώρες', 'Το όριο για κάθε μέρα'], ['📤 Ανάρτηση (upload)', 'Γίνεται δημόσια και μένει για πάντα'],
+            ['🍽️ Ζώνη χωρίς τεχνολογία', 'Το μεσημεριανό τραπέζι'], ['☕ Διάλειμμα', 'Σηκώνομαι και κινούμαι'],
+          ] },
+          { type: 'mcq', ref: 'εξάσκηση', text: 'Τι θα γίνει αν…', questions: [
+            { q: '…ανεβάσω μια αστεία φωτογραφία του φίλου μου χωρίς να τον ρωτήσω;', options: ['Τίποτα, θα τη δω μόνο εγώ', 'Θα γίνει δημόσια και μπορεί να μείνει για πάντα — γι’ αυτό ρωτάω πρώτα'], answer: 1 },
+            { q: '…διαβάσω στο Διαδίκτυο ότι «τα καρότα σε κάνουν να πετάς»;', options: ['Θυμάμαι ότι δεν είναι όλα σωστά και το ελέγχω', 'Το πιστεύω αμέσως'], answer: 0 },
+          ] },
+        ],
+      },
+      {
+        icon: '📝', title: 'Επανάληψη', sub: 'Εργονομία, υπερβολική χρήση, κανόνες και όρια',
+        acts: [
+          { type: 'info', ref: 'έκδ. v09 σελ. 114', text: 'Ανακεφαλαίωση:', cards: [
+            ['🪑', 'Μάθαμε τον <b>σωστό τρόπο</b> να καθόμαστε μπροστά στον υπολογιστή και να κρατάμε τις κινητές συσκευές.'],
+            ['🩺', 'Μάθαμε να αναγνωρίζουμε τα <b>σημάδια του εθισμού</b> στο Διαδίκτυο και στις συσκευές — σωματικά και ψυχικά.'],
+            ['⏱️', 'Μάθαμε πώς τα <b>αντιμετωπίζουμε</b>: κανόνες με την οικογένεια, έως δύο ώρες οθόνης, διαλείμματα, δημιουργικός χρόνος.'],
+          ] },
+          { type: 'mcq', ref: 'έκδ. v09 σελ. 114', text: 'Μία από τις απαντήσεις είναι σωστή!', questions: [
+            { q: 'Τι είναι η Εργονομία;', options: ['Ένα παιχνίδι στον υπολογιστή', 'Η επιστήμη που φροντίζει το περιβάλλον εργασίας μας, ώστε να είμαστε υγιείς, χαρούμενοι και αποδοτικοί', 'Ένα είδος καρέκλας'], answer: 1 },
+            { q: 'Ποια στάση είναι σωστή;', options: ['Μάτια στο ύψος του πάνω μέρους της οθόνης, πόδια στο πάτωμα', 'Μύτη στην οθόνη, πόδια να κρέμονται'], answer: 0 },
+            { q: 'Ποιο είναι <b>ψυχικό</b> σύμπτωμα της υπερβολικής χρήσης;', options: ['Ξηροφθαλμία', 'Πόνος στη μέση', 'Άγχος και κακή διάθεση όταν είμαι εκτός σύνδεσης'], answer: 2 },
+            { q: 'Πόσος χρόνος οθόνης την ημέρα είναι ο στόχος;', options: ['Έως δύο ώρες, με διαλείμματα', 'Όσος θέλω'], answer: 0 },
+            { q: 'Πώς αντιμετωπίζω τον εθισμό;', options: ['Παίζοντας ακόμα περισσότερο', 'Με κανόνες, διαλείμματα, κίνηση και παρέα με φίλους'], answer: 1 },
+          ] },
+          { type: 'sort', ref: 'έκδ. v09 σελ. 114', text: 'Το κάνω ή το αποφεύγω;', bins: ['👍 Το κάνω', '👎 Το αποφεύγω'], colors: ['#2e7d32', '#c62828'], items: [
+            ['🪑', 'Κάθομαι με ίσια πλάτη', 0], ['🚶', 'Κάνω διάλειμμα κάθε μισή ώρα', 0], ['💧', 'Πίνω νερό', 0], ['👨‍👩‍👧', 'Συμφωνώ τον χρόνο οθόνης με τους γονείς μου', 0],
+            ['📱', 'Σκύβω πολύ πάνω από το κινητό', 1], ['🌙', 'Παίζω ως αργά τη νύχτα', 1], ['🍫', 'Τρώω μόνο σνακ μπροστά στην οθόνη', 1], ['🙈', 'Αφήνω τους φίλους μου για να μείνω στο Διαδίκτυο', 1],
+          ] },
+          { type: 'info', ref: 'έκδ. v09 σελ. 110, 113', text: 'Αυτοαξιολόγηση:', cards: [
+            ['😀', 'Σημειώστε «Ναι! — Έτσι κι έτσι — Όχι…»: Έμαθα να κάθομαι μπροστά στον υπολογιστή; Να κρατάω τις κινητές συσκευές; Τι είναι ο εθισμός, τα σωματικά και τα ψυχικά του συμπτώματα και πώς τον αντιμετωπίζω;'],
+          ] },
+        ],
+        practice: [
+          { type: 'match', ref: 'εξάσκηση', text: 'Γλωσσάριο: ταίριαξε.', pairs: [
+            ['👩‍🔬 Εργονομία', 'Φροντίζει το περιβάλλον εργασίας μας'], ['🧒 ΨΗ-ΠΟ', 'Ο Ψηφιακός Πολίτης'], ['👁️ Ξηροφθαλμία', 'Μάτια που τσούζουν και κοκκινίζουν'],
+            ['⏱️ Χρόνος οθόνης', 'Όλη η ώρα μπροστά σε οθόνες'], ['🏛️ Μέτρον άριστον', 'Κρατάμε το μέτρο στη ζωή μας'],
+          ] },
+          { type: 'mcq', ref: 'εξάσκηση', text: 'Τι θα γίνει αν…', questions: [
+            { q: '…κάθομαι ώρες χωρίς διάλειμμα;', options: ['Θα κουραστούν τα μάτια, η πλάτη και τα χέρια μου', 'Θα γίνω πιο δυνατός'], answer: 0 },
+            { q: '…αντί για κύλιση φτιάξω ένα κινούμενο σχέδιο;', options: ['Ο χρόνος μου θα έχει πιο πολλή «ποιότητα»: δημιουργώ!', 'Δεν αλλάζει τίποτα'], answer: 0 },
+          ] },
+        ],
+      },
+    ],
+  },
 ];
 
 // ======================== Δ΄ ΤΑΞΗ ========================
@@ -10616,7 +11714,7 @@ function renderHome() {
 // ΠΡΟΓΡΑΜΜΑ ΔΙΔΑΣΚΑΛΙΑΣ: ένα μάθημα την εβδομάδα, ελληνικό σχολικό ημερολόγιο, αποθεματικό για χαμένες μέρες
 // ============================================================================
 // Κεφάλαια που δεν έχουν φτιαχτεί ακόμα: πόσα μαθήματα έχει η παλιά έκδοση (μάθημα = 1 διδακτική ώρα)
-const PLAN_TODO = [{}, {}, { 3: 12 }, {}, {}, {}];
+const PLAN_TODO = [{}, {}, {}, {}, {}, {}];
 const iso = d => `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}`;
 const dayAt = (y, m, d) => new Date(y, m - 1, d, 12);
 const addDays = (d, n) => new Date(d.getFullYear(), d.getMonth(), d.getDate() + n, 12);
