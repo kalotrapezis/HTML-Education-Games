@@ -297,6 +297,115 @@
   .fx .items.list .it span { font-size: 26px; } .fx .items.list .it small { margin-left: auto; color: #607d8b; }
   .fx .it small { color: #607d8b; } .fx .it input { width: 120px; font-size: 16px; }
   .fx .save { background: #e3f2fd; display: flex; gap: 10px; padding: 8px 12px; align-items: center; } .fx .save input { flex: 1; font-size: 20px; padding: 4px 8px; }
+  /* ποντίκι */
+  .mfield { position: relative; width: 1000px; height: 560px; flex: none; background: radial-gradient(circle at 30% 20%, #fffde7, #c5e1a5); border-radius: 16px; overflow: hidden; touch-action: none; color: #263238; box-shadow: 0 10px 30px rgba(0,0,0,0.35); }
+  .mfield.mparts { width: 520px; display: flex; align-items: center; justify-content: center; background: #fff; }
+  .msvg { height: 500px; } .msvg [data-p] { cursor: pointer; transition: fill 0.2s; } .msvg [data-p]:hover { opacity: 0.85; }
+  .mitem { position: absolute; transform: translate(-50%, -50%); font-size: 72px; cursor: pointer; transition: transform 0.25s, opacity 0.25s; }
+  .mitem.got { transform: translate(-50%, -50%) scale(1.6); opacity: 0; pointer-events: none; }
+  .micon { position: absolute; width: 190px; height: 190px; border-radius: 18px; display: flex; flex-direction: column; align-items: center; justify-content: center; font-size: 22px; cursor: pointer; text-align: center; }
+  .micon span { font-size: 96px; } .micon.sel { background: rgba(30,136,229,0.25); outline: 3px solid #1e88e5; } .micon.open { background: rgba(67,160,71,0.25); }
+  .mfield .ctx { position: absolute; z-index: 60; background: #fff; border-radius: 10px; box-shadow: 0 6px 20px rgba(0,0,0,0.35); display: flex; flex-direction: column; min-width: 220px; overflow: hidden; }
+  .mfield .ctx button { background: transparent; box-shadow: none; color: #263238; text-align: left; font-size: 22px; border-radius: 0; padding: 10px 18px; } .mfield .ctx button:hover { background: #e3f2fd; }
+  .mdrop { border: 4px dashed #78909c; border-radius: 14px; background: rgba(255,255,255,0.55); }
+  .mbin { position: absolute; top: 230px; height: 310px; display: flex; flex-wrap: wrap; align-content: flex-start; gap: 6px; padding: 10px; }
+  .mbin b { width: 100%; text-align: center; font-size: 56px; } .mbin span { width: 100%; text-align: center; font-size: 24px; font-weight: bold; order: 9; margin-top: auto; }
+  .mpiece { position: absolute; cursor: grab; touch-action: none; }
+  .mtok { font-size: 64px; width: 90px; height: 90px; display: flex; align-items: center; justify-content: center; background: #fff; border-radius: 14px; box-shadow: 0 3px 8px rgba(0,0,0,0.25); }
+  .mtok.in { width: 70px; height: 70px; font-size: 48px; box-shadow: none; }
+  .mpiece.sel { outline: 5px solid #ffb347; }
+  .mpuz { position: absolute; display: grid; gap: 0; background: rgba(255,255,255,0.5); }
+  .mpuz .mdrop { border-width: 2px; border-radius: 0; position: relative; }
+  .mpiece:not(.mtok) { overflow: hidden; background: #fff; border: 2px solid #90a4ae; }
+  .mpiece:not(.mtok) span { position: absolute; width: 420px; height: 420px; line-height: 420px; text-align: center; }
+  .mpiece.in:not(.mtok) { border: none; cursor: default; }
+  .mscroll { overflow-y: auto; touch-action: pan-y; }
+  .mpage { position: relative; background: linear-gradient(#e1f5fe, #fff9c4 40%, #c8e6c9 70%, #b2dfdb); }
+  .mhint { text-align: center; padding: 30px; font-size: 26px; font-weight: bold; color: #1565c0; }
+  /* πληκτρολόγιο */
+  .kbwrap { display: flex; flex-direction: column; gap: 14px; align-items: center; flex: none; }
+  .kbtop { min-height: 150px; width: 1000px; display: flex; gap: 20px; align-items: center; justify-content: center; }
+  .kbpic { font-size: 96px; } .kbpic:empty { display: none; }
+  .kbtext { flex: 1; min-height: 120px; max-height: 180px; overflow: hidden; background: #fff; color: #212121; border-radius: 12px; padding: 14px 20px; font-size: 44px; font-family: 'Courier New', monospace; white-space: pre-wrap; word-break: break-all; text-align: left; }
+  .caret { display: inline-block; width: 4px; height: 1em; background: #212121; vertical-align: -0.12em; margin: 0 1px; animation: blink 1s steps(1) infinite; }
+  @keyframes blink { 50% { opacity: 0; } }
+  .kbword { display: flex; gap: 8px; } .kbword { flex-wrap: wrap; justify-content: center; } .kbword span { font-size: 1em; font-weight: bold; padding: 4px 14px; border-radius: 10px; background: rgba(0,0,0,0.3); }
+  .kbword span.ok { background: #2e7d32; } .kbword span.cur { background: #fff8e1; color: #3e2723; outline: 4px solid #ffb347; }
+  .kbq { font-size: 32px; background: #fff8e1; color: #3e2723; border-radius: 14px; padding: 16px 26px; }
+  .kb { background: #37474f; padding: 14px; border-radius: 16px; display: flex; flex-direction: column; gap: 8px; box-shadow: 0 10px 30px rgba(0,0,0,0.35); }
+  .kbrow { display: flex; gap: 8px; justify-content: center; }
+  .kbk { width: 72px; height: 68px; padding: 0; font-size: 30px; background: #eceff1; color: #263238; box-shadow: 0 4px 0 #90a4ae; border-radius: 10px; position: relative; line-height: 1; }
+  .kbk.wide { width: auto; min-width: 72px; padding: 0 14px; font-size: 24px; } .kbk small { display: block; font-size: 14px; font-weight: normal; }
+  .kbk.space { width: 520px; } .kbk.found { background: #4fc3f7; } .kbk.hit { animation: flash 0.4s; } .kbk.no { animation: shake 0.4s; background: #ffcdd2; }
+  .kbk .lamp { position: absolute; top: 6px; right: 6px; width: 10px; height: 10px; border-radius: 50%; background: #90a4ae; } .kbk.on .lamp { background: #76ff03; box-shadow: 0 0 8px #76ff03; }
+  /* περιηγητής */
+  .br { position: relative; width: 980px; height: 620px; flex: none; background: #fff; color: #263238; border-radius: 14px; display: flex; flex-direction: column; overflow: hidden; font-size: 20px; box-shadow: 0 10px 30px rgba(0,0,0,0.35); }
+  .brtabs { background: #cfd8dc; padding: 6px 10px 0; } .brtab { display: inline-block; background: #fff; border-radius: 10px 10px 0 0; padding: 6px 18px; font-size: 17px; max-width: 420px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+  .brsim { float: right; color: #546e7a; font-size: 14px; padding-top: 8px; }
+  .brbar { display: flex; gap: 6px; padding: 6px 10px; align-items: center; background: #fff; border-bottom: 1px solid #eceff1; }
+  .brbar button { font-size: 18px; padding: 6px 10px; box-shadow: none; }
+  .braddr { flex: 1; font-size: 19px; padding: 6px 14px; border-radius: 20px; border: 2px solid #b0bec5; background: #f1f3f4; }
+  .braddr:focus { outline: none; border-color: #1e88e5; background: #fff; }
+  .brstar { background: transparent !important; color: #607d8b; font-size: 30px !important; padding: 0 8px !important; } .brstar.on { color: #fbc02d; }
+  .brmarks { display: flex; gap: 6px; padding: 4px 10px; background: #f5f7fb; border-bottom: 1px solid #cfd8dc; min-height: 40px; align-items: center; font-size: 15px; color: #78909c; flex-wrap: wrap; }
+  .brmark { background: transparent; box-shadow: none; color: #263238; font-size: 16px; padding: 4px 10px; font-weight: normal; } .brmark:hover { background: #e3f2fd; }
+  .brpage { flex: 1; overflow-y: auto; padding: 18px 26px; text-align: left; touch-action: pan-y; line-height: 1.45; user-select: text; }
+  .brpage h1 { font-size: 32px; color: #1565c0; margin-bottom: 8px; } .brpage h2 { font-size: 24px; margin: 10px 0 4px; }
+  .brpage p { margin: 6px 0; } .brpage a { color: #1a0dab; text-decoration: underline; cursor: pointer; } .brpage a:hover { color: #c2185b; }
+  .brpage .big { font-size: 72px; } .brpage .row { display: flex; gap: 14px; flex-wrap: wrap; align-items: stretch; }
+  .brpage .card { flex: 1; min-width: 180px; background: #f5f7fb; border-radius: 12px; padding: 10px 14px; }
+  .brpage .menu { display: flex; gap: 8px; flex-wrap: wrap; background: #1565c0; padding: 8px; border-radius: 10px; margin-bottom: 10px; }
+  .brpage .menu a { color: #fff; text-decoration: none; background: rgba(255,255,255,0.15); padding: 4px 12px; border-radius: 8px; } .brpage .menu a.on { background: #ffb347; color: #3e2723; }
+  .br404 { text-align: center; font-size: 26px; padding: 80px 40px; color: #546e7a; }
+  .brsearch { display: flex; align-items: center; gap: 14px; margin-bottom: 10px; } .brlogo { font-size: 30px; font-weight: bold; color: #1565c0; }
+  [data-search] { display: flex; gap: 6px; flex: 1; } [data-search] input { flex: 1; font-size: 20px; padding: 6px 16px; border-radius: 22px; border: 2px solid #b0bec5; } [data-search] button { font-size: 18px; padding: 6px 14px; box-shadow: none; }
+  .brhit { margin: 12px 0; } .brhit small { display: block; color: #388e3c; } .brhit a { font-size: 22px; } .brhit div { font-size: 17px; color: #546e7a; }
+  .brad { background: #fff3e0; color: #e65100; font-size: 14px; font-weight: bold; border: 1px solid #ffb74d; border-radius: 6px; padding: 0 6px; margin-right: 6px; }
+  [data-post] { background: #f5f7fb; border: 1px solid #cfd8dc; border-radius: 12px; padding: 12px 16px; margin: 10px 0; }
+  .brpostft { display: flex; gap: 8px; align-items: center; margin-top: 8px; flex-wrap: wrap; }
+  .brpostft input { flex: 1; min-width: 200px; font-size: 18px; padding: 5px 10px; border-radius: 8px; border: 1px solid #b0bec5; }
+  .brlike { background: #eceff1; color: #263238; box-shadow: none; font-size: 17px; padding: 5px 12px; } .brlike.on { background: #ffebee; color: #c62828; }
+  .bremo button { background: transparent; box-shadow: none; font-size: 22px; padding: 2px 4px; }
+  .brcomments div { background: #fff; border-radius: 8px; padding: 4px 10px; margin-top: 4px; font-size: 18px; }
+  .brnotes { display: flex; flex-wrap: wrap; gap: 10px; min-height: 60px; } .brnotes div { width: 200px; min-height: 90px; padding: 10px; border-radius: 6px; box-shadow: 0 3px 6px rgba(0,0,0,0.2); font-size: 19px; transform: rotate(-1deg); }
+  .brboardin { display: flex; gap: 8px; margin-top: 10px; } .brboardin input { flex: 1; font-size: 19px; padding: 6px 10px; border-radius: 8px; border: 1px solid #b0bec5; } .brboardin button { font-size: 18px; padding: 6px 14px; box-shadow: none; }
+  [data-video] { position: relative; background: #263238; color: #fff; border-radius: 12px; height: 200px; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 8px; margin: 10px 0; font-size: 22px; }
+  .brplay { font-size: 34px; border-radius: 50%; width: 76px; height: 76px; padding: 0; }
+  .brprog { position: absolute; left: 14px; right: 14px; bottom: 12px; height: 8px; background: #546e7a; border-radius: 4px; overflow: hidden; } .brprog i { display: block; height: 100%; width: 0; background: #e53935; }
+  .brdlg { position: absolute; right: 14px; top: 96px; z-index: 20; background: #fff; border-radius: 12px; box-shadow: 0 8px 26px rgba(0,0,0,0.35); padding: 14px 18px; display: flex; flex-direction: column; gap: 8px; width: 360px; }
+  .brdlg input { font-size: 19px; padding: 5px 10px; border: 1px solid #90a4ae; border-radius: 8px; } .brdlg button { font-size: 18px; padding: 8px 14px; box-shadow: none; }
+  /* Tux Paint */
+  .tux { position: relative; display: grid; grid-template-columns: 172px 700px 150px; gap: 6px; background: #fff; color: #263238; padding: 8px; border-radius: 14px; flex: none; box-shadow: 0 10px 30px rgba(0,0,0,0.35); }
+  .tux canvas { width: 700px; height: 420px; cursor: crosshair; touch-action: none; outline: 2px solid #90a4ae; }
+  .txh { grid-column: 1 / -1; background: linear-gradient(#81c784, #2e7d32); color: #fff; font-size: 24px; font-weight: bold; text-align: center; border-radius: 22px; padding: 2px 0; text-shadow: 0 1px 2px #1b5e20; }
+  .txtools { display: grid; grid-template-columns: 1fr 1fr; gap: 3px; align-content: start; }
+  .txbtn, .txopt, .txcol { padding: 0; box-shadow: none; color: #263238; border-radius: 10px; background: linear-gradient(#f5f9ff, #bbdefb); border: 1px solid #90caf9; font-weight: normal; }
+  .txbtn { font-size: 14px; height: 50px; display: flex; flex-direction: column; align-items: center; justify-content: center; line-height: 1; } .txbtn span { font-size: 20px; } .txbtn small { font-size: 10px; color: #546e7a; }
+  .txbtn.on, .txopt.on { background: linear-gradient(#64b5f6, #1565c0); color: #fff; } .txbtn.on small { color: #e3f2fd; }
+  .txopts { display: flex; flex-direction: column; gap: 4px; min-height: 0; } .txgrid { display: grid; grid-template-columns: 1fr 1fr; gap: 4px; max-height: 380px; overflow-y: auto; }
+  .txopt { height: 46px; font-size: 26px; display: flex; flex-direction: column; align-items: center; justify-content: center; line-height: 1; } .txopt small { font-size: 10px; } .txopt span { font-size: 22px; }
+  .txopt i { display: block; background: #263238; } .txnote { grid-column: 1 / -1; font-size: 14px; padding: 4px; }
+  .txcols { grid-column: 1 / -1; display: flex; gap: 4px; align-items: center; } .txcols .txh { width: 172px; flex: none; }
+  .txcol { width: 42px; height: 38px; border-radius: 50%; border: 2px solid #90caf9; } .txcol.on { outline: 4px solid #1565c0; outline-offset: 1px; } .txdrop { background: #263238; font-size: 18px; }
+  .txmix { width: 44px; height: 38px; border: none; background: none; }
+  .txtip { grid-column: 1 / -1; display: flex; gap: 10px; align-items: center; font-size: 19px; min-height: 46px; } .txtip span { font-size: 38px; }
+  .txpop { position: absolute; left: 200px; top: 60px; z-index: 10; background: #fff; border-radius: 14px; box-shadow: 0 8px 26px rgba(0,0,0,0.35); padding: 14px; display: flex; flex-direction: column; gap: 8px; font-size: 20px; max-width: 420px; } .txpop button { font-size: 19px; }
+  .txside { width: 400px; } .txside .task { font-size: 19px; padding: 8px 12px; }
+  .txchips { display: flex; flex-wrap: wrap; gap: 6px; } .txchips span { background: rgba(0,0,0,0.3); border-radius: 10px; padding: 6px 10px; font-size: 18px; } .txchips span.ok { background: #2e7d32; }
+  /* ζωγραφική */
+  .pt { position: relative; display: flex; gap: 10px; background: #eceff1; color: #263238; padding: 10px; border-radius: 14px; flex: none; box-shadow: 0 10px 30px rgba(0,0,0,0.35); }
+  .pttools, .ptopts { display: flex; flex-direction: column; gap: 6px; width: 150px; } .ptopts { width: 110px; }
+  .pttool, .ptsize { background: #fff; color: #263238; box-shadow: 0 2px 0 #b0bec5; font-size: 17px; padding: 7px 8px; text-align: left; border-radius: 10px; }
+  .pttool.on, .ptsize.on { background: #ffe0b2; outline: 3px solid #fb8c00; }
+  .ptsize { text-align: center; font-size: 22px; } .ptsize i { display: block; background: #263238; border-radius: 9px; margin: 2px auto 4px; width: 70%; } .ptsize:has(i) { font-size: 14px; }
+  .pth { font-size: 15px; font-weight: bold; text-align: center; color: #546e7a; }
+  .ptmid { position: relative; display: flex; flex-direction: column; gap: 8px; }
+  .ptmid canvas { width: 720px; height: 400px; background: #fff; border-radius: 6px; cursor: crosshair; touch-action: none; box-shadow: inset 0 0 0 1px #b0bec5; }
+  .ptpal { display: flex; gap: 6px; align-items: center; font-size: 16px; } .ptcol { width: 50px; height: 40px; padding: 0; border-radius: 8px; box-shadow: inset 0 0 0 2px rgba(0,0,0,0.25); }
+  .ptcol.on { outline: 4px solid #fb8c00; outline-offset: 2px; } .ptpal input[type=color] { width: 60px; height: 40px; border: none; background: none; }
+  .pttext { position: absolute; font-size: 28px; font-weight: bold; padding: 2px 6px; border: 2px dashed #fb8c00; background: rgba(255,255,255,0.9); width: 300px; }
+  .ptnew { position: absolute; left: 170px; top: 120px; z-index: 10; background: #fff; border-radius: 14px; box-shadow: 0 8px 26px rgba(0,0,0,0.35); padding: 16px; display: flex; flex-direction: column; gap: 8px; font-size: 20px; }
+  .ptnew button { font-size: 20px; }
   .sh { width: 960px; display: flex; flex-direction: column; gap: 8px; flex: none; }
   .sh .fbar { display: flex; gap: 6px; align-items: center; flex-wrap: wrap; }
   .sh .fbar .nm { width: 70px; background: #fff; color: #263238; border-radius: 6px; padding: 6px; text-align: center; font: bold 20px Consolas, monospace; }
@@ -449,6 +558,8 @@
   .snapprev { position: absolute; background: rgba(255,255,255,0.25); border: 3px solid #fff; border-radius: 10px; z-index: 850; pointer-events: none; }
   .dlg { position: absolute; left: 50%; top: 40%; transform: translate(-50%, -50%); background: #fff; color: #263238; border-radius: 14px; padding: 20px 28px; font-size: 24px; text-align: center; z-index: 980; display: flex; flex-direction: column; gap: 12px; box-shadow: 0 12px 40px rgba(0,0,0,0.5); }
   .setg { display: flex; flex-direction: column; gap: 14px; font-size: 20px; text-align: left; } .setg button { font-size: 17px; padding: 6px 10px; margin: 0 4px; }
+  .calc { display: grid; grid-template-columns: repeat(4, 1fr); gap: 6px; width: 100%; height: 100%; } .calc .cdisp { grid-column: 1 / -1; background: #eceff1; border-radius: 8px; text-align: right; padding: 2px 12px; font-size: 26px; }
+  .calc button { font-size: 22px; padding: 0; box-shadow: none; background: #78909c; } .calc button.eq { background: #ff9500; grid-row: span 2; }
   .setg .bgsw { width: 54px; height: 34px; border: 2px solid #fff; } .setg input { width: 200px; vertical-align: middle; }
   .dicon { position: absolute; width: 130px; display: flex; flex-direction: column; align-items: center; gap: 4px; font-size: 20px; color: #fff; text-shadow: 0 1px 3px #000; cursor: pointer; touch-action: none; border-radius: 10px; padding: 6px; }
   .dicon span { font-size: 64px; text-shadow: none; } .dicon.sel { background: rgba(255,255,255,0.3); }
@@ -609,6 +720,231 @@ function P(s) {
 }
 
 const SQUIRREL = '🐿️', ACORN = '🌰', CENTIPEDE = '🐛', DUCK = '🦆', REED = '🌾', BEE = '🐝', SUNFLOWER = '🌻';
+
+// ξεχωριστή ενότητα: οδηγός για το Tux Paint (με προσομοίωση) — μπαίνει στην Α΄ και στη Β΄
+const nth = (n, pred) => { let k = 0; return ev => pred(ev) && ++k >= n; };
+const TUX_CHAPTER = {
+  tab: '🐧 Tux Paint', title: 'Οδηγός για το Tux Paint – Ζωγραφίζω στον υπολογιστή',
+  lessons: [
+    {
+      icon: '🐧', title: 'Γνωρίζω το Tux Paint', sub: 'Tools · Colors · ο πιγκουίνος που βοηθάει',
+      acts: [
+        { type: 'info', ref: 'οδηγός Tux Paint', text: 'Το Tux Paint είναι πρόγραμμα ζωγραφικής για παιδιά. Η μασκότ του είναι ο πιγκουίνος Tux 🐧!', cards: [
+          ['🧰', 'Αριστερά είναι τα <b>Tools</b> (εργαλεία): Paint, Stamp, Lines, Shapes, Text, Fill, Magic, Undo, Eraser, New, Save…'],
+          ['🎨', 'Κάτω είναι τα <b>Colors</b> (χρώματα). Δεξιά εμφανίζονται οι <b>επιλογές</b> του εργαλείου: πινέλα, σφραγίδες, σχήματα, μαγικά.'],
+          ['🐧', 'Στο κάτω μέρος ο <b>Tux</b> γράφει τι κάνει το εργαλείο που διάλεξες. Διάβασέ το πριν ζωγραφίσεις!'],
+        ] },
+        { type: 'tux', tour: 'tools', ref: 'οδηγός Tux Paint', text: 'Γνωριμία: πάτα κάθε εργαλείο και διάβασε τι λέει ο Tux.', doneMsg: '🐧 Μπράβο! Πάτησες όλα τα εργαλεία του Tux Paint!' },
+        { type: 'match', ref: 'οδηγός Tux Paint', text: 'Ταίριαξε το εργαλείο με αυτό που κάνει.', pairs: [
+          ['🖌️ Paint', 'Ζωγραφίζω ελεύθερα με πινέλο'], ['🐾 Stamp', 'Βάζω έτοιμες εικόνες (σφραγίδες)'], ['📏 Lines', 'Ευθείες γραμμές'], ['⬟ Shapes', 'Κύκλοι, τετράγωνα, τρίγωνα, αστέρια'],
+          ['🪣 Fill', 'Γεμίζω έναν κλειστό χώρο με χρώμα'], ['✨ Magic', 'Γρασίδι, ουράνιο τόξο, τούβλα και άλλα μαγικά'], ['↩️ Undo', 'Σβήνω την τελευταία μου κίνηση'],
+        ] },
+      ],
+      practice: [
+        { type: 'mcq', ref: 'εξάσκηση', text: 'Θυμάμαι:', questions: [
+          { q: 'Πού βρίσκω τα χρώματα στο Tux Paint;', options: ['Αριστερά (Tools)', 'Δεν έχει χρώματα', 'Κάτω (Colors)'], answer: 2 },
+          { q: 'Ποιος μου εξηγεί τι κάνει κάθε εργαλείο;', options: ['Ο πιγκουίνος Tux, στο κάτω μέρος', 'Κανείς'], answer: 0 },
+          { q: 'Ζωγράφισα κάτι λάθος. Ποιο εργαλείο με βοηθάει γρήγορα;', options: ['↩️ Undo (Αναίρεση)', '🖨️ Print (Εκτύπωση)', '🚪 Quit (Έξοδος)'], answer: 0 },
+          { q: 'Θέλω να συνεχίσω τη ζωγραφιά μου την άλλη εβδομάδα. Τι πατάω πριν κλείσω;', options: ['💾 Save (Αποθήκευση)', '📄 New (Νέο)'], answer: 0 },
+        ] },
+      ],
+    },
+    {
+      icon: '🖌️', title: 'Πινέλο, χρώματα και γόμα', sub: 'Paint · Colors · Eraser · Undo · Redo · New',
+      acts: [
+        { type: 'info', ref: 'οδηγός Tux Paint', text: 'Ζωγραφίζω με το πινέλο:', cards: [
+          ['🖌️', 'Πατάω <b>Paint</b>. Δεξιά διαλέγω <b>πινέλο</b>: λεπτό, χοντρό, τετράγωνο, αστεράκι…'],
+          ['🎨', 'Κάτω διαλέγω <b>χρώμα</b>. Με το <b>💧 σταγονόμετρο</b> παίρνω ένα χρώμα από τη ζωγραφιά μου, με την <b>🌈 παλέτα</b> φτιάχνω δικό μου.'],
+          ['🧽', 'Η <b>Eraser</b> (γόμα) σβήνει. Το <b>Undo</b> ↩️ σβήνει την τελευταία κίνηση και το <b>Redo</b> ↪️ την ξαναφέρνει.'],
+        ] },
+        { type: 'tux', ref: 'οδηγός Tux Paint', text: 'Δοκίμασε το πινέλο, τα χρώματα και τη γόμα.', tasks: [
+          ['Πάτα <b>Paint</b> και διάλεξε δεξιά ένα <b>χοντρό</b> πινέλο ⬤.', ev => ev.t === 'brush'],
+          ['Διάλεξε <b>κόκκινο</b> κάτω και ζωγράφισε μια μεγάλη καμπύλη.', ev => ev.t === 'draw' && ev.color === '#ff0000' && ev.len > 100],
+          ['Διάλεξε το πινέλο <b>★</b> και ένα άλλο χρώμα. Ζωγράφισε!', ev => ev.t === 'draw' && ev.len > 60],
+          ['Πάτα <b>Undo</b> ↩️: η τελευταία γραμμή χάθηκε!', ev => ev.t === 'undo'],
+          ['Πάτα <b>Redo</b> ↪️: γύρισε πίσω!', ev => ev.t === 'redo'],
+          ['Πάτα <b>Eraser</b> 🧽 και σβήσε ένα κομμάτι.', ev => ev.t === 'erase'],
+          ['Φτιάξε δικό σου χρώμα με την <b>🌈 παλέτα</b> (το τελευταίο κουτάκι κάτω) ή πάρε χρώμα με το <b>💧</b>.', ev => ev.t === 'color' && (ev.mix || ev.picked)],
+          ['Πάτα <b>New</b> 📄 και διάλεξε μια <b>γαλάζια</b> σελίδα.', ev => ev.t === 'new' && ev.bg === '#80a0c8'],
+        ] },
+      ],
+      practice: [
+        { type: 'tux', ref: 'εξάσκηση', text: 'Ζωγράφισε έναν ήλιο και λουλούδια μόνο με το πινέλο!', tasks: [
+          ['Κίτρινο, χοντρό πινέλο: ένας ήλιος πάνω στη γωνία.', ev => ev.t === 'draw' && ev.color === '#ffff00'],
+          ['Πράσινο: τα κοτσάνια των λουλουδιών.', ev => ev.t === 'draw' && ev.color === '#1e9645'],
+          ['Ροζ ή μωβ, πινέλο ★: τα λουλούδια!', ev => ev.t === 'draw' && ['#ffa0d0', '#800080', '#b8a0ff'].includes(ev.color)],
+        ] },
+      ],
+    },
+    {
+      icon: '📐', title: 'Γραμμές, σχήματα και γέμισμα', sub: 'Lines · Shapes · Fill',
+      acts: [
+        { type: 'info', ref: 'οδηγός Tux Paint', text: 'Ευθείες, σχήματα και γέμισμα:', cards: [
+          ['📏', '<b>Lines</b>: κάνω κλικ εκεί που ξεκινάει η γραμμή, <b>κρατάω πατημένο</b>, σύρω και αφήνω εκεί που τελειώνει.'],
+          ['⬟', '<b>Shapes</b>: δεξιά διαλέγω σχήμα — αριστερά τα <b>περιγράμματα</b> □, δεξιά τα <b>γεμάτα</b> ■. Κάνω κλικ στη <b>μέση</b> και σύρω. Στο Tux Paint μετά <b>γυρίζω</b> το σχήμα κουνώντας το ποντίκι και κάνω κλικ.'],
+          ['🪣', '<b>Fill</b>: κάνω κλικ μέσα σε έναν <b>κλειστό</b> χώρο και γεμίζει με χρώμα. Αν η γραμμή έχει «τρύπα», το χρώμα ξεφεύγει — τότε <b>Undo</b>!'],
+        ] },
+        { type: 'tux', ref: 'οδηγός Tux Paint', text: 'Φτιάξε σχήματα και γέμισέ τα!', tool: 'shapes', tasks: [
+          ['Με <b>Lines</b> φτιάξε μια ευθεία γραμμή.', ev => ev.t === 'line'],
+          ['<b>Shapes</b> → τετράγωνο <b>περίγραμμα</b> □. Κλικ στη μέση και σύρε.', ev => ev.t === 'shape' && ev.shape === 'square' && !ev.filled],
+          ['Γεμάτος <b>κύκλος</b> ● σε όποιο χρώμα θέλεις.', ev => ev.t === 'shape' && ev.shape === 'circle' && ev.filled],
+          ['Ένα <b>τρίγωνο</b> και ένα <b>αστέρι</b>.', nth(2, ev => ev.t === 'shape' && ['triangle', 'star'].includes(ev.shape))],
+          ['Πάτα <b>Fill</b> 🪣, διάλεξε χρώμα και κάνε κλικ <b>μέσα</b> στο τετράγωνο.', ev => ev.t === 'fill'],
+        ] },
+        { type: 'tux', ref: 'οδηγός Tux Paint', text: 'Έτοιμο σχέδιο για γέμισμα: χρωμάτισέ το!', tool: 'fill', template: 'fish', tasks: [
+          ['Με το <b>Fill</b> χρωμάτισε το ψαράκι.', ev => ev.t === 'fill'],
+          ['Χρωμάτισε και την ουρά και το πτερύγιο με άλλο χρώμα.', nth(2, ev => ev.t === 'fill')],
+          ['Χρωμάτισε τη θάλασσα (τον λευκό χώρο γύρω) μπλε.', ev => ev.t === 'fill' && ['#3060ff', '#80a0c8'].includes(ev.color)],
+        ] },
+      ],
+      practice: [
+        { type: 'sort', ref: 'εξάσκηση', text: 'Ποιο εργαλείο θα χρησιμοποιήσεις;', bins: ['📏 Lines', '⬟ Shapes', '🪣 Fill'], items: [
+          ['☀️', 'Έναν στρογγυλό ήλιο', 1], ['🛤️', 'Μια ίσια σιδηροδρομική γραμμή', 0], ['🟦', 'Να γίνει μπλε όλος ο ουρανός', 2], ['⭐', 'Ένα αστέρι', 1], ['🏠', 'Να χρωματίσω τον τοίχο του σπιτιού', 2],
+        ] },
+      ],
+    },
+    {
+      icon: '🐾', title: 'Σφραγίδες, κείμενο και αποθήκευση', sub: 'Stamp · Text · Label · Save · Open',
+      acts: [
+        { type: 'info', ref: 'οδηγός Tux Paint', text: 'Σφραγίδες και γράμματα:', cards: [
+          ['🐾', '<b>Stamp</b>: δεξιά διαλέγω σφραγίδα (ζώα, δέντρα, αυτοκίνητα…) και κάνω κλικ στη ζωγραφιά. Στο Tux Paint αλλάζω και το <b>μέγεθός</b> της.'],
+          ['🔤', '<b>Text</b>: κάνω κλικ, γράφω με το πληκτρολόγιο και πατάω Enter. Η <b>Label</b> (ετικέτα) είναι σαν το κείμενο, αλλά αλλάζει και αργότερα.'],
+          ['💾', '<b>Save</b>: αποθηκεύω τη ζωγραφιά μου. <b>Open</b>: την ξαναβρίσκω. <b>Quit</b>: κλείνω το Tux Paint.'],
+        ] },
+        { type: 'tux', ref: 'οδηγός Tux Paint', text: 'Ένα πάρκο με σφραγίδες!', bg: '#a0e080', tool: 'stamp', tasks: [
+          ['<b>Stamp</b> → διάλεξε ένα <b>δέντρο</b> 🌳 και βάλε το στη ζωγραφιά.', ev => ev.t === 'stamp' && ['🌳', '🌲'].includes(ev.em)],
+          ['Διάλεξε <b>μεγάλη</b> σφραγίδα και βάλε ένα ζωάκι.', ev => ev.t === 'stamp' && ['🐧', '🐱', '🐶', '🐰', '🦋', '🐞'].includes(ev.em)],
+          ['Βάλε κι άλλες σφραγίδες — όσες θέλεις!', nth(2, ev => ev.t === 'stamp')],
+          ['<b>Text</b> → κάνε κλικ ψηλά και γράψε <b>ΤΟ ΠΑΡΚΟ</b>. Πάτα Enter.', ev => ev.t === 'text'],
+          ['<b>Save</b> 💾: αποθήκευσε τη ζωγραφιά.', ev => ev.t === 'save'],
+          ['Πάτα <b>New</b> → λευκή σελίδα. Μετά <b>Open</b> 📂 και άνοιξε πάλι τη ζωγραφιά σου!', ev => ev.t === 'open'],
+        ] },
+      ],
+      practice: [
+        { type: 'order', ref: 'εξάσκηση', title: 'Βάζω σφραγίδα', text: 'Βάλε τα βήματα στη σειρά.', steps: [
+          ['🐾', 'Πατάω το εργαλείο Stamp.'], ['🐧', 'Διαλέγω σφραγίδα δεξιά.'], ['📐', 'Διαλέγω μέγεθος.'], ['👆', 'Κάνω κλικ εκεί που τη θέλω στη ζωγραφιά.'],
+        ], before: 'chain' },
+      ],
+    },
+    {
+      icon: '✨', title: 'Τα μαγικά του Tux Paint', sub: 'Γρασίδι · ουράνιο τόξο · μάτια · τούβλα · αφρός',
+      acts: [
+        { type: 'info', ref: 'οδηγός Tux Paint', text: 'Το εργαλείο Magic έχει δεκάδες μαγικά! Τα πιο αγαπημένα:', cards: [
+          ['🌿', '<b>Grass</b>: σέρνω και φυτρώνει γρασίδι — πιο ψηλό κάτω, πιο κοντό πάνω. <b>Rainbow</b> 🌈: ζωγραφίζω με όλα τα χρώματα.'],
+          ['👀', '<b>Googly Eyes</b>: με ένα κλικ βάζω αστεία μάτια. <b>Bricks</b> 🧱: χτίζω με τούβλα.'],
+          ['☁️', '<b>Foam</b>: φουσκάλες αφρού — με λευκό γίνονται σύννεφα. <b>Spray Paint</b> 💨: ψεκάζω χρώμα. Με τα βελάκια ▲ ▼ δεξιά βλέπω κι άλλα μαγικά!'],
+        ] },
+        { type: 'tux', tour: 'magic', tool: 'magic', ref: 'οδηγός Tux Paint', text: 'Πάτα <b>Magic</b> και μετά κάθε μαγικό δεξιά. Δοκίμασέ τα στη σελίδα!', doneMsg: '✨ Μπράβο, μάγε! Γνώρισες όλα τα μαγικά!' },
+        { type: 'tux', ref: 'οδηγός Tux Paint', text: 'Ένα μαγικό λιβάδι!', tool: 'magic', bg: '#80a0c8', tasks: [
+          ['<b>Grass</b> 🌿: σύρε στο κάτω μέρος της σελίδας για να φυτρώσει γρασίδι.', ev => ev.t === 'magic' && ev.magic === 'grass' && ev.len > 150],
+          ['<b>Rainbow</b> 🌈: σύρε μια μεγάλη καμπύλη στον ουρανό.', ev => ev.t === 'magic' && ev.magic === 'rainbow' && ev.len > 150],
+          ['Διάλεξε <b>άσπρο</b> και με το <b>Foam</b> ☁️ κάνε ένα σύννεφο.', ev => ev.t === 'magic' && ev.magic === 'foam' && ev.color === '#ffffff'],
+          ['Με το πινέλο ή τα σχήματα κάνε ένα λουλούδι και βάλε του <b>Googly Eyes</b> 👀!', ev => ev.t === 'magic' && ev.magic === 'googly'],
+          ['Με το <b>Bricks</b> 🧱 χτίσε έναν μικρό τοίχο.', ev => ev.t === 'magic' && ev.magic === 'bricks'],
+        ] },
+      ],
+      practice: [
+        { type: 'match', ref: 'εξάσκηση', text: 'Ποιο μαγικό θα διαλέξω;', pairs: [['🌿 Grass', 'Χορτάρι στην αυλή'], ['🧱 Bricks', 'Καμινάδα από τούβλα'], ['☁️ Foam', 'Σύννεφα'], ['👀 Googly Eyes', 'Μάτια που κοιτάζουν'], ['🌈 Rainbow', 'Ουράνιο τόξο']] },
+      ],
+    },
+    {
+      icon: '🏠', title: 'Το σπιτάκι μου', sub: 'Μια ολόκληρη ζωγραφιά, βήμα-βήμα',
+      acts: [
+        { type: 'info', ref: 'οδηγός Tux Paint', text: 'Θα ζωγραφίσουμε ένα σπιτάκι με ήλιο, ουράνιο τόξο, σύννεφα, γρασίδι και μονοπάτι — σε τρία μέρη. Η ζωγραφιά συνεχίζει από το ένα μέρος στο άλλο!', cards: [
+          ['1️⃣', '<b>Ο ουρανός</b>: Fill μπλε · ήλιος με Shapes · μάτια με Googly Eyes · Rainbow · σύννεφα με Foam.'],
+          ['2️⃣', '<b>Το σπίτι</b>: τοίχοι και σκεπή με Shapes · πόρτα και παράθυρα με περιγράμματα · καμινάδα με Bricks.'],
+          ['3️⃣', '<b>Η αυλή</b>: Grass · μονοπάτι με γκρι πεντάγωνα · το όνομά μου με Text · Save!'],
+        ] },
+        { type: 'tux', keep: 'house', fresh: true, ref: 'οδηγός Tux Paint', text: 'Μέρος 1: ο ουρανός.', tool: 'fill', tasks: [
+          ['Διάλεξε <b>μπλε</b>, πάτα <b>Fill</b> 🪣 και κάνε κλικ στη σελίδα: ουρανός!', ev => ev.t === 'fill'],
+          ['<b>Shapes</b> → γεμάτος κύκλος ● <b>κίτρινος</b>. Κλικ πάνω αριστερά και σύρε: ο ήλιος!', ev => ev.t === 'shape' && ev.shape === 'circle' && ev.filled && ev.color === '#ffff00'],
+          ['<b>Magic</b> → <b>Googly Eyes</b> 👀: δύο κλικ πάνω στον ήλιο.', nth(2, ev => ev.t === 'magic' && ev.magic === 'googly')],
+          ['<b>Magic</b> → <b>Rainbow</b> 🌈: σύρε μια καμπύλη στον ουρανό.', ev => ev.t === 'magic' && ev.magic === 'rainbow' && ev.len > 120],
+          ['<b>Άσπρο</b> χρώμα και <b>Magic</b> → <b>Foam</b> ☁️: κάνε δύο σύννεφα.', nth(2, ev => ev.t === 'magic' && ev.magic === 'foam')],
+        ], doneMsg: '☀️ Ο ουρανός είναι έτοιμος! Πάτα «Επόμενο» για το σπίτι.' },
+        { type: 'tux', keep: 'house', ref: 'οδηγός Tux Paint', text: 'Μέρος 2: το σπίτι.', tool: 'shapes', tasks: [
+          ['<b>Shapes</b> → γεμάτο ορθογώνιο ▬ <b>άσπρο</b>. Κλικ στη μέση του σπιτιού και σύρε: οι τοίχοι!', ev => ev.t === 'shape' && ev.shape === 'rect' && ev.filled && ev.color === '#ffffff'],
+          ['Γεμάτο τρίγωνο ▲ <b>κόκκινο</b> πάνω από τους τοίχους: η σκεπή!', ev => ev.t === 'shape' && ev.shape === 'triangle' && ev.filled && ev.color === '#ff0000'],
+          ['Ορθογώνιο <b>περίγραμμα</b> ▭ (ροζ ή καφέ): η πόρτα.', ev => ev.t === 'shape' && ev.shape === 'rect' && !ev.filled],
+          ['Δύο τετράγωνα <b>περιγράμματα</b> □: τα παράθυρα.', nth(2, ev => ev.t === 'shape' && ev.shape === 'square' && !ev.filled)],
+          ['<b>Magic</b> → <b>Bricks</b> 🧱: σύρε λίγο πάνω στη σκεπή για καμινάδα.', ev => ev.t === 'magic' && ev.magic === 'bricks'],
+        ], doneMsg: '🏠 Το σπίτι χτίστηκε! Πάτα «Επόμενο» για την αυλή.' },
+        { type: 'tux', keep: 'house', ref: 'οδηγός Tux Paint', text: 'Μέρος 3: η αυλή.', tool: 'magic', tasks: [
+          ['<b>Magic</b> → <b>Grass</b> 🌿: σύρε πολλές φορές στο κάτω μέρος.', ev => ev.t === 'magic' && ev.magic === 'grass' && ev.len > 200],
+          ['<b>Shapes</b> → γεμάτο πεντάγωνο ⬟ <b>γκρι</b>: τρεις πέτρες από την πόρτα προς τα κάτω.', nth(3, ev => ev.t === 'shape' && ev.shape === 'pentagon' && ev.filled)],
+          ['<b>Text</b> 🔤: γράψε το όνομά σου σε μια γωνία.', ev => ev.t === 'text'],
+          ['<b>Save</b> 💾: αποθήκευσε το σπιτάκι σου!', ev => ev.t === 'save'],
+        ], doneMsg: '🎉 Τι ωραίο σπιτάκι! Τώρα φτιάξε το ίδιο στο αληθινό Tux Paint.' },
+        { type: 'info', ref: 'οδηγός Tux Paint', text: 'Στην τάξη, στο αληθινό Tux Paint:', cards: [
+          ['🔄', 'Στα <b>Shapes</b>, μόλις αφήσεις το κουμπί, κούνα το ποντίκι για να <b>γυρίσεις</b> το σχήμα και κάνε κλικ για να το στερεώσεις.'],
+          ['🔽', 'Στα <b>Magic</b> και στα <b>Stamp</b> υπάρχουν πολλές σελίδες: πάτα τα βελάκια ▲ ▼ δεξιά για να βρεις το Grass, το Rainbow, τα Googly Eyes…'],
+          ['💾', 'Στο τέλος <b>Save</b>: διαλέγεις πού θα αποθηκευτεί. Την επόμενη φορά <b>Open</b> και συνεχίζεις!'],
+        ] },
+      ],
+      practice: [
+        { type: 'order', ref: 'εξάσκηση', title: 'Το σπιτάκι μου', text: 'Με ποια σειρά τα ζωγραφίζουμε;', steps: [
+          ['🟦', 'Γεμίζω τον ουρανό μπλε (Fill).'], ['☀️', 'Φτιάχνω τον ήλιο (Shapes).'], ['🏠', 'Χτίζω τοίχους και σκεπή (Shapes).'], ['🌿', 'Φυτρώνω γρασίδι (Magic → Grass).'], ['💾', 'Αποθηκεύω (Save).'],
+        ], before: [[0, 1], [0, 2], [2, 3], [3, 4], [1, 4]] },
+      ],
+    },
+  ],
+};
+
+// ιστότοποι εξάσκησης της Α΄ (Κεφ. 4) — φανταστικοί, για τον περιηγητή του βιβλίου
+const ZOO_ANIMALS = [['parrot', '🦜', 'Ο παπαγάλος', 'Οι παπαγάλοι ζουν σε ζεστά δάση. Έχουν πολύχρωμα φτερά, γερό ράμφος και μπορούν να μιμούνται φωνές — ακόμα και λέξεις!'],
+  ['elephant', '🐘', 'Ο ελέφαντας', 'Ο ελέφαντας είναι το μεγαλύτερο ζώο της στεριάς. Με την προβοσκίδα του πίνει νερό, παίρνει φαγητό και κάνει ντους!'],
+  ['dolphin', '🐬', 'Το δελφίνι', 'Τα δελφίνια ζουν στη θάλασσα, αλλά βγαίνουν στην επιφάνεια για να πάρουν ανάσα. Είναι πολύ έξυπνα και παιχνιδιάρικα.'],
+  ['penguin', '🐧', 'Ο πιγκουίνος', 'Οι πιγκουίνοι είναι πουλιά που δεν πετάνε, αλλά κολυμπάνε υπέροχα. Πολλοί ζουν στους πάγους της Ανταρκτικής.']];
+const A_ZOO = {
+  home: { url: 'www.ta-zoa.gr', title: 'Ο κόσμος των ζώων', icon: '🐾', html: `<h1>🐾 Ο κόσμος των ζώων</h1><p>Καλώς ήρθες! Εδώ θα βρεις κείμενα, εικόνες, βίντεο και ήχους για τα ζώα. Πέρνα τον δείκτη πάνω σε ένα ζώο: αν γίνει χεράκι 👆, κάνε κλικ!</p>
+    <div class="row">${ZOO_ANIMALS.map(([k, em, t]) => `<div class="card" style="text-align:center"><a data-go="${k}" class="big" style="text-decoration:none">${em}</a><br><a data-go="${k}">${t}</a></div>`).join('')}</div>
+    <h2>🌍 Πού ζουν τα ζώα;</h2><p>Κάποια ζώα ζουν στη στεριά, άλλα στη θάλασσα και άλλα πετάνε στον ουρανό. Κάποια ζουν σε ζεστές χώρες και άλλα στους πάγους.</p>
+    <h2>🍽️ Τι τρώνε;</h2><p>Άλλα ζώα τρώνε φυτά, άλλα τρώνε άλλα ζώα και κάποια τρώνε και τα δύο.</p>
+    <h2>🐣 Μωρά ζωάκια</h2><p>Κάποια μωρά βγαίνουν από αυγό, όπως το κοτοπουλάκι 🐥. Άλλα γεννιούνται από τη μαμά τους, όπως το γατάκι 🐱.</p>
+    <p style="text-align:center;font-size:60px">🦒 🦓 🐢 🦋</p>` },
+  ...Object.fromEntries(ZOO_ANIMALS.map(([k, em, t, txt]) => [k, { url: 'www.ta-zoa.gr/' + k, title: t, icon: em, html: `<h1>${em} ${t}</h1><p style="font-size:110px;text-align:center;margin:0">${em}</p><p>${txt}</p><div data-video="${k}">🎬 Βίντεο: ${t} σε δράση</div>` }])),
+};
+const A_WEB = {
+  psd: { url: 'www.sch.gr', title: 'Πανελλήνιο Σχολικό Δίκτυο', icon: '🏫', html: `<h1>🏫 Πανελλήνιο Σχολικό Δίκτυο</h1><p>Το δίκτυο των σχολείων της Ελλάδας. Πάτα έναν υπερσύνδεσμο:</p>
+    <div class="row"><div class="card">📚 <a data-go="ebooks">Διαδραστικά Σχολικά Βιβλία</a></div><div class="card">🌳 <a data-go="photo">Φωτόδεντρο</a></div><div class="card">🔒 <a data-go="safer">Ασφαλές Διαδίκτυο</a></div></div>` },
+  ebooks: { url: 'ebooks.edu.gr', title: 'Διαδραστικά Σχολικά Βιβλία', icon: '📚', html: '<h1>📚 Διαδραστικά Σχολικά Βιβλία</h1><p>Εδώ βρίσκω τα βιβλία του σχολείου μου στον υπολογιστή, με εικόνες, ήχους και δραστηριότητες.</p><p style="font-size:60px">📕 📗 📘 📙</p>' },
+  photo: { url: 'photodentro.edu.gr', title: 'Φωτόδεντρο', icon: '🌳', html: '<h1>🌳 Φωτόδεντρο</h1><p>Εκπαιδευτικά παιχνίδια, βίντεο και εφαρμογές για όλες τις τάξεις.</p>' },
+  safer: { url: 'saferinternet.gr', title: 'Ασφαλές Διαδίκτυο', icon: '🔒', html: '<h1>🔒 Κόμβος Ασφαλούς Διαδικτύου</h1><p>Συμβουλές για να είμαστε ασφαλείς στο Διαδίκτυο. Θυμάμαι: δεν είναι αλήθεια ό,τι διαβάζω!</p>' },
+  wiki: { url: 'el.wikipedia.org', title: 'Βικιπαίδεια', icon: '📚', html: '<div class="brsearch"><div class="brlogo">📚 Βικιπαίδεια</div><div data-search></div></div><p>Η Βικιπαίδεια είναι μια μεγάλη <b>εγκυκλοπαίδεια</b> στο Διαδίκτυο. Γράψε λέξεις στη γραμμή αναζήτησης και πάτα 🔎.</p>' },
+  ...Object.fromEntries([['dog', '🐶', 'Σκύλος', 'σκύλος σκυλί', 'Ο σκύλος είναι ο πιο πιστός φίλος του ανθρώπου.'], ['cat', '🐱', 'Γάτα', 'γάτα γατάκι', 'Η γάτα είναι ένα ευκίνητο κατοικίδιο ζώο που της αρέσει να κοιμάται πολύ.'],
+    ['lion', '🦁', 'Λιοντάρι', 'λιοντάρι λέων', 'Το λιοντάρι ζει στη σαβάνα της Αφρικής. Το λένε «βασιλιά των ζώων».'], ['dolphin', '🐬', 'Δελφίνι', 'δελφίνι δελφίνια', 'Το δελφίνι είναι θηλαστικό που ζει στη θάλασσα.'],
+    ['horse', '🐴', 'Άλογο', 'άλογο άλογα', 'Το άλογο τρέχει πολύ γρήγορα και τρώει χορτάρι.'], ['rabbit', '🐰', 'Κουνέλι', 'κουνέλι κουνελάκι', 'Το κουνέλι έχει μεγάλα αυτιά και τρώει καρότα.']]
+    .map(([k, em, t, kw, d]) => ['w-' + k, { url: 'el.wikipedia.org/wiki/' + t, title: t + ' — Βικιπαίδεια', icon: em, kw, desc: d, html: `<h1>${em} ${t}</h1><p style="font-size:100px;margin:0">${em}</p><p>${d}</p>` }])),
+};
+const A_CLASS = {
+  blog: { url: 'www.i-taxi-mas.gr', title: 'Τα αγαπημένα μας ζώα', icon: '🐾', html: `<h1>🐾 Τα αγαπημένα μας ζώα</h1><p>Η τάξη μας ανεβάζει εδώ ζωγραφιές για τα ζώα που αγαπάμε.</p>
+    <div data-post="cat"><b>Μαρία:</b> Αυτή είναι η γάτα μου, η Ψιψίνα! <div style="font-size:70px">🐱</div></div>
+    <div data-post="dolphin"><b>Νίκος:</b> Ζωγράφισα ένα δελφίνι που πηδάει! <div style="font-size:70px">🐬</div></div>
+    <div data-post="dog"><b>Ελένη:</b> Ο σκύλος μου ο Ρεξ παίζει με την μπάλα. <div style="font-size:70px">🐶⚽</div></div>` },
+  board: { url: 'pinakas.i-taxi-mas.gr', title: 'Ο πίνακας της τάξης', icon: '📌', html: '<h1>📌 Ο πίνακας της τάξης</h1><p>Ηλεκτρονικός πίνακας ανακοινώσεων: γράψε κάτι με απλές λέξεις και δημοσίευσέ το!</p><div data-board></div>' },
+};
+const MICRO_MENU = '<div class="menu"><a data-go="micro">🏠 Αρχική</a><a data-go="a">Α΄ τάξη</a><a>Β΄ τάξη</a><a>Γ΄ τάξη</a><a>Δ΄ τάξη</a><a>Ε΄ τάξη</a><a>ΣΤ΄ τάξη</a><a data-go="games">🎮 Παιχνίδια</a></div>';
+const microItems = list => '<div class="row">' + list.map(([k, em, t]) => `<div class="card">${em} ${k ? `<a data-go="${k}">${t}</a>` : t}</div>`).join('') + '</div>';
+const A_MICRO = {
+  micro: { url: 'micro.photodentro.edu.gr/primary', title: 'Μικρότοπος Δημοτικού', icon: '🌳', html: `${MICRO_MENU}<h1>🌳 Μικρότοπος Δημοτικού</h1><p>Εκπαιδευτικό υλικό μόνο για το Δημοτικό Σχολείο. Διάλεξε <b>τάξη</b> ή <b>κατηγορία</b> από το μενού.</p><p style="font-size:60px">🎮 🖼️ 🎬 ❓</p>` },
+  a: { url: 'micro.photodentro.edu.gr/primary/a', title: 'Α΄ τάξη', icon: '🌳', html: `${MICRO_MENU}<h1>Α΄ τάξη — Μαθήματα</h1>${microItems([['', '📖', 'Γλώσσα'], ['', '➕', 'Μαθηματικά'], ['', '🌱', 'Μελέτη Περιβάλλοντος'], ['tpe1', '💻', 'Τ.Π.Ε.']])}` },
+  tpe1: { url: 'micro.photodentro.edu.gr/primary/a/tpe?p=1', title: 'Α΄ τάξη — Τ.Π.Ε. (σελίδα 1)', icon: '🌳', html: `${MICRO_MENU}<h1>Α΄ τάξη — Τ.Π.Ε.</h1><p>Σελίδα 1 από 2</p>${microItems([['', '⌨️', 'Εξοικειώνομαι με το πληκτρολόγιο'], ['made', '🧱', 'Από τι είναι φτιαγμένο;'], ['', '🫧', 'Παίζω με το πληκτρολόγιο – Φούσκα'], ['', '🔤', 'Παίζω με το πληκτρολόγιο – Λεξοσυλλέκτης']])}
+    <p style="text-align:center;margin-top:30px">⏮ Πρώτη · ◀ Προηγούμενη · <b>1</b> · <a data-go="tpe2">2</a> · <a data-go="tpe2">Επόμενη ▶</a> · <a data-go="tpe2">Τελευταία ⏭</a></p>` },
+  tpe2: { url: 'micro.photodentro.edu.gr/primary/a/tpe?p=2', title: 'Α΄ τάξη — Τ.Π.Ε. (σελίδα 2)', icon: '🌳', html: `${MICRO_MENU}<h1>Α΄ τάξη — Τ.Π.Ε.</h1><p>Σελίδα 2 από 2</p>${microItems([['asteroid', '☄️', 'Asteroid – Βροχή αστεροειδών'], ['mouse', '🐭', 'Ποντίκι, ο εξολοθρευτής'], ['', '👾', 'Παίζω με το πληκτρολόγιο – Γραμματοεισβολείς']])}
+    <p style="text-align:center;margin-top:30px"><a data-go="tpe1">⏮ Πρώτη</a> · <a data-go="tpe1">◀ Προηγούμενη</a> · <a data-go="tpe1">1</a> · <b>2</b> · Επόμενη ▶ · Τελευταία ⏭</p>` },
+  games: { url: 'micro.photodentro.edu.gr/primary/games', title: 'Παιχνίδια', icon: '🎮', html: `${MICRO_MENU}<h1>🎮 Παιχνίδια</h1>${microItems([['mouse', '🐭', 'Ποντίκι, ο εξολοθρευτής'], ['', '🫧', 'Παίζω με το πληκτρολόγιο – Φούσκα'], ['', '🎵', 'Παιχνίδι μνήμης με μουσικά όργανα'], ['', '🔷', 'Παίζοντας με tangram']])}` },
+  ...Object.fromEntries([['mouse', '🐭', 'Ποντίκι, ο εξολοθρευτής'], ['asteroid', '☄️', 'Asteroid – Βροχή αστεροειδών'], ['made', '🧱', 'Από τι είναι φτιαγμένο;']]
+    .map(([k, em, t]) => [k, { url: 'photodentro.edu.gr/lo/' + k, title: t, icon: em, html: `${MICRO_MENU}<h1>${em} ${t}</h1><p>Μαθησιακό αντικείμενο για την Α΄ τάξη. Πάτα ▶ για να ξεκινήσεις.</p><div data-video="${k}">${em} ${t}</div>` }])),
+};
+const TV_MENU = '<div class="menu"><a data-go="tv">🏠 Αρχική</a><a data-go="prim">Πρωτοβάθμια</a><a>Δευτεροβάθμια</a><a>Σποτ</a></div>';
+const A_TV = {
+  tv: { url: 'edutv.minedu.gov.gr', title: 'Εκπαιδευτική Τηλεόραση', icon: '📺', html: `${TV_MENU}<h1>📺 Εκπαιδευτική Τηλεόραση</h1><p>Τηλεοπτικά προγράμματα σε βίντεο για το σχολείο. Διάλεξε <b>Πρωτοβάθμια</b> για το Δημοτικό.</p>` },
+  prim: { url: 'edutv.minedu.gov.gr/primary', title: 'Πρωτοβάθμια', icon: '📺', html: `${TV_MENU}<h1>Πρωτοβάθμια — Ενότητες</h1>${microItems([['env', '🌱', 'Περιβάλλον'], ['health', '🦷', 'Αγωγή Υγείας'], ['', '📖', 'Γλώσσα-Λογοτεχνία'], ['', '🎨', 'Καλλιτεχνικά']])}` },
+  health: { url: 'edutv.minedu.gov.gr/primary/agogi-ygeias', title: 'Αγωγή Υγείας', icon: '🦷', html: `${TV_MENU}<h1>🦷 Αγωγή Υγείας</h1>${microItems([['', '🍎', 'Τρώμε σωστά (6:10)'], ['teeth', '🦷', 'Έργα και Ημέρες της κας Τερηδόνας (9:20)'], ['', '🧼', 'Πλένω τα χέρια μου (4:05)']])}` },
+  env: { url: 'edutv.minedu.gov.gr/primary/periballon', title: 'Περιβάλλον', icon: '🌱', html: `${TV_MENU}<h1>🌱 Περιβάλλον</h1>${microItems([['water', '💧', 'Ο Κύκλος του Νερού (14:20)'], ['', '🐝', 'Οι μέλισσες (8:40)'], ['', '♻️', 'Ανακύκλωση (7:15)']])}` },
+  teeth: { url: 'edutv.minedu.gov.gr/terhdona', title: 'Έργα και Ημέρες της κας Τερηδόνας', icon: '🦷', html: `${TV_MENU}<h1>🦷 Έργα και Ημέρες της κας Τερηδόνας</h1><p>Διάρκεια 9:20 · Πόσο σημαντική είναι η φροντίδα των δοντιών!</p><div data-video="teeth">🦷🪥</div>` },
+  water: { url: 'edutv.minedu.gov.gr/kyklos-nerou', title: 'Ο Κύκλος του Νερού', icon: '💧', html: `${TV_MENU}<h1>💧 Ο Κύκλος του Νερού</h1><p>Διάρκεια 14:20 · Το νερό, πηγή ζωής.</p><div data-video="water">☁️🌧️🌊</div>` },
+};
 
 const BOOK_A = [
   {
@@ -1383,7 +1719,455 @@ const BOOK_A = [
       },
     ],
   },
-  { tab: 'Κεφ. 4', title: 'Ψηφιακός γραμματισμός – Ποντίκι & πληκτρολόγιο', lessons: [] },
+  {
+    tab: 'Κεφ. 4', title: 'Ψηφιακός γραμματισμός – Ποντίκι & πληκτρολόγιο',
+    lessons: [
+      {
+        icon: '🖱️', title: 'Μαθαίνω το ποντίκι', sub: 'Αριστερό, δεξί πλήκτρο και ροδέλα',
+        acts: [
+          { type: 'info', ref: 'έκδ. 6.0 σελ. 74–75 · έκδ. v09 σελ. 81', text: '«Γεια σου, Ήρωνα, τι είναι αυτό;» «Είναι ένα ποντίκι υπολογιστή!»', cards: [
+            ['🖱️', 'Το <b>ποντίκι</b> είναι μια συσκευή που με βοηθάει να κάνω πολλά πράγματα στον υπολογιστή: να <b>επιλέξω</b> κάτι, να <b>ανοίξω</b> μια εφαρμογή, να <b>μετακινήσω</b> ένα αντικείμενο.'],
+            ['🔘', 'Έχει δύο πλήκτρα, το <b>αριστερό</b> και το <b>δεξί</b>, και στη μέση μια <b>ροδέλα κύλισης</b> που γυρίζει. Μπορεί να έχει καλώδιο ή να είναι <b>ασύρματο</b>.'],
+            ['✋', 'Το κρατάω με το δεξί χέρι: ο <b>δείκτης</b> πάνω στο αριστερό πλήκτρο, ο <b>μέσος</b> στο δεξί. Τα άλλα δάχτυλα ακουμπάνε απαλά. Το βάζω σε επιφάνεια (όχι γυάλινη) ή σε <b>mousepad</b>.'],
+          ] },
+          { type: 'mouse', mode: 'parts', ref: 'έκδ. 6.0 σελ. 75', text: 'Χρωμάτισε το ποντίκι: πάτα κάθε μέρος του με τη σειρά.', steps: [
+            ['left', '#43a047', 'Το <b>αριστερό πλήκτρο</b> με πράσινο 🟢.'], ['right', '#e53935', 'Το <b>δεξί πλήκτρο</b> με κόκκινο 🔴.'],
+            ['wheel', '#1e88e5', 'Τη <b>ροδέλα</b> με μπλε 🔵.'], ['body', '#fdd835', 'Το υπόλοιπο ποντίκι με κίτρινο 🟡.'],
+          ], doneMsg: '🎉 Μπράβο! Ξέρεις τα μέρη του ποντικιού!' },
+          { type: 'mouse', mode: 'buttons', ref: 'έκδ. v09 σελ. 81', text: 'Τώρα με το δικό σου ποντίκι! Η εικόνα ανάβει εκεί που πατάς.', steps: [
+            ['left', '#43a047', 'Κάνε ένα κλικ με το <b>αριστερό</b> πλήκτρο.'], ['right', '#e53935', 'Κάνε ένα κλικ με το <b>δεξί</b> πλήκτρο.'],
+            ['wheel', '#1e88e5', 'Γύρισε τη <b>ροδέλα</b> πάνω ή κάτω.'], ['left', '#43a047', 'Ξανά το <b>αριστερό</b>: το πιο συχνό πλήκτρο!'],
+          ], guide: 'Χρειάζεται πραγματικό ποντίκι (σε ταμπλέτα ή διαδραστικό πίνακα περάστε στο επόμενο).', doneMsg: '🎉 Το αριστερό πλήκτρο κάνει τις περισσότερες εργασίες· το δεξί μόνο κάποιες ειδικές.' },
+          { type: 'mcq', ref: 'έκδ. 6.0 σελ. 75–76', text: 'Πώς κρατάω σωστά το ποντίκι;', questions: [
+            { q: 'Ποιο δάχτυλο ακουμπάει στο αριστερό πλήκτρο (με το δεξί χέρι);', options: ['☝️ Ο δείκτης', '👍 Ο αντίχειρας', '🤙 Το μικρό δάχτυλο'], answer: 0 },
+            { q: 'Ποιο δάχτυλο ακουμπάει στο δεξί πλήκτρο;', options: ['Ο μέσος', 'Ο δείκτης'], answer: 0 },
+            { q: 'Πού βάζω το ποντίκι για να δουλεύει καλά;', options: ['Πάνω σε γυάλινο τραπέζι', 'Σε mousepad ή σε τραπέζι', 'Στον αέρα'], answer: 1 },
+          ] },
+          { type: 'info', ref: 'έκδ. 6.0 σελ. 74 · σελ. 76', text: 'Στην τάξη:', cards: [
+            ['🤔', 'Συζητήστε: γιατί το λέμε «ποντίκι»; (Θυμηθείτε: τα πρώτα ποντίκια είχαν καλώδιο σαν ουρά!)'],
+            ['✂️', 'Φτιάξε το δικό σου ποντίκι από χαρτόνι, με αριστερό πλήκτρο, δεξί πλήκτρο και ροδέλα.'],
+          ] },
+        ],
+        practice: [
+          { type: 'match', ref: 'εξάσκηση', text: 'Ταίριαξε το μέρος του ποντικιού με αυτό που κάνει.', pairs: [
+            ['🟢 Αριστερό πλήκτρο', 'Οι περισσότερες εργασίες: επιλέγω, πατάω κουμπιά'], ['🔴 Δεξί πλήκτρο', 'Κάποιες ειδικές εργασίες'], ['🔵 Ροδέλα', 'Πάνω-κάτω στη σελίδα'],
+          ] },
+          { type: 'mouse', mode: 'parts', ref: 'εξάσκηση', text: 'Γρήγορο κουίζ: πάτα το μέρος που λέει η εργασία.', steps: [
+            ['wheel', '#ffb347', 'Πού είναι η <b>ροδέλα</b>;'], ['right', '#ffb347', 'Πού είναι το <b>δεξί</b> πλήκτρο;'], ['left', '#ffb347', 'Πού είναι το <b>αριστερό</b> πλήκτρο;'],
+          ] },
+        ],
+      },
+      {
+        icon: '👆', title: 'Ο δείκτης του ποντικιού', sub: 'Κουνάω το ποντίκι — κουνιέται ο δείκτης',
+        acts: [
+          { type: 'info', ref: 'έκδ. 6.0 σελ. 77–78 · έκδ. v09 σελ. 81', text: 'Το βέλος που βλέπω στην οθόνη:', cards: [
+            ['➡️', 'Όταν κουνάω το ποντίκι, στην οθόνη κινείται μαζί και ένα βέλος. Λέγεται <b>δείκτης</b>, γιατί με αυτόν <b>δείχνω</b> κάτι — όπως με τον δείκτη του χεριού μου.'],
+            ['🔄', 'Κουνάω το ποντίκι <b>αριστερά</b> → ο δείκτης πάει αριστερά. <b>Δεξιά</b> → δεξιά. <b>Πάνω</b> (μακριά μου) → πάνω. <b>Κάτω</b> (προς εμένα) → κάτω.'],
+            ['👆', 'Ο δείκτης δεν είναι πάντα βέλος: πάνω σε υπερσύνδεσμο γίνεται <b>χεράκι</b> 👆, όταν περιμένω γίνεται <b>κυκλάκι</b> ⏳, όταν γράφω γίνεται <b>κάθετη γραμμή</b> |.'],
+          ] },
+          { type: 'match', ref: 'έκδ. 6.0 σελ. 78', text: 'Πού θα πάει ο δείκτης;', pairs: [
+            ['⬅️🖱️ Κουνάω το ποντίκι αριστερά', 'Ο δείκτης πάει αριστερά'], ['🖱️➡️ Κουνάω το ποντίκι δεξιά', 'Ο δείκτης πάει δεξιά'],
+            ['⬆️ Κουνάω το ποντίκι μακριά μου', 'Ο δείκτης πάει πάνω'], ['⬇️ Κουνάω το ποντίκι προς εμένα', 'Ο δείκτης πάει κάτω'],
+          ] },
+          { type: 'mouse', mode: 'hover', ref: 'έκδ. 6.0 σελ. 79 (Μαζεύω τα φρούτα)', text: 'Μάζεψε τα φρούτα: πέρνα τον δείκτη από πάνω τους!', n: 12, goal: '🧺 Φρούτα', tip: 'Δεν χρειάζεται κλικ — μόνο κούνημα!', doneMsg: '🎉 Μάζεψες όλα τα φρούτα!' },
+          { type: 'mouse', mode: 'hover', ref: 'έκδ. 6.0 σελ. 79 (GCompris: Σβήνω τη φωτιά)', text: 'Σβήσε τις φωτιές: πέρνα το νερό (τον δείκτη) από πάνω τους!', n: 10, items: ['🔥'], goal: '💧 Φωτιές που έσβησαν', hit: '💧 Ψσσστ!', doneMsg: '🚒 Μπράβο, πυροσβέστη! Έσβησες όλες τις φωτιές!' },
+          { type: 'mcq', ref: 'έκδ. 6.0 σελ. 79', text: '«Πες μου, Ήρωνα, υπάρχουν συσκευές χωρίς ποντίκι;»', questions: [
+            { q: 'Ποια συσκευή <b>δεν</b> χρειάζεται ποντίκι;', options: ['📱 Το έξυπνο κινητό', '🖥️ Ο υπολογιστής γραφείου'], answer: 0 },
+            { q: 'Με τι «δείχνω» στην ταμπλέτα;', options: ['Με το δάχτυλό μου', 'Με τη ροδέλα'], answer: 0 },
+            { q: 'Ο φορητός υπολογιστής έχει ένα τετράγωνο που αγγίζω αντί για ποντίκι. Πώς λέγεται;', options: ['Οθόνη', 'Επιφάνεια αφής (touchpad)'], answer: 1 },
+          ] },
+          { type: 'info', ref: 'έκδ. 6.0 σελ. 79', text: 'Στην τάξη:', cards: [
+            ['🎮', 'Στο GCompris παίξτε «Περνώ από πάνω» και «Σβήνω τη φωτιά»: μαθαίνετε να κρατάτε σωστά το ποντίκι και να το κουνάτε πάνω στο γραφείο.'],
+          ] },
+        ],
+        practice: [
+          { type: 'mouse', mode: 'hover', ref: 'εξάσκηση', text: 'Τάισε τη μέλισσα: πέρνα τον δείκτη πάνω από τα λουλούδια!', n: 15, items: ['🌸', '🌻', '🌼', '🌷'], goal: '🐝 Λουλούδια', doneMsg: '🐝 Ζζζζ! Η μέλισσα χόρτασε!' },
+          { type: 'mcq', ref: 'εξάσκηση', text: 'Θυμάμαι:', questions: [
+            { q: 'Πώς λέγεται το βέλος στην οθόνη;', options: ['Δείκτης', 'Ροδέλα', 'Εικονίδιο'], answer: 0 },
+            { q: 'Ο δείκτης έγινε χεράκι 👆. Τι σημαίνει;', options: ['Αν κάνω κλικ, κάτι θα συμβεί (π.χ. υπερσύνδεσμος)', 'Ο υπολογιστής χάλασε'], answer: 0 },
+          ] },
+        ],
+      },
+      {
+        icon: '👇', title: 'Κάνω κλικ και διπλό κλικ', sub: 'Επιλέγω · ανοίγω · Έναρξη και Αριθμομηχανή',
+        acts: [
+          { type: 'info', ref: 'έκδ. 6.0 σελ. 81–82 · έκδ. v09 σελ. 81', text: '«Πες μου, Ήρωνα, πώς χρησιμοποιώ τα πλήκτρα;»', cards: [
+            ['1️⃣', '<b>Κλικ</b>: πιέζω απαλά <b>μία φορά</b> το αριστερό πλήκτρο με τον δείκτη μου και το αφήνω. Με ένα κλικ <b>επιλέγω</b> ένα αντικείμενο ή πατάω ένα κουμπί.'],
+            ['2️⃣', '<b>Διπλό κλικ</b>: πιέζω το αριστερό πλήκτρο <b>δύο φορές γρήγορα</b>, με το χέρι σταθερό. Με διπλό κλικ <b>ανοίγω</b> ένα παιχνίδι ή μια εφαρμογή.'],
+            ['🤚', 'Αν κρατάω το ποντίκι με το <b>αριστερό</b> χέρι, κάνω κλικ με τον δείκτη στο <b>δεξί</b> πλήκτρο.'],
+          ] },
+          { type: 'mouse', mode: 'click', ref: 'έκδ. 6.0 σελ. 81–83 (Κλικ στα ψάρια)', text: 'Ψάρεψε τα ψαράκια: ένα κλικ σε καθένα!', n: 10, goal: '🎣 Ψάρια', tip: 'Τα ψάρια μικραίνουν — σημάδεψε καλά!', doneMsg: '🎣 Μπράβο, ψαρά! Έπιασες όλα τα ψάρια!' },
+          { type: 'mouse', mode: 'double', ref: 'έκδ. 6.0 σελ. 81 (Διπλό κλικ)', text: 'Άνοιξε τα δώρα με διπλό κλικ!', items: [['🎁', '🧸', 'Δώρο 1'], ['🎁', '🪁', 'Δώρο 2'], ['🎁', '🚂', 'Δώρο 3'], ['🎁', '⚽', 'Δώρο 4']], goal: '🎁 Δώρα που άνοιξαν', doneMsg: '🎉 Άνοιξες όλα τα δώρα με διπλό κλικ!' },
+          { type: 'match', ref: 'έκδ. 6.0 σελ. 82', text: 'Κάνε την αντιστοίχιση.', pairs: [['1️⃣ Αριστερό κλικ', 'Επιλογή αντικειμένου'], ['2️⃣ Διπλό αριστερό κλικ', 'Άνοιγμα — εκκίνηση δραστηριότητας']] },
+          { type: 'desktop', ref: 'έκδ. v09 σελ. 82', text: 'Βρες την Αριθμομηχανή και λογάριασε με το ποντίκι!', tasks: [
+            ['Πάτα το κουμπί <b>⊞ Έναρξη</b> κάτω αριστερά.', ev => ev.t === 'start'],
+            ['Βρες στη λίστα την <b>🧮 Αριθμομηχανή</b> και άνοιξέ την.', ev => ev.t === 'open' && ev.id === 'calc'],
+            ['Με κλικ στα κουμπιά: πόσο κάνει <b>5 + 3</b>; (πάτα 5, +, 3 και =)', ev => ev.t === 'calc' && ev.v === 8],
+            ['Τώρα το <b>7 + 4</b>.', ev => ev.t === 'calc' && ev.v === 11],
+            ['Κλείσε την Αριθμομηχανή με το ✕.', ev => ev.t === 'close'],
+          ] },
+          { type: 'info', ref: 'έκδ. 6.0 σελ. 83', text: 'Στην τάξη:', cards: [
+            ['🎮', 'Άνοιξε με διπλό κλικ παιχνίδια του GCompris: «Κάνω κλικ επάνω», «Εξάγωνο», «Διπλό πάτημα ή διπλό κλικ», «Κλικ στα ψάρια».'],
+          ] },
+        ],
+        practice: [
+          { type: 'mouse', mode: 'click', ref: 'εξάσκηση', text: 'Σκάσε τα μπαλόνια με ένα κλικ!', n: 12, items: ['🎈'], goal: '🎈 Μπαλόνια', doneMsg: '💥 Σκάσατε όλα τα μπαλόνια!' },
+          { type: 'sort', ref: 'εξάσκηση', text: 'Κλικ ή διπλό κλικ;', bins: ['1️⃣ Ένα κλικ', '2️⃣ Διπλό κλικ'], items: [
+            ['🔘', 'Πατάω ένα κουμπί', 0], ['📁', 'Ανοίγω έναν φάκελο στην επιφάνεια εργασίας', 1], ['✅', 'Διαλέγω μια απάντηση', 0], ['🎮', 'Ανοίγω ένα παιχνίδι από την επιφάνεια εργασίας', 1], ['🖼️', 'Επιλέγω μια εικόνα', 0],
+          ] },
+        ],
+      },
+      {
+        icon: '🖱️', title: 'Δεξί κλικ, ροδέλα και «σύρε»', sub: 'Λίστα επιλογών · κύλιση · σύρε και άφησε',
+        acts: [
+          { type: 'info', ref: 'έκδ. 6.0 σελ. 84–85 · έκδ. v09 σελ. 81', text: '«Τι άλλες ενέργειες κάνουμε με το ποντίκι;» «Πάμε να σου δείξω!»', cards: [
+            ['🔴', '<b>Δεξί κλικ</b>: πατάω το δεξί πλήκτρο και εμφανίζεται μια <b>λίστα με επιλογές</b>.'],
+            ['🔵', '<b>Ροδέλα κύλισης</b>: τη γυρίζω πάνω-κάτω για να κινηθώ σε μια <b>μεγάλη σελίδα</b>.'],
+            ['✋', '<b>Σύρε</b>: βάζω τον δείκτη πάνω στο αντικείμενο, <b>κρατάω πατημένο</b> το αριστερό πλήκτρο, το μετακινώ και το <b>αφήνω</b> εκεί που θέλω.'],
+          ] },
+          { type: 'mouse', mode: 'right', ref: 'έκδ. 6.0 σελ. 84 (Δεξί κλικ)', text: 'Βάψε τα μπαλάκια: δεξί κλικ σε καθένα και διάλεξε χρώμα από τη λίστα.', menu: ['🔴 Κόκκινο', '🔵 Μπλε', '🟢 Πράσινο', '🟡 Κίτρινο'],
+            items: [['⚪', '🔴 Κόκκινο'], ['⚪', '🔵 Μπλε'], ['⚪', '🟢 Πράσινο'], ['⚪', '🟡 Κίτρινο']], result: (em, opt) => opt.split(' ')[0], goal: '🎨 Μπαλάκια', doneMsg: '🎉 Το δεξί κλικ ανοίγει μια λίστα με επιλογές!' },
+          { type: 'mouse', mode: 'scroll', ref: 'έκδ. 6.0 σελ. 84 (Ροδέλα κύλισης)', text: 'Μεγάλη σελίδα με ζώα! Κύλισε κάτω και βρες τα.',
+            items: ['🐶', '🐱', '🐭', '🐰', '🦊', '🐻', '🐼', '🦜', '🐨', '🐯', '🦁', '🐮', '🐷', '🐸', '🐧', '🐔', '🐘', '🦒', '🐢', '🐬'],
+            find: [['🦜', 'τον παπαγάλο'], ['🐧', 'τον πιγκουίνο'], ['🐬', 'το δελφίνι'], ['🐶', 'τον σκύλο (ψηλά!)']], doneMsg: '🎉 Με τη ροδέλα κινείσαι πάνω-κάτω σε μια μεγάλη σελίδα!' },
+          { type: 'mouse', mode: 'drag', ref: 'έκδ. v09 σελ. 81–82 (Το καλάθι με τα μήλα · Όλα στη θέση τους)', text: 'Όλα στη θέση τους! Σύρε κάθε πράγμα στο σωστό κουτί.',
+            bins: [['Φρούτα', '🧺'], ['Παιχνίδια', '🧸'], ['Ρούχα', '👕']], items: [['🍎', 0], ['🍌', 0], ['🍐', 0], ['⚽', 1], ['🪀', 1], ['🚗', 1], ['🧦', 2], ['🧢', 2], ['👗', 2]], goal: '📦 Στη θέση τους', doneMsg: '🎉 Τακτοποίησες τα πάντα με σύρε και άφησε!' },
+          { type: 'mouse', mode: 'drag', ref: 'έκδ. 6.0 σελ. 85 · έκδ. v09 σελ. 81 (Παζλ)', text: 'Παζλ! Σύρε κάθε κομμάτι στη θέση του για να φτιάξεις το λιονταράκι.', puzzle: '🦁', size: 2, goal: '🧩 Κομμάτια', doneMsg: '🦁 Γρρρ! Το παζλ είναι έτοιμο!' },
+          { type: 'theory', ref: 'έκδ. 6.0 σελ. 85', text: 'Στην ταμπλέτα και στο κινητό χρησιμοποιώ το δάχτυλό μου:', sections: [
+            ['👆 Άγγιγμα = άνοιγμα', 'Για να ανοίξω ένα πρόγραμμα ή ένα αρχείο, αγγίζω το εικονίδιο με το δάχτυλό μου.', ['📱 ένα άγγιγμα στο 🎮 → ανοίγει το παιχνίδι']],
+            ['✋ Σύρε', 'Πατάω και <b>κρατάω</b> το δάχτυλο πάνω στο αντικείμενο, το μετακινώ προς τον προορισμό και το <b>αφήνω</b>.', ['🧩 κομμάτι παζλ → στη θέση του']],
+            ['✌️ Κύλιση', 'Με <b>δύο δάχτυλα</b> (ή ένα, σε πολλές εφαρμογές) σέρνω τη σελίδα πάνω, κάτω, αριστερά ή δεξιά.', ['📄 μεγάλη σελίδα → βλέπω πιο κάτω']],
+          ] },
+          { type: 'match', ref: 'έκδ. 6.0 σελ. 86', text: 'Κάνε την αντιστοίχιση.', pairs: [
+            ['Αριστερό κλικ', 'Επιλογή αντικειμένου'], ['Διπλό αριστερό κλικ', 'Άνοιγμα — εκκίνηση δραστηριότητας'], ['Δεξί κλικ', 'Λίστα με επιλογές'], ['Ροδέλα κύλισης', 'Μετακίνηση πάνω-κάτω σε σελίδα'],
+          ] },
+          { type: 'desktop', ref: 'έκδ. v09 σελ. 82', text: 'Στην επιφάνεια εργασίας:', tasks: [
+            ['Πέρνα τον δείκτη πάνω από τα εικονίδια: τι παρατηρείς; Μετά <b>σύρε</b> το εικονίδιο «Οι εργασίες μου» σε άλλη θέση.', ev => ev.t === 'moveicon' && ev.id === 'folder'],
+            ['Κάνε <b>δεξί κλικ</b> σε άδειο σημείο της οθόνης: τι επιλογές εμφανίζονται; Διάλεξε «📁 Νέος φάκελος».', ev => ev.t === 'newfolder'],
+            ['Γράψε ένα όνομα και πάτα Enter.', ev => ev.t === 'rename'],
+          ] },
+        ],
+        practice: [
+          { type: 'mouse', mode: 'drag', ref: 'εξάσκηση', text: 'Πιο δύσκολο παζλ: 9 κομμάτια!', puzzle: '🐸', size: 3, goal: '🧩 Κομμάτια', doneMsg: '🐸 Κουάξ! Τέλειο παζλ!' },
+          { type: 'mouse', mode: 'drag', ref: 'εξάσκηση', text: 'Το καλάθι με τα μήλα: σύρε μόνο τα μήλα στο καλάθι.', bins: [['Μήλα', '🧺'], ['Όχι μήλα', '📦']],
+            items: [['🍎', 0], ['🍏', 0], ['🍎', 0], ['🍏', 0], ['🍋', 1], ['🥕', 1]], goal: '🍎 Τακτοποιημένα' },
+        ],
+      },
+      {
+        icon: '⌨️', title: 'Γνωρίζω το πληκτρολόγιο', sub: 'Γράμματα, αριθμοί και ο κέρσορας',
+        acts: [
+          { type: 'info', ref: 'έκδ. 6.0 σελ. 88–89 · έκδ. v09 σελ. 85', text: '«Με το μολύβι γράφω στο βιβλίο μου. Με το πληκτρολόγιο γράφω στον υπολογιστή!»', cards: [
+            ['⌨️', 'Το <b>πληκτρολόγιο</b> είναι μια συσκευή που με βοηθάει να γράφω <b>χαρακτήρες</b> στον υπολογιστή: γράμματα, αριθμούς, σύμβολα και πολλά ακόμα.'],
+            ['🔤', 'Το μεγαλύτερο μέρος του έχει <b>γράμματα</b> και <b>αριθμούς</b>. Για να γράψω ένα γράμμα πιέζω <b>μία φορά, απαλά</b> το πλήκτρο του.'],
+            ['|', 'Όταν γράφω, μια κάθετη γραμμή αναβοσβήνει: είναι ο <b>κέρσορας</b> «|» και μου δείχνει <b>πού</b> θα γραφτεί ό,τι πληκτρολογήσω.'],
+          ] },
+          { type: 'keys', mode: 'find', ref: 'έκδ. 6.0 σελ. 90', text: 'Εντόπισε στο πληκτρολόγιο τα γράμματα της λέξης ΥΠΟΛΟΓΙΣΤΗΣ και χρωμάτισέ τα γαλάζια.', word: 'ΥΠΟΛΟΓΙΣΤΗΣ', color: '#4fc3f7' },
+          { type: 'keys', mode: 'find', ref: 'έκδ. 6.0 σελ. 90', text: 'Και μια ακόμα λέξη: βρες τα γράμματα και χρωμάτισέ τα πράσινα.', word: 'ΠΛΗΚΤΡΟΛΟΓΙΟ', color: '#81c784' },
+          { type: 'keys', ref: 'έκδ. 6.0 σελ. 90 · έκδ. v09 σελ. 86', text: 'Γράψε το όνομά σου! Πρόσεξε πού αναβοσβήνει ο κέρσορας «|».', caps: true, words: [['🙂', '', 'Γράψε το <b>όνομά σου</b> και πάτα <b>↵ Enter</b>.']] },
+          { type: 'mcq', ref: 'έκδ. 6.0 σελ. 88', text: 'Σκέψου και συζήτησε με την ομάδα σου:', questions: [
+            { q: 'Γιατί το λέμε «πληκτρολόγιο»;', options: ['Γιατί είναι μικρό', 'Γιατί έχει πολλά πλήκτρα που «λένε» στον υπολογιστή τι να γράψει'], answer: 1 },
+            { q: 'Πού θα γραφτεί το επόμενο γράμμα;', options: ['Στην αρχή της σελίδας πάντα', 'Εκεί που αναβοσβήνει ο κέρσορας «|»'], answer: 1 },
+            { q: 'Ποιες συσκευές έχουν πληκτρολόγιο;', options: ['Όλες οι υπολογιστικές μηχανές — και το κινητό στην οθόνη του', 'Μόνο η τηλεόραση'], answer: 0 },
+          ] },
+          { type: 'info', ref: 'έκδ. 6.0 σελ. 91', text: 'Στην τάξη:', cards: [
+            ['🧩', 'Άνοιξε στο Φωτόδεντρο το «Εξοικειώνομαι με το πληκτρολόγιο» (8521/3103) και βάλε τα πλήκτρα στη σωστή θέση.'],
+            ['🌍', 'Όλα τα πληκτρολόγια είναι ίδια σε όλο τον κόσμο; Ψάξτε μαζί μια φωτογραφία με πληκτρολόγιο άλλης γλώσσας!'],
+          ] },
+        ],
+        practice: [
+          { type: 'keys', mode: 'find', ref: 'εξάσκηση', text: 'Βρες τους αριθμούς από το 1 ως το 9 στην πάνω σειρά του πληκτρολογίου.', word: '123456789', color: '#ffb74d' },
+          { type: 'keys', mode: 'find', ref: 'εξάσκηση', text: 'Βρες όλη την αλφαβήτα με τη σειρά!', word: 'ΑΒΓΔΕΖΗΘΙΚΛΜΝΞΟΠΡΣΤΥΦΧΨΩ', color: '#ce93d8' },
+        ],
+      },
+      {
+        icon: '🔠', title: 'Κεφαλαία, αριθμοί και σβήσιμο', sub: 'Caps Lock · Backspace',
+        acts: [
+          { type: 'info', ref: 'έκδ. 6.0 σελ. 92–93 · έκδ. v09 σελ. 85', text: '«Τα πληκτρολόγια έχουν πολλά πλήκτρα — πώς θα μάθω τι κάνουν όλα;» «Μην ανησυχείς, θα σε βοηθήσω!»', cards: [
+            ['⇪', 'Για να γράψω όλα τα γράμματα <b>κεφαλαία</b>, πατάω το πλήκτρο <b>Caps Lock</b>, δίπλα στο Α. Ανάβει ένα <b>λαμπάκι</b>. Ξαναπατάω → γράφω πάλι πεζά (μικρά).'],
+            ['⌫', 'Έκανα λάθος; Το πλήκτρο <b>Backspace</b> σβήνει <b>ένα</b> γράμμα: αυτό που είναι <b>αριστερά</b> από τον κέρσορα. ΚΟΤΑ| → ΚΟΤ|'],
+            ['🔢', 'Τα πλήκτρα με τους <b>αριθμούς</b> είναι στην πάνω σειρά του πληκτρολογίου.'],
+          ] },
+          { type: 'keys', ref: 'έκδ. 6.0 σελ. 92', text: 'Άναψε το Caps Lock και γράψε κεφαλαία!', words: [
+            ['💡', 'ΦΩΣ', 'Πάτα <b>⇪ Caps Lock</b> (θα ανάψει το λαμπάκι) και γράψε <b>ΦΩΣ</b>.'], ['🐱', 'ΓΑΤΑ'], ['🌙', 'ΦΕΓΓΑΡΙ'],
+          ] },
+          { type: 'mcq', ref: 'έκδ. 6.0 σελ. 93', text: 'Ποιο γράμμα θα σβηστεί αν πατήσεις μία φορά το Backspace; Πρόσεξε πού είναι ο κέρσορας!', questions: [
+            { q: 'ΥΠΟΛΟΓΙΣΤΗΣ<b>|</b>', options: ['Το Υ στην αρχή', 'Το Σ στο τέλος'], answer: 1 },
+            { q: 'ΥΠΟΛ<b>|</b>ΟΓΙΣΤΗΣ', options: ['Το Ο', 'Το Λ', 'Το Σ'], answer: 1 },
+            { q: 'ΥΠΟΛΟΓΙΣ<b>|</b>ΤΗΣ', options: ['Το Σ πριν από τον κέρσορα', 'Το Τ', 'Το Η'], answer: 0 },
+            { q: 'ΠΑΤΑ<b>|</b>ΤΑ', options: ['Το Τ μετά τον κέρσορα', 'Το Α πριν από τον κέρσορα'], answer: 1 },
+            { q: 'ΠΑΤ<b>|</b>ΑΤΑ', options: ['Το Τ', 'Το Α'], answer: 0 },
+          ], explain: 'Το Backspace σβήνει πάντα τον χαρακτήρα <b>πριν</b> (αριστερά) από τον κέρσορα.' },
+          { type: 'keys', ref: 'έκδ. 6.0 σελ. 93 (Σβήνω με το Backspace)', text: 'Διόρθωσε τις λέξεις με το Backspace!', caps: true, words: [
+            ['🐔', 'ΚΟΤ', 'Ο κέρσορας είναι μετά το Α. Πάτα <b>⌫</b> μία φορά: τι μένει;', 'ΚΟΤΑ'],
+            ['🐱', 'ΓΑΤΑ', 'Ένα Τ περισσεύει! Ο κέρσορας είναι μετά το πρώτο Τ: πάτα <b>⌫</b>.', 'ΓΑΤΤΑ', 3],
+            ['🐟', 'ΨΑΡΙ', 'Γράφτηκε ΨΑΡΟ. Σβήσε το Ο και γράψε <b>Ι</b>.', 'ΨΑΡΟ'],
+          ] },
+          { type: 'keys', ref: 'έκδ. 6.0 σελ. 94 · έκδ. v09 σελ. 88', text: 'Γράψε τους αριθμούς με ένα κενό ανάμεσα.', words: [['🔢', '12 8 15 5', 'Γράψε: <b>12 8 15 5</b> (κενό = το μεγάλο πλήκτρο κάτω)'], ['🔢', '2 7 1 20 16 11']] },
+        ],
+        practice: [
+          { type: 'keys', mode: 'keyname', ref: 'εξάσκηση', text: 'Βρες το πλήκτρο!', questions: [
+            ['Πάτα το πλήκτρο που ανάβει το λαμπάκι για <b>ΚΕΦΑΛΑΙΑ</b>.', '⇪'], ['Πάτα το πλήκτρο που <b>σβήνει</b> ένα γράμμα.', '⌫'], ['Πάτα τον αριθμό <b>7</b>.', '7'], ['Πάτα το γράμμα <b>Μ</b>.', 'μ'],
+          ] },
+          { type: 'mcq', ref: 'εξάσκηση', text: 'Τι θα γίνει;', questions: [
+            { q: 'Το λαμπάκι του Caps Lock είναι <b>αναμμένο</b> και πατάω το Α. Τι γράφεται;', options: ['α (πεζό)', 'Α (κεφαλαίο)'], answer: 1 },
+            { q: 'Γράφω ΜΗΛΟ| και πατάω ⌫ δύο φορές. Τι μένει;', options: ['ΛΟ', 'ΜΗΛ', 'ΜΗ'], answer: 2 },
+          ] },
+        ],
+      },
+      {
+        icon: '✍️', title: 'Γράφω τις πρώτες μου λέξεις', sub: 'Κενό · τόνος · Enter',
+        acts: [
+          { type: 'info', ref: 'έκδ. 6.0 σελ. 95 · έκδ. v09 σελ. 85–86', text: 'Από τα γράμματα στις λέξεις και στις φράσεις:', cards: [
+            ['🔤', 'Πατάω περισσότερα γράμματα <b>στη σειρά</b> και γράφω μια λέξη, π.χ. ΥΠΟΛΟΓΙΣΤΗΣ.'],
+            ['␣', 'Πατάω το μεγάλο πλήκτρο του <b>κενού</b> μία φορά για να αφήσω ένα κενό <b>ανάμεσα στις λέξεις</b>.'],
+            ['΄', 'Το πλήκτρο του <b>τόνου</b> είναι δεξιά από το Λ. Πατάω <b>πρώτα τον τόνο</b> και <b>μετά</b> το φωνήεν: ά, έ, ή, ί, ό, ύ, ώ. Με το <b>Enter</b> ↵ αλλάζω γραμμή.'],
+          ] },
+          { type: 'keys', ref: 'έκδ. 6.0 σελ. 95 (Γράφω απλές λέξεις)', text: 'Γράψε τις λέξεις με κεφαλαία.', caps: true, words: [['💻', 'ΥΠΟΛΟΓΙΣΤΗΣ'], ['🐭', 'ΠΟΝΤΙΚΙ'], ['🏫', 'ΣΧΟΛΕΙΟ']] },
+          { type: 'keys', ref: 'έκδ. v09 σελ. 87', text: 'Τι είναι; Γράψε τη λέξη με πεζά και τόνο (πρώτα ΄ και μετά το φωνήεν).', words: [['🍎', 'μήλο'], ['🐱', 'γάτα'], ['⚽', 'μπάλα'], ['🏠', 'σπίτι'], ['🐶', 'σκύλος']] },
+          { type: 'keys', ref: 'έκδ. v09 σελ. 88', text: 'Οι τέσσερις εποχές!', words: [['🌸', 'άνοιξη'], ['☀️', 'καλοκαίρι'], ['🍂', 'φθινόπωρο'], ['⛄', 'χειμώνας']] },
+          { type: 'keys', ref: 'έκδ. 6.0 σελ. 95', text: 'Μια φράση: μην ξεχάσεις το κενό ανάμεσα στις λέξεις!', caps: true, words: [['⚽', 'ΜΟΥ ΑΡΕΣΕΙ Η ΜΠΑΛΑ'], ['🧸', 'ΠΑΙΖΩ ΜΕ ΤΟΥΣ ΦΙΛΟΥΣ ΜΟΥ']] },
+          { type: 'keys', ref: 'έκδ. v09 σελ. 85', text: 'Το Enter προσθέτει νέα γραμμή.', caps: true, lines: true, words: [['👨‍👩‍👧', 'ΜΑΜΑ\nΜΠΑΜΠΑΣ', 'Γράψε <b>ΜΑΜΑ</b>, πάτα <b>↵ Enter</b> και γράψε <b>ΜΠΑΜΠΑΣ</b> στην από κάτω γραμμή.']] },
+          { type: 'keys', mode: 'keyname', ref: 'έκδ. 6.0 σελ. 96–97', text: 'Χρωμάτισε τα σωστά πλήκτρα: πάτα αυτό που ζητάει κάθε ερώτηση.', questions: [
+            ['🟠 Το πλήκτρο που <b>κλειδώνει</b> τα γράμματα και γίνονται κεφαλαία.', '⇪'], ['🔴 Το πλήκτρο που <b>σβήνει</b> έναν χαρακτήρα.', '⌫'],
+            ['🔵 Το πλήκτρο που βάζει ένα <b>κενό</b>.', '␣'], ['🟣 Το πλήκτρο του <b>τόνου</b>.', '΄'], ['🟢 Το πλήκτρο που αλλάζει <b>γραμμή</b>.', '↵'],
+          ] },
+        ],
+        practice: [
+          { type: 'keys', ref: 'εξάσκηση', text: 'Ζωάκια με τόνους:', words: [['🐘', 'ελέφαντας'], ['🦁', 'λιοντάρι'], ['🐢', 'χελώνα'], ['🦋', 'πεταλούδα']] },
+          { type: 'keys', ref: 'εξάσκηση', text: 'Γράψε μια δική σου φράση για το αγαπημένο σου παιχνίδι.', caps: true, words: [['🎲', '', 'Γράψε λίγα λόγια (με κενά ανάμεσα στις λέξεις) και πάτα <b>↵ Enter</b>.']] },
+        ],
+      },
+      {
+        icon: '🌐', title: 'Ιστοσελίδες και ιστότοποι', sub: 'Περιηγητής · διεύθυνση · υπερσύνδεσμος · ⬅ πίσω',
+        acts: [
+          { type: 'info', ref: 'έκδ. 6.0 σελ. 98 · έκδ. v09 σελ. 90–91', text: '«Τι κάνεις, Υπατία, στο Διαδίκτυο;» «Βλέπω μια ιστοσελίδα για τα ζώα!»', cards: [
+            ['🌍', 'Το <b>Διαδίκτυο</b> συνδέει υπολογιστές σε όλο τον κόσμο. Εκεί βρίσκω πληροφορίες, παίζω παιχνίδια, διαβάζω βιβλία… Για να «ταξιδέψω» χρησιμοποιώ μια εφαρμογή που λέγεται <b>περιηγητής</b> (Chrome, Firefox…).'],
+            ['📄', 'Οι πληροφορίες είναι σε <b>ιστοσελίδες</b>, όπως οι σελίδες ενός βιβλίου — με κείμενο, εικόνες, βίντεο και ήχο. Ένας <b>ιστότοπος</b> έχει πολλές ιστοσελίδες.'],
+            ['🏠', 'Κάθε ιστότοπος έχει μια <b>διεύθυνση</b>, όπως το σπίτι μας. Τη γράφω στη <b>γραμμή διευθύνσεων</b> του περιηγητή. Π.χ. το Πανελλήνιο Σχολικό Δίκτυο: <b>www.sch.gr</b>'],
+          ] },
+          { type: 'theory', ref: 'έκδ. 6.0 σελ. 100 · έκδ. v09 σελ. 91–92', text: 'Ο υπερσύνδεσμος και το κουμπί «πίσω»:', sections: [
+            ['👆 Υπερσύνδεσμος', 'Πηγαίνω τον δείκτη πάνω σε μια εικόνα ή λέξη. Αν γίνει <b>χεράκι</b>, είναι <b>υπερσύνδεσμος</b>: κάνω κλικ και πάω σε άλλη σελίδα. Έχει «κρυμμένη» μέσα του μια διεύθυνση.', ['🦜 <u>Ο παπαγάλος</u> → σελίδα για τον παπαγάλο']],
+            ['⬅ Πίσω', 'Για να γυρίσω σε ό,τι έβλεπα πριν, πατάω το κουμπί με το <b>βέλος προς τα πίσω</b>, συνήθως πάνω αριστερά.', ['⬅ → η προηγούμενη σελίδα']],
+            ['🔵 Κύλιση', 'Μια ιστοσελίδα μπορεί να είναι μεγάλη: τη βλέπω όλη με τη <b>ροδέλα</b> ή σέρνοντάς τη με το δάχτυλο.', ['⬇️ πιο κάτω · ⬆️ πιο πάνω']],
+          ] },
+          { type: 'browser', ref: 'έκδ. 6.0 σελ. 98–101', text: 'Επισκέψου την ιστοσελίδα για τα ζώα!', start: 'home', pages: A_ZOO, tasks: [
+            ['Κύλισε τη σελίδα <b>προς τα κάτω</b> με τη ροδέλα για να τη δεις όλη.', ev => ev.t === 'scroll'],
+            ['Πήγαινε τον δείκτη πάνω στον <b>παπαγάλο</b> 🦜: γίνεται χεράκι! Κάνε κλικ.', ev => ev.t === 'go' && ev.page === 'parrot'],
+            ['Δες το βίντεο: πάτα ▶.', ev => ev.t === 'video'],
+            ['Γύρισε πίσω πατώντας το <b>⬅</b> πάνω αριστερά.', ev => ev.t === 'go' && ev.via === 'back' && ev.page === 'home'],
+            ['Άνοιξε τη σελίδα για το <b>δελφίνι</b> 🐬.', ev => ev.t === 'go' && ev.page === 'dolphin'],
+          ], doneMsg: '🎉 Μπράβο! Χρησιμοποίησες υπερσυνδέσμους και το κουμπί «πίσω»!' },
+          { type: 'sort', ref: 'έκδ. 6.0 σελ. 99–100', text: 'Τι βρήκες στην ιστοσελίδα για τα ζώα;', bins: ['📝 Κείμενο', '🖼️ Εικόνα', '🎬 Βίντεο', '🔊 Ήχος'], items: [
+            ['📝', 'Οι παπαγάλοι ζουν σε ζεστά δάση και μπορούν να μιμούνται φωνές.', 0], ['🦜', 'Μια φωτογραφία με έναν πολύχρωμο παπαγάλο', 1], ['▶️', 'Ο παπαγάλος πετάει (κινούμενη εικόνα με ▶)', 2], ['🔊', 'Το κελάηδισμα του παπαγάλου', 3],
+          ] },
+          { type: 'browser', ref: 'έκδ. v09 σελ. 91–93', text: 'Ταξίδι στο Διαδίκτυο με τη γραμμή διευθύνσεων!', pages: A_WEB, engine: 'el.wikipedia.org/w', logo: '📚 Βικιπαίδεια', tasks: [
+            ['Γράψε στη <b>γραμμή διευθύνσεων</b> (πάνω) <b>www.sch.gr</b> και πάτα Enter.', ev => ev.t === 'go' && ev.page === 'psd' && ev.via === 'address'],
+            ['Πάτα τον υπερσύνδεσμο «<b>Διαδραστικά Σχολικά Βιβλία</b>».', ev => ev.t === 'go' && ev.page === 'ebooks'],
+            ['Πήγαινε στη Βικιπαίδεια: γράψε <b>el.wikipedia.org</b> και πάτα Enter.', ev => ev.t === 'go' && ev.page === 'wiki'],
+            ['Ψάξε το αγαπημένο σου ζώο: γράψε π.χ. <b>γάτα</b> στη γραμμή αναζήτησης και πάτα 🔎.', ev => ev.t === 'search'],
+            ['Πάτα ένα αποτέλεσμα για να διαβάσεις για το ζώο.', ev => ev.t === 'go' && ev.via === 'link' && /^w-/.test(ev.page)],
+          ] },
+          { type: 'mcq', ref: 'έκδ. 6.0 σελ. 99 · έκδ. v09 σελ. 90–91', text: 'Θυμάμαι:', questions: [
+            { q: 'Με ποια εφαρμογή «ταξιδεύω» στο Διαδίκτυο;', options: ['Με την αριθμομηχανή', 'Με τον περιηγητή', 'Με τη ζωγραφική'], answer: 1 },
+            { q: 'Τι είναι το <b>www.sch.gr</b>;', options: ['Ένα παιχνίδι', 'Η διεύθυνση ενός ιστότοπου', 'Ένα ποντίκι'], answer: 1 },
+            { q: 'Ένας ιστότοπος έχει…', options: ['μόνο μία λέξη', 'πολλές ιστοσελίδες'], answer: 1 },
+          ] },
+        ],
+        practice: [
+          { type: 'mcq', ref: 'εξάσκηση', text: 'Τι θα γίνει αν…', questions: [
+            { q: '…πατήσω το ⬅;', options: ['Θα κλείσει ο υπολογιστής', 'Θα γυρίσω στη σελίδα που έβλεπα πριν'], answer: 1 },
+            { q: '…κάνω κλικ σε μια λέξη όπου ο δείκτης γίνεται χεράκι 👆;', options: ['Θα πάω σε άλλη σελίδα (είναι υπερσύνδεσμος)', 'Τίποτα'], answer: 0 },
+            { q: '…γράψω λάθος τη διεύθυνση, π.χ. www.sh.gr;', options: ['Ίσως δεν βρεθεί η σελίδα ή βρω άλλη', 'Θα τη διορθώσει πάντα μόνος του'], answer: 0 },
+          ] },
+          { type: 'match', ref: 'εξάσκηση', text: 'Γλωσσάριο:', pairs: [
+            ['🌍 Διαδίκτυο', 'Ένα παγκόσμιο δίκτυο υπολογιστών'], ['🏠 Διεύθυνση', 'Πού βρίσκεται ένας ιστότοπος στο Διαδίκτυο'], ['🧭 Περιηγητής', 'Εφαρμογή για να πλοηγούμαι στο Διαδίκτυο'], ['👆 Υπερσύνδεσμος', 'Κείμενο ή εικόνα που με πάει σε άλλη σελίδα'],
+          ] },
+        ],
+      },
+      {
+        icon: '⭐', title: 'Σελιδοδείκτες και σχόλια', sub: '☆ σελιδοδείκτης · ❤️ αντίδραση · πίνακας ανακοινώσεων',
+        acts: [
+          { type: 'info', ref: 'έκδ. 6.0 σελ. 102–104 · έκδ. v09 σελ. 93–94', text: '«Αυτή η ιστοσελίδα είναι τέλεια! Πώς θα τη βρω εύκολα κάποια άλλη στιγμή;»', cards: [
+            ['⭐', 'Φτιάχνω έναν <b>σελιδοδείκτη</b>: ένα «μαγικό σημάδι» που με πάει γρήγορα σε μια σελίδα — όπως ο σελιδοδείκτης του βιβλίου μου.'],
+            ['☆', 'Πατάω το <b>αστεράκι</b> δεξιά στη γραμμή διευθύνσεων. Γράφω ένα <b>όνομα</b> και πατάω «Ολοκληρώθηκε». Ο σελιδοδείκτης μπαίνει στη <b>γραμμή σελιδοδεικτών</b>.'],
+            ['💬', 'Σε μια <b>ανάρτηση</b> μπορώ να <b>αντιδράσω</b> πατώντας την καρδούλα ❤️ ή να γράψω ένα <b>σχόλιο</b> με λέξεις ή σύμβολα (😀 👍) και να πατήσω Enter.'],
+          ] },
+          { type: 'browser', ref: 'έκδ. 6.0 σελ. 102–104 · έκδ. v09 σελ. 94', text: 'Φτιάξε τον σελιδοδείκτη «τα ζώα»!', start: 'home', pages: { ...A_ZOO, ...A_WEB }, tasks: [
+            ['Πάτα το <b>☆</b> δεξιά στη γραμμή διευθύνσεων. Γράψε το όνομα <b>τα ζώα</b> και πάτα «✔ Ολοκληρώθηκε».', ev => ev.t === 'bookmark' && isName(ev, 'ζωα')],
+            ['Το αστεράκι έγινε κίτρινο ★! Τώρα πήγαινε αλλού: γράψε <b>www.sch.gr</b> και πάτα Enter.', ev => ev.t === 'go' && ev.page === 'psd'],
+            ['Γύρισε στα ζώα με <b>ένα κλικ</b> στον σελιδοδείκτη «τα ζώα» (κάτω από τη γραμμή διευθύνσεων).', ev => ev.t === 'go' && ev.via === 'bookmark' && ev.page === 'home'],
+          ], doneMsg: '🎉 Μπράβο! Ο σελιδοδείκτης σε πάει αμέσως στην ιστοσελίδα με τα ζώα!' },
+          { type: 'browser', ref: 'έκδ. 6.0 σελ. 104 · έκδ. v09 σελ. 94–95', text: 'Η τάξη μας στο Διαδίκτυο: αντίδρασε, σχολίασε, δημοσίευσε!', start: 'blog', pages: A_CLASS, bookmarks: ['blog', 'board'], tasks: [
+            ['Κάνε κλικ στην <b>καρδούλα 🤍</b> κάτω από την ανάρτηση που σου αρέσει.', ev => ev.t === 'like'],
+            ['Γράψε ένα <b>σχόλιο</b> με ένα σύμβολο (π.χ. 👍 ή 😀) και πάτα Enter.', ev => ev.t === 'comment' && /[😀👍❤⭐👏]/u.test(ev.text)],
+            ['Άνοιξε τον σελιδοδείκτη «<b>Ο πίνακας της τάξης</b>».', ev => ev.t === 'go' && ev.page === 'board' && ev.via === 'bookmark'],
+            ['Γράψε μια απλή ανακοίνωση (π.χ. <b>ΜΟΥ ΑΡΕΣΟΥΝ ΟΙ ΓΑΤΕΣ</b>) και πάτα «📌 Δημοσίευση».', ev => ev.t === 'publish'],
+          ], doneMsg: '🎉 Αντέδρασες, σχολίασες και δημοσίευσες στον ηλεκτρονικό πίνακα ανακοινώσεων!' },
+          { type: 'mcq', ref: 'έκδ. v09 σελ. 95', text: 'Στον Κόμβο Ασφαλούς Διαδικτύου (saferinternet.gr) είδαμε το σποτ «Η γη είναι επίπεδη!». Τι μάθαμε;', questions: [
+            { q: 'Ό,τι διαβάζω στο Διαδίκτυο είναι πάντα αλήθεια;', options: ['Όχι, πολλές φορές οι πληροφορίες δεν είναι σωστές', 'Ναι, πάντα'], answer: 0 },
+            { q: 'Βρήκα κάτι παράξενο στο Διαδίκτυο. Τι κάνω;', options: ['Ρωτάω τη δασκάλα, τον δάσκαλο ή τους γονείς μου', 'Το πιστεύω αμέσως'], answer: 0 },
+            { q: 'Τι γράφω σε ένα σχόλιο;', options: ['Ευγενικά λόγια', 'Κάτι που θα στεναχωρήσει τον άλλον'], answer: 0 },
+          ] },
+          { type: 'info', ref: 'έκδ. v09 σελ. 94–95', text: 'Στην τάξη:', cards: [
+            ['⭐', 'Ο/Η εκπαιδευτικός βάζει σελιδοδείκτες για το ΠΣΔ, τα Διαδραστικά Σχολικά Βιβλία, το Φωτόδεντρο, την Εκπαιδευτική Τηλεόραση, την e-me και την η-τάξη. Πηγαίνετε σε καθέναν με ένα κλικ!'],
+            ['🐝', 'Στην <b>e-me</b>, στον τοίχο της κυψέλης της τάξης, αφήστε ένα σύντομο σχόλιο με απλές λέξεις ή σύμβολα.'],
+          ] },
+        ],
+        practice: [
+          { type: 'order', ref: 'εξάσκηση', title: 'Φτιάχνω σελιδοδείκτη', text: 'Βάλε τα βήματα στη σειρά.', steps: [
+            ['🌐', 'Ανοίγω την ιστοσελίδα που μου αρέσει.'], ['☆', 'Πατάω το αστεράκι.'], ['⌨️', 'Γράφω ένα όνομα για τον σελιδοδείκτη.'], ['✔', 'Πατάω «Ολοκληρώθηκε».'], ['⭐', 'Τον βρίσκω στη γραμμή σελιδοδεικτών!'],
+          ], before: 'chain' },
+          { type: 'sort', ref: 'εξάσκηση', text: 'Καλό σχόλιο ή όχι;', bins: ['👍 Καλό σχόλιο', '👎 Όχι καλό'], colors: ['#2e7d32', '#c62828'], items: [
+            ['💬', 'Πολύ ωραία ζωγραφιά! 😀', 0], ['💬', 'Μου αρέσει κι εμένα το δελφίνι 👍', 0], ['💬', 'Είσαι χαζός!', 1, 'Τα σχόλια που προσβάλλουν πληγώνουν. Γράφουμε όπως θα μιλούσαμε από κοντά.'], ['💬', 'Μπράβο σου! ⭐', 0],
+          ] },
+        ],
+      },
+      {
+        icon: '🎨', title: 'Η πρώτη μου ζωγραφιά', sub: 'Μολύβι, χρώματα, πάχος, πινέλα, σφραγίδες',
+        acts: [
+          { type: 'info', ref: 'έκδ. 6.0 σελ. 105–106 · έκδ. v09 σελ. 97–98', text: '«Τι κάνεις, Ήρωνα, στον υπολογιστή;» «Ζωγραφίζω το αγαπημένο μου ζωάκι!»', cards: [
+            ['🖱️', 'Στον υπολογιστή ζωγραφίζω με το <b>ποντίκι</b>. Στο κινητό, στην ταμπλέτα ή στον διαδραστικό πίνακα με το <b>δάχτυλο</b> ή με ένα ειδικό μολύβι, τη <b>γραφίδα</b>.'],
+            ['🧰', 'Τα προγράμματα ζωγραφικής (π.χ. το <b>Tux Paint</b>) έχουν <b>εργαλεία</b> (πινέλο, σφραγίδα, γραμμές, σχήματα, γέμισμα, σβήστρα), <b>μορφές πινέλων</b> και <b>χρώματα</b>.'],
+            ['✋', 'Με <b>κλικ</b> αφήνω ένα αποτύπωμα. <b>Σέρνοντας</b> το ποντίκι (με πατημένο το πλήκτρο) φτιάχνω γραμμές και σχήματα.'],
+          ] },
+          { type: 'order', ref: 'έκδ. 6.0 σελ. 106', title: 'Ζωγραφίζω με το μολύβι', text: 'Βάλε τα βήματα στη σειρά.', steps: [
+            ['✏️', 'Επιλέγω το εργαλείο «μολύβι».'], ['🎨', 'Επιλέγω χρώμα.'], ['📏', 'Επιλέγω πάχος γραμμής.'], ['✋', 'Κάνω κλικ εκεί που ξεκινάει η γραμμή και, κρατώντας πατημένο, σέρνω μέχρι εκεί που σταματάει.'],
+          ], before: 'chain' },
+          { type: 'paint', ref: 'έκδ. 6.0 σελ. 106–107 · έκδ. v09 σελ. 98', text: 'Ζωγράφισε στον υπολογιστή!', tools: ['pencil', 'brush', 'stamp', 'eraser'], tasks: [
+            ['Διάλεξε ένα <b>χρώμα</b> από την παλέτα κάτω.', ev => ev.t === 'color'],
+            ['Διάλεξε <b>πάχος</b> γραμμής δεξιά.', ev => ev.t === 'size'],
+            ['Με το <b>✏️ Μολύβι</b>: κράτα πατημένο και σύρε για να ζωγραφίσεις.', ev => ev.t === 'draw' && ev.tool === 'pencil' && ev.len > 80],
+            ['Διάλεξε το <b>🖌️ Πινέλο</b> και ένα σχέδιο δεξιά (⭐, 🌸, 🐾…). Ζωγράφισε!', ev => ev.t === 'draw' && ev.tool === 'brush' && ev.len > 80],
+            ['Βάλε <b>🐧 σφραγίδες</b> στη ζωγραφιά σου.', ev => ev.t === 'stamp'],
+            ['Με τη <b>🧽 Γόμα</b> σβήσε ένα κομμάτι.', ev => ev.t === 'erase'],
+          ] },
+          { type: 'info', ref: 'έκδ. 6.0 σελ. 107 · έκδ. v09 σελ. 97–98', text: 'Στην τάξη:', cards: [
+            ['🐧', 'Άνοιξε το <b>Tux Paint</b>: διάλεξε χρώμα, πινέλο και μορφή πινέλου (γραμμούλες, κυκλάκια, αστεράκια, πατούσες). Βάλε σφραγίδες με πιγκουίνους!'],
+            ['🖍️', 'Ή άνοιξε στο Φωτόδεντρο τη «Ζωγραφική για μικρά παιδιά» (8521/10768) και ζωγράφισε με «μολύβι», «χρώματα» και «πάχος».'],
+          ] },
+        ],
+        practice: [
+          { type: 'paint', ref: 'εξάσκηση', text: 'Ζωγράφισε έναν ήλιο και ένα λουλούδι!', tools: ['pencil', 'brush', 'stamp', 'eraser'], tasks: [
+            ['Διάλεξε <b>κίτρινο</b> και ζωγράφισε τον ήλιο με το μολύβι.', ev => ev.t === 'draw' && ev.color === '#fdd835'],
+            ['Διάλεξε <b>πράσινο</b> και <b>χοντρό</b> πάχος για το κοτσάνι.', ev => ev.t === 'draw' && ev.color === '#43a047' && ev.size === 18],
+            ['Με το πινέλο 🌸 κάνε λουλουδάκια γύρω-γύρω.', ev => ev.t === 'draw' && ev.tool === 'brush'],
+          ] },
+          { type: 'match', ref: 'εξάσκηση', text: 'Ταίριαξε το εργαλείο με αυτό που κάνει.', pairs: [['✏️ Μολύβι', 'Ζωγραφίζω γραμμές με το χέρι'], ['🐧 Σφραγίδα', 'Βάζω έτοιμες εικονίτσες'], ['🧽 Γόμα', 'Σβήνω'], ['🖊️ Γραφίδα', 'Ειδικό μολύβι για ταμπλέτα']] },
+        ],
+      },
+      {
+        icon: '🖌️', title: 'Σχήματα, γέμισμα και αναίρεση', sub: 'Περισσότερα εργαλεία ζωγραφικής',
+        acts: [
+          { type: 'theory', ref: 'έκδ. 6.0 σελ. 108 · έκδ. v09 σελ. 99', text: 'Περισσότερα εργαλεία ζωγραφικής:', sections: [
+            ['📏 Γραμμή · ⚪ Κύκλος · ⬛ Ορθογώνιο', 'Σχεδιάζω <b>ευθείες</b>, <b>κύκλους και ελλείψεις</b>, <b>τετράγωνα και ορθογώνια</b>. Κάνω κλικ στο αρχικό σημείο και, κρατώντας πατημένο, σέρνω μέχρι το τέλος.', ['▭ περίγραμμα · ■ γεμάτο σχήμα']],
+            ['🪣 Γέμισμα', 'Γεμίζω με χρώμα έναν κλειστό χώρο της ζωγραφιάς — με ένα κλικ!', ['🏠 κλικ μέσα στο σπίτι → γίνεται κόκκινο']],
+            ['🔤 Κείμενο · ↩️ Αναίρεση', 'Πληκτρολογώ λέξεις μέσα στη ζωγραφιά. Έκανα λάθος; Η <b>αναίρεση</b> με γυρίζει στην προηγούμενη κατάσταση.', ['↩️ σβήνει την τελευταία μου ενέργεια']],
+          ] },
+          { type: 'order', ref: 'έκδ. 6.0 σελ. 109', title: 'Σχεδιάζω κύκλο', text: 'Πώς σχεδιάζω έναν κύκλο; Βάλε τα βήματα στη σειρά.', steps: [
+            ['⚪', 'Επιλέγω το εργαλείο του κύκλου.'], ['🎨', 'Επιλέγω χρώμα για το περίγραμμα και το γέμισμα.'], ['📏', 'Επιλέγω πάχος γραμμής.'], ['✋', 'Κάνω κλικ στο αρχικό σημείο και, κρατώντας πατημένο, σύρω μέχρι εκεί που σταματάει ο κύκλος.'],
+          ], before: 'chain' },
+          { type: 'paint', ref: 'έκδ. 6.0 σελ. 108–110 · έκδ. v09 σελ. 99', text: 'Ζωγραφιά με σχήματα και γραμμές!', tools: ['line', 'rect', 'ellipse', 'fill', 'text', 'pencil', 'eraser'], tasks: [
+            ['Διάλεξε <b>📏 Γραμμή</b> και φτιάξε μια ευθεία γραμμή.', ev => ev.t === 'draw' && ev.tool === 'line'],
+            ['Διάλεξε <b>⚪ Έλλειψη</b> και σχεδίασε έναν κύκλο.', ev => ev.t === 'draw' && ev.tool === 'ellipse'],
+            ['Διάλεξε <b>⬛ Ορθογώνιο</b>, πάτα δεξιά «■ Γεμάτο» και φτιάξε ένα γεμάτο τετράγωνο.', ev => ev.t === 'draw' && ev.tool === 'rect' && ev.filled],
+            ['Με το <b>🪣 Γέμισμα</b> κάνε κλικ μέσα στον κύκλο σου για να τον χρωματίσεις.', ev => ev.t === 'fill'],
+            ['Με το <b>🔤 Κείμενο</b> γράψε το όνομά σου στη ζωγραφιά.', ev => ev.t === 'text'],
+            ['Πάτα <b>↩️ Αναίρεση</b>: τι έγινε;', ev => ev.t === 'undo'],
+          ] },
+          { type: 'paint', ref: 'έκδ. v09 σελ. 99–100 (Ο Tux στο τρακτέρ · Το κοτοπουλάκι)', text: 'Χρωμάτισε την έτοιμη ζωγραφιά με το γέμισμα!', tools: ['fill', 'brush', 'stamp'], template: 'chick', templates: ['chick', 'house', 'fish'], tasks: [
+            ['Διάλεξε κίτρινο και με το <b>🪣 Γέμισμα</b> χρωμάτισε το κοτοπουλάκι.', ev => ev.t === 'fill'],
+            ['Χρωμάτισε και το ράμφος και τη φτερούγα με άλλα χρώματα.', (() => { let k = 0; return ev => ev.t === 'fill' && ++k >= 2; })()],
+            ['Πάτα <b>🆕 Νέο</b> και διάλεξε το <b>🏠 Σπιτάκι</b>.', ev => ev.t === 'new' && ev.template === 'house'],
+            ['Χρωμάτισέ το όπως θέλεις και βάλε «μαγικά»: πινέλο ⭐ ή σφραγίδες!', ev => ev.t === 'draw' || ev.t === 'stamp'],
+          ] },
+          { type: 'info', ref: 'έκδ. 6.0 σελ. 110 · έκδ. v09 σελ. 100', text: 'Στην τάξη:', cards: [
+            ['🚜', 'Στο Tux Paint, πάρε από το εργαλείο <b>Νέο</b> το τρακτέρ ή το κοτοπουλάκι και χρωμάτισέ τα με το <b>Γέμισμα</b>. Μετά βάλε <b>μαγικά</b>!'],
+          ] },
+        ],
+        practice: [
+          { type: 'match', ref: 'εξάσκηση', text: 'Ταίριαξε το εργαλείο με αυτό που κάνει.', pairs: [
+            ['📏 Γραμμή', 'Ευθεία γραμμή'], ['⚪ Έλλειψη', 'Κύκλος ή έλλειψη'], ['🪣 Γέμισμα', 'Χρωματίζω έναν κλειστό χώρο'], ['↩️ Αναίρεση', 'Γυρίζω στην προηγούμενη κατάσταση'], ['🔤 Κείμενο', 'Πληκτρολογώ λέξεις'],
+          ] },
+          { type: 'paint', ref: 'εξάσκηση', text: 'Φτιάξε ένα σπιτάκι μόνο με σχήματα!', tools: ['rect', 'line', 'ellipse', 'fill'], tasks: [
+            ['Ένα μεγάλο <b>ορθογώνιο</b> για τους τοίχους.', ev => ev.t === 'draw' && ev.tool === 'rect'],
+            ['Δύο <b>γραμμές</b> για τη σκεπή.', (() => { let k = 0; return ev => ev.t === 'draw' && ev.tool === 'line' && ++k >= 2; })()],
+            ['Έναν <b>κύκλο</b> για τον ήλιο και γέμισέ τον κίτρινο.', ev => ev.t === 'fill' && ev.color === '#fdd835'],
+          ] },
+        ],
+      },
+      {
+        icon: '🌳', title: 'Φωτόδεντρο και Εκπαιδευτική Τηλεόραση', sub: 'Βρίσκω εκπαιδευτικό περιεχόμενο',
+        acts: [
+          { type: 'info', ref: 'έκδ. 6.0 σελ. 111 · έκδ. v09 σελ. 102–103, 109', text: '«Γνωρίζεις κάποια ενδιαφέρουσα ιστοσελίδα;» «Βέβαια! Επισκέπτομαι συχνά το Φωτόδεντρο και την Εκπαιδευτική Τηλεόραση.»', cards: [
+            ['🌳', 'Το <b>Φωτόδεντρο</b> είναι υπηρεσία του Υπουργείου Παιδείας με εκπαιδευτικές εφαρμογές, παιχνίδια, κουίζ, βίντεο και παρουσιάσεις. Ο <b>Μικρότοπος Δημοτικού</b> έχει υλικό μόνο για το Δημοτικό.'],
+            ['🔎', 'Στον Μικρότοπο υπάρχει ένα <b>κεντρικό μενού</b>. Ψάχνω υλικό <b>ανά τάξη</b>, <b>ανά μάθημα</b>, <b>ανά κατηγορία</b> ή με τη γραμμή αναζήτησης. Με τα κουμπιά <b>Προηγούμενη — Επόμενη</b> αλλάζω σελίδα αποτελεσμάτων.'],
+            ['📺', 'Η <b>Εκπαιδευτική Τηλεόραση</b> (από το 1977) φτιάχνει εκπομπές σε βίντεο για το σχολείο. Από την επιλογή <b>Πρωτοβάθμια</b> βρίσκω εκπομπές για το Δημοτικό, ανά μάθημα/ενότητα.'],
+          ] },
+          { type: 'browser', ref: 'έκδ. v09 σελ. 104–106', text: 'Βρες ένα παιχνίδι με το ποντίκι στον Μικρότοπο Δημοτικού!', pages: A_MICRO, bookmarks: ['micro'], home: 'micro', tasks: [
+            ['Πάτα τον σελιδοδείκτη «<b>Μικρότοπος Δημοτικού</b>».', ev => ev.t === 'go' && ev.page === 'micro'],
+            ['Από το μενού διάλεξε την <b>Α΄ τάξη</b>.', ev => ev.t === 'go' && ev.page === 'a'],
+            ['Διάλεξε το μάθημα <b>Τ.Π.Ε.</b>', ev => ev.t === 'go' && ev.page === 'tpe1'],
+            ['Δεν είναι εδώ το «Ποντίκι, ο εξολοθρευτής». Πάτα <b>Επόμενη ▶</b> στο τέλος της σελίδας.', ev => ev.t === 'go' && ev.page === 'tpe2'],
+            ['Άνοιξε το «<b>Ποντίκι, ο εξολοθρευτής</b>» και πάτα ▶ για να παίξεις.', ev => ev.t === 'video' && ev.id === 'mouse'],
+            ['Γύρισε στην αρχική του Μικρότοπου με το <b>🏠</b>.', ev => ev.t === 'go' && ev.page === 'micro'],
+          ] },
+          { type: 'browser', ref: 'έκδ. v09 σελ. 109–111', text: 'Δες μια εκπομπή στην Εκπαιδευτική Τηλεόραση!', pages: A_TV, tasks: [
+            ['Γράψε τη διεύθυνση <b>edutv.minedu.gov.gr</b> και πάτα Enter.', ev => ev.t === 'go' && ev.page === 'tv'],
+            ['Από το μενού διάλεξε <b>Πρωτοβάθμια</b>.', ev => ev.t === 'go' && ev.page === 'prim'],
+            ['Διάλεξε την ενότητα <b>Αγωγή Υγείας</b>.', ev => ev.t === 'go' && ev.page === 'health'],
+            ['Βρες και άνοιξε το «<b>Έργα και Ημέρες της κας Τερηδόνας</b>».', ev => ev.t === 'go' && ev.page === 'teeth'],
+            ['Ξεκίνα την προβολή με το ▶.', ev => ev.t === 'video'],
+            ['Γύρισε πίσω με το <b>⬅</b> (δύο φορές) και άνοιξε την ενότητα <b>Περιβάλλον</b>.', ev => ev.t === 'go' && ev.page === 'env'],
+          ], doneMsg: '🎉 Μπράβο! Βρήκες εκπομπή στην Εκπαιδευτική Τηλεόραση. Τι σας έκανε εντύπωση;' },
+          { type: 'info', ref: 'έκδ. 6.0 σελ. 112 · έκδ. v09 σελ. 105–111', text: 'Στην τάξη:', cards: [
+            ['🎮', 'Με τον/την εκπαιδευτικό: παιχνίδι μνήμης με μουσικά όργανα, «Παίζοντας με tangram», παιχνίδι μνήμης με ζώα, «Παίζω με το πληκτρολόγιο – Γραμματοεισβολείς / Λεξοσυλλέκτης / Φούσκα».'],
+            ['📺', 'Εκπομπές: «Έργα και Ημέρες της κας Τερηδόνας» (φροντίδα των δοντιών), «Ο κύκλος του νερού», «Ένα γράμμα μια ιστορία – Γράμμα Α: Η αχτένιστη αγελάδα». Πείτε δύο λέξεις από Α που μάθατε!'],
+          ] },
+        ],
+        practice: [
+          { type: 'mcq', ref: 'εξάσκηση', text: 'Θυμάμαι:', questions: [
+            { q: 'Τι βρίσκω στο Φωτόδεντρο;', options: ['Εκπαιδευτικά παιχνίδια, βίντεο, κουίζ και εφαρμογές', 'Μόνο διαφημίσεις'], answer: 0 },
+            { q: 'Στα αποτελέσματα δεν βρίσκω αυτό που θέλω. Τι πατάω;', options: ['«Επόμενη ▶» για την επόμενη σελίδα', 'Κλείνω τον υπολογιστή'], answer: 0 },
+            { q: 'Πού βρίσκω εκπομπές σε βίντεο για το σχολείο;', options: ['Στην Εκπαιδευτική Τηλεόραση', 'Στην αριθμομηχανή'], answer: 0 },
+          ] },
+        ],
+      },
+      {
+        icon: '📝', title: 'Επανάληψη', sub: 'Ποντίκι, πληκτρολόγιο, Διαδίκτυο, ζωγραφική',
+        acts: [
+          { type: 'info', ref: 'έκδ. v09 σελ. 113', text: 'Ανακεφαλαίωση:', cards: [
+            ['🖱️', 'Κάνω δραστηριότητες στον υπολογιστή με το <b>ποντίκι</b> (κλικ, διπλό κλικ, δεξί κλικ, ροδέλα, σύρε) και το <b>πληκτρολόγιο</b>.'],
+            ['🌐', 'Πλοηγούμαι στο <b>Διαδίκτυο</b> με έναν περιηγητή: διευθύνσεις, υπερσύνδεσμοι, σελιδοδείκτες.'],
+            ['🎨', 'Ζωγραφίζω στον υπολογιστή και βρίσκω εκπαιδευτικό υλικό στο <b>Φωτόδεντρο</b> και στην <b>Εκπαιδευτική Τηλεόραση</b>.'],
+          ] },
+          { type: 'desktop', ref: 'έκδ. v09 σελ. 113', text: 'Ο Ηλίας είχε 7 καραμέλες και ο Χρήστος του έδωσε άλλες 9. Πόσες έχει τώρα;', tasks: [
+            ['Άνοιξε την <b>⊞ Έναρξη</b> και μετά την <b>🧮 Αριθμομηχανή</b>.', ev => ev.t === 'open' && ev.id === 'calc'],
+            ['Με το ποντίκι κάνε την πρόσθεση <b>7 + 9</b>.', ev => ev.t === 'calc' && ev.v === 16],
+          ], doneMsg: '🍬 7 + 9 = 16 καραμέλες!' },
+          { type: 'keys', ref: 'έκδ. v09 σελ. 113', text: 'Τι φρούτο είναι; Πληκτρολόγησέ το.', words: [['🍌', 'μπανάνα'], ['🍓', 'φράουλα'], ['🍊', 'πορτοκάλι'], ['🍉', 'καρπούζι'], ['🍇', 'σταφύλι']] },
+          { type: 'paint', ref: 'έκδ. v09 σελ. 113', text: 'Πάρε ένα έτοιμο σχέδιο και χρωμάτισέ το με το γέμισμα. Βάλε και αστέρια!', tools: ['fill', 'brush', 'stamp'], template: 'fish', templates: ['fish', 'house', 'chick'], tasks: [
+            ['Χρωμάτισε το ψαράκι με το <b>🪣 Γέμισμα</b>.', ev => ev.t === 'fill'],
+            ['Βάλε αστέρια με το <b>🖌️ Πινέλο ⭐</b> ή σφραγίδες.', ev => ev.t === 'draw' || ev.t === 'stamp'],
+          ] },
+          { type: 'browser', ref: 'έκδ. v09 σελ. 114', text: 'Στον Μικρότοπο Δημοτικού: «Από τι είναι φτιαγμένο;»', pages: A_MICRO, bookmarks: ['micro'], tasks: [
+            ['Πήγαινε στον <b>Μικρότοπο Δημοτικού</b> (σελιδοδείκτης) → <b>Α΄ τάξη</b> → <b>Τ.Π.Ε.</b>', ev => ev.t === 'go' && ev.page === 'tpe1'],
+            ['Άνοιξε το «<b>Από τι είναι φτιαγμένο;</b>» και πάτα ▶.', ev => ev.t === 'video' && ev.id === 'made'],
+          ] },
+          { type: 'sort', ref: 'έκδ. v09 σελ. 114 (Από τι είναι φτιαγμένο;)', text: 'Από τι είναι φτιαγμένο;', bins: ['🪟 Γυαλί', '🪵 Ξύλο', '🔩 Μέταλλο', '📄 Χαρτί'], items: [
+            ['🍾', 'Μπουκάλι', 0], ['🪑', 'Καρέκλα', 1], ['🥄', 'Κουτάλι', 2], ['📰', 'Εφημερίδα', 3], ['🔑', 'Κλειδί', 2], ['✏️', 'Μολύβι', 1],
+          ] },
+        ],
+        practice: [
+          { type: 'match', ref: 'έκδ. v09 σελ. 115 (Γλωσσάριο)', text: 'Γλωσσάριο: ταίριαξε.', pairs: [
+            ['🌍 Ιστότοπος', 'Μια τοποθεσία στο Διαδίκτυο'], ['🧭 Πλοήγηση', 'Η επίσκεψη σε ιστότοπους και ιστοσελίδες'], ['⭐ Σελιδοδείκτης', 'Αποθηκευμένη διεύθυνση που επισκέπτομαι συχνά'],
+            ['💡 Ψηφιακός γραμματισμός', 'Ξέρω να βρίσκω, να ελέγχω, να δημιουργώ και να μοιράζομαι πληροφορίες με την τεχνολογία'],
+          ] },
+          { type: 'mouse', mode: 'drag', ref: 'εξάσκηση', text: 'Ποντίκι ή πληκτρολόγιο; Σύρε κάθε ενέργεια στο σωστό κουτί.', bins: [['Ποντίκι', '🖱️'], ['Πληκτρολόγιο', '⌨️']],
+            items: [['👆', 0], ['🔵', 0], ['✋', 0], ['🔤', 1], ['⇪', 1], ['⌫', 1]], tip: '👆 κλικ · 🔵 ροδέλα · ✋ σύρε · 🔤 γράμματα · ⇪ Caps Lock · ⌫ Backspace' },
+        ],
+      },
+    ],
+  },
 ];
 
 // αλγόριθμος με «Επανάλαβε» όπως τον γράφει το βιβλίο (εσοχή για τα βήματα μέσα στην επανάληψη)
@@ -5871,11 +6655,11 @@ const BOOK_F = [
   { tab: 'Κεφ. 4', title: 'Ψηφιακός γραμματισμός', lessons: [] },
 ];
 
-const BOOKS = [{ grade: 'Α΄ τάξη', hash: '#a', chapters: BOOK_A }, { grade: 'Β΄ τάξη', hash: '#b', chapters: BOOK_B },
+const BOOKS = [{ grade: 'Α΄ τάξη', hash: '#a', chapters: [...BOOK_A, TUX_CHAPTER] }, { grade: 'Β΄ τάξη', hash: '#b', chapters: [...BOOK_B, TUX_CHAPTER] },
   { grade: 'Γ΄ τάξη', hash: '#c', chapters: BOOK_C }, { grade: 'Δ΄ τάξη', hash: '#d', chapters: BOOK_D }, { grade: 'Ε΄ τάξη', hash: '#e', chapters: BOOK_E },
   { grade: 'ΣΤ΄ τάξη', hash: '#f', chapters: BOOK_F }];
 // οι ασκήσεις εξάσκησης κάθε μαθήματος μπαίνουν στο τέλος του, μετά τις δραστηριότητες του βιβλίου
-for (const les of BOOKS.flatMap(b => b.chapters).flatMap(ch => ch.lessons))
+for (const les of new Set(BOOKS.flatMap(b => b.chapters).flatMap(ch => ch.lessons))) // Set: η ενότητα Tux Paint είναι κοινή σε Α΄ και Β΄
   if (les.practice) les.acts.push(...les.practice.map(a => ({ ...a, practice: true })));
 
 const GUIDE = {
@@ -5915,12 +6699,25 @@ const GUIDE = {
   whois: 'Διαβάστε την περιγραφή και πατήστε την κάρτα που ταιριάζει — ή απαντήστε «Αλήθεια» / «Ψέμα» για την κάρτα με το πορτοκαλί πλαίσιο.',
   rulesgame: 'Κινήστε τον ήρωα με τα βελάκια (ή τα πλήκτρα ← ↑ → ↓). Δείτε ποιον κανόνα εφαρμόζει ο υπολογιστής σε κάθε κίνηση.',
   edison: 'Πατήστε ένα τετράγωνο για να βάλετε ένα ✋ εμπόδιο (ξανά για να το βγάλετε) και μετά «▶ Εκτέλεση».',
+  tux: 'Όπως στο Tux Paint: εργαλεία (Tools) αριστερά, επιλογές δεξιά, χρώματα (Colors) κάτω. Ο Tux 🐧 κάτω εξηγεί κάθε εργαλείο.',
+  'mouse.parts': 'Πατήστε πάνω στο ποντίκι το μέρος που ζητάει η εργασία.',
+  'mouse.buttons': 'Χρησιμοποιήστε το ΔΙΚΟ σας ποντίκι: αριστερό κλικ, δεξί κλικ ή ροδέλα, ό,τι ζητάει η εργασία.',
+  'mouse.hover': 'Κουνήστε το ποντίκι ώστε ο δείκτης να περάσει πάνω από κάθε στόχο (με το δάχτυλο: σύρετε πάνω στην οθόνη).',
+  'mouse.click': 'Πηγαίνετε τον δείκτη πάνω στον στόχο και κάντε ένα κλικ με το αριστερό πλήκτρο.',
+  'mouse.double': 'Ένα κλικ επιλέγει · διπλό κλικ (δύο γρήγορα πατήματα) ανοίγει.',
+  'mouse.right': 'Κάντε δεξί κλικ (στην οθόνη αφής: κρατήστε πατημένο το δάχτυλο) και διαλέξτε από τη λίστα.',
+  'mouse.drag': 'Κρατήστε πατημένο το αριστερό πλήκτρο πάνω στο αντικείμενο, σύρετέ το και αφήστε το στη σωστή θέση.',
+  'mouse.scroll': 'Γυρίστε τη ροδέλα κύλισης (ή σύρετε τη σελίδα πάνω-κάτω με το δάχτυλο) και πατήστε ό,τι ζητάει η εργασία.',
+  keys: 'Πατήστε τα πλήκτρα στην οθόνη — ή γράψτε με το πραγματικό πληκτρολόγιο. ⇪ Caps Lock = κεφαλαία · ΄ και μετά φωνήεν = τόνος · ⌫ = σβήνω.',
+  browser: 'Κάντε με τη σειρά τις εργασίες δεξιά: γράψτε διευθύνσεις και πατήστε Enter, πατήστε υπερσυνδέσμους, ⬅ για πίσω, ☆ για σελιδοδείκτη.',
+  paint: 'Διαλέξτε εργαλείο αριστερά, χρώμα κάτω και πάχος δεξιά. Κρατήστε πατημένο και σύρετε πάνω στη σελίδα για να ζωγραφίσετε.',
   scratch: 'Πατήστε τη σημαία 🏳️ ή τα πλήκτρα κάτω από τη σκηνή. Στα πεδία με ▾ διαλέγετε τιμή. ↺ = αρχικές θέσεις · ⬇ Scratch = το έργο για να το συνεχίσετε στο Scratch.',
 };
 const KIND_NAMES = { info: '📖 Διαβάζω', theory: '📘 Θεωρία', order: '🔢 Σειρά βημάτων', trace: '🔍 Πού θα φτάσει;', program: '🧩 Φτιάχνω πρόγραμμα',
   pick: '🎯 Ποιο πρόγραμμα;', mcq: '❓ Ερωτήσεις', match: '🔗 Ταίριασμα', sort: '🗂️ Ταξινόμηση', dots: '✏️ Ενώνω τις τελείες', net: '🔗 Φτιάχνω δίκτυο', pixels: '🖼️ Εικονοστοιχεία', binword: '🔤 Γράμματα σε bit', conceptmap: '🗺️ Εννοιολογικός χάρτης', sheet: '📊 Υπολογιστικό φύλλο', mltrain: '🤖 Εκπαιδεύω μια μηχανή', files: '📂 Αρχεία και φάκελοι', password: '🔑 Συνθηματικό',
   counter: '🔢 Μετράμε', bits: '💡 Λάμπες', bracelet: '📿 Βραχιόλι', sticks: '🪵 Ξυλάκια',
-  logic: '💡 Λογικές εκφράσεις', whois: '🔎 Βρες ποιος είναι', rulesgame: '🎮 Οι κανόνες του παιχνιδιού', edison: '🤖 Ρομπότ εδάφους', scratch: '🐱 Scratch', guess: '🔢 Μάντεψε τον αριθμό', microbit: '📟 micro:bit', stepper: '👣 Βήμα-βήμα', desktop: '🖥️ Επιφάνεια εργασίας', dress: '👕 Ντύσε τον Ήρωνα', decision: '🔀 Σχεδιάγραμμα απόφασης', board: '🎲 Επιτραπέζιο', river: '🚣 Γρίφος', caesar: '🔐 Κρυπτογράφηση' };
+  logic: '💡 Λογικές εκφράσεις', whois: '🔎 Βρες ποιος είναι', rulesgame: '🎮 Οι κανόνες του παιχνιδιού', edison: '🤖 Ρομπότ εδάφους', scratch: '🐱 Scratch', guess: '🔢 Μάντεψε τον αριθμό', microbit: '📟 micro:bit', stepper: '👣 Βήμα-βήμα', desktop: '🖥️ Επιφάνεια εργασίας', dress: '👕 Ντύσε τον Ήρωνα', decision: '🔀 Σχεδιάγραμμα απόφασης', board: '🎲 Επιτραπέζιο', river: '🚣 Γρίφος', caesar: '🔐 Κρυπτογράφηση',
+  mouse: '🖱️ Παίζω με το ποντίκι', keys: '⌨️ Πληκτρολόγιο', browser: '🌐 Περιηγητής', paint: '🎨 Ζωγραφική', tux: '🐧 Tux Paint' };
 
 // ============================================================================
 // ΓΕΝΙΚΑ
@@ -5995,7 +6792,7 @@ function renderHome() {
 // ΠΡΟΓΡΑΜΜΑ ΔΙΔΑΣΚΑΛΙΑΣ: ένα μάθημα την εβδομάδα, ελληνικό σχολικό ημερολόγιο, αποθεματικό για χαμένες μέρες
 // ============================================================================
 // Κεφάλαια που δεν έχουν φτιαχτεί ακόμα: πόσα μαθήματα έχει η παλιά έκδοση (μάθημα = 1 διδακτική ώρα)
-const PLAN_TODO = [{ 3: 12 }, { 3: 10 }, { 3: 12 }, { 3: 8, 4: 3 }, { 3: 7, 4: 3 }, { 3: 7, 4: 3 }];
+const PLAN_TODO = [{}, { 3: 10 }, { 3: 12 }, { 3: 8, 4: 3 }, { 3: 7, 4: 3 }, { 3: 7, 4: 3 }];
 const iso = d => `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}`;
 const dayAt = (y, m, d) => new Date(y, m - 1, d, 12);
 const addDays = (d, n) => new Date(d.getFullYear(), d.getMonth(), d.getDate() + n, 12);
@@ -7323,7 +8120,7 @@ const PINNED = ['web', 'notepad', 'paint']; // καρφιτσωμένες στη
 const DESK_W = 1000, DESK_H = 560, BAR = 52, WIN_W = 520, WIN_H = 320;
 const DESK_APPS = {
   paint: { em: '🎨', name: 'Ζωγραφική', body: '🖌️ Εδώ ζωγραφίζουμε!' },
-  calc: { em: '🧮', name: 'Αριθμομηχανή', body: '2 + 2 = 4' },
+  calc: { em: '🧮', name: 'Αριθμομηχανή', body: `<div class="calc"><div class="cdisp">0</div>${['7', '8', '9', '+', '4', '5', '6', '−', '1', '2', '3', '=', 'C', '0'].map(k => `<button data-c="${k}"${k === '=' ? ' class="eq"' : ''}>${k}</button>`).join('')}</div>` },
   notepad: { em: '📝', name: 'Σημειωματάριο', body: 'Γράφω τις σημειώσεις μου…' },
   web: { em: '🌐', name: 'Περιηγητής', body: '🔎 Αναζήτηση στο διαδίκτυο' },
   settings: { em: '⚙️', name: 'Ρυθμίσεις', body: `<div class="setg"><div>🖼️ Φόντο: ${['linear-gradient(160deg, #00897b, #26a69a 60%, #4db6ac)', 'linear-gradient(160deg, #283593, #5c6bc0)', 'linear-gradient(160deg, #e65100, #ffb74d)', 'linear-gradient(160deg, #4a148c, #ec407a)']
@@ -7390,7 +8187,7 @@ const DESK_TASKS = {
   ],
 };
 RENDER.desktop = (act, area) => {
-  const tasks = DESK_TASKS[act.tasks || 'basic'];
+  const tasks = Array.isArray(act.tasks) ? act.tasks : DESK_TASKS[act.tasks || 'basic'];
   let ti = 0, z = 10, nextNew = 1, selIcon = null;
   const desk = el('div', 'desk'), side = el('div', 'tasks');
   area.append(desk, side);
@@ -7406,7 +8203,7 @@ RENDER.desktop = (act, area) => {
     if (ti >= tasks.length || !tasks[ti][1](e)) return;
     ti++;
     drawTasks();
-    if (ti === tasks.length) complete('🎉 Μπράβο! Τα κατάφερες όλα στην επιφάνεια εργασίας!');
+    if (ti === tasks.length) complete(act.doneMsg || '🎉 Μπράβο! Τα κατάφερες όλα στην επιφάνεια εργασίας!');
     else say('✅ Σωστά!', 'good');
   }
   function drawTasks() {
@@ -7518,6 +8315,20 @@ RENDER.desktop = (act, area) => {
     });
     desk.appendChild(w.el);
     layout(w);
+    if (ic.id === 'calc') { // αριθμομηχανή που δουλεύει (πρόσθεση/αφαίρεση από αριστερά προς τα δεξιά)
+      const disp = w.el.querySelector('.cdisp');
+      let expr = '';
+      w.el.querySelectorAll('[data-c]').forEach(b => b.onclick = () => {
+        const k = b.dataset.c;
+        if (k === 'C') expr = '';
+        else if (k === '=') {
+          const parts = expr.match(/\d+|[+−]/g) || [];
+          const v = parts.reduce((acc, t, i) => (/\d/.test(t) ? (parts[i - 1] === '−' ? acc - +t : acc + +t) : acc), 0);
+          disp.textContent = `${expr} = ${v}`; event({ t: 'calc', expr, v }); expr = ''; return;
+        } else if (/\d/.test(k) || (expr && !/[+−]$/.test(expr))) expr += k;
+        disp.textContent = expr || '0';
+      });
+    }
     if (ic.id === 'settings') { // ρυθμίσεις εξατομίκευσης: φόντο, φωτεινότητα, ανάλυση (μικρότερη ανάλυση → όλα μεγαλύτερα)
       w.el.querySelectorAll('[data-bg]').forEach(b => b.onclick = () => { desk.style.background = b.dataset.bg; event({ t: 'wallpaper' }); });
       const br = w.el.querySelector('[data-br]');
@@ -8486,6 +9297,832 @@ RENDER.files = (act, area) => {
     selName = null; draw();
   }
   draw(); drawTasks();
+};
+
+// ---- Ποντίκι (Α΄–Β΄): μέρη του ποντικιού, «περνώ από πάνω», κλικ, διπλό κλικ, δεξί κλικ, σύρε και άφησε, κύλιση
+const MOUSE_PARTS = { left: 'αριστερό πλήκτρο', right: 'δεξί πλήκτρο', wheel: 'ροδέλα κύλισης', body: 'σώμα του ποντικιού', double: 'διπλό κλικ' };
+const mouseSVG = () => `<svg viewBox="0 -50 200 345" class="msvg"><path d="M100 15 Q100 -25 150 -45" fill="none" stroke="#37474f" stroke-width="6"/>
+  <path data-p="body" d="M20 130 L180 130 L180 205 Q180 290 100 290 Q20 290 20 205 Z" fill="#eceff1" stroke="#37474f" stroke-width="5"/>
+  <path data-p="left" d="M20 130 L20 95 Q20 20 98 15 L98 130 Z" fill="#eceff1" stroke="#37474f" stroke-width="5"/>
+  <path data-p="right" d="M102 15 Q180 20 180 95 L180 130 L102 130 Z" fill="#eceff1" stroke="#37474f" stroke-width="5"/>
+  <rect data-p="wheel" x="86" y="42" width="28" height="58" rx="14" fill="#90a4ae" stroke="#37474f" stroke-width="4"/></svg>`;
+RENDER.mouse = (act, area) => {
+  const mode = act.mode;
+  const field = el('div', 'mfield'), side = el('div', 'tasks');
+  area.append(field, side);
+  let n = 0;
+  const total = act.n || (act.puzzle ? (act.size || 2) ** 2 : (act.items || act.steps || act.find || []).length);
+  const count = () => { side.innerHTML = ''; side.appendChild(el('div', 'task cur', `${act.goal || '🎯 Στόχος'}: <b>${n} / ${total}</b>`)); if (act.tip) side.appendChild(el('div', 'task', act.tip)); };
+  const finish = () => complete(act.doneMsg || '🎉 Μπράβο! Τα κατάφερες με το ποντίκι!');
+  const rnd = (a, b) => a + Math.random() * (b - a);
+  const place = (d, w = 1000, h = 560, m = 70) => { d.style.left = rnd(m, w - m) + 'px'; d.style.top = rnd(m, h - m) + 'px'; };
+  const fieldXY = ev => { const r = field.getBoundingClientRect(), sc = r.width / field.offsetWidth; return [(ev.clientX - r.left) / sc, (ev.clientY - r.top) / sc]; };
+
+  if (mode === 'parts' || mode === 'buttons') { // parts: πατάω το μέρος (και το χρωματίζω) · buttons: χρησιμοποιώ τα πλήκτρα του ΔΙΚΟΥ μου ποντικιού
+    field.classList.add('mparts');
+    field.innerHTML = mouseSVG();
+    const steps = act.steps;
+    const draw = () => { side.innerHTML = ''; steps.forEach((s, i) => side.appendChild(el('div', 'task' + (i < n ? ' ok' : i === n ? ' cur' : ''), (i < n ? '✅ ' : `${i + 1}. `) + s[2]))); };
+    const hit = p => {
+      if (n >= steps.length) return;
+      const [want, color] = steps[n];
+      if (p !== want) return say(mode === 'buttons' ? 'Όχι αυτό! Διάβασε ξανά την εργασία. 🤔' : `Αυτό είναι: <b>${MOUSE_PARTS[p]}</b>. Ψάξε ξανά! 🤔`, 'bad');
+      const part = field.querySelector(`[data-p="${want === 'double' ? 'left' : want}"]`);
+      part.setAttribute('fill', color || '#ffb347');
+      if (mode === 'buttons') setTimeout(() => part.setAttribute('fill', want === 'wheel' ? '#90a4ae' : '#eceff1'), 700);
+      n++; draw();
+      if (n === steps.length) finish(); else say('✅ Σωστά!', 'good');
+    };
+    if (mode === 'parts') field.querySelectorAll('[data-p]').forEach(p => { p.onpointerdown = e => { e.preventDefault(); e.stopPropagation(); hit(p.dataset.p); }; });
+    else {
+      let last = 0;
+      field.onpointerdown = e => {
+        e.preventDefault();
+        if (e.button === 2) return hit('right');
+        if (e.button !== 0) return;
+        const now = Date.now();
+        if (steps[n] && steps[n][0] === 'double') { if (now - last < 500) { last = 0; return hit('double'); } last = now; return say('Ένα κλικ… τώρα δύο γρήγορα!'); }
+        hit('left');
+      };
+      field.oncontextmenu = e => e.preventDefault();
+      field.onwheel = e => { e.preventDefault(); hit('wheel'); };
+    }
+    return draw();
+  }
+
+  if (mode === 'hover') { // «Μαζεύω τα φρούτα»: περνάω τον δείκτη από πάνω τους (με το δάχτυλο: σέρνω)
+    const items = act.items || ['🍎', '🍐', '🍊', '🍋', '🍌', '🍉', '🍇', '🍓', '🍒', '🍑'];
+    const pool = [];
+    for (let i = 0; i < total; i++) { const d = el('div', 'mitem', items[i % items.length]); place(d); field.appendChild(d); pool.push(d); }
+    const sweep = ev => {
+      const [x, y] = fieldXY(ev);
+      for (const d of pool) if (!d.classList.contains('got') && Math.hypot(d.offsetLeft - x, d.offsetTop - y) < 46) {
+        d.classList.add('got'); n++; count();
+        if (n === total) finish(); else if (act.hit) say(act.hit, 'good');
+      }
+    };
+    field.onpointermove = sweep;
+    field.onpointerdown = e => { e.preventDefault(); sweep(e); };
+    return count();
+  }
+
+  if (mode === 'click') { // ένας στόχος τη φορά· όλο και πιο μικρός
+    const items = act.items || ['🐟', '🐠', '🐡'];
+    const next = () => {
+      field.innerHTML = '';
+      const d = el('div', 'mitem', items[n % items.length]);
+      d.style.fontSize = Math.max(44, 96 - n * 5) + 'px';
+      place(d);
+      d.onpointerdown = e => { e.preventDefault(); e.stopPropagation(); if (e.button !== 0) return say('Αυτό ήταν δεξί κλικ — με το <b>αριστερό</b> πλήκτρο!', 'bad'); n++; count(); if (n === total) { field.innerHTML = ''; finish(); } else next(); };
+      field.appendChild(d);
+    };
+    field.onpointerdown = e => { e.preventDefault(); say('Αστόχησες! Πήγαινε πρώτα τον δείκτη πάνω στον στόχο. 🎯', 'bad'); };
+    next();
+    return count();
+  }
+
+  if (mode === 'double') { // ένα κλικ επιλέγει, διπλό κλικ ανοίγει
+    act.items.forEach(([em, inside, name], i) => {
+      const d = el('div', 'micon', `<span>${em}</span><div>${name || ''}</div>`);
+      d.style.left = 60 + (i % 4) * 230 + 'px'; d.style.top = 60 + Math.floor(i / 4) * 230 + 'px';
+      press(d, {
+        onTap: () => { field.querySelectorAll('.micon').forEach(o => o.classList.remove('sel')); d.classList.add('sel'); if (!d.dataset.open) say('Ένα κλικ: το <b>επέλεξες</b>. Για να ανοίξει θέλει <b>διπλό κλικ</b>!'); },
+        onDouble: () => {
+          if (d.dataset.open) return;
+          d.dataset.open = 1; d.firstChild.textContent = inside; d.classList.add('open');
+          n++; count();
+          if (n === total) finish(); else say('🎉 Άνοιξε με διπλό κλικ!', 'good');
+        },
+      });
+      field.appendChild(d);
+    });
+    return count();
+  }
+
+  if (mode === 'right') { // δεξί κλικ (ή παρατεταμένο πάτημα) → μενού επιλογών
+    act.items.forEach(([em, want, label], i) => {
+      const d = el('div', 'micon', `<span>${em}</span><div>${label || want}</div>`);
+      d.style.left = 60 + (i % 4) * 230 + 'px'; d.style.top = 80 + Math.floor(i / 4) * 240 + 'px';
+      press(d, {
+        onTap: () => say('Αυτό ήταν <b>αριστερό</b> κλικ. Δοκίμασε το <b>δεξί</b> πλήκτρο! (στην οθόνη αφής: κράτα πατημένο)', 'bad'),
+        onLong: ev => {
+          if (d.dataset.done) return;
+          field.querySelector('.ctx')?.remove();
+          const [x, y] = fieldXY(ev), m = el('div', 'ctx');
+          Object.assign(m.style, { left: Math.min(x, 760) + 'px', top: Math.min(y, 560 - act.menu.length * 50 - 10) + 'px' });
+          act.menu.forEach(opt => {
+            const b = el('button', '', opt);
+            b.onclick = () => {
+              m.remove();
+              if (opt !== want) return say(`Διάλεξες «${opt}». Ζητάμε «${want}» — ξαναδοκίμασε!`, 'bad');
+              d.dataset.done = 1; d.classList.add('open');
+              if (act.result) d.firstChild.textContent = act.result(em, opt);
+              n++; count();
+              if (n === total) finish(); else say('✅ Σωστά! Το δεξί κλικ άνοιξε μια λίστα με επιλογές.', 'good');
+            };
+            m.appendChild(b);
+          });
+          field.appendChild(m);
+        },
+      });
+      field.appendChild(d);
+    });
+    field.onpointerdown = e => { if (!e.target.closest('.ctx')) field.querySelector('.ctx')?.remove(); };
+    field.oncontextmenu = e => e.preventDefault();
+    return count();
+  }
+
+  if (mode === 'drag') { // σύρε και άφησε στο σωστό κουτί · puzzle: μια μεγάλη εικόνα κομμένη σε κομμάτια
+    let pieces;
+    if (act.puzzle) {
+      const k = act.size || 2, S = 420 / k;
+      const board = el('div', 'mpuz');
+      board.style.cssText = `left:60px;top:70px;width:420px;height:420px;grid-template-columns:repeat(${k},1fr)`;
+      field.appendChild(board);
+      const cells = [];
+      for (let i = 0; i < k * k; i++) { const c = el('div', 'mdrop'); c.dataset.t = i; board.appendChild(c); cells.push(c); }
+      pieces = shuffle([...Array(k * k).keys()]).map((i, j) => {
+        const d = el('div', 'mpiece', `<span style="left:${-(i % k) * S}px;top:${-Math.floor(i / k) * S}px">${act.puzzle}</span>`);
+        d.style.cssText += `width:${S}px;height:${S}px;left:${520 + (j % k) * (S + 10)}px;top:${40 + Math.floor(j / k) * (S + 10)}px`;
+        d.firstChild.style.fontSize = 340 + 'px';
+        d.dataset.t = i;
+        return d;
+      });
+      board.style.setProperty('--S', S + 'px');
+    } else {
+      act.bins.forEach(([label, em], b) => {
+        const c = el('div', 'mdrop mbin', `<b>${em || ''}</b><span>${label}</span>`);
+        c.dataset.t = b;
+        c.style.left = 40 + b * (920 / act.bins.length) + 'px'; c.style.width = 920 / act.bins.length - 30 + 'px';
+        field.appendChild(c);
+      });
+      pieces = shuffle([...act.items]).map(([em, b], j) => {
+        const d = el('div', 'mpiece mtok', em);
+        d.dataset.t = b;
+        d.style.left = 40 + (j % 9) * 104 + 'px'; d.style.top = 20 + Math.floor(j / 9) * 96 + 'px';
+        return d;
+      });
+    }
+    let picked = null;
+    const drop = (d, target) => {
+      if (!target || d.dataset.done) return;
+      if (target.dataset.t !== d.dataset.t) { say(act.wrong || 'Όχι εκεί! Ξαναδοκίμασε. 🤔', 'bad'); return false; }
+      d.dataset.done = 1; d.classList.add('in'); d.classList.remove('sel'); d.style.transform = '';
+      if (act.puzzle) { target.appendChild(d); d.style.left = d.style.top = '0px'; d.style.position = 'relative'; }
+      else { const box = target.querySelector('span'); target.insertBefore(d, box); d.style.position = 'static'; }
+      n++; count();
+      if (n === total) finish(); else say('✅ Σωστά!', 'good');
+      return true;
+    };
+    pieces.forEach(d => {
+      press(d, {
+        onTap: () => { if (d.dataset.done) return; field.querySelectorAll('.mpiece').forEach(o => o.classList.remove('sel')); d.classList.add('sel'); picked = d; say('Πάτησε τώρα το κουτί όπου πηγαίνει — ή, καλύτερα, <b>σύρε</b> το!'); },
+        onDrag: (dx, dy) => { if (!d.dataset.done) { d.style.transform = `translate(${dx}px,${dy}px)`; d.style.zIndex = 50; } },
+        onDragEnd: ev => {
+          d.style.zIndex = '';
+          const t = document.elementsFromPoint(ev.clientX, ev.clientY).find(x => x.classList.contains('mdrop'));
+          if (!drop(d, t)) d.style.transform = '';
+        },
+      });
+      field.appendChild(d);
+    });
+    field.querySelectorAll('.mdrop').forEach(c => c.addEventListener('click', () => { if (picked && drop(picked, c) !== undefined) picked = null; }));
+    return count();
+  }
+
+  if (mode === 'scroll') { // μεγάλη σελίδα: κυλάω με τη ροδέλα (ή με το δάχτυλο) και βρίσκω ό,τι ζητάει
+    field.classList.add('mscroll', 'scrollable');
+    const page = el('div', 'mpage');
+    field.appendChild(page);
+    act.items.forEach((em, i) => { const d = el('div', 'mitem', em); d.style.left = 80 + (i * 389) % 840 + 'px'; d.style.top = 120 + i * 150 + 'px'; d.dataset.em = em; page.appendChild(d); });
+    page.style.height = 220 + act.items.length * 150 + 'px';
+    page.prepend(el('div', 'mhint', '⬇️ Γύρισε τη ροδέλα του ποντικιού (ή σύρε τη σελίδα με το δάχτυλο) για να δεις πιο κάτω! ⬇️'));
+    const draw = () => { side.innerHTML = ''; act.find.forEach(([em, t], i) => side.appendChild(el('div', 'task' + (i < n ? ' ok' : i === n ? ' cur' : ''), (i < n ? '✅ ' : `${i + 1}. `) + `Βρες ${t} ${em} και κάνε κλικ.`))); };
+    page.onclick = e => {
+      const d = e.target.closest('.mitem');
+      if (!d || n >= act.find.length) return;
+      if (d.dataset.em !== act.find[n][0]) return say('Όχι αυτό! Συνέχισε την κύλιση. 🔎', 'bad');
+      d.classList.add('got'); n++; draw();
+      if (n === act.find.length) finish(); else say('✅ Το βρήκες!', 'good');
+    };
+    return draw();
+  }
+};
+
+// ---- Πληκτρολόγιο (Α΄–Γ΄): ελληνική διάταξη στην οθόνη — δουλεύει και με το πραγματικό πληκτρολόγιο
+const KB_ROWS = [['1', '2', '3', '4', '5', '6', '7', '8', '9', '0', '⌫'], [';', 'ς', 'ε', 'ρ', 'τ', 'υ', 'θ', 'ι', 'ο', 'π'],
+  ['⇪', 'α', 'σ', 'δ', 'φ', 'γ', 'η', 'ξ', 'κ', 'λ', '΄', '↵'], ['ζ', 'χ', 'ψ', 'ω', 'β', 'ν', 'μ', ',', '.'], ['␣', '←', '→']];
+const KB_NAMES = { '⌫': 'Backspace', '⇪': 'Caps Lock', '↵': 'Enter', '␣': 'κενό', '΄': 'τόνος' };
+// το πλήκτρο που πατήθηκε, από τη ΘΕΣΗ του (e.code): έτσι δουλεύει ακόμα κι αν ο υπολογιστής είναι στα αγγλικά
+const KB_CODE = Object.fromEntries([...'QWERTYUIOP'].map((c, i) => ['Key' + c, KB_ROWS[1][i]]).concat([...'ASDFGHJKL'].map((c, i) => ['Key' + c, KB_ROWS[2][i + 1]]),
+  [...'ZXCVBNM'].map((c, i) => ['Key' + c, KB_ROWS[3][i]]), [...'1234567890'].map(c => ['Digit' + c, c]),
+  [['Semicolon', '΄'], ['Comma', ','], ['Period', '.'], ['Backspace', '⌫'], ['CapsLock', '⇪'], ['Enter', '↵'], ['NumpadEnter', '↵'], ['Space', '␣'], ['ArrowLeft', '←'], ['ArrowRight', '→']]));
+const TONOS = { α: 'ά', ε: 'έ', η: 'ή', ι: 'ί', ο: 'ό', υ: 'ύ', ω: 'ώ' };
+RENDER.keys = (act, area) => {
+  const mode = act.mode || 'type';
+  const wrap = el('div', 'kbwrap'), side = el('div', 'tasks');
+  area.append(wrap, side);
+  let caps = false, tone = false, i = 0, text = '', cur = 0;
+  const words = (act.words || []).map(w => (typeof w === 'string' ? ['', w] : w));
+  const top = el('div', 'kbtop');
+  wrap.appendChild(top);
+  const kb = el('div', 'kb'), keyEl = {};
+  KB_ROWS.forEach(r => {
+    const row = el('div', 'kbrow');
+    r.forEach(k => {
+      const b = el('button', 'kbk' + (k in KB_NAMES ? ' wide' : '') + (k === '␣' ? ' space' : ''), k === '␣' ? 'κενό' : k in KB_NAMES ? `${k} <small>${KB_NAMES[k]}</small>` : k.toUpperCase());
+      if (k === '⇪') b.innerHTML += '<i class="lamp"></i>';
+      if (mode !== 'type' && ['←', '→'].includes(k)) b.style.visibility = 'hidden';
+      b.onpointerdown = e => { e.preventDefault(); hitKey(k); };
+      keyEl[k] = b; row.appendChild(b);
+    });
+    kb.appendChild(row);
+  });
+  wrap.appendChild(kb);
+  const flash = (k, cls) => { const b = keyEl[k]; if (!b) return; b.classList.remove(cls); void b.offsetWidth; b.classList.add(cls); };
+
+  function drawSide() {
+    side.innerHTML = '';
+    if (mode === 'find') return side.appendChild(el('div', 'task cur', `Βρες στο πληκτρολόγιο τα γράμματα της λέξης και πάτησέ τα με τη σειρά.`));
+    const list = mode === 'keyname' ? act.questions.map(q => q[0]) : words.map(([em, w, t]) => t || `${em} Γράψε: <b>${escHTML(w)}</b>`);
+    list.forEach((t, k) => side.appendChild(el('div', 'task' + (k < i ? ' ok' : k === i ? ' cur' : ''), (k < i ? '✅ ' : `${k + 1}. `) + t)));
+  }
+  function drawTop() {
+    if (mode === 'find') {
+      top.innerHTML = `<div class="kbword" style="font-size:${Math.min(64, 1500 / act.word.length)}px">` + [...act.word].map((c, k) => `<span class="${k < i ? 'ok' : k === i ? 'cur' : ''}">${c}</span>`).join('') + '</div>';
+      return;
+    }
+    if (mode === 'keyname') { top.innerHTML = `<div class="kbq">${act.questions[i] ? act.questions[i][0] : '🎉'}</div>`; return; }
+    const [em] = words[i] || [''];
+    top.innerHTML = `<div class="kbpic">${em}</div><div class="kbtext">${escHTML(text.slice(0, cur)).replace(/\n/g, '<br>')}<i class="caret"></i>${escHTML(text.slice(cur)).replace(/\n/g, '<br>')}</div>`;
+  }
+  const next = msg => {
+    i++; drawSide();
+    const end = mode === 'keyname' ? i === act.questions.length : i === words.length;
+    if (end) { drawTop(); complete(act.doneMsg || '🎉 Μπράβο! Τα κατάφερες με το πληκτρολόγιο!'); }
+    else { if (mode === 'type') { text = words[i][3] || ''; cur = words[i][4] ?? text.length; } drawTop(); say(msg || '✅ Σωστά!', 'good'); }
+  };
+  function hitKey(k) {
+    if (mode === 'keyname') {
+      if (i >= act.questions.length) return;
+      flash(k, 'hit');
+      return k === act.questions[i][1] ? next() : say(`Αυτό είναι το πλήκτρο «${KB_NAMES[k] || k.toUpperCase()}». Ψάξε ξανά! 🔎`, 'bad');
+    }
+    if (k === '⇪') { caps = !caps; keyEl['⇪'].classList.toggle('on', caps); return say(caps ? '⇪ Caps Lock: <b>ανοιχτό</b> — το λαμπάκι άναψε, γράφω ΚΕΦΑΛΑΙΑ.' : '⇪ Caps Lock: κλειστό — γράφω πεζά (μικρά).'); }
+    if (mode === 'find') {
+      if (i >= act.word.length) return;
+      const want = norm(act.word[i]).replace('ς', 'σ');
+      if (norm(k).replace('ς', 'σ') === want || (k === '␣' && want === ' ')) { keyEl[k].classList.add('found'); if (act.color) keyEl[k].style.background = act.color; i++; drawTop(); if (i === act.word.length) complete(act.doneMsg || '🎉 Τα βρήκες όλα!'); else say('✅', 'good'); }
+      else { flash(k, 'no'); say('Δεν είναι αυτό. Κοίτα καλά το πληκτρολόγιο! 🔎', 'bad'); }
+      return;
+    }
+    if (i >= words.length) return;
+    flash(k, 'hit');
+    if (k === '΄') { tone = true; return say('΄ Τόνος: τώρα πάτα το φωνήεν.'); }
+    if (k === '⌫') { if (cur > 0) { text = text.slice(0, cur - 1) + text.slice(cur); cur--; } }
+    else if (k === '←') cur = Math.max(0, cur - 1);
+    else if (k === '→') cur = Math.min(text.length, cur + 1);
+    else if (k === '↵') {
+      const want = words[i][1];
+      if (want === '' && text.trim().length > 1) return next('✅ Μπράβο!');
+      if (!act.lines) return say(text.trimEnd() === want ? '' : 'Το Enter αλλάζει γραμμή. Εδώ γράψε μόνο τη λέξη!', text.trimEnd() === want ? '' : 'bad');
+      text = text.slice(0, cur) + '\n' + text.slice(cur); cur++;
+    } else {
+      let ch = k === '␣' ? ' ' : k;
+      if (tone) { ch = TONOS[ch] || '΄' + ch; tone = false; }
+      if (caps || shiftDown) ch = ch.toUpperCase();
+      text = text.slice(0, cur) + ch + text.slice(cur); cur += ch.length;
+    }
+    drawTop();
+    const want = words[i][1];
+    if (want !== '' && text.trimEnd() === want) next();
+  }
+  let shiftDown = false;
+  const onKey = e => {
+    if (!wrap.isConnected) { removeEventListener('keydown', onKey); return removeEventListener('keyup', onUp); }
+    shiftDown = e.shiftKey;
+    const k = KB_CODE[e.code];
+    if (!k || e.ctrlKey || e.metaKey || e.altKey) return;
+    e.preventDefault();
+    hitKey(k);
+  };
+  const onUp = e => { shiftDown = e.shiftKey; };
+  addEventListener('keydown', onKey); addEventListener('keyup', onUp);
+  if (mode === 'type' && words[0]) { text = words[0][3] || ''; cur = words[0][4] ?? text.length; }
+  if (act.caps) { caps = true; keyEl['⇪'].classList.add('on'); }
+  drawTop(); drawSide();
+};
+
+// ---- Περιηγητής (Α΄–ΣΤ΄): γραμμή διευθύνσεων, ⬅ πίσω, υπερσύνδεσμοι, ☆ σελιδοδείκτες, αναζήτηση, αναρτήσεις με ❤️ και σχόλια,
+//      πίνακας ανακοινώσεων, βίντεο. Οι σελίδες είναι HTML με «άγκιστρα»: data-go, data-post, data-board, data-video, data-search
+const urlNorm = u => norm(u).replace(/^https?:\/\//, '').replace(/^www\./, '').replace(/\/+$/, '');
+RENDER.browser = (act, area) => {
+  const pages = act.pages, box = el('div', 'br'), side = el('div', 'tasks');
+  area.append(box, side);
+  const marks = (act.bookmarks || []).map(k => ({ key: k, name: pages[k].title }));
+  let hist = [], hi = -1, ti = 0, query = '';
+  function event(e) {
+    if (!act.tasks || ti >= act.tasks.length || !act.tasks[ti][1](e)) return;
+    ti++; drawTasks();
+    if (ti === act.tasks.length) complete(act.doneMsg || '🎉 Μπράβο! Ταξίδεψες με επιτυχία στο Διαδίκτυο!');
+    else say('✅ Σωστά!', 'good');
+  }
+  const drawTasks = () => { side.innerHTML = ''; (act.tasks || []).forEach(([t], i) => side.appendChild(el('div', 'task' + (i < ti ? ' ok' : i === ti ? ' cur' : ''), (i < ti ? '✅ ' : `${i + 1}. `) + t))); };
+  const bar = el('div', 'brbar'), mbar = el('div', 'brmarks'), page = el('div', 'brpage scrollable');
+  const back = el('button', 'secondary', '⬅'), fwd = el('button', 'secondary', '➡'), reload = el('button', 'secondary', '🔄'), home = el('button', 'secondary', '🏠');
+  back.title = 'Πίσω'; fwd.title = 'Μπροστά'; reload.title = 'Ανανέωση'; home.title = 'Αρχική σελίδα';
+  const addr = el('input', 'braddr'), star = el('button', 'brstar', '☆');
+  addr.spellcheck = false;
+  bar.append(back, fwd, reload, ...(act.home ? [home] : []), addr, star);
+  box.append(el('div', 'brtabs', '<span class="brtab"></span><small class="brsim">🧪 Εξάσκηση — όχι το πραγματικό Διαδίκτυο</small>'), bar, mbar, page);
+  const cur = () => hist[hi];
+  function go(k, via) {
+    if (k !== '?' && !pages[k] && k !== '404') return;
+    hist = hist.slice(0, hi + 1); hist.push(k); hi++;
+    show(); event({ t: 'go', page: k, via, q: query });
+  }
+  function show() {
+    const k = cur(), p = k === '?' ? { title: `${query} — Αναζήτηση`, icon: '🔎', url: (act.engine || 'www.anazitisi.gr') + '/?q=' + query } : k === '404' ? { title: 'Δεν βρέθηκε', icon: '⚠️', url: addr.value } : pages[k];
+    box.querySelector('.brtab').innerHTML = `${p.icon || '🌐'} ${p.title}`;
+    addr.value = p.url;
+    back.disabled = hi <= 0; fwd.disabled = hi >= hist.length - 1;
+    star.textContent = marks.some(m => m.key === k) ? '★' : '☆';
+    star.classList.toggle('on', star.textContent === '★');
+    mbar.innerHTML = marks.length ? '' : '<i>Η γραμμή σελιδοδεικτών είναι άδεια — πάτα το ☆ για να προσθέσεις μια σελίδα.</i>';
+    marks.forEach(m => { const b = el('button', 'brmark', `${pages[m.key].icon || '🌐'} ${escHTML(m.name)}`); b.onclick = () => go(m.key, 'bookmark'); mbar.appendChild(b); });
+    page.scrollTop = 0;
+    page.innerHTML = k === '?' ? results() : k === '404' ? '<div class="br404">⚠️ <b>Η σελίδα δεν βρέθηκε.</b><br>Έλεγξε ότι έγραψες σωστά τη διεύθυνση — ένα γράμμα να λείπει, ο υπολογιστής δεν τη βρίσκει!</div>' : p.html;
+    wire();
+  }
+  function results() {
+    const words = norm(query).split(/\s+/).filter(w => w.length > 1);
+    const hits = Object.entries(pages).filter(([, p]) => p.kw).map(([k, p]) => {
+      const hay = norm(`${p.title} ${p.kw} ${p.desc || ''}`);
+      return [k, p, words.filter(w => hay.includes(w.replace(/(ος|ες|ης|ας|α|ο|η|ι|ε|ς)$/, ''))).length];
+    }).filter(h => h[2] > 0).sort((a, b) => (b[1].ad ? 1 : 0) - (a[1].ad ? 1 : 0) || b[2] - a[2]);
+    return `<div class="brsearch"><div class="brlogo">${act.logo || '🔎 Αναζήτηση'}</div><div data-search></div></div><div class="brres">` +
+      (hits.length ? `<small>Περίπου ${hits.length * 1730} αποτελέσματα</small>` + hits.map(([k, p]) => `<div class="brhit">${p.ad ? '<span class="brad">Χορηγούμενο</span>' : ''}<small>${p.url}</small><a data-go="${k}">${p.icon || ''} ${p.title}</a><div>${p.desc || ''}</div></div>`).join('')
+        : `<p>Δεν βρέθηκαν αποτελέσματα για «${escHTML(query)}». Δοκίμασε άλλες λέξεις-κλειδιά.</p>`) + '</div>';
+  }
+  function wire() {
+    page.querySelectorAll('[data-go]').forEach(a => { a.onclick = e => { e.preventDefault(); go(a.dataset.go, 'link'); }; });
+    page.querySelectorAll('a:not([data-go])').forEach(a => { a.onclick = () => say('Σε αυτή την εξάσκηση αυτός ο σύνδεσμος δεν ανοίγει. Ψάξε άλλον! 🔎'); });
+    page.querySelectorAll('[data-search]').forEach(s => {
+      const inp = el('input'); inp.placeholder = 'Γράψε λέξεις-κλειδιά…'; inp.value = cur() === '?' ? query : '';
+      const b = el('button', '', '🔎');
+      const run = () => { if (!inp.value.trim()) return; query = inp.value.trim(); event({ t: 'search', q: query }); go('?', 'search'); };
+      inp.onkeydown = e => { e.stopPropagation(); if (e.key === 'Enter') run(); };
+      b.onclick = run;
+      s.append(inp, b);
+    });
+    page.querySelectorAll('[data-post]').forEach(p => {
+      const id = p.dataset.post, st = (posts[id] = posts[id] || { like: false, comments: [] });
+      const ft = el('div', 'brpostft');
+      const like = el('button', 'brlike' + (st.like ? ' on' : ''), (st.like ? '❤️' : '🤍') + ' Μου αρέσει');
+      like.onclick = () => { st.like = !st.like; like.className = 'brlike' + (st.like ? ' on' : ''); like.textContent = (st.like ? '❤️' : '🤍') + ' Μου αρέσει'; if (st.like) event({ t: 'like', post: id }); };
+      const list = el('div', 'brcomments');
+      const drawC = () => { list.innerHTML = st.comments.map(c => `<div>🧒 ${escHTML(c)}</div>`).join(''); };
+      const inp = el('input'); inp.placeholder = 'Γράψε ένα σχόλιο και πάτα Enter…';
+      const send = () => { const t = inp.value.trim(); if (!t) return; st.comments.push(t); inp.value = ''; drawC(); event({ t: 'comment', post: id, text: t }); };
+      inp.onkeydown = e => { e.stopPropagation(); if (e.key === 'Enter') send(); };
+      const emo = el('span', 'bremo');
+      ['😀', '👍', '❤️', '⭐', '👏'].forEach(s => { const b = el('button', '', s); b.onclick = () => { inp.value += s; inp.focus(); }; emo.appendChild(b); });
+      ft.append(like, emo, inp);
+      drawC(); p.append(ft, list);
+    });
+    page.querySelectorAll('[data-board]').forEach(bd => {
+      const notes = el('div', 'brnotes'), inp = el('input'), b = el('button', '', '📌 Δημοσίευση');
+      inp.placeholder = 'Γράψε την ανακοίνωσή σου…';
+      const drawN = () => { notes.innerHTML = board.map((t, i) => `<div style="background:${['#fff59d', '#b3e5fc', '#c8e6c9', '#f8bbd0'][i % 4]}">${escHTML(t)}</div>`).join(''); };
+      b.onclick = () => { const t = inp.value.trim(); if (!t) return say('Γράψε πρώτα κάτι!', 'bad'); board.push(t); inp.value = ''; drawN(); event({ t: 'publish', text: t }); };
+      inp.onkeydown = e => { e.stopPropagation(); if (e.key === 'Enter') b.onclick(); };
+      drawN(); bd.append(notes, el('div', 'brboardin'));
+      bd.lastChild.append(inp, b);
+    });
+    page.querySelectorAll('[data-video]').forEach(v => {
+      const b = el('button', 'brplay', '▶'), prog = el('div', 'brprog', '<i></i>');
+      b.onclick = async () => {
+        b.disabled = true; const my = runId;
+        for (let k = 0; k <= 20; k++) { if (my !== runId || !v.isConnected) return; prog.firstChild.style.width = k * 5 + '%'; await sleep(120); }
+        b.disabled = false; event({ t: 'video', id: v.dataset.video });
+      };
+      v.append(b, prog);
+    });
+  }
+  const posts = {}, board = [];
+  let scrolled = false;
+  page.onscroll = () => { if (!scrolled && page.scrollTop > 120) { scrolled = true; event({ t: 'scroll', page: cur() }); } };
+  back.onclick = () => { if (hi > 0) { hi--; show(); event({ t: 'go', page: cur(), via: 'back' }); } };
+  fwd.onclick = () => { if (hi < hist.length - 1) { hi++; show(); event({ t: 'go', page: cur(), via: 'forward' }); } };
+  reload.onclick = () => { show(); event({ t: 'reload' }); };
+  home.onclick = () => go(act.home, 'home');
+  addr.onfocus = () => addr.select();
+  addr.onkeydown = e => {
+    e.stopPropagation();
+    if (e.key !== 'Enter') return;
+    const u = urlNorm(addr.value);
+    const k = Object.keys(pages).find(x => urlNorm(pages[x].url) === u);
+    if (k) return go(k, 'address');
+    if (act.engine && !u.includes('.')) { query = addr.value.trim(); event({ t: 'search', q: query }); return go('?', 'search'); }
+    event({ t: 'notfound', url: addr.value });
+    go('404', 'address');
+  };
+  star.onclick = () => {
+    const k = cur();
+    if (!pages[k]) return;
+    const i = marks.findIndex(m => m.key === k);
+    if (i >= 0) { marks.splice(i, 1); show(); return event({ t: 'unbookmark', page: k }); }
+    box.querySelector('.brdlg')?.remove();
+    const dlg = el('div', 'brdlg', '<b>★ Προσθήκη σελιδοδείκτη</b>'), inp = el('input'), ok = el('button', '', '✔ Ολοκληρώθηκε');
+    inp.value = pages[k].title;
+    inp.onkeydown = e => { e.stopPropagation(); if (e.key === 'Enter') ok.onclick(); };
+    ok.onclick = () => { marks.push({ key: k, name: inp.value.trim() || pages[k].title }); dlg.remove(); show(); event({ t: 'bookmark', page: k, name: inp.value }); };
+    dlg.append(el('span', '', 'Όνομα:'), inp, ok);
+    box.appendChild(dlg);
+    inp.focus(); inp.select();
+  };
+  if (act.start) go(act.start, 'start');
+  else { box.querySelector('.brtab').textContent = '🌐 Νέα καρτέλα'; page.innerHTML = '<div class="br404">🌐 Γράψε μια διεύθυνση στη <b>γραμμή διευθύνσεων</b> (πάνω) και πάτα Enter.</div>'; back.disabled = fwd.disabled = true; mbar.innerHTML = ''; marks.forEach(m => { const b = el('button', 'brmark', `${pages[m.key].icon || '🌐'} ${escHTML(m.name)}`); b.onclick = () => go(m.key, 'bookmark'); mbar.appendChild(b); }); }
+  drawTasks();
+};
+
+// γέμισμα: ίδιο χρώμα (με ανοχή) γύρω από το σημείο — για τη Ζωγραφική και το Tux Paint
+function floodFill(c, W, H, x, y, color) {
+  const img = c.getImageData(0, 0, W, H), d = img.data, i0 = (Math.floor(y) * W + Math.floor(x)) * 4;
+  const seed = [d[i0], d[i0 + 1], d[i0 + 2]], nc = [1, 3, 5].map(k => parseInt(color.slice(k, k + 2), 16));
+  if (seed.every((v, k) => Math.abs(v - nc[k]) < 8)) return;
+  const same = i => Math.abs(d[i] - seed[0]) + Math.abs(d[i + 1] - seed[1]) + Math.abs(d[i + 2] - seed[2]) < 120;
+  const st = [[Math.floor(x), Math.floor(y)]], seen = new Uint8Array(W * H);
+  while (st.length) {
+    const [px, py] = st.pop();
+    if (px < 0 || py < 0 || px >= W || py >= H) continue;
+    const p = py * W + px;
+    if (seen[p] || !same(p * 4)) continue;
+    seen[p] = 1; d[p * 4] = nc[0]; d[p * 4 + 1] = nc[1]; d[p * 4 + 2] = nc[2]; d[p * 4 + 3] = 255;
+    st.push([px + 1, py], [px - 1, py], [px, py + 1], [px, py - 1]);
+  }
+  c.putImageData(img, 0, 0);
+}
+
+// ---- Tux Paint (Α΄–Β΄): ίδια εργαλεία και ίδια διάταξη με το αληθινό Tux Paint, με τον πιγκουίνο να εξηγεί κάθε εργαλείο.
+//      tour: 'tools' | 'magic' = γνωριμία (πατάω κάθε εργαλείο) · keep: η ζωγραφιά συνεχίζει στην επόμενη δραστηριότητα
+const TUX_TOOLS = [['paint', '🖌️', 'Paint', 'Πινέλο', 'Κάνε κλικ και σύρε το ποντίκι για να ζωγραφίσεις. Δεξιά διαλέγεις πινέλο, κάτω χρώμα.'],
+  ['stamp', '🐾', 'Stamp', 'Σφραγίδα', 'Διάλεξε μια σφραγίδα δεξιά και κάνε κλικ στη ζωγραφιά για να τη βάλεις.'],
+  ['lines', '📏', 'Lines', 'Γραμμές', 'Κάνε κλικ εκεί που ξεκινάει η γραμμή, σύρε και άφησε το κουμπί εκεί που τελειώνει.'],
+  ['shapes', '⬟', 'Shapes', 'Σχήματα', 'Διάλεξε σχήμα δεξιά (□ περίγραμμα ή ■ γεμάτο). Κάνε κλικ στη <b>μέση</b> του σχήματος και σύρε για να μεγαλώσει. (Στο αληθινό Tux Paint μετά κουνάς το ποντίκι για να το γυρίσεις και κάνεις κλικ.)'],
+  ['text', '🔤', 'Text', 'Κείμενο', 'Κάνε κλικ στη ζωγραφιά, γράψε με το πληκτρολόγιο και πάτα Enter.'],
+  ['label', '🏷️', 'Label', 'Ετικέτα', 'Σαν το Κείμενο — αλλά στο αληθινό Tux Paint την ετικέτα μπορείς να την αλλάξεις ή να τη μετακινήσεις αργότερα.'],
+  ['fill', '🪣', 'Fill', 'Γέμισμα', 'Κάνε κλικ μέσα σε έναν κλειστό χώρο: γεμίζει με το χρώμα που διάλεξες.'],
+  ['magic', '✨', 'Magic', 'Μαγικά', 'Διάλεξε ένα μαγικό εργαλείο δεξιά! (Με τα βελάκια ▲ ▼ βλέπεις κι άλλα.)'],
+  ['undo', '↩️', 'Undo', 'Αναίρεση', 'Αναίρεση: σβήνει την τελευταία σου κίνηση.'],
+  ['redo', '↪️', 'Redo', 'Ξανά', 'Ξαναφέρνει ό,τι αναίρεσες.'],
+  ['eraser', '🧽', 'Eraser', 'Γόμα', 'Κάνε κλικ και σύρε για να σβήσεις. Δεξιά διαλέγεις το μέγεθος της γόμας.'],
+  ['new', '📄', 'New', 'Νέο', 'Νέα ζωγραφιά: λευκή σελίδα, σελίδα με χρώμα ή έτοιμο σχέδιο για γέμισμα.'],
+  ['open', '📂', 'Open', 'Άνοιγμα', 'Άνοιγμα: βρίσκεις μια ζωγραφιά που είχες αποθηκεύσει.'],
+  ['save', '💾', 'Save', 'Αποθήκευση', 'Αποθήκευση: η ζωγραφιά σου φυλάγεται για να τη συνεχίσεις άλλη φορά.'],
+  ['print', '🖨️', 'Print', 'Εκτύπωση', 'Εκτύπωση: η ζωγραφιά πηγαίνει στον εκτυπωτή. (Εδώ δεν τυπώνουμε στ’ αλήθεια.)'],
+  ['quit', '🚪', 'Quit', 'Έξοδος', 'Έξοδος: κλείνει το Tux Paint — πρώτα σε ρωτάει αν θέλεις να αποθηκεύσεις!']];
+const TUX_MAGIC = [['grass', '🌿', 'Grass', 'Γρασίδι', 'Κάνε κλικ και σύρε για να φυτρώσει γρασίδι. Μην ξεχάσεις το χώμα!'],
+  ['rainbow', '🌈', 'Rainbow', 'Ουράνιο τόξο', 'Σύρε για να ζωγραφίσεις με όλα τα χρώματα του ουράνιου τόξου. Κάνε μια καμπύλη!'],
+  ['googly', '👀', 'Googly Eyes', 'Μάτια', 'Κάνε κλικ για να βάλεις ένα αστείο μάτι. Βάλε δύο — και ο ήλιος σε κοιτάζει!'],
+  ['bricks', '🧱', 'Bricks', 'Τούβλα', 'Σύρε για να χτίσεις με τούβλα — για καμινάδες και τοίχους.'],
+  ['spray', '💨', 'Spray Paint', 'Σπρέι', 'Σύρε για να ψεκάσεις χρώμα με το σπρέι.'],
+  ['foam', '☁️', 'Foam', 'Αφρός', 'Σύρε για να κάνεις αφρό από φουσκάλες — με λευκό γίνονται ωραία σύννεφα!'],
+  ['squiggles', '〰️', 'Squiggles', 'Ορνιθοσκαλίσματα', 'Κάνε κλικ και σύρε για να κάνεις ορνιθοσκαλίσματα.']];
+const TUX_COLORS = ['#000000', '#808080', '#c0c0c0', '#ffffff', '#ff0000', '#ff8000', '#ffff00', '#a0e080', '#1e9645', '#80a0c8', '#3060ff', '#b8a0ff', '#800080', '#ffa0d0', '#804000', '#e0b090', '#f8e0d0'];
+const TUX_BRUSHES = [['dot', 4, '•'], ['dot', 10, '●'], ['dot', 24, '⬤'], ['square', 16, '■'], ['star', 16, '★'], ['fuzzy', 18, '░']];
+const TUX_STAMPS = ['🐧', '🐱', '🐶', '🐰', '🦋', '🐞', '🌳', '🌲', '🌸', '🌻', '🍄', '🌞', '🚗', '🚂', '⛵', '🎈', '⭐', '🏠'];
+const TUX_SHAPES = [['square', '□', 'Τετράγωνο'], ['rect', '▭', 'Ορθογώνιο'], ['circle', '○', 'Κύκλος'], ['ellipse', '⬭', 'Έλλειψη'], ['triangle', '△', 'Τρίγωνο'], ['pentagon', '⬠', 'Πεντάγωνο'], ['star', '☆', 'Αστέρι']];
+const TUX_KEEP = {}; // ζωγραφιές που συνεχίζουν από δραστηριότητα σε δραστηριότητα (μόνο όσο είναι ανοιχτή η σελίδα)
+function polyPath(c, cx, cy, r, n, inner) { // κανονικό πολύγωνο ή αστέρι (inner = λόγος εσωτερικής ακτίνας)
+  c.beginPath();
+  const k = inner ? n * 2 : n;
+  for (let i = 0; i < k; i++) { const a = -Math.PI / 2 + i * 2 * Math.PI / k, rr = inner && i % 2 ? r * inner : r; c[i ? 'lineTo' : 'moveTo'](cx + rr * Math.cos(a), cy + rr * Math.sin(a)); }
+  c.closePath();
+}
+RENDER.tux = (act, area) => {
+  const W = 900, H = 540;
+  const box = el('div', 'tux'), side = el('div', 'tasks txside');
+  area.append(box, side);
+  let tool = 'paint', color = '#000000', brush = 1, stamp = '🐧', stampSize = 80, shape = 'circle', filled = true, magic = 'grass', eraser = 24, bg = '#ffffff', ti = 0, pick = false;
+  const seen = new Set();
+  const left = el('div', 'txtools', '<div class="txh">Tools</div>'), right = el('div', 'txopts'), cv = el('canvas'), cols = el('div', 'txcols', '<div class="txh">Colors</div>'), tip = el('div', 'txtip');
+  cv.width = W; cv.height = H;
+  const c = cv.getContext('2d');
+  box.append(left, cv, right, cols, tip);
+  const undo = [], redo = [];
+  const before = () => { undo.push(c.getImageData(0, 0, W, H)); if (undo.length > 30) undo.shift(); redo.length = 0; };
+  const after = () => { if (act.keep) TUX_KEEP[act.keep] = c.getImageData(0, 0, W, H); };
+  function event(e) {
+    if (act.tour) {
+      const k = e.t === 'tool' ? e.tool : e.t === 'magicpick' ? e.magic : null;
+      if (!k || seen.has(k)) return;
+      seen.add(k); drawTasks();
+      const all = act.tour === 'magic' ? TUX_MAGIC : TUX_TOOLS;
+      if (seen.size === all.length) complete(act.doneMsg || '🐧 Μπράβο! Τώρα ξέρεις τι κάνει κάθε εργαλείο!');
+      return;
+    }
+    if (!act.tasks || ti >= act.tasks.length || !act.tasks[ti][1](e)) return;
+    ti++; drawTasks();
+    if (ti === act.tasks.length) complete(act.doneMsg || '🐧 Μπράβο! Τι ωραία ζωγραφιά!');
+    else say('✅ Σωστά!', 'good');
+  }
+  function drawTasks() {
+    side.innerHTML = '';
+    if (act.tour) {
+      const all = act.tour === 'magic' ? TUX_MAGIC : TUX_TOOLS;
+      side.appendChild(el('div', 'task cur', `Πάτα ${act.tour === 'magic' ? 'κάθε μαγικό εργαλείο (δεξιά)' : 'κάθε εργαλείο (αριστερά)'} και διάβασε τι λέει ο Tux 🐧 κάτω. <b>${seen.size} / ${all.length}</b>`));
+      const chips = el('div', 'txchips');
+      all.forEach(([k, em, en]) => chips.appendChild(el('span', seen.has(k) ? 'ok' : '', `${em} ${en}`)));
+      return side.appendChild(chips);
+    }
+    (act.tasks || []).forEach(([t], i) => side.appendChild(el('div', 'task' + (i < ti ? ' ok' : i === ti ? ' cur' : ''), (i < ti ? '✅ ' : `${i + 1}. `) + t)));
+  }
+  const say2 = t => { tip.innerHTML = `<span>🐧</span><div>${t}</div>`; };
+  const blank = (col, tpl) => { bg = col; c.fillStyle = col; c.fillRect(0, 0, W, H); if (tpl) { c.strokeStyle = '#000'; c.lineWidth = 5; PAINT_TEMPLATES[tpl](c); } };
+  function popup(title, items) {
+    box.querySelector('.txpop')?.remove();
+    const m = el('div', 'txpop', `<b>${title}</b>`);
+    items.forEach(([t, f]) => { const b = el('button', 'secondary', t); b.onclick = () => { m.remove(); f(); }; m.appendChild(b); });
+    box.appendChild(m);
+  }
+  const ACTIONS = {
+    undo: () => { if (!undo.length) return say2('Δεν υπάρχει τίποτα για αναίρεση.'); redo.push(c.getImageData(0, 0, W, H)); c.putImageData(undo.pop(), 0, 0); after(); event({ t: 'undo' }); },
+    redo: () => { if (!redo.length) return say2('Δεν υπάρχει κάτι για να ξαναγίνει. (Το Redo δουλεύει μετά από Undo.)'); undo.push(c.getImageData(0, 0, W, H)); c.putImageData(redo.pop(), 0, 0); after(); event({ t: 'redo' }); },
+    new: () => popup('📄 Νέα ζωγραφιά:', [['⬜ Λευκή', ['#ffffff']], ['🟦 Γαλάζια', ['#80a0c8']], ['🟩 Πράσινη', ['#a0e080']], ['🏠 Σπιτάκι για γέμισμα', ['#ffffff', 'house']], ['🐟 Ψαράκι για γέμισμα', ['#ffffff', 'fish']], ['🐥 Κοτοπουλάκι για γέμισμα', ['#ffffff', 'chick']]]
+      .map(([t, a]) => [t, () => { before(); blank(...a); after(); event({ t: 'new', bg: a[0], template: a[1] }); }])),
+    save: () => { TUX_KEEP['💾'] = c.getImageData(0, 0, W, H); say2('💾 Η ζωγραφιά σου αποθηκεύτηκε!'); event({ t: 'save' }); },
+    open: () => { if (!TUX_KEEP['💾']) return say2('Δεν έχεις αποθηκεύσει ακόμα καμία ζωγραφιά. Πάτα πρώτα <b>Save</b>!'); popup('📂 Οι ζωγραφιές μου:', [['🖼️ Η ζωγραφιά μου', () => { before(); c.putImageData(TUX_KEEP['💾'], 0, 0); after(); event({ t: 'open' }); }]]); },
+    print: () => event({ t: 'print' }),
+    quit: () => { popup('🚪 Θέλεις να αποθηκεύσεις τη ζωγραφιά σου πριν βγεις;', [['💾 Ναι, αποθήκευση', () => ACTIONS.save()], ['Όχι', () => say2('Εδώ το Tux Paint δεν κλείνει — συνέχισε να ζωγραφίζεις! 🙂')]]); event({ t: 'quit' }); },
+  };
+  function drawTools() {
+    left.querySelectorAll('button').forEach(b => b.remove());
+    TUX_TOOLS.forEach(([k, em, en, gr, t]) => {
+      const b = el('button', 'txbtn' + (k === tool ? ' on' : ''), `<span>${em}</span>${en}<small>${gr}</small>`);
+      b.onclick = () => {
+        box.querySelector('.txpop')?.remove();
+        say2(`<b>${en}</b> (${gr}): ${t}`);
+        if (ACTIONS[k]) { event({ t: 'tool', tool: k }); return ACTIONS[k](); }
+        tool = k; drawTools(); drawOpts();
+        if (k === 'magic') say2(`<b>Magic</b> (Μαγικά) → <b>${TUX_MAGIC.find(m => m[0] === magic)[2]}</b>: ${TUX_MAGIC.find(m => m[0] === magic)[4]}`);
+        event({ t: 'tool', tool: k });
+      };
+      left.appendChild(b);
+    });
+  }
+  function drawOpts() {
+    right.innerHTML = '';
+    const head = { paint: 'Brushes', stamp: 'Stamps', lines: 'Brushes', shapes: 'Shapes', text: 'Letters', label: 'Letters', fill: 'Fill', magic: 'Magic', eraser: 'Erasers' }[tool];
+    right.appendChild(el('div', 'txh', head));
+    const grid = el('div', 'txgrid');
+    right.appendChild(grid);
+    const opt = (html, on, f, title) => { const b = el('button', 'txopt' + (on ? ' on' : ''), html); if (title) b.title = title; b.onclick = () => { f(); drawOpts(); }; grid.appendChild(b); };
+    if (tool === 'paint' || tool === 'lines') TUX_BRUSHES.forEach(([, , s], i) => opt(s, i === brush, () => { brush = i; event({ t: 'brush', brush: TUX_BRUSHES[i][0] }); }));
+    if (tool === 'stamp') { TUX_STAMPS.forEach(s => opt(s, s === stamp, () => { stamp = s; event({ t: 'stamppick', em: s }); })); [[50, 'μικρή'], [80, 'μεσαία'], [130, 'μεγάλη']].forEach(([z, n]) => opt(`<small>${n}</small>`, z === stampSize, () => { stampSize = z; })); }
+    if (tool === 'shapes') TUX_SHAPES.forEach(([k, s, n]) => [false, true].forEach(f => opt(f ? `<b style="color:${color === '#ffffff' ? '#90a4ae' : color}">${{ '□': '■', '▭': '▬', '○': '●', '⬭': '⬬', '△': '▲', '⬠': '⬟', '☆': '★' }[s]}</b>` : s, k === shape && f === filled, () => { shape = k; filled = f; say2(`<b>${n}</b> ${f ? 'γεμάτο' : 'περίγραμμα'}: κάνε κλικ στη μέση και σύρε.`); event({ t: 'shapepick', shape: k, filled: f }); }, n)));
+    if (tool === 'magic') TUX_MAGIC.forEach(([k, em, en, gr, t]) => opt(`<span>${em}</span><small>${en}</small>`, k === magic, () => { magic = k; say2(`<b>${en}</b> (${gr}): ${t}`); event({ t: 'magicpick', magic: k }); }, gr));
+    if (tool === 'eraser') [10, 24, 48].forEach(z => opt(`<i style="width:${z / 2 + 6}px;height:${z / 2 + 6}px"></i>`, z === eraser, () => { eraser = z; }));
+    if (tool === 'text' || tool === 'label') grid.appendChild(el('div', 'txnote', 'Γράμματα: <b>Aa</b> · Μέγεθος: μεγάλο'));
+    if (tool === 'fill') grid.appendChild(el('div', 'txnote', 'Γεμίζει όλο τον χώρο που έχει το ίδιο χρώμα, μέχρι να βρει γραμμή.'));
+  }
+  TUX_COLORS.forEach(col => { const b = el('button', 'txcol'); b.style.background = col; b.onclick = () => { color = col; pick = false; cols.querySelectorAll('.txcol').forEach(o => o.classList.toggle('on', o === b)); if (tool === 'shapes') drawOpts(); event({ t: 'color', color: col }); }; if (col === color) b.classList.add('on'); cols.appendChild(b); });
+  const drop = el('button', 'txcol txdrop', '💧'); drop.title = 'Σταγονόμετρο: πάρε χρώμα από τη ζωγραφιά';
+  drop.onclick = () => { pick = true; say2('<b>Σταγονόμετρο</b>: κάνε κλικ σε ένα σημείο της ζωγραφιάς για να πάρεις το χρώμα του.'); };
+  const mix = el('input'); mix.type = 'color'; mix.className = 'txmix'; mix.title = 'Φτιάξε δικό σου χρώμα';
+  mix.oninput = () => { color = mix.value; cols.querySelectorAll('.txcol').forEach(o => o.classList.remove('on')); event({ t: 'color', color, mix: true }); };
+  cols.append(drop, mix);
+
+  const xy = ev => { const r = cv.getBoundingClientRect(); return [(ev.clientX - r.left) * W / r.width, (ev.clientY - r.top) * H / r.height]; };
+  const rnd = (a, b) => a + Math.random() * (b - a);
+  function dab(x, y) { // ένα «πάτημα» του πινέλου
+    const [kind, s] = TUX_BRUSHES[brush];
+    c.fillStyle = color;
+    if (kind === 'dot') { c.beginPath(); c.arc(x, y, s / 2, 0, 7); c.fill(); }
+    else if (kind === 'square') c.fillRect(x - s / 2, y - s / 2, s, s);
+    else if (kind === 'star') { polyPath(c, x, y, s, 5, 0.45); c.fill(); }
+    else for (let i = 0; i < 6; i++) { c.fillRect(x + rnd(-s, s), y + rnd(-s, s), 2, 2); }
+  }
+  function strokeLine(x0, y0, x1, y1, f) { const n = Math.max(1, Math.ceil(Math.hypot(x1 - x0, y1 - y0) / 3)); for (let i = 0; i <= n; i++) f(x0 + (x1 - x0) * i / n, y0 + (y1 - y0) * i / n); }
+  let hue = 0;
+  const bricksDone = new Set();
+  function magicAt(x, y, x0, y0) {
+    if (magic === 'grass') for (let i = 0; i < 9; i++) { // πιο ψηλό γρασίδι στο κάτω μέρος, όπως στο Tux Paint
+      const bx = x + rnd(-18, 18), h = rnd(16, 34) * (0.5 + y / H);
+      c.strokeStyle = `hsl(${rnd(95, 135)},${rnd(35, 55)}%,${rnd(32, 50)}%)`; c.lineWidth = 3;
+      c.beginPath(); c.moveTo(bx, y + 10); c.quadraticCurveTo(bx + rnd(-4, 4), y, bx + rnd(-8, 8), y + 10 - h); c.stroke();
+    }
+    else if (magic === 'rainbow') { hue = (hue + 3) % 360; c.strokeStyle = `hsl(${hue},100%,50%)`; c.lineWidth = 26; c.lineCap = 'round'; c.beginPath(); c.moveTo(x0, y0); c.lineTo(x, y); c.stroke(); }
+    else if (magic === 'bricks') {
+      const bw = 40, bh = 20, row = Math.floor(y / bh), col = Math.floor((x + (row % 2) * bw / 2) / bw), key = row + ',' + col;
+      if (bricksDone.has(key)) return;
+      bricksDone.add(key);
+      const bx = col * bw - (row % 2) * bw / 2, by = row * bh;
+      c.fillStyle = `hsl(${rnd(5, 15)},${rnd(40, 60)}%,${rnd(35, 50)}%)`; c.fillRect(bx, by, bw, bh);
+      c.strokeStyle = '#d7ccc8'; c.lineWidth = 2; c.strokeRect(bx + 1, by + 1, bw - 2, bh - 2);
+    }
+    else if (magic === 'spray') { c.fillStyle = color; for (let i = 0; i < 25; i++) { const a = rnd(0, 7), r = rnd(0, 26); c.fillRect(x + r * Math.cos(a), y + r * Math.sin(a), 2, 2); } }
+    else if (magic === 'foam') for (let i = 0; i < 3; i++) {
+      const r = rnd(6, 20); c.beginPath(); c.arc(x + rnd(-20, 20), y + rnd(-20, 20), r, 0, 7);
+      c.fillStyle = color === '#000000' ? 'rgba(255,255,255,0.75)' : color; c.globalAlpha = 0.6; c.fill(); c.globalAlpha = 1;
+      c.strokeStyle = 'rgba(200,180,220,0.9)'; c.lineWidth = 1.5; c.stroke();
+    }
+    else if (magic === 'squiggles') { c.strokeStyle = color; c.lineWidth = 1.5; c.beginPath(); c.arc(x + rnd(-10, 10), y + rnd(-10, 10), rnd(4, 14), rnd(0, 6), rnd(6, 12)); c.stroke(); }
+  }
+  function googly(x, y) {
+    const r = 34;
+    c.fillStyle = '#fff'; c.strokeStyle = '#999'; c.lineWidth = 2; c.beginPath(); c.arc(x, y, r, 0, 7); c.fill(); c.stroke();
+    const a = rnd(0, 7); c.fillStyle = '#111'; c.beginPath(); c.arc(x + 14 * Math.cos(a), y + 14 * Math.sin(a), 15, 0, 7); c.fill();
+    c.fillStyle = '#fff'; c.beginPath(); c.arc(x + 14 * Math.cos(a) - 5, y + 14 * Math.sin(a) - 5, 4, 0, 7); c.fill();
+  }
+  function shapeAt(cx, cy, x, y) {
+    const dx = Math.abs(x - cx), dy = Math.abs(y - cy), r = Math.hypot(x - cx, y - cy);
+    c.strokeStyle = c.fillStyle = color; c.lineWidth = 6; c.lineJoin = 'round';
+    c.beginPath();
+    if (shape === 'square') c.rect(cx - r / 1.41, cy - r / 1.41, r * 1.41, r * 1.41);
+    else if (shape === 'rect') c.rect(cx - dx, cy - dy, dx * 2, dy * 2);
+    else if (shape === 'circle') c.arc(cx, cy, r, 0, 7);
+    else if (shape === 'ellipse') c.ellipse(cx, cy, dx + 1, dy + 1, 0, 0, 7);
+    else if (shape === 'triangle') { c.moveTo(cx, cy - dy); c.lineTo(cx + dx, cy + dy); c.lineTo(cx - dx, cy + dy); c.closePath(); }
+    else polyPath(c, cx, cy, r, 5, shape === 'star' ? 0.45 : 0);
+    filled ? c.fill() : c.stroke();
+  }
+  let start = null, base = null, last = null, len = 0;
+  cv.onpointerdown = ev => {
+    ev.preventDefault(); cv.setPointerCapture(ev.pointerId);
+    box.querySelector('.txpop')?.remove();
+    const [x, y] = xy(ev);
+    if (pick) { const d = c.getImageData(Math.floor(x), Math.floor(y), 1, 1).data; color = '#' + [d[0], d[1], d[2]].map(v => v.toString(16).padStart(2, '0')).join(''); pick = false; cols.querySelectorAll('.txcol').forEach(o => o.classList.remove('on')); say2(`💧 Πήρες το χρώμα <b style="color:${color}">■</b>!`); return event({ t: 'color', color, picked: true }); }
+    before();
+    if (tool === 'fill') { floodFill(c, W, H, x, y, color); after(); return event({ t: 'fill', color, x, y }); }
+    if (tool === 'stamp') { c.font = `${stampSize}px sans-serif`; c.textAlign = 'center'; c.textBaseline = 'middle'; c.fillText(stamp, x, y); after(); return event({ t: 'stamp', em: stamp, x, y }); }
+    if (tool === 'magic' && magic === 'googly') { googly(x, y); after(); return event({ t: 'magic', magic, x, y }); }
+    if (tool === 'text' || tool === 'label') {
+      box.querySelector('.pttext')?.remove();
+      const inp = el('input', 'pttext'), k = cv.offsetWidth / W;
+      Object.assign(inp.style, { left: cv.offsetLeft + x * k + 'px', top: cv.offsetTop + y * k - 22 + 'px', color });
+      inp.placeholder = 'Γράψε… και Enter';
+      inp.onkeydown = e => {
+        e.stopPropagation();
+        if (e.key !== 'Enter') return;
+        const t = inp.value.trim(); inp.remove(); if (!t) return;
+        c.font = 'bold 44px sans-serif'; c.textAlign = 'left'; c.textBaseline = 'middle';
+        if (tool === 'label') { const w = c.measureText(t).width; c.fillStyle = 'rgba(255,255,255,0.8)'; c.fillRect(x - 6, y - 28, w + 12, 56); }
+        c.fillStyle = color; c.fillText(t, x, y); after(); event({ t: tool, text: t });
+      };
+      box.appendChild(inp); setTimeout(() => inp.focus(), 0);
+      return;
+    }
+    start = [x, y]; last = [x, y]; len = 0; base = c.getImageData(0, 0, W, H); bricksDone.clear();
+    if (tool === 'paint') dab(x, y);
+    if (tool === 'eraser') { c.fillStyle = bg; c.fillRect(x - eraser / 2, y - eraser / 2, eraser, eraser); }
+    if (tool === 'magic') magicAt(x, y, x, y);
+  };
+  cv.onpointermove = ev => {
+    if (!start) return;
+    const [x, y] = xy(ev);
+    len += Math.hypot(x - last[0], y - last[1]);
+    if (tool === 'paint') strokeLine(...last, x, y, dab);
+    else if (tool === 'eraser') strokeLine(...last, x, y, (a, b) => { c.fillStyle = bg; c.fillRect(a - eraser / 2, b - eraser / 2, eraser, eraser); });
+    else if (tool === 'magic') magicAt(x, y, ...last);
+    else if (tool === 'lines') { c.putImageData(base, 0, 0); strokeLine(...start, x, y, dab); }
+    else if (tool === 'shapes') { c.putImageData(base, 0, 0); shapeAt(...start, x, y); }
+    last = [x, y];
+  };
+  cv.onpointerup = ev => {
+    if (!start) return;
+    const [x, y] = xy(ev), s = start;
+    start = null;
+    if ((tool === 'lines' || tool === 'shapes') && Math.hypot(x - s[0], y - s[1]) < 8) { c.putImageData(base, 0, 0); undo.pop(); return say2('Κράτα πατημένο το κουμπί και <b>σύρε</b> για να φτιάξεις ' + (tool === 'lines' ? 'τη γραμμή!' : 'το σχήμα!')); }
+    after();
+    event({ t: tool === 'eraser' ? 'erase' : tool === 'shapes' ? 'shape' : tool === 'lines' ? 'line' : tool === 'magic' ? 'magic' : 'draw', tool, magic, shape, filled, color, len, x: s[0], y: s[1], r: Math.hypot(x - s[0], y - s[1]) });
+  };
+  if (act.keep && TUX_KEEP[act.keep] && !act.fresh) c.putImageData(TUX_KEEP[act.keep], 0, 0); else blank(act.bg || '#ffffff', act.template);
+  if (act.tool) tool = act.tool;
+  drawTools(); drawOpts(); drawTasks();
+  say2(act.tip || 'Γεια σου! Είμαι ο Tux. Διάλεξε ένα εργαλείο αριστερά και ένα χρώμα κάτω — και ζωγράφισε!');
+};
+
+// ---- Ζωγραφική (Α΄–Β΄): μολύβι, πινέλα-σχέδια, γραμμή, ορθογώνιο, έλλειψη, γέμισμα, γόμα, σφραγίδες, κείμενο, αναίρεση, νέο / έτοιμα σχέδια
+const PAINT_TOOLS = { pencil: '✏️ Μολύβι', brush: '🖌️ Πινέλο', line: '📏 Γραμμή', rect: '⬛ Ορθογώνιο', ellipse: '⚪ Έλλειψη', fill: '🪣 Γέμισμα', eraser: '🧽 Γόμα', stamp: '🐧 Σφραγίδα', text: '🔤 Κείμενο' };
+const PAINT_COLORS = ['#000000', '#ffffff', '#e53935', '#fb8c00', '#fdd835', '#43a047', '#1e88e5', '#8e24aa', '#6d4c41', '#f48fb1'];
+const PAINT_TEMPLATES = { // έτοιμες ζωγραφιές με μαύρο περίγραμμα για «Γέμισμα»
+  house: c => { c.strokeRect(300, 240, 300, 220); c.beginPath(); c.moveTo(270, 240); c.lineTo(450, 90); c.lineTo(630, 240); c.closePath(); c.stroke(); c.strokeRect(410, 340, 80, 120); c.strokeRect(330, 280, 60, 60); c.strokeRect(510, 280, 60, 60); c.beginPath(); c.arc(760, 110, 60, 0, 7); c.stroke(); },
+  fish: c => { c.beginPath(); c.ellipse(430, 260, 220, 130, 0, 0, 7); c.stroke(); c.beginPath(); c.moveTo(640, 260); c.lineTo(800, 150); c.lineTo(800, 370); c.closePath(); c.stroke(); c.beginPath(); c.arc(320, 230, 25, 0, 7); c.stroke(); c.beginPath(); c.moveTo(430, 130); c.quadraticCurveTo(480, 60, 560, 150); c.stroke(); },
+  chick: c => { c.beginPath(); c.arc(450, 320, 150, 0, 7); c.stroke(); c.beginPath(); c.arc(450, 140, 85, 0, 7); c.stroke(); c.beginPath(); c.arc(480, 120, 14, 0, 7); c.stroke(); c.beginPath(); c.moveTo(530, 140); c.lineTo(590, 155); c.lineTo(530, 170); c.closePath(); c.stroke(); c.beginPath(); c.ellipse(390, 330, 70, 45, -0.4, 0, 7); c.stroke(); },
+};
+RENDER.paint = (act, area) => {
+  const W = 900, H = 500;
+  const box = el('div', 'pt'), side = el('div', 'tasks');
+  area.append(box, side);
+  const tools = act.tools || Object.keys(PAINT_TOOLS);
+  let tool = tools[0], color = '#e53935', size = 6, filled = false, stampEm = '🐧', ti = 0;
+  const left = el('div', 'pttools'), right = el('div', 'ptopts'), mid = el('div', 'ptmid');
+  const cv = el('canvas'); cv.width = W; cv.height = H;
+  const c = cv.getContext('2d');
+  const pal = el('div', 'ptpal');
+  mid.append(cv, pal);
+  box.append(left, mid, right);
+  const undo = [];
+  const snap = () => { undo.push(c.getImageData(0, 0, W, H)); if (undo.length > 25) undo.shift(); };
+  function event(e) {
+    if (!act.tasks || ti >= act.tasks.length || !act.tasks[ti][1](e)) return;
+    ti++; drawTasks();
+    if (ti === act.tasks.length) complete(act.doneMsg || '🎉 Μπράβο! Τι ωραία ζωγραφιά!');
+    else say('✅ Σωστά!', 'good');
+  }
+  const drawTasks = () => { side.innerHTML = ''; (act.tasks || []).forEach(([t], i) => side.appendChild(el('div', 'task' + (i < ti ? ' ok' : i === ti ? ' cur' : ''), (i < ti ? '✅ ' : `${i + 1}. `) + t))); };
+  const blank = tpl => { c.fillStyle = '#fff'; c.fillRect(0, 0, W, H); if (tpl) { c.strokeStyle = '#000'; c.lineWidth = 5; PAINT_TEMPLATES[tpl](c); } };
+  function drawTools() {
+    left.innerHTML = '';
+    tools.forEach(t => { const b = el('button', 'pttool' + (t === tool ? ' on' : ''), PAINT_TOOLS[t]); b.onclick = () => { tool = t; drawTools(); drawOpts(); event({ t: 'tool', tool: t }); }; left.appendChild(b); });
+    const u = el('button', 'pttool', '↩️ Αναίρεση');
+    u.onclick = () => { if (!undo.length) return say('Δεν υπάρχει τίποτα για αναίρεση.'); c.putImageData(undo.pop(), 0, 0); event({ t: 'undo' }); };
+    const nw = el('button', 'pttool', '🆕 Νέο');
+    nw.onclick = () => {
+      if (!act.templates) { snap(); blank(); return event({ t: 'new' }); }
+      const m = el('div', 'ptnew', '<b>🆕 Νέο:</b>');
+      [['', '⬜ Λευκή σελίδα'], ...act.templates.map(k => [k, { house: '🏠 Σπιτάκι', fish: '🐟 Ψαράκι', chick: '🐥 Κοτοπουλάκι' }[k]])].forEach(([k, t]) => {
+        const b = el('button', 'secondary', t); b.onclick = () => { m.remove(); snap(); blank(k); event({ t: 'new', template: k }); }; m.appendChild(b);
+      });
+      box.appendChild(m);
+    };
+    left.append(u, nw);
+  }
+  function drawOpts() {
+    right.innerHTML = '';
+    if (['pencil', 'brush', 'line', 'rect', 'ellipse', 'eraser'].includes(tool)) {
+      right.appendChild(el('div', 'pth', 'Πάχος'));
+      [[3, 'λεπτό'], [8, 'μεσαίο'], [18, 'χοντρό']].forEach(([s, n]) => {
+        const b = el('button', 'ptsize' + (s === size ? ' on' : ''), `<i style="height:${s}px"></i>${n}`);
+        b.onclick = () => { size = s; drawOpts(); event({ t: 'size', size: s }); }; right.appendChild(b);
+      });
+    }
+    if (['rect', 'ellipse'].includes(tool)) [[false, '▭ Περίγραμμα'], [true, '■ Γεμάτο']].forEach(([f, n]) => {
+      const b = el('button', 'ptsize' + (f === filled ? ' on' : ''), n); b.onclick = () => { filled = f; drawOpts(); event({ t: 'filled', filled: f }); }; right.appendChild(b);
+    });
+    if (tool === 'brush' || tool === 'stamp') {
+      right.appendChild(el('div', 'pth', tool === 'brush' ? 'Σχέδιο πινέλου' : 'Σφραγίδες'));
+      (tool === 'brush' ? ['●', '⭐', '🌸', '🐾', '💧'] : ['🐧', '🐱', '🌳', '🚗', '🦋', '🌞']).forEach(s => {
+        const b = el('button', 'ptsize' + (s === stampEm ? ' on' : ''), s); b.onclick = () => { stampEm = s; drawOpts(); event({ t: 'pattern', em: s }); }; right.appendChild(b);
+      });
+    }
+  }
+  PAINT_COLORS.forEach(col => { const b = el('button', 'ptcol'); b.style.background = col; b.onclick = () => { color = col; pal.querySelectorAll('.ptcol').forEach(o => o.classList.toggle('on', o === b)); event({ t: 'color', color: col }); }; if (col === color) b.classList.add('on'); pal.appendChild(b); });
+  if (act.mix) { const mix = el('input'); mix.type = 'color'; mix.value = '#00bcd4'; mix.title = 'Φτιάξε δικό σου χρώμα'; mix.oninput = () => { color = mix.value; pal.querySelectorAll('.ptcol').forEach(o => o.classList.remove('on')); event({ t: 'color', color, mix: true }); }; pal.append(el('span', '', '🎨 Δικό μου:'), mix); }
+
+  const xy = ev => { const r = cv.getBoundingClientRect(); return [(ev.clientX - r.left) * W / r.width, (ev.clientY - r.top) * H / r.height]; };
+  const stampAt = (x, y, em, s) => { c.font = `${s}px sans-serif`; c.textAlign = 'center'; c.textBaseline = 'middle'; c.fillStyle = color; c.fillText(em, x, y); };
+  function shape(x0, y0, x1, y1) {
+    c.strokeStyle = c.fillStyle = color; c.lineWidth = size; c.lineCap = 'round';
+    c.beginPath();
+    if (tool === 'line') { c.moveTo(x0, y0); c.lineTo(x1, y1); return c.stroke(); }
+    if (tool === 'rect') c.rect(Math.min(x0, x1), Math.min(y0, y1), Math.abs(x1 - x0), Math.abs(y1 - y0));
+    else c.ellipse((x0 + x1) / 2, (y0 + y1) / 2, Math.abs(x1 - x0) / 2 + 0.5, Math.abs(y1 - y0) / 2 + 0.5, 0, 0, 7);
+    filled ? c.fill() : c.stroke();
+  }
+  const flood = (x, y) => floodFill(c, W, H, x, y, color);
+  let start = null, base = null, lastP = null, moved = 0;
+  cv.onpointerdown = ev => {
+    ev.preventDefault(); cv.setPointerCapture(ev.pointerId);
+    box.querySelector('.ptnew')?.remove();
+    const [x, y] = xy(ev);
+    snap();
+    if (tool === 'fill') { flood(x, y); return event({ t: 'fill', color }); }
+    if (tool === 'stamp') { stampAt(x, y, stampEm, 70); return event({ t: 'stamp', em: stampEm }); }
+    if (tool === 'text') {
+      box.querySelector('.pttext')?.remove();
+      const inp = el('input', 'pttext');
+      const k = cv.offsetWidth / W;
+      Object.assign(inp.style, { left: cv.offsetLeft + x * k + 'px', top: cv.offsetTop + y * k - 22 + 'px', color });
+      inp.placeholder = 'Γράψε… και Enter';
+      inp.onkeydown = e => { e.stopPropagation(); if (e.key === 'Enter') { const t = inp.value.trim(); inp.remove(); if (!t) return; c.font = 'bold 40px sans-serif'; c.textAlign = 'left'; c.textBaseline = 'middle'; c.fillStyle = color; c.fillText(t, x, y); event({ t: 'text', text: t }); } };
+      mid.appendChild(inp); setTimeout(() => inp.focus(), 0);
+      return;
+    }
+    start = [x, y]; lastP = [x, y]; moved = 0; base = c.getImageData(0, 0, W, H);
+    if (tool === 'pencil' || tool === 'eraser') { c.fillStyle = tool === 'eraser' ? '#fff' : color; c.beginPath(); c.arc(x, y, size / 2, 0, 7); c.fill(); }
+    if (tool === 'brush') stampAt(x, y, stampEm, size * 3 + 14);
+  };
+  cv.onpointermove = ev => {
+    if (!start) return;
+    const [x, y] = xy(ev);
+    moved += Math.hypot(x - lastP[0], y - lastP[1]);
+    if (tool === 'pencil' || tool === 'eraser') {
+      c.strokeStyle = tool === 'eraser' ? '#fff' : color; c.lineWidth = tool === 'eraser' ? size * 2 : size; c.lineCap = 'round';
+      c.beginPath(); c.moveTo(...lastP); c.lineTo(x, y); c.stroke(); lastP = [x, y];
+    } else if (tool === 'brush') { if (Math.hypot(x - lastP[0], y - lastP[1]) > size * 2 + 14) { stampAt(x, y, stampEm, size * 3 + 14); lastP = [x, y]; } }
+    else { c.putImageData(base, 0, 0); shape(...start, x, y); }
+  };
+  cv.onpointerup = ev => {
+    if (!start) return;
+    const [x, y] = xy(ev);
+    const s = start; start = null;
+    if (['line', 'rect', 'ellipse'].includes(tool)) { c.putImageData(base, 0, 0); if (Math.hypot(x - s[0], y - s[1]) < 6) return say('Κράτα πατημένο και <b>σύρε</b> για να φτιάξεις το σχήμα!'); shape(...s, x, y); }
+    event({ t: tool === 'eraser' ? 'erase' : 'draw', tool, color, size, filled, len: moved });
+  };
+  blank(act.template);
+  drawTools(); drawOpts(); drawTasks();
 };
 
 // ---- Γράμματα σε δυαδικό: gr5 = Α 00001 … Ω 11000 (Δ΄ έκδ. 6.0 σελ. 46) · ascii = A 01000001 …
