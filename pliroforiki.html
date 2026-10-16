@@ -374,6 +374,50 @@
   .brprog { position: absolute; left: 14px; right: 14px; bottom: 12px; height: 8px; background: #546e7a; border-radius: 4px; overflow: hidden; } .brprog i { display: block; height: 100%; width: 0; background: #e53935; }
   .brdlg { position: absolute; right: 14px; top: 96px; z-index: 20; background: #fff; border-radius: 12px; box-shadow: 0 8px 26px rgba(0,0,0,0.35); padding: 14px 18px; display: flex; flex-direction: column; gap: 8px; width: 360px; }
   .brdlg input { font-size: 19px; padding: 5px 10px; border: 1px solid #90a4ae; border-radius: 8px; } .brdlg button { font-size: 18px; padding: 8px 14px; box-shadow: none; }
+  /* επεξεργαστής κειμένου */
+  .ed { position: relative; width: 980px; height: 620px; flex: none; background: #eceff1; color: #263238; border-radius: 14px; display: flex; flex-direction: column; overflow: hidden; box-shadow: 0 10px 30px rgba(0,0,0,0.35); }
+  .edtitle { background: #1565c0; color: #fff; padding: 6px 14px; font-size: 18px; }
+  .edbar { display: flex; gap: 5px; padding: 6px 10px; align-items: center; flex-wrap: wrap; background: #f5f7fb; border-bottom: 1px solid #cfd8dc; }
+  .edb { background: #fff; color: #263238; box-shadow: none; border: 1px solid #b0bec5; font-size: 19px; padding: 4px 10px; border-radius: 6px; } .edb:hover { background: #e3f2fd; }
+  .eds { font-size: 16px; padding: 4px; border-radius: 6px; } .edcols { display: inline-flex; gap: 3px; } .edcol { width: 26px; height: 26px; padding: 0; border-radius: 50%; box-shadow: none; border: 2px solid #fff; outline: 1px solid #b0bec5; }
+  .eddoc { flex: 1; margin: 14px auto; width: 760px; background: #fff; padding: 30px 40px; font-size: 22px; line-height: 1.5; overflow-y: auto; text-align: left; user-select: text; outline: none; box-shadow: 0 2px 8px rgba(0,0,0,0.2); font-family: Arial, sans-serif; color: #212121; touch-action: pan-y; }
+  .eddoc .edimg { font-size: 60px; }
+  .edpop { position: absolute; left: 50%; top: 110px; transform: translateX(-50%); z-index: 20; background: #fff; border-radius: 14px; box-shadow: 0 8px 26px rgba(0,0,0,0.35); padding: 14px; display: flex; flex-wrap: wrap; gap: 8px; align-items: center; max-width: 560px; font-size: 20px; color: #263238; }
+  .edpop b { width: 100%; } .edpop button { font-size: 26px; padding: 6px 12px; } .edpop input { flex: 1; font-size: 20px; padding: 5px 10px; }
+  /* παρουσιάσεις */
+  .sl { position: relative; width: 1000px; height: 620px; flex: none; background: #eceff1; color: #263238; border-radius: 14px; display: flex; flex-direction: column; overflow: hidden; box-shadow: 0 10px 30px rgba(0,0,0,0.35); }
+  .slbar { display: flex; gap: 5px; padding: 6px 10px; flex-wrap: wrap; background: #f5f7fb; border-bottom: 1px solid #cfd8dc; } .slbar button { font-size: 16px; padding: 6px 10px; box-shadow: none; }
+  .slbody { flex: 1; display: flex; min-height: 0; } .sllist { width: 190px; overflow-y: auto; padding: 8px; display: flex; flex-direction: column; gap: 8px; background: #e0e4e8; touch-action: pan-y; }
+  .slthumb { display: flex; gap: 4px; cursor: pointer; } .slthumb b { font-size: 14px; } .slthumb .slv { width: 150px; height: 84px; font-size: 7px; padding: 4px; pointer-events: none; outline: 1px solid #b0bec5; }
+  .slthumb.on .slv { outline: 3px solid #fb8c00; } .slthumb .slv .slt { font-size: 11px; } .slthumb .slv .slx { font-size: 7px; } .slthumb .slv .slem { font-size: 22px; } .slthumb .slv { gap: 2px; }
+  .slmain { flex: 1; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 6px; }
+  .slv { width: 720px; height: 405px; background: #fff; display: flex; flex-direction: column; align-items: center; gap: 10px; padding: 24px; box-shadow: 0 3px 10px rgba(0,0,0,0.25); overflow: hidden; text-align: center; }
+  .slv .slt { font-size: 36px; font-weight: bold; width: 100%; text-align: center; color: inherit; } .slv .slx { font-size: 22px; width: 100%; flex: 1; color: inherit; white-space: normal; }
+  .slv input.slt, .slv textarea.slx { background: transparent; border: 2px dashed rgba(120,144,156,0.6); border-radius: 6px; font-family: inherit; padding: 4px; resize: none; }
+  .slv .slem { font-size: 90px; line-height: 1; cursor: pointer; } .slinfo { font-size: 16px; color: #546e7a; }
+  .slsw { display: inline-block; width: 30px; height: 20px; vertical-align: middle; border: 1px solid #90a4ae; }
+  .slshow { position: absolute; inset: 0; background: #000; z-index: 40; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 8px; cursor: pointer; } .slshow small { color: #90a4ae; font-size: 14px; }
+  .slv.big { width: 960px; height: 540px; } .slv.big .slt { font-size: 52px; } .slv.big .slx { font-size: 30px; } .slv.big .slem { font-size: 140px; }
+  .tr-fade { animation: trfade 0.9s; } .tr-slide { animation: trslide 0.7s; } .tr-zoom { animation: trzoom 0.7s; } .slem.fly { animation: trfly 1.2s; }
+  @keyframes trfade { from { opacity: 0; } } @keyframes trslide { from { transform: translateX(100%); } } @keyframes trzoom { from { transform: scale(0.1); } } @keyframes trfly { from { transform: translate(-500px, 200px) rotate(-90deg); opacity: 0; } }
+  /* ηλεκτρονικό ταχυδρομείο */
+  .ml { position: relative; width: 980px; height: 620px; flex: none; background: #fff; color: #263238; border-radius: 14px; display: flex; flex-direction: column; overflow: hidden; box-shadow: 0 10px 30px rgba(0,0,0,0.35); font-size: 19px; }
+  .mltop { display: flex; gap: 12px; align-items: center; padding: 8px 12px; background: #e3f2fd; } .mltop span { flex: 1; } .mltop button { font-size: 18px; padding: 8px 14px; box-shadow: none; }
+  .mlmain { flex: 1; display: flex; min-height: 0; } .mlnav { width: 220px; background: #f5f7fb; border-right: 1px solid #cfd8dc; padding: 8px; display: flex; flex-direction: column; gap: 4px; }
+  .mlnav div { padding: 8px 10px; border-radius: 8px; cursor: pointer; } .mlnav div.on { background: #bbdefb; }
+  .mllist { flex: 1; overflow-y: auto; touch-action: pan-y; text-align: left; } .mlrow { display: grid; grid-template-columns: 220px 1fr auto; gap: 10px; padding: 10px 14px; border-bottom: 1px solid #eceff1; cursor: pointer; } .mlrow:hover { background: #f1f8ff; }
+  .mlrow.unread { font-weight: bold; background: #fffde7; } .mlrow span { overflow: hidden; white-space: nowrap; text-overflow: ellipsis; } .mlrow b { font-weight: inherit; } .mlrow small { color: #78909c; } .mlempty { padding: 30px; color: #90a4ae; }
+  .mlread { padding: 14px 20px; display: flex; flex-direction: column; gap: 8px; } .mltext { background: #fafafa; border-radius: 8px; padding: 12px; line-height: 1.5; user-select: text; } .mlread > button { align-self: flex-start; font-size: 17px; box-shadow: none; }
+  .mlacts { display: flex; gap: 6px; flex-wrap: wrap; align-items: center; } .mlacts button { font-size: 16px; padding: 6px 12px; box-shadow: none; } .mlatt { font-size: 16px; color: #1565c0; }
+  .mlcomp { position: absolute; right: 14px; bottom: 14px; width: 560px; background: #fff; border-radius: 12px; box-shadow: 0 8px 30px rgba(0,0,0,0.45); padding: 12px; display: flex; flex-direction: column; gap: 6px; z-index: 10; }
+  .mlcomp input, .mlcomp textarea { font-size: 18px; padding: 6px 10px; border: 1px solid #b0bec5; border-radius: 6px; font-family: inherit; } .mlcomp textarea { height: 170px; resize: none; }
+  .mllogin { margin: auto; display: flex; flex-direction: column; gap: 10px; align-items: center; width: 380px; } .mllogin input { width: 100%; font-size: 20px; padding: 8px 12px; border: 1px solid #90a4ae; border-radius: 8px; } .mllogin small { color: #e65100; }
+  /* κινούμενο σχέδιο */
+  .an { width: 1000px; flex: none; background: #fff; color: #263238; border-radius: 14px; padding: 12px; display: flex; flex-direction: column; gap: 8px; box-shadow: 0 10px 30px rgba(0,0,0,0.35); }
+  .anscreen { align-self: center; } .anf { width: 300px; height: 200px; border: 3px solid #37474f; border-radius: 8px; background: #fffde7; position: relative; overflow: hidden; font-size: 60px; }
+  .anf.sm { width: 105px; height: 70px; font-size: 21px; border-width: 2px; } .anctl { display: flex; gap: 10px; align-items: center; justify-content: center; font-size: 18px; } .anctl button { font-size: 18px; padding: 8px 14px; }
+  .anh { font-size: 16px; color: #546e7a; text-align: left; } .antl, .anpool { display: flex; gap: 6px; flex-wrap: wrap; min-height: 80px; background: #eceff1; border-radius: 8px; padding: 6px; align-items: center; }
+  .anslot { cursor: pointer; position: relative; } .anslot small { position: absolute; right: 4px; bottom: 2px; font-size: 13px; font-weight: bold; } .anslot.used { opacity: 0.3; cursor: default; }
   /* Tux Paint */
   .tux { position: relative; display: grid; grid-template-columns: 172px 700px 150px; gap: 6px; background: #fff; color: #263238; padding: 8px; border-radius: 14px; flex: none; box-shadow: 0 10px 30px rgba(0,0,0,0.35); }
   .tux canvas { width: 700px; height: 420px; cursor: crosshair; touch-action: none; outline: 2px solid #90a4ae; }
@@ -6699,6 +6743,10 @@ const GUIDE = {
   whois: 'Διαβάστε την περιγραφή και πατήστε την κάρτα που ταιριάζει — ή απαντήστε «Αλήθεια» / «Ψέμα» για την κάρτα με το πορτοκαλί πλαίσιο.',
   rulesgame: 'Κινήστε τον ήρωα με τα βελάκια (ή τα πλήκτρα ← ↑ → ↓). Δείτε ποιον κανόνα εφαρμόζει ο υπολογιστής σε κάθε κίνηση.',
   edison: 'Πατήστε ένα τετράγωνο για να βάλετε ένα ✋ εμπόδιο (ξανά για να το βγάλετε) και μετά «▶ Εκτέλεση».',
+  editor: 'Γράψτε στη σελίδα. Για να αλλάξετε μορφή, πρώτα επιλέξτε το κείμενο (σύρετε από πάνω του) και μετά πατήστε κουμπί στη γραμμή εργαλείων.',
+  slides: 'Πατήστε στον τίτλο ή στο κείμενο της διαφάνειας για να γράψετε. Αριστερά οι διαφάνειες · ▶ Προβολή για να τη δείτε όπως το κοινό.',
+  mail: 'Κάντε με τη σειρά τις εργασίες δεξιά. Κλικ σε μήνυμα για να το διαβάσετε · ✏️ Σύνταξη για νέο μήνυμα.',
+  anim: 'Πατήστε τις εικόνες με τη σειρά που γίνεται η κίνηση, μετά «▶ Αναπαραγωγή». Με τον δρομέα αλλάζετε ταχύτητα.',
   tux: 'Όπως στο Tux Paint: εργαλεία (Tools) αριστερά, επιλογές δεξιά, χρώματα (Colors) κάτω. Ο Tux 🐧 κάτω εξηγεί κάθε εργαλείο.',
   'mouse.parts': 'Πατήστε πάνω στο ποντίκι το μέρος που ζητάει η εργασία.',
   'mouse.buttons': 'Χρησιμοποιήστε το ΔΙΚΟ σας ποντίκι: αριστερό κλικ, δεξί κλικ ή ροδέλα, ό,τι ζητάει η εργασία.',
@@ -6717,7 +6765,8 @@ const KIND_NAMES = { info: '📖 Διαβάζω', theory: '📘 Θεωρία', o
   pick: '🎯 Ποιο πρόγραμμα;', mcq: '❓ Ερωτήσεις', match: '🔗 Ταίριασμα', sort: '🗂️ Ταξινόμηση', dots: '✏️ Ενώνω τις τελείες', net: '🔗 Φτιάχνω δίκτυο', pixels: '🖼️ Εικονοστοιχεία', binword: '🔤 Γράμματα σε bit', conceptmap: '🗺️ Εννοιολογικός χάρτης', sheet: '📊 Υπολογιστικό φύλλο', mltrain: '🤖 Εκπαιδεύω μια μηχανή', files: '📂 Αρχεία και φάκελοι', password: '🔑 Συνθηματικό',
   counter: '🔢 Μετράμε', bits: '💡 Λάμπες', bracelet: '📿 Βραχιόλι', sticks: '🪵 Ξυλάκια',
   logic: '💡 Λογικές εκφράσεις', whois: '🔎 Βρες ποιος είναι', rulesgame: '🎮 Οι κανόνες του παιχνιδιού', edison: '🤖 Ρομπότ εδάφους', scratch: '🐱 Scratch', guess: '🔢 Μάντεψε τον αριθμό', microbit: '📟 micro:bit', stepper: '👣 Βήμα-βήμα', desktop: '🖥️ Επιφάνεια εργασίας', dress: '👕 Ντύσε τον Ήρωνα', decision: '🔀 Σχεδιάγραμμα απόφασης', board: '🎲 Επιτραπέζιο', river: '🚣 Γρίφος', caesar: '🔐 Κρυπτογράφηση',
-  mouse: '🖱️ Παίζω με το ποντίκι', keys: '⌨️ Πληκτρολόγιο', browser: '🌐 Περιηγητής', paint: '🎨 Ζωγραφική', tux: '🐧 Tux Paint' };
+  mouse: '🖱️ Παίζω με το ποντίκι', keys: '⌨️ Πληκτρολόγιο', browser: '🌐 Περιηγητής', paint: '🎨 Ζωγραφική', tux: '🐧 Tux Paint',
+  editor: '📝 Επεξεργαστής κειμένου', slides: '📽️ Παρουσίαση', mail: '✉️ Ηλεκτρονικό ταχυδρομείο', anim: '🎞️ Κινούμενο σχέδιο' };
 
 // ============================================================================
 // ΓΕΝΙΚΑ
@@ -9617,7 +9666,7 @@ RENDER.keys = (act, area) => {
 //      πίνακας ανακοινώσεων, βίντεο. Οι σελίδες είναι HTML με «άγκιστρα»: data-go, data-post, data-board, data-video, data-search
 const urlNorm = u => norm(u).replace(/^https?:\/\//, '').replace(/^www\./, '').replace(/\/+$/, '');
 RENDER.browser = (act, area) => {
-  const pages = act.pages, box = el('div', 'br'), side = el('div', 'tasks');
+  const pages = JSON.parse(JSON.stringify(act.pages)), box = el('div', 'br'), side = el('div', 'tasks'); // αντίγραφο: οι νέες αναρτήσεις μένουν μόνο σε αυτή την επίσκεψη
   area.append(box, side);
   const marks = (act.bookmarks || []).map(k => ({ key: k, name: pages[k].title }));
   let hist = [], hi = -1, ti = 0, query = '';
@@ -9675,21 +9724,43 @@ RENDER.browser = (act, area) => {
       b.onclick = run;
       s.append(inp, b);
     });
-    page.querySelectorAll('[data-post]').forEach(p => {
-      const id = p.dataset.post, st = (posts[id] = posts[id] || { like: false, comments: [] });
-      const ft = el('div', 'brpostft');
-      const like = el('button', 'brlike' + (st.like ? ' on' : ''), (st.like ? '❤️' : '🤍') + ' Μου αρέσει');
-      like.onclick = () => { st.like = !st.like; like.className = 'brlike' + (st.like ? ' on' : ''); like.textContent = (st.like ? '❤️' : '🤍') + ' Μου αρέσει'; if (st.like) event({ t: 'like', post: id }); };
-      const list = el('div', 'brcomments');
-      const drawC = () => { list.innerHTML = st.comments.map(c => `<div>🧒 ${escHTML(c)}</div>`).join(''); };
-      const inp = el('input'); inp.placeholder = 'Γράψε ένα σχόλιο και πάτα Enter…';
-      const send = () => { const t = inp.value.trim(); if (!t) return; st.comments.push(t); inp.value = ''; drawC(); event({ t: 'comment', post: id, text: t }); };
-      inp.onkeydown = e => { e.stopPropagation(); if (e.key === 'Enter') send(); };
-      const emo = el('span', 'bremo');
-      ['😀', '👍', '❤️', '⭐', '👏'].forEach(s => { const b = el('button', '', s); b.onclick = () => { inp.value += s; inp.focus(); }; emo.appendChild(b); });
-      ft.append(like, emo, inp);
-      drawC(); p.append(ft, list);
+    page.querySelectorAll('[data-post]').forEach(wirePost);
+    wireRest();
+    page.querySelectorAll('[data-form]').forEach(f => {
+      f.querySelectorAll('input, textarea, select').forEach(i => { i.onkeydown = e => e.stopPropagation(); });
+      const b = f.querySelector('[data-submit]');
+      if (b) b.onclick = () => {
+        const values = Object.fromEntries([...f.querySelectorAll('[name]')].map(i => [i.name, i.type === 'checkbox' ? i.checked : i.type === 'radio' ? (i.checked ? i.value : undefined) : i.value.trim()]).filter(([, v]) => v !== undefined));
+        if (f.dataset.need && f.dataset.need.split(',').some(n => !values[n])) return say('Συμπλήρωσε όλα τα πεδία με τα αστεράκια!', 'bad');
+        if (f.dataset.append) { // νέα ανάρτηση/άρθρο πάνω-πάνω στη λίστα
+          const id = 'new' + Date.now(), html = `<div data-post="${id}"><b>${values.author ? escHTML(values.author) + ': ' : ''}${escHTML(values.title || '')}</b>${values.tags ? ` <small>🏷️ ${escHTML(values.tags)}</small>` : ''}<p>${escHTML(values.body || '')}</p></div>`;
+          const k = cur(), mark = `id="${f.dataset.append}">`;
+          pages[k].html = pages[k].html.replace(mark, mark + html);
+          page.querySelector('#' + f.dataset.append).insertAdjacentHTML('afterbegin', html);
+          wirePost(page.querySelector(`[data-post="${id}"]`));
+          f.querySelectorAll('input:not([type=checkbox]):not([type=radio]), textarea').forEach(i => { i.value = ''; });
+          say(f.dataset.ok || '✅ Δημοσιεύτηκε!', 'good');
+        } else say(f.dataset.ok || '✅ Αποθηκεύτηκε!', 'good');
+        event({ t: 'submit', form: f.dataset.form, values, page: cur() });
+      };
     });
+  }
+  function wirePost(p) {
+    const id = p.dataset.post, st = (posts[id] = posts[id] || { like: false, comments: [] });
+    const ft = el('div', 'brpostft');
+    const like = el('button', 'brlike' + (st.like ? ' on' : ''), (st.like ? '❤️' : '🤍') + ' Μου αρέσει');
+    like.onclick = () => { st.like = !st.like; like.className = 'brlike' + (st.like ? ' on' : ''); like.textContent = (st.like ? '❤️' : '🤍') + ' Μου αρέσει'; if (st.like) event({ t: 'like', post: id }); };
+    const list = el('div', 'brcomments');
+    const drawC = () => { list.innerHTML = st.comments.map(c => `<div>🧒 ${escHTML(c)}</div>`).join(''); };
+    const inp = el('input'); inp.placeholder = 'Γράψε ένα σχόλιο και πάτα Enter…';
+    const send = () => { const t = inp.value.trim(); if (!t) return; st.comments.push(t); inp.value = ''; drawC(); event({ t: 'comment', post: id, text: t }); };
+    inp.onkeydown = e => { e.stopPropagation(); if (e.key === 'Enter') send(); };
+    const emo = el('span', 'bremo');
+    ['😀', '👍', '❤️', '⭐', '👏'].forEach(s => { const b = el('button', '', s); b.onclick = () => { inp.value += s; inp.focus(); }; emo.appendChild(b); });
+    ft.append(like, emo, inp);
+    drawC(); p.append(ft, list);
+  }
+  function wireRest() {
     page.querySelectorAll('[data-board]').forEach(bd => {
       const notes = el('div', 'brnotes'), inp = el('input'), b = el('button', '', '📌 Δημοσίευση');
       inp.placeholder = 'Γράψε την ανακοίνωσή σου…';
@@ -10123,6 +10194,269 @@ RENDER.paint = (act, area) => {
   };
   blank(act.template);
   drawTools(); drawOpts(); drawTasks();
+};
+
+// κοινό για τις «εφαρμογές» με λίστα εργασιών δεξιά: event(e) προχωράει την τρέχουσα εργασία όταν το κατηγόρημά της είναι αληθές
+function taskRunner(act, side, doneDefault) {
+  let ti = 0;
+  const draw = () => { side.innerHTML = ''; (act.tasks || []).forEach(([t], i) => side.appendChild(el('div', 'task' + (i < ti ? ' ok' : i === ti ? ' cur' : ''), (i < ti ? '✅ ' : `${i + 1}. `) + t))); };
+  draw();
+  return e => {
+    if (!act.tasks || ti >= act.tasks.length || !act.tasks[ti][1](e)) return;
+    ti++; draw();
+    if (ti === act.tasks.length) complete(act.doneMsg || doneDefault);
+    else say('✅ Σωστά!', 'good');
+  };
+}
+// βοηθοί για τα κατηγορήματα του επεξεργαστή κειμένου: έχει <sel> με το κείμενο; πώς είναι στοιχισμένη η παράγραφος με το κείμενο;
+const edHas = (doc, sel, txt) => [...doc.querySelectorAll(sel)].some(e => norm(e.textContent).includes(norm(txt)));
+const edAlign = (doc, txt) => { const b = [...doc.querySelectorAll('div, p, h1, h2, li')].filter(e => norm(e.textContent).includes(norm(txt))).pop(); return b ? getComputedStyle(b).textAlign : 'start'; };
+
+// ---- Επεξεργαστής κειμένου (Β΄–ΣΤ΄): γράφω, επιλέγω, Β Ι U, μέγεθος, γραμματοσειρά, χρώμα, στοίχιση, κουκκίδες, εικόνα, αναίρεση
+RENDER.editor = (act, area) => {
+  const box = el('div', 'ed'), side = el('div', 'tasks');
+  area.append(box, side);
+  const event = taskRunner(act, side, '🎉 Μπράβο! Το κείμενό σου είναι έτοιμο!');
+  const bar = el('div', 'edbar'), doc = el('div', 'eddoc scrollable');
+  doc.contentEditable = 'true'; doc.spellcheck = false;
+  doc.innerHTML = act.html || '<div><br></div>';
+  box.append(el('div', 'edtitle', `📝 ${act.app || 'Επεξεργαστής κειμένου'} — ${act.file || 'Έγγραφο χωρίς τίτλο'}`), bar, doc);
+  const fire = (t, extra) => event({ t, doc, text: doc.innerText, sel: String(getSelection()), ...extra });
+  const cmd = (c, v) => { doc.focus(); document.execCommand('styleWithCSS', false, false); document.execCommand(c, false, v); fire('cmd', { cmd: c, value: v }); };
+  const tools = act.tools || ['undo', 'font', 'size', 'bold', 'italic', 'underline', 'color', 'left', 'center', 'right', 'justify', 'list', 'image'];
+  const B = (html, title, f) => { const b = el('button', 'edb', html); b.title = title; b.onpointerdown = e => e.preventDefault(); b.onclick = f; bar.appendChild(b); return b; };
+  const sel = (opts, title, f) => { const s = el('select', 'eds'); s.title = title; opts.forEach(([v, t]) => s.appendChild(new Option(t, v))); s.onchange = () => { f(s.value); s.selectedIndex = 0; }; bar.appendChild(s); };
+  const T = {
+    undo: () => B('↩️', 'Αναίρεση', () => cmd('undo')),
+    font: () => sel([['', 'Γραμματοσειρά'], ['Arial', 'Arial'], ['Times New Roman', 'Times New Roman'], ['Comic Sans MS', 'Comic Sans'], ['Courier New', 'Courier New']], 'Γραμματοσειρά', v => cmd('fontName', v)),
+    size: () => sel([['', 'Μέγεθος'], ['2', '10 — μικρά'], ['3', '12 — κανονικά'], ['4', '14'], ['5', '18 — μεγάλα'], ['6', '24'], ['7', '36 — πολύ μεγάλα']], 'Μέγεθος γραμμάτων', v => cmd('fontSize', v)),
+    bold: () => B('<b>B</b>', 'Έντονα (Ctrl+B)', () => cmd('bold')),
+    italic: () => B('<i>I</i>', 'Πλάγια (Ctrl+I)', () => cmd('italic')),
+    underline: () => B('<u>U</u>', 'Υπογράμμιση (Ctrl+U)', () => cmd('underline')),
+    color: () => { const w = el('span', 'edcols'); ['#000000', '#e53935', '#1e88e5', '#43a047', '#fb8c00', '#8e24aa'].forEach(c => { const b = el('button', 'edcol'); b.style.background = c; b.title = 'Χρώμα γραμμάτων'; b.onpointerdown = e => e.preventDefault(); b.onclick = () => cmd('foreColor', c); w.appendChild(b); }); bar.appendChild(w); },
+    left: () => B('⫷', 'Στοίχιση αριστερά', () => cmd('justifyLeft')),
+    center: () => B('☰', 'Στοίχιση στο κέντρο', () => cmd('justifyCenter')),
+    right: () => B('⫸', 'Στοίχιση δεξιά', () => cmd('justifyRight')),
+    justify: () => B('≣', 'Πλήρης στοίχιση', () => cmd('justifyFull')),
+    list: () => B('• ≡', 'Κουκκίδες', () => cmd('insertUnorderedList')),
+    image: () => B('🖼️ Εικόνα', 'Εισαγωγή εικόνας', () => {
+      box.querySelector('.edpop')?.remove();
+      const m = el('div', 'edpop', '<b>🖼️ Εισαγωγή εικόνας:</b>');
+      (act.images || ['🌳', '🐬', '🏛️', '🌋', '🚀', '🍎', '⚽', '🎨']).forEach(em => { const b = el('button', 'secondary', em); b.onpointerdown = e => e.preventDefault(); b.onclick = () => { m.remove(); cmd('insertHTML', `<span class="edimg">${em}</span>&nbsp;`); fire('image', { em }); }; m.appendChild(b); });
+      box.appendChild(m);
+    }),
+  };
+  tools.forEach(k => T[k]());
+  if (act.save) B('💾 Αποθήκευση', 'Αποθήκευση', () => {
+    box.querySelector('.edpop')?.remove();
+    const m = el('div', 'edpop', '<b>💾 Αποθήκευση ως:</b>'), inp = el('input'), ok = el('button', '', '💾 Αποθήκευση');
+    inp.value = act.file || 'Η εργασία μου';
+    ok.onclick = () => { const n = inp.value.trim(); if (!n) return; m.remove(); box.querySelector('.edtitle').textContent = `📝 ${act.app || 'Επεξεργαστής κειμένου'} — ${n}`; say(`💾 Αποθηκεύτηκε: ${n}`, 'good'); fire('save', { name: n }); };
+    inp.onkeydown = ev => { ev.stopPropagation(); if (ev.key === 'Enter') ok.onclick(); };
+    m.append(inp, ok); box.appendChild(m); inp.select();
+  });
+  let tm;
+  doc.oninput = () => { clearTimeout(tm); tm = setTimeout(() => fire('input'), 250); };
+  doc.onkeydown = e => { e.stopPropagation(); if (e.ctrlKey && ['b', 'i', 'u'].includes(e.key.toLowerCase())) setTimeout(() => fire('cmd', { cmd: { b: 'bold', i: 'italic', u: 'underline' }[e.key.toLowerCase()] }), 0); };
+  document.onselectionchange = () => { if (!doc.isConnected) { document.onselectionchange = null; return; } const s = String(getSelection()); if (s.trim().length > 1 && doc.contains(getSelection().anchorNode)) fire('select', { sel: s }); };
+};
+
+// ---- Παρουσιάσεις (Δ΄–ΣΤ΄): διαφάνειες με τίτλο, κείμενο, εικόνα, φόντο, εφέ μετάβασης και προβολή
+const SLIDE_BGS = [['#ffffff', 'Λευκό'], ['linear-gradient(135deg,#e3f2fd,#90caf9)', 'Ουρανός'], ['linear-gradient(135deg,#fff8e1,#ffcc80)', 'Ήλιος'], ['linear-gradient(135deg,#e8f5e9,#81c784)', 'Δάσος'], ['linear-gradient(135deg,#311b92,#7e57c2)', 'Νύχτα']];
+const TRANS = [['', 'Χωρίς εφέ'], ['fade', 'Σβήσιμο'], ['slide', 'Ολίσθηση'], ['zoom', 'Μεγέθυνση']];
+RENDER.slides = (act, area) => {
+  const box = el('div', 'sl'), side = el('div', 'tasks');
+  area.append(box, side);
+  const S = (act.slides || [{ title: '', body: '' }]).map(s => ({ title: '', body: '', em: '', bg: '#ffffff', trans: '', anim: false, ...s }));
+  let cur = 0;
+  const event = taskRunner(act, side, '🎉 Μπράβο! Η παρουσίασή σου είναι έτοιμη!');
+  const fire = (t, extra) => event({ t, slides: S, cur, s: S[cur], ...extra });
+  const bar = el('div', 'slbar'), list = el('div', 'sllist scrollable'), main = el('div', 'slmain');
+  box.append(bar, el('div', 'slbody'));
+  box.lastChild.append(list, main);
+  const B = (t, f) => { const b = el('button', 'secondary', t); b.onclick = f; bar.appendChild(b); return b; };
+  const popup = (title, items) => { box.querySelector('.edpop')?.remove(); const m = el('div', 'edpop', `<b>${title}</b>`); items.forEach(([h, f]) => { const b = el('button', 'secondary', h); b.onclick = () => { m.remove(); f(); }; m.appendChild(b); }); box.appendChild(m); return m; };
+  B('➕ Νέα διαφάνεια', () => { S.splice(cur + 1, 0, { title: '', body: '', em: '', bg: S[cur].bg, trans: '', anim: false }); cur++; draw(); fire('add', { n: S.length }); });
+  B('🖼️ Εικόνα', () => popup('🖼️ Διάλεξε εικόνα:', (act.images || ['🌍', '🐬', '🏛️', '🌋', '🚀', '🦉', '🌳', '⚽', '🎵', '🍎']).map(em => [em, () => { S[cur].em = em; draw(); fire('pic', { em }); }])));
+  B('🎨 Φόντο', () => popup('🎨 Φόντο διαφάνειας:', SLIDE_BGS.map(([bg, n]) => [`<span class="slsw" style="background:${bg}"></span> ${n}`, () => { S[cur].bg = bg; draw(); fire('bg', { bg }); }]).concat([['🎨 Σε όλες τις διαφάνειες', () => { S.forEach(s => { s.bg = S[cur].bg; }); draw(); fire('bgall'); }]])));
+  B('✨ Μετάβαση', () => popup('✨ Εφέ μετάβασης (όταν εμφανίζεται η διαφάνεια):', TRANS.map(([v, n]) => [n, () => { S[cur].trans = v; draw(); fire('trans', { v }); }])));
+  B('🎬 Κίνηση εικόνας', () => { S[cur].anim = !S[cur].anim; draw(); fire('anim', { on: S[cur].anim }); say(S[cur].anim ? '🎬 Η εικόνα θα «πετάξει» μέσα στην προβολή.' : 'Χωρίς κίνηση.'); });
+  B('⬆', () => { if (cur > 0) { [S[cur - 1], S[cur]] = [S[cur], S[cur - 1]]; cur--; draw(); fire('move'); } }).title = 'Μετακίνηση πάνω';
+  B('⬇', () => { if (cur < S.length - 1) { [S[cur + 1], S[cur]] = [S[cur], S[cur + 1]]; cur++; draw(); fire('move'); } }).title = 'Μετακίνηση κάτω';
+  B('🗑️', () => { if (S.length < 2) return say('Μια παρουσίαση έχει τουλάχιστον μία διαφάνεια.', 'bad'); S.splice(cur, 1); cur = Math.min(cur, S.length - 1); draw(); fire('del', { n: S.length }); }).title = 'Διαγραφή διαφάνειας';
+  B('▶ Προβολή', show).classList.remove('secondary');
+  const view = (s, big) => `<div class="slv${big ? ' big' : ''}" style="background:${s.bg};color:${s.bg.includes('311b92') ? '#fff' : '#263238'}"><div class="slt">${escHTML(s.title) || (big ? '' : '<i>Κάντε κλικ για να προσθέσετε τίτλο</i>')}</div>${s.em ? `<div class="slem${big && s.anim ? ' fly' : ''}">${s.em}</div>` : ''}<div class="slx">${escHTML(s.body).replace(/\n/g, '<br>') || (big ? '' : '<i>Κάντε κλικ για να προσθέσετε κείμενο</i>')}</div></div>`;
+  function draw() {
+    list.innerHTML = '';
+    S.forEach((s, i) => { const t = el('div', 'slthumb' + (i === cur ? ' on' : ''), `<b>${i + 1}</b>${view(s)}`); t.onclick = () => { cur = i; draw(); }; list.appendChild(t); });
+    main.innerHTML = '';
+    const s = S[cur], v = el('div', 'slv', '');
+    v.style.background = s.bg; v.style.color = s.bg.includes('311b92') ? '#fff' : '#263238';
+    const ti = el('input', 'slt'), bo = el('textarea', 'slx');
+    ti.placeholder = 'Κάντε κλικ για να προσθέσετε τίτλο'; bo.placeholder = 'Κάντε κλικ για να προσθέσετε κείμενο';
+    ti.value = s.title; bo.value = s.body;
+    ti.onkeydown = bo.onkeydown = e => e.stopPropagation();
+    ti.oninput = () => { s.title = ti.value; list.children[cur].innerHTML = `<b>${cur + 1}</b>${view(s)}`; };
+    bo.oninput = () => { s.body = bo.value; list.children[cur].innerHTML = `<b>${cur + 1}</b>${view(s)}`; };
+    ti.onchange = () => fire('title', { text: s.title });
+    bo.onchange = () => fire('body', { text: s.body });
+    v.append(ti);
+    if (s.em) { const p = el('div', 'slem', s.em); p.title = 'Πατήστε για να αφαιρέσετε την εικόνα'; p.onclick = () => { s.em = ''; draw(); }; v.append(p); }
+    v.append(bo);
+    main.append(v, el('div', 'slinfo', `Διαφάνεια ${cur + 1} από ${S.length}${s.trans ? ' · ✨ ' + TRANS.find(t => t[0] === s.trans)[1] : ''}${s.anim ? ' · 🎬 κίνηση' : ''}`));
+  }
+  function show() {
+    let i = 0;
+    const scr = el('div', 'slshow');
+    const step = () => {
+      if (i >= S.length) { scr.remove(); fire('end'); return say('🏁 Τέλος προβολής.'); }
+      scr.innerHTML = view(S[i], true) + '<small>Κλικ ή → για την επόμενη · Esc για έξοδο</small>';
+      scr.firstChild.classList.add('tr-' + (S[i].trans || 'none'));
+      i++;
+    };
+    scr.onclick = step;
+    const onKey = e => { if (!scr.isConnected) return removeEventListener('keydown', onKey); if (e.key === 'Escape') { scr.remove(); fire('exit'); } else if (['ArrowRight', ' ', 'Enter', 'PageDown'].includes(e.key)) { e.preventDefault(); step(); } };
+    addEventListener('keydown', onKey);
+    box.appendChild(scr);
+    fire('show');
+    step();
+  }
+  draw();
+};
+
+// ---- Ηλεκτρονικό ταχυδρομείο (Δ΄–ΣΤ΄): σύνδεση, εισερχόμενα, ανάγνωση, σύνταξη, απάντηση, προώθηση, συνημμένα, ανεπιθύμητα
+RENDER.mail = (act, area) => {
+  const box = el('div', 'ml'), side = el('div', 'tasks');
+  area.append(box, side);
+  const event = taskRunner(act, side, '🎉 Μπράβο! Τα κατάφερες με το ηλεκτρονικό ταχυδρομείο!');
+  const F = { inbox: (act.inbox || []).map((m, i) => ({ id: i, read: false, folder: m.spam ? 'spam' : 'inbox', ...m })), sent: [] };
+  let folder = 'inbox', open = null, logged = !act.login;
+  const all = () => [...F.inbox, ...F.sent];
+  const FOLDERS = [['inbox', '📥 Εισερχόμενα'], ['sent', '📤 Απεσταλμένα'], ['spam', '⚠️ Ανεπιθύμητα'], ['bin', '🗑️ Κάδος']];
+  function draw() {
+    box.innerHTML = '';
+    if (!logged) {
+      const f = el('div', 'mllogin', `<div style="font-size:60px">✉️</div><b>Σύνδεση στο ταχυδρομείο</b><small>Εξάσκηση — μη γράφεις εδώ τον πραγματικό σου κωδικό!</small>`);
+      const u = el('input'), p = el('input'), b = el('button', '', 'Σύνδεση');
+      u.placeholder = 'Όνομα χρήστη'; p.placeholder = 'Συνθηματικό'; p.type = 'password';
+      u.onkeydown = p.onkeydown = e => { e.stopPropagation(); if (e.key === 'Enter') b.onclick(); };
+      b.onclick = () => {
+        if (!u.value.trim() || !p.value) return say('Συμπλήρωσε όνομα χρήστη και συνθηματικό.', 'bad');
+        if (act.login.user && norm(u.value) !== norm(act.login.user)) { event({ t: 'loginfail' }); return say(`Λάθος όνομα χρήστη! Γράψε: <b>${act.login.user}</b>`, 'bad'); }
+        logged = true; draw(); event({ t: 'login', user: u.value });
+      };
+      f.append(u, p, b); box.appendChild(f);
+      return;
+    }
+    const top = el('div', 'mltop', `<span>✉️ <b>${act.me || 'maria@sch.gr'}</b></span>`), comp = el('button', '', '✏️ Σύνταξη');
+    comp.onclick = () => compose({});
+    top.prepend(comp);
+    if (act.login) { const out = el('button', 'secondary', 'Αποσύνδεση'); out.onclick = () => { logged = false; draw(); event({ t: 'logout' }); }; top.appendChild(out); }
+    const main = el('div', 'mlmain'), nav = el('div', 'mlnav'), list = el('div', 'mllist scrollable');
+    FOLDERS.forEach(([k, n]) => {
+      const c = (k === 'sent' ? F.sent : F.inbox.filter(m => m.folder === k)).length, unread = F.inbox.filter(m => m.folder === k && !m.read).length;
+      const d = el('div', k === folder ? 'on' : '', `${n}${unread ? ` <b>(${unread})</b>` : c ? ` <small>${c}</small>` : ''}`);
+      d.onclick = () => { folder = k; open = null; draw(); event({ t: 'folder', folder: k }); };
+      nav.appendChild(d);
+    });
+    if (act.contacts) { const d = el('div', folder === 'contacts' ? 'on' : '', '👥 Επαφές'); d.onclick = () => { folder = 'contacts'; open = null; draw(); event({ t: 'folder', folder: 'contacts' }); }; nav.appendChild(d); }
+    main.append(nav, list);
+    box.append(top, main);
+    if (folder === 'contacts') { act.contacts.forEach(([n, a]) => { const r = el('div', 'mlrow', `👤 <b>${n}</b> <small>${a}</small>`); r.onclick = () => compose({ to: a }); list.appendChild(r); }); return; }
+    if (open) return reader(list);
+    const msgs = folder === 'sent' ? F.sent : F.inbox.filter(m => m.folder === folder);
+    if (!msgs.length) list.appendChild(el('div', 'mlempty', 'Ο φάκελος είναι άδειος.'));
+    msgs.forEach(m => {
+      const r = el('div', 'mlrow' + (m.read || folder === 'sent' ? '' : ' unread'), `<span>${folder === 'sent' ? 'Προς: ' + escHTML(m.to) : escHTML(m.from)}</span><b>${escHTML(m.subject || '(χωρίς θέμα)')}</b>${m.attach ? ' 📎' : ''}<small>${m.date || 'σήμερα'}</small>`);
+      r.onclick = () => { m.read = true; open = m; draw(); event({ t: 'open', msg: m, subject: m.subject, from: m.from }); };
+      list.appendChild(r);
+    });
+  }
+  function reader(list) {
+    const m = open, r = el('div', 'mlread');
+    r.innerHTML = `<div><b>${escHTML(m.subject || '(χωρίς θέμα)')}</b></div><div><small>${folder === 'sent' ? 'Προς: ' + escHTML(m.to) : 'Από: ' + escHTML(m.from)} · ${m.date || 'σήμερα'}</small></div><div class="mltext">${m.html || escHTML(m.body || '').replace(/\n/g, '<br>')}</div>`;
+    if (m.attach) { const a = el('button', 'secondary', `📎 ${m.attach}`); a.onclick = () => { say(`📎 Άνοιξε το συνημμένο «${m.attach}».`, 'good'); event({ t: 'attachopen', name: m.attach, msg: m }); }; r.appendChild(a); }
+    const acts = el('div', 'mlacts');
+    const A = (t, f) => { const b = el('button', 'secondary', t); b.onclick = f; acts.appendChild(b); };
+    A('⬅ Πίσω', () => { open = null; draw(); });
+    if (folder !== 'sent') {
+      A('↩️ Απάντηση', () => compose({ to: m.addr || m.from, subject: 'Re: ' + m.subject, reply: m, quote: m.body }));
+      A('➡️ Προώθηση', () => compose({ subject: 'Fwd: ' + m.subject, fwd: m, quote: m.body, attach: m.attach }));
+      if (m.folder !== 'spam') A('⚠️ Ανεπιθύμητο', () => { m.folder = 'spam'; open = null; draw(); event({ t: 'spam', msg: m }); say('⚠️ Μεταφέρθηκε στα Ανεπιθύμητα.'); });
+      else A('✅ Δεν είναι ανεπιθύμητο', () => { m.folder = 'inbox'; open = null; draw(); event({ t: 'notspam', msg: m }); });
+      if (m.folder !== 'bin') A('🗑️ Διαγραφή', () => { m.folder = 'bin'; open = null; draw(); event({ t: 'delete', msg: m }); say('🗑️ Μεταφέρθηκε στον Κάδο.'); });
+    }
+    r.appendChild(acts); list.appendChild(r);
+  }
+  function compose(o) {
+    box.querySelector('.mlcomp')?.remove();
+    const c = el('div', 'mlcomp', `<b>✏️ ${o.reply ? 'Απάντηση' : o.fwd ? 'Προώθηση' : 'Νέο μήνυμα'}</b>`);
+    const to = el('input'), cc = el('input'), sub = el('input'), body = el('textarea');
+    to.placeholder = 'Προς: (π.χ. nikos@sch.gr)'; cc.placeholder = 'Κοιν.: (προαιρετικά)'; sub.placeholder = 'Θέμα'; body.placeholder = 'Γράψε το μήνυμά σου…';
+    to.value = o.to || ''; sub.value = o.subject || ''; body.value = o.quote ? `\n\n----- Αρχικό μήνυμα -----\n${o.quote}` : '';
+    let attach = o.attach || '';
+    const att = el('span', 'mlatt', attach ? `📎 ${attach}` : '');
+    [to, cc, sub, body].forEach(i => { i.onkeydown = e => e.stopPropagation(); });
+    const row = el('div', 'mlacts'), send = el('button', '', '📤 Αποστολή'), clip = el('button', 'secondary', '📎 Επισύναψη'), x = el('button', 'secondary', 'Άκυρο');
+    clip.onclick = () => {
+      const files = act.files || ['Η εργασία μου.docx', 'Ζωγραφιά.png', 'Παρουσίαση.pptx'];
+      const m = el('div', 'edpop', '<b>📎 Διάλεξε αρχείο:</b>');
+      files.forEach(f => { const b = el('button', 'secondary', f); b.onclick = () => { attach = f; att.textContent = '📎 ' + f; m.remove(); event({ t: 'attach', name: f }); }; m.appendChild(b); });
+      box.appendChild(m);
+    };
+    x.onclick = () => c.remove();
+    send.onclick = () => {
+      const addrs = (to.value + ',' + cc.value).split(/[,;\s]+/).filter(Boolean);
+      if (!to.value.trim()) return say('Συμπλήρωσε τον παραλήπτη (Προς:).', 'bad');
+      if (!addrs.every(a => /^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(a))) { event({ t: 'badaddr', to: to.value }); return say('⚠️ Η διεύθυνση δεν είναι σωστή! Μια διεύθυνση email μοιάζει με <b>όνομα@τομέας.gr</b>.', 'bad'); }
+      if (!sub.value.trim() && !send.dataset.warned) { send.dataset.warned = 1; return say('⚠️ Το μήνυμα δεν έχει <b>θέμα</b>. Γράψε ένα θέμα — ή πάτα ξανά «Αποστολή».', 'bad'); }
+      const m = { to: to.value.trim(), cc: cc.value.trim(), subject: sub.value.trim(), body: body.value, attach, date: 'τώρα' };
+      F.sent.unshift(m); c.remove(); folder = 'sent'; open = null; draw();
+      say('📤 Το μήνυμα στάλθηκε!', 'good');
+      event({ t: 'send', ...m, reply: !!o.reply, fwd: !!o.fwd });
+    };
+    row.append(send, clip, att, x);
+    c.append(to, cc, sub, body, row);
+    box.appendChild(c);
+    to.focus();
+    event({ t: 'compose', reply: !!o.reply, fwd: !!o.fwd });
+  }
+  draw();
+};
+
+// ---- Κινούμενο σχέδιο από εικόνες (Γ΄): βάζω τα καρέ στη σειρά, αλλάζω ταχύτητα και το «παίζω»
+RENDER.anim = (act, area) => {
+  const box = el('div', 'an'), side = el('div', 'tasks');
+  area.append(box, side);
+  const event = taskRunner(act, side, '🎬 Μπράβο! Το κινούμενο σχέδιό σου ζωντάνεψε!');
+  let line = [], fps = act.fps || 3, playing = 0;
+  const screen = el('div', 'anscreen'), ctl = el('div', 'anctl'), tl = el('div', 'antl'), pool = el('div', 'anpool');
+  box.append(screen, ctl, el('div', 'anh', '🎞️ Γραμμή χρόνου (πάτα ένα καρέ για να το βγάλεις):'), tl, el('div', 'anh', '🖼️ Εικόνες (πάτα για να μπουν στη σειρά):'), pool);
+  const frame = (i, small) => `<div class="anf${small ? ' sm' : ''}">${act.frames[i]}</div>`;
+  const play = el('button', '', '▶ Αναπαραγωγή'), stop = el('button', 'secondary', '⏹'), sp = el('input');
+  sp.type = 'range'; sp.min = 1; sp.max = 12; sp.value = fps;
+  const spl = el('span', '', `⏱️ ${fps} καρέ/δευτ.`);
+  sp.oninput = () => { fps = +sp.value; spl.textContent = `⏱️ ${fps} καρέ/δευτ.`; }; sp.onchange = () => event({ t: 'speed', fps });
+  ctl.append(play, stop, sp, spl);
+  const right = () => line.length === act.frames.length && line.every((f, k) => f === k);
+  function draw() {
+    tl.innerHTML = ''; pool.innerHTML = '';
+    line.forEach((f, k) => { const d = el('div', 'anslot', frame(f, true) + `<small>${k + 1}</small>`); d.onclick = () => { line.splice(k, 1); draw(); event({ t: 'remove' }); }; tl.appendChild(d); });
+    if (!line.length) tl.appendChild(el('i', '', 'Άδεια — πρόσθεσε εικόνες από κάτω.'));
+    order.forEach(f => { const d = el('div', 'anslot' + (line.includes(f) ? ' used' : ''), frame(f, true)); d.onclick = () => { if (line.includes(f)) return; line.push(f); draw(); event({ t: 'add', n: line.length, ok: right() }); }; pool.appendChild(d); });
+    if (!playing) screen.innerHTML = line.length ? frame(line[0]) : '<div class="anf"><i>🎬</i></div>';
+  }
+  const order = shuffle([...act.frames.keys()]);
+  play.onclick = async () => {
+    if (!line.length) return say('Βάλε πρώτα εικόνες στη γραμμή χρόνου!', 'bad');
+    const my = ++playing, run = runId;
+    event({ t: 'play', fps, ok: right(), n: line.length });
+    say(right() ? '🎬 Τέλεια σειρά — δες πώς κινείται!' : '🤔 Κάτι δεν «κυλάει» σωστά… Είναι οι εικόνες στη σωστή σειρά;', right() ? 'good' : 'bad');
+    for (let loop = 0; loop < (act.loops || 3); loop++) for (const f of line) { if (my !== playing || run !== runId || !box.isConnected) return; screen.innerHTML = frame(f); await sleep(1000 / fps); }
+    if (my === playing) playing = 0;
+  };
+  stop.onclick = () => { playing = 0; draw(); };
+  draw();
 };
 
 // ---- Γράμματα σε δυαδικό: gr5 = Α 00001 … Ω 11000 (Δ΄ έκδ. 6.0 σελ. 46) · ascii = A 01000001 …
