@@ -96,6 +96,24 @@ safe parser with + − * / and SUM AVERAGE MAX MIN COUNT COUNTIF, Greek-keyboard
 Note: the newer Β΄/Γ΄/Δ΄ editions point to CmapTools / Φωτόδεντρο tools; we keep those as «Στην τάξη» cards
 next to the in-book concept-map games.
 
+Chapter 4 (digital literacy) — in progress (2026-10-16).
+
+| Grade | Older-edition lessons | Newer-edition sections | Lessons in the book |
+|---|---|---|---|
+| Α΄ | 19–30 | 4.1.1–4.2.2 + review | 13 |
+
+Engine pieces added for chapter 4: `mouse` (parts, real buttons, hover, click, double, right-click menu, drag and drop,
+emoji puzzle, scroll), `keys` (Greek on-screen keyboard that follows the real keyboard by key position: find letters,
+key names, typing with Caps Lock, tonos, Backspace, arrows, Enter), `browser` (address bar, ⬅ ➡, links, ☆ bookmarks,
+search engine results with `kw`/`ad`, posts with ❤️/comments, notice board, ▶ videos, `data-form` + `data-append`),
+`paint`, `editor` (word processor), `slides` (presentations with transitions and slideshow), `mail` (login, inbox,
+reply, forward, attachments, spam), `anim` (flipbook), a working calculator in `desktop`; inline task lists for `desktop`.
+
+**🐧 Tux Paint** — a separate chapter (tab) in Α΄ and Β΄ at the teacher's request (the class paints in Tux Paint and has no
+interactive whiteboard): `tux` simulator with the same tools/layout (Paint, Stamp, Lines, Shapes, Text, Label, Fill, Magic —
+Grass, Rainbow, Googly Eyes, Bricks, Spray Paint, Foam, Squiggles —, Undo/Redo, Eraser, New, Open, Save…), the penguin's tip for
+every tool, a tool tour, and «Το σπιτάκι μου» in three parts that keep the same drawing (`keep`).
+
 ### Next: chapter 4 (digital literacy) and chapter 5 (society)
 - Α΄ (19–30): ποντίκι (δείκτης, κλικ, δεξί κλικ, ροδέλα, σύρε), πληκτρολόγιο, ιστοσελίδες, σελιδοδείκτες, ζωγραφική, Φωτόδεντρο.
 - Β΄ (19–28): φυλλομετρητής, ψηφιακοί πόροι, πληκτρολόγιο, ζωγραφική, e-me, ηλεκτρονικά μηνύματα.
