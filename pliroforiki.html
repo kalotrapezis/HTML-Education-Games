@@ -64,7 +64,7 @@
   .lesson .ttl { font-size: 25px; color: #ffb347; }
   .lesson .sub { font-size: 17px; font-weight: normal; opacity: 0.8; margin-top: 6px; }
   .lesson .prog { font-size: 18px; margin-top: 6px; color: #b9f6ca; }
-  .planbtn { font-size: 22px; padding: 10px 18px; }
+  .planbtn { font-size: 22px; padding: 10px 18px; } #tuxBtn.on { outline: 3px solid #ffb347; }
   .planctl { display: flex; gap: 14px; justify-content: center; align-items: center; flex-wrap: wrap; font-size: 21px; margin-bottom: 12px; }
   .planctl select { font-size: 20px; padding: 4px 8px; border-radius: 8px; }
   .planctl .pstep button { font-size: 19px; padding: 6px 12px; margin: 0 2px; box-shadow: none; background: rgba(0,0,0,0.3); border: 2px solid transparent; }
@@ -716,6 +716,7 @@
     <div class="home-head">
       <a class="back" href="index.html">← Πίσω</a>
       <h1>💻 Πληροφορική Δημοτικού</h1>
+      <button class="secondary planbtn" id="tuxBtn">🐧 Οδηγός Tux Paint</button>
       <button class="secondary planbtn" id="planBtn">📅 Πρόγραμμα</button>
     </div>
     <div class="tabs grades" id="grades"></div>
@@ -766,7 +767,7 @@ function P(s) {
 
 const SQUIRREL = '🐿️', ACORN = '🌰', CENTIPEDE = '🐛', DUCK = '🦆', REED = '🌾', BEE = '🐝', SUNFLOWER = '🌻';
 
-// ξεχωριστή ενότητα: οδηγός για το Tux Paint (με προσομοίωση) — μπαίνει στην Α΄ και στη Β΄
+// ξεχωριστός οδηγός για το Tux Paint (με προσομοίωση), έξω από τα μαθήματα — κουμπί «🐧 Οδηγός Tux Paint» στην αρχική
 const nth = (n, pred) => { let k = 0; return ev => pred(ev) && ++k >= n; };
 const TUX_CHAPTER = {
   tab: '🐧 Tux Paint', title: 'Οδηγός για το Tux Paint – Ζωγραφίζω στον υπολογιστή',
@@ -2078,16 +2079,22 @@ const BOOK_A = [
           { type: 'order', ref: 'έκδ. 6.0 σελ. 106', title: 'Ζωγραφίζω με το μολύβι', text: 'Βάλε τα βήματα στη σειρά.', steps: [
             ['✏️', 'Επιλέγω το εργαλείο «μολύβι».'], ['🎨', 'Επιλέγω χρώμα.'], ['📏', 'Επιλέγω πάχος γραμμής.'], ['✋', 'Κάνω κλικ εκεί που ξεκινάει η γραμμή και, κρατώντας πατημένο, σέρνω μέχρι εκεί που σταματάει.'],
           ], before: 'chain' },
-          { type: 'paint', ref: 'έκδ. 6.0 σελ. 106–107 · έκδ. v09 σελ. 98', text: 'Ζωγράφισε στον υπολογιστή!', tools: ['pencil', 'brush', 'stamp', 'eraser'], tasks: [
+          { type: 'paint', ref: 'έκδ. 6.0 σελ. 106–107 (Ζωγραφική για μικρά παιδιά)', text: 'Ζωγράφισε με το μολύβι, τα χρώματα και το πάχος!', tools: ['pencil', 'eraser'], tasks: [
             ['Διάλεξε ένα <b>χρώμα</b> από την παλέτα κάτω.', ev => ev.t === 'color'],
             ['Διάλεξε <b>πάχος</b> γραμμής δεξιά.', ev => ev.t === 'size'],
             ['Με το <b>✏️ Μολύβι</b>: κράτα πατημένο και σύρε για να ζωγραφίσεις.', ev => ev.t === 'draw' && ev.tool === 'pencil' && ev.len > 80],
-            ['Διάλεξε το <b>🖌️ Πινέλο</b> και ένα σχέδιο δεξιά (⭐, 🌸, 🐾…). Ζωγράφισε!', ev => ev.t === 'draw' && ev.tool === 'brush' && ev.len > 80],
-            ['Βάλε <b>🐧 σφραγίδες</b> στη ζωγραφιά σου.', ev => ev.t === 'stamp'],
-            ['Με τη <b>🧽 Γόμα</b> σβήσε ένα κομμάτι.', ev => ev.t === 'erase'],
+            ['Άλλαξε χρώμα και πάχος και ζωγράφισε κάτι απλό: ένα σπιτάκι ή ένα ζωάκι.', nth(2, ev => ev.t === 'draw' && ev.len > 60)],
+          ] },
+          { type: 'tux', ref: 'έκδ. v09 σελ. 97–98 (Tux Paint)', text: 'Στο Tux Paint: χρώματα, πινέλα, σφραγίδες και σβήστρα!', tasks: [
+            ['Διάλεξε ένα <b>χρώμα</b> κάτω (Colors).', ev => ev.t === 'color'],
+            ['Πάτα <b>Paint</b> (πινέλο) και διάλεξε δεξιά μια μορφή πινέλου (● ★ ░).', ev => ev.t === 'brush'],
+            ['Ζωγράφισε πολύχρωμες γραμμούλες και αστεράκια!', ev => ev.t === 'draw' && ev.len > 80],
+            ['Πάτα <b>Stamp</b> και βάλε <b>πιγκουίνους</b> 🐧 στη ζωγραφιά σου.', ev => ev.t === 'stamp' && ev.em === '🐧'],
+            ['Βάλε κι άλλες σφραγίδες, όποιες θέλεις.', ev => ev.t === 'stamp' && ev.em !== '🐧'],
+            ['Με την <b>Eraser</b> (σβήστρα) καθάρισε ένα κομμάτι.', ev => ev.t === 'erase'],
           ] },
           { type: 'info', ref: 'έκδ. 6.0 σελ. 107 · έκδ. v09 σελ. 97–98', text: 'Στην τάξη:', cards: [
-            ['🐧', 'Άνοιξε το <b>Tux Paint</b>: διάλεξε χρώμα, πινέλο και μορφή πινέλου (γραμμούλες, κυκλάκια, αστεράκια, πατούσες). Βάλε σφραγίδες με πιγκουίνους!'],
+            ['🐧', 'Άνοιξε το <b>Tux Paint</b>: διάλεξε χρώμα, πινέλο και μορφή πινέλου (γραμμούλες, κυκλάκια, αστεράκια, πατούσες). Βάλε σφραγίδες με πιγκουίνους! (Όλα τα εργαλεία: κουμπί <b>«🐧 Οδηγός Tux Paint»</b> στην αρχική.)'],
             ['🖍️', 'Ή άνοιξε στο Φωτόδεντρο τη «Ζωγραφική για μικρά παιδιά» (8521/10768) και ζωγράφισε με «μολύβι», «χρώματα» και «πάχος».'],
           ] },
         ],
@@ -2111,7 +2118,7 @@ const BOOK_A = [
           { type: 'order', ref: 'έκδ. 6.0 σελ. 109', title: 'Σχεδιάζω κύκλο', text: 'Πώς σχεδιάζω έναν κύκλο; Βάλε τα βήματα στη σειρά.', steps: [
             ['⚪', 'Επιλέγω το εργαλείο του κύκλου.'], ['🎨', 'Επιλέγω χρώμα για το περίγραμμα και το γέμισμα.'], ['📏', 'Επιλέγω πάχος γραμμής.'], ['✋', 'Κάνω κλικ στο αρχικό σημείο και, κρατώντας πατημένο, σύρω μέχρι εκεί που σταματάει ο κύκλος.'],
           ], before: 'chain' },
-          { type: 'paint', ref: 'έκδ. 6.0 σελ. 108–110 · έκδ. v09 σελ. 99', text: 'Ζωγραφιά με σχήματα και γραμμές!', tools: ['line', 'rect', 'ellipse', 'fill', 'text', 'pencil', 'eraser'], tasks: [
+          { type: 'paint', ref: 'έκδ. 6.0 σελ. 108–110 (Ζωγραφική για μικρά παιδιά)', text: 'Ζωγραφιά με σχήματα και γραμμές!', tools: ['line', 'rect', 'ellipse', 'fill', 'text', 'pencil', 'eraser'], tasks: [
             ['Διάλεξε <b>📏 Γραμμή</b> και φτιάξε μια ευθεία γραμμή.', ev => ev.t === 'draw' && ev.tool === 'line'],
             ['Διάλεξε <b>⚪ Έλλειψη</b> και σχεδίασε έναν κύκλο.', ev => ev.t === 'draw' && ev.tool === 'ellipse'],
             ['Διάλεξε <b>⬛ Ορθογώνιο</b>, πάτα δεξιά «■ Γεμάτο» και φτιάξε ένα γεμάτο τετράγωνο.', ev => ev.t === 'draw' && ev.tool === 'rect' && ev.filled],
@@ -2119,11 +2126,16 @@ const BOOK_A = [
             ['Με το <b>🔤 Κείμενο</b> γράψε το όνομά σου στη ζωγραφιά.', ev => ev.t === 'text'],
             ['Πάτα <b>↩️ Αναίρεση</b>: τι έγινε;', ev => ev.t === 'undo'],
           ] },
-          { type: 'paint', ref: 'έκδ. v09 σελ. 99–100 (Ο Tux στο τρακτέρ · Το κοτοπουλάκι)', text: 'Χρωμάτισε την έτοιμη ζωγραφιά με το γέμισμα!', tools: ['fill', 'brush', 'stamp'], template: 'chick', templates: ['chick', 'house', 'fish'], tasks: [
-            ['Διάλεξε κίτρινο και με το <b>🪣 Γέμισμα</b> χρωμάτισε το κοτοπουλάκι.', ev => ev.t === 'fill'],
-            ['Χρωμάτισε και το ράμφος και τη φτερούγα με άλλα χρώματα.', (() => { let k = 0; return ev => ev.t === 'fill' && ++k >= 2; })()],
-            ['Πάτα <b>🆕 Νέο</b> και διάλεξε το <b>🏠 Σπιτάκι</b>.', ev => ev.t === 'new' && ev.template === 'house'],
-            ['Χρωμάτισέ το όπως θέλεις και βάλε «μαγικά»: πινέλο ⭐ ή σφραγίδες!', ev => ev.t === 'draw' || ev.t === 'stamp'],
+          { type: 'tux', ref: 'έκδ. v09 σελ. 99 (Tux Paint: γραμμές και σχήματα)', text: 'Στο Tux Paint: πολύχρωμες γραμμές και σχήματα!', tool: 'lines', tasks: [
+            ['Με <b>Lines</b> (γραμμές) φτιάξε πολύχρωμες ευθείες γραμμές.', nth(2, ev => ev.t === 'line')],
+            ['Πάτα <b>Shapes</b> (σχήματα) και φτιάξε ένα σχήμα με σκέτο <b>περίγραμμα</b> □.', ev => ev.t === 'shape' && !ev.filled],
+            ['Τώρα ένα <b>γεμάτο</b> σχήμα ■ σε άλλο χρώμα.', ev => ev.t === 'shape' && ev.filled],
+          ] },
+          { type: 'tux', ref: 'έκδ. v09 σελ. 99–100 (Ο Tux στο τρακτέρ · Το κοτοπουλάκι · Ώρα για μαγικά!)', text: 'Χρωμάτισε την έτοιμη ζωγραφιά με το γέμισμα και βάλε μαγικά!', tool: 'fill', template: 'chick', tasks: [
+            ['Διάλεξε κίτρινο και με το <b>Fill</b> (γέμισμα) χρωμάτισε το κοτοπουλάκι.', ev => ev.t === 'fill'],
+            ['Χρωμάτισε και το ράμφος και τη φτερούγα με άλλα χρώματα.', nth(2, ev => ev.t === 'fill')],
+            ['Πάτα <b>New</b> (νέο) και διάλεξε το <b>🏠 Σπιτάκι για γέμισμα</b>.', ev => ev.t === 'new' && ev.template === 'house'],
+            ['Χρωμάτισέ το με το Fill και βάλε <b>Magic</b> (μαγικά): γρασίδι, ουράνιο τόξο…', ev => ev.t === 'magic'],
           ] },
           { type: 'info', ref: 'έκδ. 6.0 σελ. 110 · έκδ. v09 σελ. 100', text: 'Στην τάξη:', cards: [
             ['🚜', 'Στο Tux Paint, πάρε από το εργαλείο <b>Νέο</b> το τρακτέρ ή το κοτοπουλάκι και χρωμάτισέ τα με το <b>Γέμισμα</b>. Μετά βάλε <b>μαγικά</b>!'],
@@ -3481,7 +3493,7 @@ const BOOK_B = [
           { type: 'info', ref: 'έκδ. 7.0 σελ. 93 · έκδ. v08 σελ. 93–94', text: '«Τι τέλεια ζωγραφιά! Πώς την έφτιαξες;» «Με ένα πρόγραμμα ζωγραφικής, το Tux Paint.»', cards: [
             ['🐧', 'Το <b>Tux Paint</b> είναι ένα <b>δωρεάν</b> πρόγραμμα ζωγραφικής για μικρά παιδιά. Ξεκίνησε το 2002 από τον Bill Kendrick και το βελτιώνουν πολλοί εθελοντές. Το βρίσκω στην επιφάνεια εργασίας με τον <b>πιγκουίνο</b>!'],
             ['🧰', '<b>Αριστερά</b> είναι τα <b>εργαλεία</b>, <b>δεξιά</b> τα <b>πινέλα</b> και <b>κάτω</b> τα <b>χρώματα</b>. Με το <b>Κείμενο</b> και την <b>Ετικέτα</b> γράφω πάνω στη ζωγραφιά. Η <b>Αναίρεση</b> ↩️ με πάει πίσω, η <b>Ακύρωση</b> (Redo) ↪️ ξαναφέρνει ό,τι αναίρεσα.'],
-            ['💾', 'Με την <b>Αποθήκευση</b> η ζωγραφιά γίνεται <b>αρχείο</b>· με το <b>Άνοιγμα</b> τη συνεχίζω. Για να κλείσω: <b>Quit</b> και «Ναι, τελείωσα». Όλα τα εργαλεία βήμα-βήμα: στην καρτέλα <b>«🐧 Tux Paint»</b> πάνω!'],
+            ['💾', 'Με την <b>Αποθήκευση</b> η ζωγραφιά γίνεται <b>αρχείο</b>· με το <b>Άνοιγμα</b> τη συνεχίζω. Για να κλείσω: <b>Quit</b> και «Ναι, τελείωσα». Όλα τα εργαλεία βήμα-βήμα: στον <b>«🐧 Οδηγό Tux Paint»</b> (κουμπί στην αρχική) πάνω!'],
           ] },
           { type: 'tux', ref: 'έκδ. 7.0 σελ. 94', text: 'Σχεδίασε ένα ρομπότ με σχήματα και γραμμές!', tool: 'shapes', tasks: [
             ['Πάτα <b>Shapes</b> και φτιάξε ένα τετράγωνο ή ορθογώνιο για το <b>κεφάλι</b>.', ev => ev.t === 'shape' && ['square', 'rect'].includes(ev.shape)],
@@ -3516,7 +3528,7 @@ const BOOK_B = [
           { type: 'info', ref: 'έκδ. 7.0 σελ. 95 · έκδ. v08 σελ. 95–97', text: 'Στην τάξη:', cards: [
             ['🏡', 'Στο αληθινό Tux Paint ζωγραφίστε ένα <b>σπιτάκι</b> και ένα <b>τοπίο</b> (δέντρα, θάλασσα, βουνό, ήλιο) με τίτλο από το Κείμενο. Από το <b>Νέο</b> πάρτε το <b>διάστημα</b> και χρωματίστε το· βάλτε και <b>μαγικά</b>!'],
             ['🥕', 'Σε ομάδες: ζωγραφίστε φρούτα, λαχανικά και άλλες υγιεινές τροφές, τυπώστε τες και φτιάξτε μια <b>αφίσα</b>. Τυπώστε και τα μωσαϊκά σας για μια όμορφη γωνιά της τάξης.'],
-            ['🐧', 'Θέλεις κι άλλη εξάσκηση; Άνοιξε την καρτέλα <b>«🐧 Tux Paint»</b>: ο οδηγός με όλα τα εργαλεία και τα μαγικά, βήμα-βήμα.'],
+            ['🐧', 'Θέλεις κι άλλη εξάσκηση; Άνοιξε τον <b>«🐧 Οδηγό Tux Paint»</b> (κουμπί στην αρχική): ο οδηγός με όλα τα εργαλεία και τα μαγικά, βήμα-βήμα.'],
           ] },
         ],
         practice: [
@@ -11571,11 +11583,12 @@ const BOOK_F = [
   },
 ];
 
-const BOOKS = [{ grade: 'Α΄ τάξη', hash: '#a', chapters: [...BOOK_A, TUX_CHAPTER] }, { grade: 'Β΄ τάξη', hash: '#b', chapters: [...BOOK_B, TUX_CHAPTER] },
+const BOOKS = [{ grade: 'Α΄ τάξη', hash: '#a', chapters: BOOK_A }, { grade: 'Β΄ τάξη', hash: '#b', chapters: BOOK_B },
   { grade: 'Γ΄ τάξη', hash: '#c', chapters: BOOK_C }, { grade: 'Δ΄ τάξη', hash: '#d', chapters: BOOK_D }, { grade: 'Ε΄ τάξη', hash: '#e', chapters: BOOK_E },
-  { grade: 'ΣΤ΄ τάξη', hash: '#f', chapters: BOOK_F }];
+  { grade: 'ΣΤ΄ τάξη', hash: '#f', chapters: BOOK_F },
+  { grade: '🐧 Οδηγός Tux Paint', hash: '#tux', chapters: [TUX_CHAPTER], extra: true }]; // extra: έξω από τις τάξεις και το πρόγραμμα
 // οι ασκήσεις εξάσκησης κάθε μαθήματος μπαίνουν στο τέλος του, μετά τις δραστηριότητες του βιβλίου
-for (const les of new Set(BOOKS.flatMap(b => b.chapters).flatMap(ch => ch.lessons))) // Set: η ενότητα Tux Paint είναι κοινή σε Α΄ και Β΄
+for (const les of new Set(BOOKS.flatMap(b => b.chapters).flatMap(ch => ch.lessons))) // Set: κάθε μάθημα μία φορά
   if (les.practice) les.acts.push(...les.practice.map(a => ({ ...a, practice: true })));
 
 const GUIDE = {
@@ -11678,10 +11691,13 @@ function renderHome() {
   const grades = $('grades');
   grades.innerHTML = '';
   BOOKS.forEach((b, i) => {
+    if (b.extra) return;
     const t = el('button', 'tab' + (i === gradeIdx ? ' on' : ''), b.grade);
     t.onclick = () => { gradeIdx = i; chapterIdx = 0; history.replaceState(null, '', b.hash); renderHome(); };
     grades.appendChild(t);
   });
+  $('planBtn').style.visibility = BOOKS[gradeIdx].extra ? 'hidden' : '';
+  $('tuxBtn').classList.toggle('on', !!BOOKS[gradeIdx].extra);
   const tabs = $('tabs');
   tabs.innerHTML = '';
   book().forEach((ch, i) => {
@@ -11772,7 +11788,7 @@ function renderPlan() {
   const st = planState[gradeIdx] = Object.assign({ lost: 12, marked: [] }, planState[gradeIdx]);
   const grades = $('planGrades');
   grades.innerHTML = '';
-  BOOKS.forEach((b, i) => { const t = el('button', 'tab' + (i === gradeIdx ? ' on' : ''), b.grade); t.onclick = () => { gradeIdx = i; history.replaceState(null, '', b.hash); renderPlan(); }; grades.appendChild(t); });
+  BOOKS.forEach((b, i) => { if (b.extra) return; const t = el('button', 'tab' + (i === gradeIdx ? ' on' : ''), b.grade); t.onclick = () => { gradeIdx = i; history.replaceState(null, '', b.hash); renderPlan(); }; grades.appendChild(t); });
   const ctl = $('planCtl');
   ctl.innerHTML = '';
   const ysel = el('select');
@@ -16128,6 +16144,7 @@ RENDER.scratch = (act, area) => {
 // ============================================================================
 $('homeBtn').onclick = () => { runId++; renderHome(); showScreen('homeScreen'); };
 $('planBtn').onclick = () => { renderPlan(); showScreen('planScreen'); };
+$('tuxBtn').onclick = () => { gradeIdx = BOOKS.findIndex(b => b.extra); chapterIdx = 0; history.replaceState(null, '', '#tux'); renderHome(); };
 $('planBack').onclick = () => { renderHome(); showScreen('homeScreen'); };
 $('prevBtn').onclick = () => { if (actIdx > 0) { actIdx--; renderAct(); } };
 $('nextBtn').onclick = () => {

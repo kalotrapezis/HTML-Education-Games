@@ -119,10 +119,13 @@ search engine results with `kw`/`ad`, posts with ❤️/comments, notice board, 
 `paint`, `editor` (word processor), `slides` (presentations with transitions and slideshow), `mail` (login, inbox,
 reply, forward, attachments, spam), `anim` (flipbook), a working calculator in `desktop`; inline task lists for `desktop`.
 
-**🐧 Tux Paint** — a separate chapter (tab) in Α΄ and Β΄ at the teacher's request (the class paints in Tux Paint and has no
-interactive whiteboard): `tux` simulator with the same tools/layout (Paint, Stamp, Lines, Shapes, Text, Label, Fill, Magic —
-Grass, Rainbow, Googly Eyes, Bricks, Spray Paint, Foam, Squiggles —, Undo/Redo, Eraser, New, Open, Save…), the penguin's tip for
-every tool, a tool tour, and «Το σπιτάκι μου» in three parts that keep the same drawing (`keep`).
+**🐧 Οδηγός Tux Paint** — a standalone guide outside the grades and the teaching plan (button on the home screen, `#tux`;
+`BOOKS` entry with `extra: true`), at the teacher's request (the class paints in Tux Paint and has no interactive whiteboard):
+`tux` simulator with the same tools/layout (Paint, Stamp, Lines, Shapes, Text, Label, Fill, Magic — Grass, Rainbow, Googly Eyes,
+Bricks, Spray Paint, Foam, Squiggles —, Undo/Redo, Eraser, New, Open, Save…), the penguin's tip for every tool, a tool tour, and
+«Το σπιτάκι μου» in three parts that keep the same drawing (`keep`). Inside the lessons Tux Paint appears only where the book uses
+it (Α΄ v09 4.1.4, Β΄ lesson 24 / 4.1.3); where the book shows another program (Α΄ 6.0: «Ζωγραφική για μικρά παιδιά») the lesson
+uses the generic `paint`.
 
 ### Next: Phase 6 (⌨️ Συντομεύσεις) — see Order of work.
 
@@ -136,7 +139,7 @@ every tool, a tool tour, and «Το σπιτάκι μου» in three parts that 
 - **Phase 4** ✅ — Κεφ. 4 digital literacy — `mouse`/`keys` games; platform-specific lessons
   (e-me, Φωτόδεντρο, email) become info + quiz.
 - **Phase 5** ✅ — Κεφ. 5 society & safety for all grades.
-- **🐧 Tux Paint** ✅ — extra chapter for Α΄/Β΄ (teacher's request).
+- **🐧 Οδηγός Tux Paint** ✅ — standalone guide outside the lessons (teacher's request).
 - **Phase 6** — ⌨️ Συντομεύσεις extra chapter (Β΄–ΣΤ΄): `keys` trainer + on-screen keyboard (built with
   Phase 4's keyboard games), shortcut layer in `desktop` / `files` / `sheet` / `editor` (the editor exists since Phase 4); then «⌨️ Συντόμευση»
   cards in the regular lessons.
