@@ -643,6 +643,9 @@
   .tt { border-collapse: collapse; font-size: 22px; background: rgba(0,0,0,0.3); }
   .tt th, .tt td { border: 1px solid rgba(255,255,255,0.25); padding: 6px 14px; text-align: center; }
   .tt tr.cur td { background: rgba(255,179,71,0.35); }
+  .tt tr { cursor: pointer; }
+  .lg-pick { display: flex; gap: 10px; } .lg-pick button { font-size: 22px; padding: 10px 16px; }
+  .lg-q { width: 120px; height: 120px; display: flex; align-items: center; justify-content: center; font-size: 80px; }
   /* ΜΑΝΤΕΨΕ ΤΟΝ ΑΡΙΘΜΟ */
   .guess { display: flex; gap: 50px; align-items: center; }
   .gpad { display: grid; grid-template-columns: repeat(3, 90px); gap: 10px; }
@@ -11015,13 +11018,27 @@ const BOOK_F = [
           ] },
         ],
         practice: [
-          { type: 'scratch', ref: 'έκδ. 8.02 σελ. 25 (εξάσκηση)', text: 'Περίμετρος και εμβαδόν τετραγώνου: διάλεξε τη σωστή πράξη για το εμβαδόν και δοκίμασε με πλευρά 5.',
+          { type: 'scratch', ref: 'έκδ. 8.02 σελ. 25 (εξάσκηση)', text: '🐞 Το πρόγραμμα έχει ΛΑΘΟΣ και πρέπει να το διορθώσουμε! Πάτα 🏳️ με πλευρά 5: το εμβαδόν βγαίνει ίσο με την περίμετρο. Βρες το λάθος στο ▾ και διόρθωσέ το.',
             hint: '🤔 Όχι ακόμα! Εμβαδόν = πλευρά × <b>πλευρά</b>: διάλεξε «απάντηση» στο ▾ και ξαναπάτα 🏳️.',
             sprites: { bot: { em: '🤖', name: 'Ρομπότ', x: 0, y: -40 } }, vars: { 'Περίμετρος': 0, 'Εμβαδόν': 0 },
             scripts: [{ sprite: 'bot', when: 'flag', blocks: [['ask', 'Πλευρά τετραγώνου;'], ['setvar', 'Περίμετρος', ['mul', 'answer', 4]],
               ['setvar', 'Εμβαδόν', ['mul', 'answer', { pick: [4, 2, 'answer'] }]], ['say', ['join', 'Εμβαδόν: ', 'Εμβαδόν'], 3]] }],
             goal: st => st.vars['Εμβαδόν'] === st.answer * st.answer && st.answer > 1 && st.vars['Εμβαδόν'] !== st.answer * 4,
             doneMsg: '🎉 Εμβαδόν = πλευρά × πλευρά · Περίμετρος = πλευρά × 4.' },
+          { type: 'scratch', ref: 'εξάσκηση (εκσφαλμάτωση)', text: '🐞 Κι αυτό το πρόγραμμα έχει ΛΑΘΟΣ! Πάτα 🏳️ και γράψε την ηλικία σου: η γατούλα λέει λάθος ηλικία για του χρόνου. Διόρθωσέ το στο ▾.',
+            hint: '🤔 Όχι ακόμα! Του χρόνου είμαι <b>1</b> χρόνο μεγαλύτερος/η: ηλικία = απάντηση + 1.',
+            sprites: { cat: { em: '🐱', name: 'Γατούλα', x: 0, y: -40 } }, vars: { 'ηλικία': 0 },
+            scripts: [{ sprite: 'cat', when: 'flag', blocks: [['ask', 'Πόσων χρονών είσαι;'], ['setvar', 'ηλικία', ['add', 'answer', { pick: [10, 0, 1] }]],
+              ['say', ['join', 'Του χρόνου θα είσαι ', 'ηλικία'], 3]] }],
+            goal: st => st.answer !== '' && st.vars['ηλικία'] === +st.answer + 1,
+            doneMsg: '🎉 Διόρθωσες το λάθος: ηλικία = απάντηση + 1!' },
+          { type: 'scratch', ref: 'εξάσκηση (εκσφαλμάτωση)', text: '🐞 Το πρόγραμμα για το μήκος του κύκλου έχει ΛΑΘΟΣ: ξέχασε κάτι από τον τύπο 2 × π × ρ. Βρες το στο ▾, διόρθωσέ το και δοκίμασε με ακτίνα 10.',
+            hint: '🤔 Όχι ακόμα! Μήκος κύκλου = <b>2</b> × 3.14 × ακτίνα. Με ακτίνα 10 πρέπει να βγει 62.8.',
+            sprites: { cat: { em: '🐱', name: 'Γατούλα', x: 0, y: -40 } }, vars: { 'μήκος κύκλου': 0 },
+            scripts: [{ sprite: 'cat', when: 'flag', blocks: [['ask', 'Ποια είναι η ακτίνα του κύκλου;'], ['setvar', 'μήκος κύκλου', ['mul', ['mul', { pick: [1, 3, 2] }, 3.14], 'answer']],
+              ['say', ['join', 'Το μήκος του κύκλου είναι ', 'μήκος κύκλου'], 3]] }],
+            goal: st => +st.answer > 0 && Math.abs(st.vars['μήκος κύκλου'] - 6.28 * st.answer) < 0.001,
+            doneMsg: '🎉 Βρήκες το λάθος! Μήκος κύκλου = 2 × 3.14 × ακτίνα.' },
           { type: 'sort', ref: 'εξάσκηση', text: 'Είσοδος ή έξοδος;', bins: ['📥 Είσοδος', '📤 Έξοδος'], items: [
             ['❓', 'ρώτησε «Πόσων χρονών είσαι;» και περίμενε', 0], ['💬', 'πες «Μπράβο!»', 1], ['⌨️', 'Ο/Η χρήστης πληκτρολογεί έναν αριθμό', 0],
             ['📊', 'Η μεταβλητή «αποτέλεσμα» φαίνεται στη σκηνή', 1], ['🖱️', 'Κλικ πάνω στη μορφή', 0], ['🏃', 'Η μορφή κινείται για να δείξει την απάντηση', 1],
@@ -12660,7 +12677,7 @@ const GUIDE = {
   board: 'Δύο ομάδες παίζουν με τη σειρά: πατήστε «🎲 Ρίξε το ζάρι». Αν πέσετε σε κουτάκι με κανόνα, ο κανόνας εφαρμόζεται!',
   river: 'Πατήστε ένα ζώο ή το λάχανο για να μπει στη βάρκα και μετά «⛵ Πέρνα απέναντι». Ο βαρκάρης παίρνει έναν επιβάτη τη φορά.',
   caesar: 'Για κάθε γράμμα της λέξης, πατήστε στον πίνακα το σωστό γράμμα.',
-  logic: 'Πατήστε τους διακόπτες για να γίνουν ΑΛΗΘΗΣ ή ΨΕΥΔΗΣ. Πότε ανάβει η λάμπα; Δοκιμάστε όλους τους συνδυασμούς.',
+  logic: 'Πατήστε τους διακόπτες (ή μια γραμμή του πίνακα) και προβλέψτε: ΑΛΗΘΗΣ ή ΨΕΥΔΗΣ; Η λάμπα ανάβει μόνο μετά τη σωστή απάντηση.',
   guess: 'Πληκτρολογήστε έναν αριθμό και πατήστε ✔. Ο υπολογιστής σας λέει αν ο μυστικός αριθμός είναι μεγαλύτερος ή μικρότερος.',
   stepper: 'Πατήστε «▶ Επόμενο βήμα». Η γραμμή που εκτελείται φωτίζεται· όταν ερωτηθείτε, μαντέψτε τη νέα τιμή της μεταβλητής.',
   desktop: 'Κάντε με τη σειρά τις εργασίες δεξιά. Διπλό κλικ = δύο γρήγορα πατήματα · δεξί κλικ = κρατήστε πατημένο το δάχτυλο.',
@@ -14459,30 +14476,50 @@ RENDER.stepper = (act, area) => {
 
 // ---- Λογικές εκφράσεις: διακόπτες ΑΛΗΘΗΣ/ΨΕΥΔΗΣ → λάμπα, και πίνακας αλήθειας που γεμίζει (ΣΤ΄ έκδ. 8.02 σελ. 14–15)
 RENDER.logic = (act, area) => {
+  // ο μαθητής ΠΡΟΒΛΕΠΕΙ το αποτέλεσμα κάθε γραμμής του πίνακα αλήθειας· η λάμπα ανάβει μόνο αφού απαντήσει σωστά
   const n = act.inputs.length;
-  const vals = Array(n).fill(false);
-  const seen = new Set();
+  const combos = [...Array(2 ** n).keys()].map(k => [...Array(n)].map((_, i) => !!(k & (1 << (n - 1 - i)))));
+  let vals = Array(n).fill(false);
+  const solved = new Set();
   const left = el('div', 'lg-in'), mid = el('div', 'lg-mid'), table = el('table', 'tt');
   const wrap = el('div', 'logic');
   wrap.append(left, mid, table);
   area.appendChild(wrap);
-  const combos = [...Array(2 ** n).keys()].map(k => [...Array(n)].map((_, i) => !!(k & (1 << (n - 1 - i)))));
   const mark = b => (b ? '✅' : '❌');
-  function draw() {
+  function next() { // πήγαινε στην πρώτη γραμμή που δεν λύθηκε
+    const c = combos.find(c => !solved.has(c.join()));
+    if (c) vals = [...c];
+  }
+  function guess(g) {
     const res = !!act.f(vals);
-    seen.add(vals.join());
+    if (g !== res) return say(`🤔 Όχι! Κοίτα ξανά τους διακόπτες. ${act.explain || 'ΚΑΙ: αληθής μόνο αν είναι αληθείς όλες · Ή: αληθής αν είναι αληθής έστω μία · ΟΧΙ: το αντίθετο.'}`, 'bad');
+    solved.add(vals.join());
+    if (solved.size === combos.length) { draw(); return complete(act.doneMsg || '🎉 Μπράβο! Βρήκες μόνος/η σου όλο τον πίνακα αλήθειας!'); }
+    say(`✔ Σωστά! Συμπλήρωσες ${solved.size} από ${combos.length} γραμμές. Άλλαξε τους διακόπτες ή πάτα μια γραμμή με ❓.`, 'good');
+    draw();
+  }
+  function draw() {
+    const res = !!act.f(vals), known = solved.has(vals.join());
     left.innerHTML = '';
     act.inputs.forEach(([nm, em, label], i) => {
       const b = el('button', 'sw' + (vals[i] ? ' on' : ''), `<span class="em">${em}</span><span><b>${nm}:</b> ${label}</span><span class="v">${vals[i] ? 'ΑΛΗΘΗΣ' : 'ΨΕΥΔΗΣ'}</span>`);
       b.onclick = () => { vals[i] = !vals[i]; draw(); };
       left.appendChild(b);
     });
-    mid.innerHTML = `<div class="ex">${act.expr}</div>${lampSVG(res, 120)}<div class="out">${act.out[0]} ${act.out[1]}<br><b>${res ? 'ΑΛΗΘΗΣ ✅' : 'ΨΕΥΔΗΣ ❌'}</b></div>`;
+    mid.innerHTML = `<div class="ex">${act.expr}</div>` + (known
+      ? `${lampSVG(res, 120)}<div class="out">${act.out[0]} ${act.out[1]}<br><b>${res ? 'ΑΛΗΘΗΣ ✅' : 'ΨΕΥΔΗΣ ❌'}</b></div>`
+      : `<div class="lg-q">❓</div><div class="out">${act.out[0]} ${act.out[1]};<br>Τι θα βγει;</div>`);
+    if (!known) {
+      const row = el('div', 'lg-pick');
+      for (const g of [true, false]) { const b = el('button', g ? '' : 'secondary', g ? 'ΑΛΗΘΗΣ ✅' : 'ΨΕΥΔΗΣ ❌'); b.onclick = () => guess(g); row.appendChild(b); }
+      mid.appendChild(row);
+    }
     table.innerHTML = `<tr>${act.inputs.map(x => `<th>${x[0]}</th>`).join('')}<th>${act.expr}</th></tr>` +
-      combos.map(c => `<tr class="${c.join() === vals.join() ? 'cur' : ''}">${c.map(v => `<td>${mark(v)}</td>`).join('')}<td>${seen.has(c.join()) ? mark(act.f(c)) : '?'}</td></tr>`).join('');
-    if (seen.size === combos.length) complete(act.doneMsg || '🎉 Μπράβο! Δοκίμασες όλους τους συνδυασμούς — συμπλήρωσες τον πίνακα αλήθειας!');
-    else say(`Δοκίμασε όλους τους συνδυασμούς: ${seen.size} από ${combos.length}.`);
+      combos.map((c, k) => `<tr data-k="${k}" class="${c.join() === vals.join() ? 'cur' : ''}">${c.map(v => `<td>${mark(v)}</td>`).join('')}<td>${solved.has(c.join()) ? mark(act.f(c)) : '❓'}</td></tr>`).join('');
+    table.querySelectorAll('tr[data-k]').forEach(tr => { tr.onclick = () => { vals = [...combos[+tr.dataset.k]]; draw(); }; });
   }
+  next();
+  say(`Βάλε τους διακόπτες όπως θέλεις και διάλεξε: ανάβει η λάμπα (ΑΛΗΘΗΣ) ή όχι (ΨΕΥΔΗΣ); Συμπλήρωσε όλες τις ${combos.length} γραμμές.`);
   draw();
 };
 
