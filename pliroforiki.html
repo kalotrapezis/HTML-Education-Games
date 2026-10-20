@@ -11016,6 +11016,7 @@ const BOOK_F = [
         ],
         practice: [
           { type: 'scratch', ref: 'έκδ. 8.02 σελ. 25 (εξάσκηση)', text: 'Περίμετρος και εμβαδόν τετραγώνου: διάλεξε τη σωστή πράξη για το εμβαδόν και δοκίμασε με πλευρά 5.',
+            hint: '🤔 Όχι ακόμα! Εμβαδόν = πλευρά × <b>πλευρά</b>: διάλεξε «απάντηση» στο ▾ και ξαναπάτα 🏳️.',
             sprites: { bot: { em: '🤖', name: 'Ρομπότ', x: 0, y: -40 } }, vars: { 'Περίμετρος': 0, 'Εμβαδόν': 0 },
             scripts: [{ sprite: 'bot', when: 'flag', blocks: [['ask', 'Πλευρά τετραγώνου;'], ['setvar', 'Περίμετρος', ['mul', 'answer', 4]],
               ['setvar', 'Εμβαδόν', ['mul', 'answer', { pick: [4, 2, 'answer'] }]], ['say', ['join', 'Εμβαδόν: ', 'Εμβαδόν'], 3]] }],
@@ -17174,6 +17175,9 @@ RENDER.scratch = (act, area) => {
     await Promise.all(act.scripts.filter(s => s.when === when && (!only || s.sprite === only)).map(s => run(s.blocks, s.sprite, my)));
     st.running--;
     check();
+    // το σενάριο τελείωσε αλλά ο στόχος δεν πέτυχε: πες τι να αλλάξει
+    if (!done && act.goal && !st.running && my === gen && when === 'flag')
+      say(act.hint || (JSON.stringify(act.scripts).includes('"pick"') ? '🤔 Όχι ακόμα! Άλλαξε την τιμή στο ▾ και ξαναπάτα 🏳️.' : '🤔 Όχι ακόμα! Ξαναπάτα 🏳️ και δοκίμασε άλλη απάντηση.'), 'bad');
   }
   stopB.onclick = () => { gen++; st.running = 0; stage.querySelector('.askbox')?.remove(); document.querySelectorAll('.sb.run').forEach(e => e.classList.remove('run')); };
   resetB.onclick = () => { stopB.onclick(); resetAll(); };
