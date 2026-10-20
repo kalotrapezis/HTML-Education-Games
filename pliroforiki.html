@@ -89,6 +89,7 @@
   .pip { width: 22px; height: 22px; border-radius: 50%; background: rgba(255,255,255,0.25); }
   .pip.done { background: #66bb6a; }
   .pip.cur { outline: 3px solid #ffb347; }
+  .pip.go { cursor: pointer; } .pip.go:hover { transform: scale(1.2); }
   .instr {
     margin-top: 14px; background: rgba(0,0,0,0.3); border-radius: 14px; padding: 14px 22px;
     font-size: 27px; line-height: 1.35; display: flex; gap: 16px; align-items: center;
@@ -11821,6 +11822,7 @@ function complete(text) {
     $('area').appendChild(w);
   }
   say(text || '🎉 Μπράβο!', 'good');
+  $('nextBtn').disabled = false;
   $('nextBtn').classList.add('pulse');
   renderPips();
 }
@@ -12013,7 +12015,10 @@ function renderPips() {
   const pips = $('pips');
   pips.innerHTML = '';
   les.acts.forEach((_, a) => {
-    const p = el('div', 'pip' + (done.has(key(chapterIdx, lessonIdx, a)) ? ' done' : '') + (a === actIdx ? ' cur' : '') + (les.acts[a].practice ? ' px' : ''));
+    // πατήσιμη: όποια έχει ολοκληρωθεί ή η πρώτη που λείπει (για να ξαναγίνει)
+    const ok = les.acts.slice(0, a).every((_, b) => done.has(key(chapterIdx, lessonIdx, b)));
+    const p = el('div', 'pip' + (done.has(key(chapterIdx, lessonIdx, a)) ? ' done' : '') + (a === actIdx ? ' cur' : '') + (les.acts[a].practice ? ' px' : '') + (ok && a !== actIdx ? ' go' : ''));
+    if (ok && a !== actIdx) p.onclick = () => { actIdx = a; renderAct(); };
     pips.appendChild(p);
   });
 }
@@ -12026,6 +12031,7 @@ function renderFinish(les) {
   $('ref').textContent = '';
   $('prevBtn').disabled = false;
   $('nextBtn').textContent = '← Μαθήματα';
+  $('nextBtn').disabled = false;
   $('nextBtn').classList.remove('pulse');
   say('');
   const area = $('area');
@@ -12061,6 +12067,8 @@ function renderAct() {
   $('prevBtn').disabled = actIdx === 0;
   $('nextBtn').textContent = actIdx === les.acts.length - 1 ? 'Τέλος 🏁' : 'Επόμενο ▶';
   $('nextBtn').classList.remove('pulse');
+  // «Επόμενο» ανοίγει μόνο με τη σωστή απάντηση
+  $('nextBtn').disabled = !done.has(key(chapterIdx, lessonIdx, actIdx));
   say('');
   const area = $('area');
   area.innerHTML = '';
@@ -16290,7 +16298,7 @@ $('planBack').onclick = () => { renderHome(); showScreen('homeScreen'); };
 $('prevBtn').onclick = () => { if (actIdx > 0) { actIdx--; renderAct(); } };
 $('nextBtn').onclick = () => {
   const les = book()[chapterIdx].lessons[lessonIdx];
-  if (actIdx < les.acts.length) { actIdx++; renderAct(); } // μετά την τελευταία: οθόνη «Τέλος μαθήματος»
+  if (actIdx < les.acts.length) { if (!done.has(key(chapterIdx, lessonIdx, actIdx))) return; actIdx++; renderAct(); } // μετά την τελευταία: οθόνη «Τέλος μαθήματος»
   else { runId++; renderHome(); showScreen('homeScreen'); }
 };
 
