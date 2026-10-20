@@ -30,6 +30,14 @@
     border-bottom: 2px solid rgba(255,179,71,0.3);
   }
   .category:first-of-type { margin-top: 10px; }
+  /* Α, Β, Γ για τις κατηγορίες και 1, 2, 3 για τις κάρτες: «πάμε στο Α3» */
+  @counter-style greek-cap { system: alphabetic; symbols: Α Β Γ Δ Ε Ζ Η Θ; }
+  body { counter-reset: cat; }
+  .category { counter-increment: cat; }
+  .category::before { content: counter(cat, greek-cap) ". "; }
+  .grid { counter-reset: card; }
+  .card { counter-increment: card; position: relative; }
+  .card::before { content: counter(cat, greek-cap) counter(card); position: absolute; top: 10px; right: 12px; background: #ffb347; color: #1e3c72; font-weight: bold; font-size: 22px; padding: 2px 12px; border-radius: 12px; }
   .grid {
     display: grid;
     grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
