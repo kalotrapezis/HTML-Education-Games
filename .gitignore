@@ -21,3 +21,6 @@ memory/
 # OS / editor
 .DS_Store
 Thumbs.db
+
+# Built offline bundle (python3 build-offline.py)
+dist/
