@@ -42,6 +42,7 @@ var F=$F;
 function hook(proto,prop){var d=Object.getOwnPropertyDescriptor(proto,prop);
  Object.defineProperty(proto,prop,{configurable:true,get:function(){return d.get.call(this)},set:function(v){d.set.call(this,F[v]||v)}});}
 hook(HTMLScriptElement.prototype,'src');hook(HTMLImageElement.prototype,'src');hook(HTMLMediaElement.prototype,'src');
+['pushState','replaceState'].forEach(function(k){var f=history[k];history[k]=function(){try{return f.apply(history,arguments)}catch(e){}}});// about:srcdoc can't take a #hash URL
 var A=window.Audio;window.Audio=function(u){return u===undefined?new A():new A(F[u]||u)};window.Audio.prototype=A.prototype;
 document.addEventListener('click',function(e){var a=e.target.closest&&e.target.closest('a[href]');if(!a)return;
  var h=a.getAttribute('href');if(/^[^#:]+\\.html?(#|$)/.test(h)){e.preventDefault();parent.postMessage({open:h.split('#')[0]},'*');}},true);
