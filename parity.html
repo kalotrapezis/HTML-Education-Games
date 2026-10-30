@@ -1,0 +1,166 @@
+<!DOCTYPE html>
+<html lang="el">
+<head>
+<link rel="icon" type="image/svg+xml" href="favicon.svg">
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
+<title>Το Μαγικό Κόλπο των Bit</title>
+<style>
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body {
+    font-family: 'Segoe UI', Tahoma, sans-serif;
+    background: linear-gradient(135deg, #1e3c72, #2a5298 50%, #6b2a8a);
+    color: #fff; min-height: 100vh; padding: 20px;
+    display: flex; flex-direction: column; align-items: center;
+    -webkit-tap-highlight-color: transparent;
+  }
+  .back { position: absolute; top: 20px; left: 20px; z-index: 5; }
+  .back a { color: #fff; text-decoration: none; background: rgba(0,0,0,0.3); padding: 8px 14px; border-radius: 8px; }
+  h1 { font-size: 38px; margin: 6px 0 4px; text-align: center; }
+  .info { opacity: 0.9; margin: 6px 0 14px; font-size: 20px; text-align: center; max-width: 820px; min-height: 2.6em; line-height: 1.35; }
+  .info b { color: #ffb347; }
+
+  .bar { display: flex; gap: 12px; align-items: center; margin-bottom: 14px; flex-wrap: wrap; justify-content: center; }
+  button {
+    padding: 12px 24px; font-size: 18px; border: none; border-radius: 10px;
+    background: #ff9500; color: #fff; font-weight: bold; cursor: pointer;
+    box-shadow: 0 4px 0 #c46c00;
+  }
+  button:active { transform: translateY(2px); box-shadow: 0 2px 0 #c46c00; }
+  button:disabled { opacity: 0.5; cursor: not-allowed; }
+  button.ghost { background: rgba(0,0,0,0.3); box-shadow: none; font-size: 16px; padding: 10px 16px; }
+  button.ghost.on { background: rgba(255,179,71,0.35); }
+
+  .board { display: grid; gap: 10px; padding: 14px; background: rgba(0,0,0,0.28); border-radius: 16px; }
+  .cell {
+    width: var(--s); height: var(--s); border-radius: 14px; border: 3px solid #9cc3ee;
+    display: flex; align-items: center; justify-content: center;
+    font-size: calc(var(--s) * 0.45); font-weight: bold; cursor: pointer; user-select: none;
+    background: #fff; color: #1e3c72;
+  }
+  .cell.zero { background: #13284d; color: #9cc3ee; }
+  .cell.hide { visibility: hidden; }
+  .cell.anim { animation: flip 0.35s; }
+  @keyframes flip { 50% { transform: scaleX(0); } }
+  /* οι «δείκτες» (γραμμή/στήλη ισοτιμίας) στέκονται χωριστά από την εικόνα */
+  .cell.par { border-style: dashed; border-color: #ffb347; }
+  .r0 { margin-bottom: 18px; }
+  .c0 { margin-right: 18px; }
+  .cell.hit { box-shadow: 0 0 0 6px #4caf50; }
+  .cell.miss { box-shadow: 0 0 0 6px #ff5252; }
+  .count { width: var(--s); height: var(--s); display: flex; align-items: center; justify-content: center; font-size: 22px; font-weight: bold; opacity: 0.9; }
+  .count.odd { color: #ff5252; }
+  .count.even { color: #8fe28f; }
+</style>
+</head>
+<body>
+<div class="back"><a href="index.html">← Πίσω</a></div>
+<h1>🪄 Το Μαγικό Κόλπο των Bit</h1>
+<div class="info" id="info"></div>
+<div class="bar" id="bar"></div>
+<div class="board" id="board"></div>
+
+<script>
+// Η 1η γραμμή και η 1η στήλη είναι τα «μαγικά» bit ισοτιμίας: κάθε γραμμή και στήλη έχει ΖΥΓΟ πλήθος από 1.
+let n = 5, g, phase, flipped, guess, explain, pc;
+const $ = id => document.getElementById(id);
+const N = () => n + 1;
+const isPar = (r, c) => r === 0 || c === 0;
+const ones = cells => cells.reduce((a, b) => a + b, 0);
+const row = r => g[r];
+const col = c => g.map(rw => rw[c]);
+
+function newGame(random) {
+  g = Array.from({ length: N() }, () => Array.from({ length: N() }, () => random ? Math.round(Math.random()) : 0));
+  phase = 'setup'; flipped = null; explain = false;
+  render();
+}
+
+function addMagic() {
+  for (let r = 1; r < N(); r++) g[r][0] = ones(row(r).slice(1)) % 2;
+  for (let c = 0; c < N(); c++) g[0][c] = ones(col(c).slice(1)) % 2; // c=0: η γωνία κάνει ζυγή και τη γραμμή και τη στήλη
+  phase = 'flip'; pc = false;
+  render();
+}
+
+function pcError() {
+  addMagic();
+  const r = Math.floor(Math.random() * N()), c = Math.floor(Math.random() * N());
+  g[r][c] ^= 1; flipped = r * N() + c; // χωρίς κίνηση: δεν πρέπει να φανεί ποια άλλαξε
+  phase = 'guess'; pc = true;
+  render();
+}
+
+function tap(r, c) {
+  if (phase === 'setup' && !isPar(r, c)) { g[r][c] ^= 1; render(r, c); }
+  else if (phase === 'flip' && (flipped === null || flipped === r * N() + c)) {
+    g[r][c] ^= 1;
+    flipped = flipped === null ? r * N() + c : null; // ξαναπάτημα = ακύρωση
+    render(r, c);
+  }
+  else if (phase === 'guess') { phase = 'done'; guess = r * N() + c; render(); }
+}
+
+const MSG = {
+  setup: 'Ένας μαθητής φτιάχνει μια «εικόνα» από <b>1</b> και <b>0</b> — πάτα τις κάρτες για να τις γυρίσεις.<br>Μετά ο δάσκαλος προσθέτει μια γραμμή και μια στήλη «για να δυσκολέψει» — ή αφήνει τον <b>υπολογιστή</b> να κάνει το λάθος.',
+  flip: 'Ο δάσκαλος <b>γυρίζει την πλάτη</b>! Ένας μαθητής γυρίζει <b>μία μόνο</b> κάρτα — όποια θέλει.',
+  guess: 'Δάσκαλε, γύρνα! Ποια κάρτα γύρισε; Πάτα την.',
+};
+
+function render(ar, ac) {
+  const b = $('board');
+  b.style.setProperty('--s', Math.min(80, Math.floor((Math.min(innerWidth, 900) - 140) / (N() + 1))) + 'px');
+  b.style.gridTemplateColumns = `repeat(${N() + (explain ? 1 : 0)}, auto)`;
+  b.innerHTML = '';
+  const pos = (r, c) => (r === 0 ? ' r0' : '') + (c === 0 ? ' c0' : '');
+  for (let r = 0; r < N(); r++) {
+    for (let c = 0; c < N(); c++) {
+      const d = document.createElement('div');
+      const k = r * N() + c;
+      d.className = 'cell' + (g[r][c] ? '' : ' zero') + (isPar(r, c) ? ' par' : '') + pos(r, c)
+        + (phase === 'setup' && isPar(r, c) ? ' hide' : '')
+        + (r === ar && c === ac ? ' anim' : '')
+        + (phase === 'done' && k === flipped ? ' hit' : '')
+        + (phase === 'done' && k === guess && k !== flipped ? ' miss' : '');
+      d.textContent = g[r][c];
+      d.onclick = () => tap(r, c);
+      b.appendChild(d);
+    }
+    if (explain) b.appendChild(count(ones(row(r)), pos(r, 1)));
+  }
+  if (explain) { for (let c = 0; c < N(); c++) b.appendChild(count(ones(col(c)), pos(1, c))); b.appendChild(document.createElement('div')); }
+
+  const bar = $('bar'); bar.innerHTML = '';
+  const btn = (txt, fn, cls = '', dis = false) => { const x = document.createElement('button'); x.textContent = txt; x.className = cls; x.disabled = dis; x.onclick = fn; bar.appendChild(x); };
+  if (phase === 'setup') {
+    btn('🎲 Τυχαία', () => newGame(true), 'ghost');
+    btn('🧹 Όλα 0', () => newGame(false), 'ghost');
+    for (let s = 3; s <= 8; s++) btn(`${s}×${s}`, () => { n = s; newGame(true); }, 'ghost' + (s === n ? ' on' : ''));
+    btn('🪄 Πρόσθεσε τα μαγικά', addMagic);
+    btn('💻 Ο υπολογιστής κάνει λάθος', pcError);
+  } else if (phase === 'flip') {
+    btn('✅ Έτοιμο — γύρνα, δάσκαλε!', () => { phase = 'guess'; render(); }, '', flipped === null);
+  } else {
+    btn('🔢 Μέτρα τους άσους', () => { explain = !explain; render(); }, 'ghost' + (explain ? ' on' : ''));
+    if (phase === 'done') btn('🔄 Ξανά', () => newGame(true));
+  }
+
+  let msg = phase === 'guess' && pc ? '💻 Ο υπολογιστής έστειλε την εικόνα, αλλά στον δρόμο <b>χάλασε ένα bit</b>! Βρείτε ποιο και πατήστε το.' : MSG[phase];
+  if (phase === 'done') msg = (guess === flipped ? (pc ? '🎉 <b>Σωστά!</b> Βρήκατε το χαλασμένο bit — ο υπολογιστής το διορθώνει μόνος του.' : '🎉 <b>Σωστά!</b> Αυτή ήταν η κάρτα.') : '😮 Όχι αυτή — η σωστή έχει πράσινο πλαίσιο.')
+    + (explain ? '<br>Μέτρα τους <b>1</b> σε κάθε γραμμή και στήλη: όλες έχουν <b>ζυγό</b> αριθμό — εκτός από μία γραμμή και μία στήλη. Εκεί που διασταυρώνονται είναι η κάρτα!' : '');
+  else if (explain) msg += '<br>Κάθε γραμμή και στήλη πρέπει να έχει <b>ζυγό</b> αριθμό από 1. Ποια γραμμή και ποια στήλη έχουν <b>μονό</b>;';
+  $('info').innerHTML = msg;
+}
+
+function count(v, cls) {
+  const d = document.createElement('div');
+  d.className = 'count' + cls + (phase === 'done' ? (v % 2 ? ' odd' : ' even') : ''); // τα χρώματα μόνο στο φινάλε
+  d.textContent = v;
+  return d;
+}
+
+addEventListener('resize', () => render());
+newGame(true);
+</script>
+</body>
+</html>
