@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Builds ONE self-contained file, dist/Παιχνίδια.html: the home page with every game
+"""Builds ONE self-contained file, Διαδραστικά.html: the home page with every game
 (and its scripts, question bank, pictures, sounds) and the technology stories inside it.
 Android opens files as content://, which cannot follow links to neighbouring files,
 so nothing may live outside the one file.
@@ -12,7 +12,7 @@ from urllib.parse import quote
 
 ROOT = Path(__file__).resolve().parent
 STORIES = Path(sys.argv[1]) if len(sys.argv) > 1 else ROOT.parent / 'stories' / 'out' / 'Ιστορίες'
-OUT = ROOT / 'dist' / 'Παιχνίδια.html'
+OUT = ROOT / 'Διαδραστικά.html'
 HOME = {'index.html', 'Διαδραστικά.html'}  # links to these go back to the menu
 LOCAL = re.compile(r'href="([^"#:]+\.html?)(?:#[^"]*)?"')
 ESC = ''  # stands in for '<' where it would end the <script type="text/plain"> holding a page
@@ -143,7 +143,6 @@ def main():
     blocks = ''.join(f'<script type="text/plain" id="page:{n}">{pack(t)}</script>\n' for n, t in pages.items())
     tail = (story_cards(stories) if stories else '') + PLAYER.replace('$HOME', json.dumps(dict.fromkeys(HOME, 1))) + blocks
     home = home.replace('</body>', tail + '</body>', 1)
-    OUT.parent.mkdir(exist_ok=True)
     OUT.write_text(home, encoding='utf-8')
     print(f'{OUT}  {OUT.stat().st_size / 1e6:.1f} MB  ({len(pages) - len(stories)} games, {len(stories)} stories)')
 
