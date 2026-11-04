@@ -1,0 +1,324 @@
+<!DOCTYPE html>
+<html lang="el">
+<head>
+<link rel="icon" type="image/svg+xml" href="favicon.svg">
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
+<title>Ναυμαχία</title>
+<style>
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body {
+    font-family: 'Segoe UI', Tahoma, sans-serif;
+    background: linear-gradient(135deg, #1e3c72, #2a5298 50%, #6b2a8a);
+    color: #fff; min-height: 100vh; padding: 16px;
+    display: flex; flex-direction: column; align-items: center;
+    -webkit-tap-highlight-color: transparent;
+    --s: min(calc((100vw - 120px) / 22), calc((100vh - 340px) / 11), 58px);
+  }
+  @media (max-width: 760px) { body { --s: calc((100vw - 40px) / 11); } }
+  .back { position: absolute; top: 16px; left: 16px; z-index: 5; }
+  .back a { color: #fff; text-decoration: none; background: rgba(0,0,0,0.3); padding: 8px 14px; border-radius: 8px; }
+  h1 { font-size: 36px; margin: 4px 0; text-align: center; }
+  .info { font-size: 22px; text-align: center; max-width: 900px; min-height: 2.6em; line-height: 1.3; margin: 4px 0 8px; }
+  .info b { color: #ffb347; }
+
+  .bar { display: flex; gap: 10px; align-items: center; margin-bottom: 12px; flex-wrap: wrap; justify-content: center; }
+  button {
+    padding: 12px 22px; font-size: 18px; border: none; border-radius: 10px;
+    background: #ff9500; color: #fff; font-weight: bold; cursor: pointer;
+    box-shadow: 0 4px 0 #c46c00;
+  }
+  button:active { transform: translateY(2px); box-shadow: 0 2px 0 #c46c00; }
+  button:disabled { opacity: 0.5; cursor: not-allowed; }
+  button.ghost { background: rgba(0,0,0,0.3); box-shadow: none; font-size: 16px; padding: 10px 16px; }
+  button.ghost.on { background: rgba(255,179,71,0.35); }
+
+  .info { background: rgba(0,0,0,0.28); border: 1px solid rgba(255,255,255,0.12); border-radius: 14px; padding: 8px 22px; }
+  button.go:not(:disabled) { animation: pulse 1.4s infinite; }
+  @keyframes pulse { 50% { transform: scale(1.07); } }
+
+  .boards { display: flex; gap: 36px; flex-wrap: wrap; justify-content: center; }
+  .side { display: flex; flex-direction: column; align-items: center; gap: 8px; }
+  .side h2 { font-size: 22px; color: #ffd27a; display: flex; align-items: center; gap: 10px; min-height: 34px; }
+  .pill { font-size: 16px; color: #1e3c72; background: #ffb347; border-radius: 20px; padding: 3px 12px; animation: pulse 1.2s infinite; }
+  .grid { display: grid; grid-template-columns: repeat(11, var(--s)); grid-auto-rows: var(--s);
+    padding: 8px 12px 12px 8px; background: linear-gradient(#0f2f55, #0a2240); border: 3px solid #3d6a9a; border-radius: 16px;
+    box-shadow: 0 10px 30px rgba(0,0,0,0.45); transition: box-shadow 0.3s, border-color 0.3s, opacity 0.3s; }
+  .side.turn .grid { border-color: #ffb347; box-shadow: 0 0 0 4px rgba(255,179,71,0.3), 0 0 36px rgba(255,179,71,0.55); }
+  .side.wait .grid { opacity: 0.75; }
+  .lbl { display: flex; align-items: center; justify-content: center; font-weight: bold; font-size: calc(var(--s) * 0.42); color: #ffd27a; }
+
+  .cell { position: relative; user-select: none; font-size: calc(var(--s) * 0.55);
+    background: linear-gradient(160deg, #2f8fd6, #1b5f9e); box-shadow: inset 0 0 0 1px rgba(255,255,255,0.13); }
+  /* κύματα: κάθε κελί «γυαλίζει» λίγο αργότερα από το προηγούμενο, διαγώνια */
+  .cell::before { content: ''; position: absolute; inset: 0; pointer-events: none; opacity: 0;
+    background: radial-gradient(ellipse at 30% 35%, rgba(255,255,255,0.4), transparent 62%);
+    animation: wave 4s ease-in-out infinite; animation-delay: var(--d); }
+  @keyframes wave { 50% { opacity: 0.55; } }
+  .cell::after { position: absolute; inset: 0; z-index: 2; display: flex; align-items: center; justify-content: center; pointer-events: none; }
+  .enemy.aim .cell:not(.shot) { cursor: crosshair; }
+  .enemy.aim .cell:not(.shot):hover { background: linear-gradient(160deg, #5fb2ec, #2f7fc1); }
+  .enemy.aim .cell:not(.shot):hover::after { content: '🎯'; }
+  .cell.preview { background: #57c46a; }
+  .cell.bad { background: #e05a5a; }
+
+  .hull { position: absolute; z-index: 1; background: linear-gradient(#d3dce4, #8796a5 55%, #5d6a77); box-shadow: 0 2px 5px rgba(0,0,0,0.4); }
+  .hull.v { background: linear-gradient(90deg, #d3dce4, #8796a5 55%, #5d6a77); }
+  .hull.h { inset: 19% -1px; }
+  .hull.v { inset: -1px 19%; }
+  .hull.h.start { left: 8%; border-radius: 40% 0 0 40% / 50% 0 0 50%; }
+  .hull.h.end { right: 3%; border-radius: 0 70% 70% 0 / 0 50% 50% 0; }
+  .hull.v.start { top: 3%; border-radius: 50% 50% 0 0 / 70% 70% 0 0; }
+  .hull.v.end { bottom: 8%; border-radius: 0 0 50% 50% / 0 0 40% 40%; }
+  .hull::after { content: ''; position: absolute; inset: 30%; border-radius: 50%; background: #4b5864; box-shadow: inset 0 2px 2px rgba(255,255,255,0.35); }
+  .hull.wreck { background: linear-gradient(#5a4640, #2a1f1d); }
+  .hull.wreck.v { background: linear-gradient(90deg, #5a4640, #2a1f1d); }
+
+  .cell.miss::after { content: ''; inset: 36%; border-radius: 50%; background: #e8f4ff; box-shadow: 0 0 0 4px rgba(232,244,255,0.3); }
+  .cell.hit { background: radial-gradient(circle, #ff9d4d, #b3261e 75%); }
+  .cell.sunk { background: linear-gradient(160deg, #1d4f80, #123a63); }
+  .cell.hit::after, .cell.sunk::after { content: '🔥'; animation: flicker 0.7s infinite alternate; }
+  .cell.sunk::after { opacity: 0.8; font-size: 0.75em; }
+  @keyframes flicker { to { transform: scale(1.15) translateY(-6%); } }
+  .cell.last { outline: 4px solid #ffeb3b; outline-offset: -2px; z-index: 3; }
+  .boom { position: absolute; inset: 0; z-index: 4; border-radius: 50%; pointer-events: none; animation: boom 0.7s ease-out forwards; }
+  .boom.water { border: 4px solid #e8f4ff; }
+  .boom.fire { background: radial-gradient(circle, #fff6a0, #ff9500 45%, transparent 70%); }
+  @keyframes boom { from { transform: scale(0.2); opacity: 1; } to { transform: scale(2.4); opacity: 0; } }
+
+  .fleet { display: flex; flex-wrap: wrap; gap: 6px 10px; justify-content: center; max-width: calc(var(--s) * 11 + 26px); font-size: 15px; }
+  .fleet span { padding: 4px 10px; border-radius: 10px; background: rgba(0,0,0,0.3); display: flex; align-items: center; gap: 7px; }
+  .fleet i { display: inline-block; height: 9px; width: calc(var(--n) * 11px); border-radius: 3px 9px 9px 3px; background: linear-gradient(#d3dce4, #5d6a77); }
+  .fleet span.sel { background: #ff9500; }
+  .fleet span.done { opacity: 0.45; text-decoration: line-through; }
+  .fleet span.done i { background: #b3261e; }
+  .fleet.pick span { cursor: pointer; }
+  .fleet.pick span.done { text-decoration: none; opacity: 0.6; }
+  .fleet.pick span.done i { background: #57c46a; }
+
+  #banner { position: fixed; inset: 0; z-index: 20; display: flex; align-items: center; justify-content: center; background: rgba(0,0,0,0.45); cursor: pointer; }
+  #banner[hidden] { display: none; }
+  #banner div { background: linear-gradient(135deg, #ffb347, #ff9500); color: #1e3c72; font-size: 46px; font-weight: bold; text-align: center;
+    padding: 34px 54px; border-radius: 26px; box-shadow: 0 20px 60px rgba(0,0,0,0.5); animation: popin 0.5s; }
+  #banner small { display: block; font-size: 20px; margin-top: 10px; opacity: 0.8; }
+  @keyframes popin { from { transform: scale(0.3) rotate(-8deg); opacity: 0; } }
+</style>
+</head>
+<body>
+<div class="back"><a href="index.html">← Πίσω</a></div>
+<h1>🚢 Ναυμαχία ⚓</h1>
+<div class="info" id="info"></div>
+<div class="bar" id="bar"></div>
+<div class="boards">
+  <div class="side" id="sideMe"><h2>🧒 Ο στόλος μας <span class="pill" id="pillMe" hidden></span></h2><div class="grid" id="me"></div><div class="fleet" id="fleetMe"></div></div>
+  <div class="side" id="sidePc"><h2>💻 Ο στόλος του υπολογιστή <span class="pill" id="pillPc" hidden></span></h2><div class="grid enemy" id="pc"></div><div class="fleet" id="fleetPc"></div></div>
+</div>
+<div id="banner" hidden onclick="this.hidden=true"><div id="bannerText"></div></div>
+
+<script src="sounds.js"></script>
+<script>
+const S = 10, L = 'ΑΒΓΔΕΖΗΘΙΚ';
+const FLEET = [[5, 'Αεροπλανοφόρο'], [4, 'Θωρηκτό'], [3, 'Καταδρομικό'], [3, 'Υποβρύχιο'], [2, 'Αντιτορπιλικό']];
+const $ = id => document.getElementById(id);
+const name = k => L[Math.floor(k / S)] + (k % S + 1);  // «Γ5»
+let me, pc, phase, turn, vert = false, sel, hover = null, level = 'normal', last = {}, fresh = null, msg = '';
+
+const board = () => ({ ships: [], at: Array(S * S).fill(-1), shot: Array(S * S).fill(false) });
+const sunk = s => s.hits === s.cells.length;
+const allSunk = b => b.ships.every(sunk);
+
+function cellsFor(k, len, v) {
+  const r = Math.floor(k / S), c = k % S, out = [];
+  for (let i = 0; i < len; i++) {
+    const rr = r + (v ? i : 0), cc = c + (v ? 0 : i);
+    if (rr >= S || cc >= S) return null;
+    out.push(rr * S + cc);
+  }
+  return out;
+}
+const fits = (b, cells) => cells && cells.every(k => b.at[k] < 0);
+function put(b, i, cells) { b.ships[i] = { cells, hits: 0 }; cells.forEach(k => b.at[k] = i); }
+function unput(b, i) { b.ships[i].cells.forEach(k => b.at[k] = -1); b.ships[i] = undefined; }
+function randomFill(b) {
+  FLEET.forEach(([len], i) => {
+    while (!b.ships[i]) {
+      const cells = cellsFor(Math.floor(Math.random() * S * S), len, Math.random() < 0.5);
+      if (fits(b, cells)) put(b, i, cells);
+    }
+  });
+}
+const nextFree = () => { const i = FLEET.findIndex((_, i) => !me.ships[i]); return i < 0 ? null : i; };
+
+function fire(b, k) {
+  b.shot[k] = true;
+  const i = b.at[k];
+  if (i < 0) return 'miss';
+  return ++b.ships[i].hits === b.ships[i].cells.length ? 'sunk' : 'hit';
+}
+
+// Ο υπολογιστής: αν έχει «ανοιχτά» χτυπήματα (πλοίο που δεν βυθίστηκε) σημαδεύει δίπλα τους, αλλιώς ψάχνει σαν σκακιέρα.
+function neighbours(k) {
+  const r = Math.floor(k / S), c = k % S, out = [];
+  if (r > 0) out.push(k - S); if (r < S - 1) out.push(k + S);
+  if (c > 0) out.push(k - 1); if (c < S - 1) out.push(k + 1);
+  return out;
+}
+function aiPick() {
+  const free = [...Array(S * S).keys()].filter(k => !me.shot[k]);
+  const any = a => a[Math.floor(Math.random() * a.length)];
+  if (level === 'easy') return any(free);
+  const open = [...Array(S * S).keys()].filter(k => me.shot[k] && me.at[k] >= 0 && !sunk(me.ships[me.at[k]]));
+  if (open.length) {
+    let best = [], score = 0;
+    for (const h of open) for (const n of neighbours(h)) {
+      if (me.shot[n]) continue;
+      const back = 2 * h - n;  // το κελί από την άλλη μεριά του χτυπήματος: αν είναι κι αυτό χτύπημα, συνεχίζουμε τη γραμμή
+      const sc = open.includes(back) && neighbours(h).includes(back) ? 2 : 1;
+      if (sc > score) { score = sc; best = []; }
+      if (sc === score) best.push(n);
+    }
+    if (best.length) return any(best);
+  }
+  const chess = free.filter(k => (Math.floor(k / S) + k) % 2 === 0);
+  return any(chess.length ? chess : free);
+}
+
+function newGame() {
+  me = board(); pc = board(); randomFill(pc);
+  phase = 'place'; sel = 0; last = {}; hover = null;
+  msg = 'Τοποθέτησε τα πλοία σου: διάλεξε πλοίο και <b>πάτα ένα κελί</b>. Πάτα πλοίο για να το μετακινήσεις.';
+  render();
+}
+
+function tapMe(k) {
+  if (phase !== 'place') return;
+  if (me.at[k] >= 0) { sel = me.at[k]; unput(me, sel); }
+  else if (sel !== null) {
+    const cells = cellsFor(k, FLEET[sel][0], vert);
+    if (!fits(me, cells)) return;
+    put(me, sel, cells); sel = nextFree();
+  }
+  render();
+}
+
+function tapPc(k) {
+  if (phase !== 'play' || turn !== 'me' || pc.shot[k]) return;
+  GameSounds.unlock();
+  const res = fire(pc, k);
+  last.pc = k; fresh = 'pc';
+  msg = `Βολή στο <b>${name(k)}</b>: ` + say(res, pc, k, 'Βύθισες το');
+  if (res !== 'miss') (res === 'sunk' ? GameSounds.bigCorrect : GameSounds.correct)();
+  if (allSunk(pc)) return over(true);
+  turn = 'pc'; render();
+  setTimeout(pcTurn, 1100);
+}
+
+function pcTurn() {
+  const k = aiPick(), res = fire(me, k);
+  last.me = k; fresh = 'me';
+  msg += `<br>💻 Ο υπολογιστής ρίχνει στο <b>${name(k)}</b>: ` + say(res, me, k, 'Βύθισε το');
+  if (res !== 'miss') GameSounds.wrong();
+  if (allSunk(me)) return over(false);
+  turn = 'me'; render();
+}
+
+function say(res, b, k, verb) {
+  if (res === 'miss') return 'Νερό 💧';
+  if (res === 'hit') return 'Χτύπημα! 💥';
+  const n = FLEET[b.at[k]][1];
+  return `${verb} <b>${n}</b>! 🚢🌊`;
+}
+
+function over(win) {
+  phase = 'over';
+  $('bannerText').innerHTML = (win ? '🏆 Νικήσαμε!' : '🌊 Μας βύθισαν!') + '<small>πάτα για να δεις τους πίνακες</small>';
+  $('banner').hidden = false;
+  msg += win ? '<br>🏆 <b>Νικήσαμε!</b> Βυθίσαμε όλο τον στόλο του υπολογιστή!' : '<br>😢 Ο υπολογιστής βύθισε όλο τον στόλο μας. Πάμε ξανά;';
+  setTimeout(() => win ? GameSounds.bigCorrect() : GameSounds.bigWrong(), 500);
+  render();
+}
+
+function drawGrid(el, b, mine, lastK, boom) {
+  el.innerHTML = '';
+  const add = (cls, txt) => { const d = document.createElement('div'); d.className = cls; d.textContent = txt || ''; el.appendChild(d); return d; };
+  add('lbl');
+  for (let c = 1; c <= S; c++) add('lbl', c);
+  const prev = mine && phase === 'place' && hover !== null && sel !== null && me.at[hover] < 0 ? cellsFor(hover, FLEET[sel][0], vert) : null;
+  const ok = fits(me, prev);
+  for (let k = 0; k < S * S; k++) {
+    if (k % S === 0) add('lbl', L[k / S]);
+    const i = b.at[k], s = b.ships[i], show = mine || phase === 'over';
+    let cls = 'cell';
+    if (b.shot[k]) cls += ' shot' + (i < 0 ? ' miss' : sunk(s) ? ' sunk' : ' hit');
+    if (prev && prev.includes(k)) cls += ok ? ' preview' : ' bad';
+    if (k === lastK) cls += ' last';
+    const d = add(cls);
+    d.style.setProperty('--d', (Math.floor(k / S) + k % S) * 0.18 + 's');
+    if (i >= 0 && (show || sunk(s))) {  // του υπολογιστή φαίνονται μόνο όσα βυθίστηκαν
+      const h = document.createElement('div'), p = s.cells.indexOf(k);
+      h.className = 'hull ' + (s.cells[1] - s.cells[0] === S ? 'v' : 'h') + (p === 0 ? ' start' : '') + (p === s.cells.length - 1 ? ' end' : '') + (sunk(s) ? ' wreck' : '');
+      d.appendChild(h);
+    }
+    if (boom && k === lastK) { const x = document.createElement('div'); x.className = 'boom ' + (i < 0 ? 'water' : 'fire'); d.appendChild(x); }
+    d.title = name(k);
+    if (mine) {
+      d.onclick = () => tapMe(k);
+      d.onmouseenter = () => { if (phase === 'place' && hover !== k) { hover = k; render(); } };
+    } else d.onclick = () => tapPc(k);
+  }
+  if (mine) el.onmouseleave = () => { if (phase === 'place' && hover !== null) { hover = null; render(); } };
+}
+
+function drawFleet(el, b, pick) {
+  el.innerHTML = '';
+  el.classList.toggle('pick', pick);
+  FLEET.forEach(([len, n], i) => {
+    const d = document.createElement('span');
+    d.innerHTML = `${n}<i style="--n:${len}"></i>`;
+    const s = b.ships[i];
+    if (pick) { d.className = i === sel ? 'sel' : s ? 'done' : ''; d.onclick = () => { if (s) unput(me, i); sel = i; render(); }; }
+    else if (s && sunk(s)) d.className = 'done';
+    el.appendChild(d);
+  });
+}
+
+function render() {
+  const placing = phase === 'place';
+  drawGrid($('me'), me, true, last.me, fresh === 'me');
+  drawGrid($('pc'), pc, false, last.pc, fresh === 'pc');
+  fresh = null;  // η έκρηξη παίζει μία φορά, όχι σε κάθε ξανασχεδίασμα
+  drawFleet($('fleetMe'), me, placing);
+  drawFleet($('fleetPc'), pc, false);
+  $('pc').classList.toggle('aim', phase === 'play' && turn === 'me');
+  $('sidePc').style.display = placing && innerWidth < 760 ? 'none' : '';  // στο κινητό: πρώτα τοποθέτηση, μετά οι δύο πίνακες
+  const play = phase === 'play';
+  $('sideMe').classList.toggle('turn', play && turn === 'pc');
+  $('sidePc').classList.toggle('turn', play && turn === 'me');
+  $('sidePc').classList.toggle('wait', play && turn === 'pc');
+  $('pillMe').hidden = !(play && turn === 'pc'); $('pillMe').textContent = '💻 σημαδεύει…';
+  $('pillPc').hidden = !(play && turn === 'me'); $('pillPc').textContent = '🎯 Σειρά μας!';
+  if (phase !== 'over') $('banner').hidden = true;
+
+  const bar = $('bar'); bar.innerHTML = '';
+  const btn = (txt, fn, cls = '', dis = false) => { const x = document.createElement('button'); x.textContent = txt; x.className = cls; x.disabled = dis; x.onclick = fn; bar.appendChild(x); };
+  if (placing) {
+    btn(vert ? '↕ Κάθετα' : '↔ Οριζόντια', () => { vert = !vert; render(); }, 'ghost on');
+    btn('🎲 Τυχαία', () => { me = board(); randomFill(me); sel = null; render(); }, 'ghost');
+    btn('🧹 Καθάρισμα', () => { me = board(); sel = 0; render(); }, 'ghost');
+    btn('😊 Εύκολο', () => { level = 'easy'; render(); }, 'ghost' + (level === 'easy' ? ' on' : ''));
+    btn('🧠 Δύσκολο', () => { level = 'normal'; render(); }, 'ghost' + (level === 'normal' ? ' on' : ''));
+    btn('⚓ Ξεκινάμε!', () => {
+      GameSounds.unlock();
+      phase = 'play'; turn = 'me';
+      msg = 'Πάτα ένα κελί στον πίνακα του <b>υπολογιστή</b> για να ρίξεις — π.χ. «<b>Γ5</b>»!';
+      render();
+    }, 'go', nextFree() !== null);
+  } else btn('🔄 Νέο παιχνίδι', newGame, phase === 'over' ? '' : 'ghost');
+  $('info').innerHTML = msg;
+}
+
+addEventListener('resize', () => render());
+newGame();
+</script>
+</body>
+</html>
