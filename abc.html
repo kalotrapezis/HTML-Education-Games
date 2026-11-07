@@ -1,0 +1,324 @@
+<!DOCTYPE html>
+<html lang="el">
+<head>
+<link rel="icon" type="image/svg+xml" href="favicon.svg">
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Τα Πρώτα μου Παιχνίδια</title>
+<style>
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body {
+    font-family: 'Segoe UI', Tahoma, sans-serif;
+    background: linear-gradient(135deg, #1e3c72, #2a5298 50%, #6b2a8a);
+    color: #fff; min-height: 100vh; padding: 70px 20px 30px;
+    display: flex; flex-direction: column; align-items: center; user-select: none;
+  }
+  .back { position: absolute; top: 16px; left: 16px; z-index: 5; display: flex; gap: 10px; }
+  .back a, .back button { color: #fff; text-decoration: none; background: rgba(0,0,0,0.3); padding: 8px 14px; border-radius: 8px; border: 0; font: inherit; cursor: pointer; }
+  h1 { font-size: 48px; margin-bottom: 30px; text-align: center; }
+  .menu { display: grid; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); gap: 24px; max-width: 1100px; width: 100%; }
+  .menu button {
+    background: rgba(0,0,0,0.35); border: 2px solid transparent; border-radius: 18px; color: #fff;
+    padding: 30px 20px; font: inherit; cursor: pointer; display: flex; flex-direction: column; align-items: center; gap: 10px;
+  }
+  .menu button:hover { border-color: #ffb347; }
+  .menu .em { font-size: 64px; }
+  .menu .nm { font-size: 26px; font-weight: bold; color: #ffb347; }
+  .menu .ds { font-size: 16px; opacity: .85; }
+  #game { display: none; flex-direction: column; align-items: center; gap: 26px; width: 100%; max-width: 1100px; }
+  #stars { font-size: 34px; min-height: 44px; letter-spacing: 2px; }
+  #q { font-size: 34px; text-align: center; }
+  #pic { font-size: 70px; line-height: 1.25; text-align: center; max-width: 900px; min-height: 100px; }
+  #pic .op { color: #ffb347; font-weight: bold; margin: 0 18px; }
+  #pic .gone { opacity: .3; text-decoration: line-through; }
+  #pic .word { font-size: 64px; letter-spacing: 4px; display: block; }
+  #pic .word b { color: #ffb347; }
+  #opts { display: flex; flex-wrap: wrap; justify-content: center; gap: 20px; }
+  #opts button {
+    min-width: 120px; padding: 18px 26px; font-size: 54px; font-weight: bold; border-radius: 20px; border: 0;
+    background: #ffb347; color: #1e3c72; cursor: pointer; box-shadow: 0 6px 0 #c47f1c; font-family: inherit;
+  }
+  #opts button:active { transform: translateY(4px); box-shadow: 0 2px 0 #c47f1c; }
+  #opts button.no { background: #888; box-shadow: 0 6px 0 #555; opacity: .5; }
+  #opts button.yes { background: #4caf50; color: #fff; box-shadow: 0 6px 0 #2e7d32; }
+  #msg { font-size: 40px; min-height: 54px; }
+  svg.clock { width: 300px; height: 300px; }
+  #typing { display: none; flex-direction: column; align-items: center; gap: 20px; width: 100%; max-width: 1100px; }
+  #tword { font-size: 64px; letter-spacing: 6px; min-height: 80px; }
+  #tword .ok { color: #7CFC00; }
+  #tword .nx { border-bottom: 6px solid #ffb347; }
+  #tpic { font-size: 90px; min-height: 100px; }
+  #ttext { width: 100%; height: 240px; font-size: 40px; padding: 16px; border-radius: 14px; border: 0; font-family: inherit; resize: vertical; }
+  #kb { display: flex; flex-direction: column; gap: 8px; align-items: center; }
+  #kb .r { display: flex; gap: 8px; }
+  #kb .k { width: 64px; height: 64px; border-radius: 10px; display: flex; align-items: center; justify-content: center; font-size: 30px; font-weight: bold; color: #1e3c72; cursor: pointer; box-shadow: 0 4px 0 rgba(0,0,0,.35); transition: transform .08s; }
+  #kb .k { position: relative; }
+  #kb .k.home::after { content: ''; position: absolute; bottom: 8px; width: 16px; height: 3px; background: #1e3c72; border-radius: 2px; }
+  #kb .k.sp { width: 420px; }
+  #kb .k.wide { width: 110px; font-size: 22px; }
+  #kb .k.next { outline: 6px solid #fff; transform: scale(1.12); }
+  #kb .k.hit { transform: translateY(4px); box-shadow: none; }
+  #kb .k.bad { background: #e53935 !important; color: #fff; }
+  .f0 { background: #f48fb1; } .f1 { background: #ffcc80; } .f2 { background: #fff59d; } .f3 { background: #a5d6a7; }
+  .f4 { background: #90caf9; } .f5 { background: #ce93d8; } .f6 { background: #80cbc4; } .f7 { background: #bcaaa4; } .f8 { background: #e0e0e0; }
+  #hands { font-size: 18px; opacity: .85; text-align: center; }
+</style>
+</head>
+<body>
+<div class="back"><a href="index.html">← Πίσω</a><button id="toMenu" hidden>☰ Μενού</button></div>
+
+<div id="home">
+  <h1>🧸 Τα Πρώτα μου Παιχνίδια</h1>
+  <div class="menu">
+    <button data-g="count"><span class="em">🍎🍎🍎</span><span class="nm">Πόσα είναι;</span><span class="ds">Μέτρα τα πράγματα (1–10)</span></button>
+    <button data-g="first"><span class="em">🐱 _άτα</span><span class="nm">Πρώτο γράμμα</span><span class="ds">Με ποιο γράμμα αρχίζει η λέξη;</span></button>
+    <button data-g="word"><span class="em">🐱 → ;</span><span class="nm">Βρες τη λέξη</span><span class="ds">Ποια λέξη ταιριάζει στην εικόνα;</span></button>
+    <button data-g="pair"><span class="em">Α ↔ α</span><span class="nm">Βρες το γράμμα</span><span class="ds">Κεφαλαίο και μικρό γράμμα</span></button>
+    <button data-g="add"><span class="em">🐥🐥 + 🐥</span><span class="nm">Πρόσθεση</span><span class="ds">Μέχρι το 10, με εικόνες</span></button>
+    <button data-g="sub"><span class="em">🎈🎈🎈 − 🎈</span><span class="nm">Αφαίρεση</span><span class="ds">Μέχρι το 10, με εικόνες</span></button>
+    <button data-g="clock"><span class="em">🕒</span><span class="nm">Τι ώρα είναι;</span><span class="ds">Ακριβώς και μισή</span></button>
+    <button data-t="copy"><span class="em">⌨️</span><span class="nm">Γράψε τη λέξη</span><span class="ds">Τυφλό σύστημα: κοίτα την οθόνη, όχι τα πλήκτρα</span></button>
+    <button data-t="free"><span class="em">📝</span><span class="nm">Κειμενογράφος</span><span class="ds">Γράψε ό,τι θέλεις με μεγάλα γράμματα</span></button>
+  </div>
+</div>
+
+<div id="game">
+  <div id="stars"></div>
+  <div id="q"></div>
+  <div id="pic"></div>
+  <div id="opts"></div>
+  <div id="msg"></div>
+</div>
+
+<div id="typing">
+  <div id="tstars" style="font-size:34px;min-height:44px"></div>
+  <div id="tpic"></div>
+  <div id="tword"></div>
+  <textarea id="ttext" spellcheck="false" placeholder="Γράψε εδώ…"></textarea>
+  <div id="kb"></div>
+  <div id="hands">Τα δάχτυλα πάνω στα πλήκτρα με το γραμματάκι κάτω: <b>Α Σ Δ Φ</b> (αριστερό) και <b>Ξ Κ Λ</b> (δεξί). Κάθε χρώμα είναι ένα δάχτυλο.</div>
+</div>
+
+<script src="sounds.js"></script>
+<script>
+const $ = id => document.getElementById(id);
+const rnd = n => Math.floor(Math.random() * n);           // 0..n-1
+const pick = a => a[rnd(a.length)];
+const shuffle = a => { for (let i = a.length - 1; i > 0; i--) { const j = rnd(i + 1); [a[i], a[j]] = [a[j], a[i]]; } return a; };
+const THINGS = ['🍎', '🍌', '🐥', '🐟', '⭐', '🎈', '🌸', '🐞', '🚗', '⚽', '🍓', '🐶'];
+const ABC = 'ΑΒΓΔΕΖΗΘΙΚΛΜΝΞΟΠΡΣΤΥΦΧΨΩ';
+const abc = 'αβγδεζηθικλμνξοπρστυφχψω';
+const WORDS = [
+  ['🐄', 'αγελάδα'], ['🚗', 'αυτοκίνητο'], ['⭐', 'αστέρι'], ['✈️', 'αεροπλάνο'],
+  ['⛵', 'βάρκα'], ['📖', 'βιβλίο'], ['🐸', 'βάτραχος'], ['🌧️', 'βροχή'],
+  ['🐱', 'γάτα'], ['🥛', 'γάλα'], ['🧤', 'γάντι'],
+  ['🌳', 'δέντρο'], ['🐬', 'δελφίνι'], ['💍', 'δαχτυλίδι'],
+  ['🐘', 'ελέφαντας'], ['🚁', 'ελικόπτερο'], ['🦓', 'ζέβρα'],
+  ['☀️', 'ήλιος'], ['🌊', 'θάλασσα'],
+  ['🐔', 'κότα'], ['🥕', 'καρότο'], ['🔑', 'κλειδί'], ['🎩', 'καπέλο'],
+  ['🌸', 'λουλούδι'], ['🍋', 'λεμόνι'], ['🦁', 'λιοντάρι'], ['🐇', 'λαγός'],
+  ['🍎', 'μήλο'], ['🍌', 'μπανάνα'], ['🐝', 'μέλισσα'], ['🐒', 'μαϊμού'],
+  ['💧', 'νερό'], ['🦇', 'νυχτερίδα'], ['🪵', 'ξύλο'],
+  ['☂️', 'ομπρέλα'], ['🪟', 'παράθυρο'], ['🚪', 'πόρτα'], ['🪑', 'καρέκλα'], ['🌈', 'ουράνιο τόξο'],
+  ['🥔', 'πατάτα'], ['🐧', 'πιγκουίνος'], ['🚲', 'ποδήλατο'], ['🦆', 'πάπια'],
+  ['⌚', 'ρολόι'], ['🦏', 'ρινόκερος'],
+  ['🐶', 'σκύλος'], ['🏠', 'σπίτι'], ['🍇', 'σταφύλι'], ['🐌', 'σαλιγκάρι'],
+  ['🧀', 'τυρί'], ['🚂', 'τρένο'], ['🐯', 'τίγρη'], ['🎂', 'τούρτα'],
+  ['🍓', 'φράουλα'], ['🌙', 'φεγγάρι'], ['🐍', 'φίδι'], ['🔥', 'φωτιά'],
+  ['⛄', 'χιονάνθρωπος'], ['🐢', 'χελώνα'], ['✋', 'χέρι'],
+  ['🐟', 'ψάρι'], ['🍞', 'ψωμί'],
+];
+const plain = s => s.normalize('NFD').replace(/[̀-ͯ]/g, '').toUpperCase();
+const row = (em, n) => Array(n).fill(em).join(' ');
+
+// Ανάγνωση με φωνή μόνο αν υπάρχει ελληνική φωνή (αλλιώς θα το διάβαζε με αγγλική προφορά)
+function say(text) {
+  try {
+    const v = speechSynthesis.getVoices().find(v => v.lang.startsWith('el'));
+    if (!v) return;
+    speechSynthesis.cancel();
+    const u = new SpeechSynthesisUtterance(text); u.voice = v; u.lang = v.lang; u.rate = 0.9;
+    speechSynthesis.speak(u);
+  } catch (e) {}
+}
+
+// Κάθε παιχνίδι επιστρέφει { q, pic (html), answer, options, speak? }
+const GAMES = {
+  count() {
+    const n = 1 + rnd(10), em = pick(THINGS);
+    return { q: 'Πόσα είναι;', pic: row(em, n), answer: n, options: near(n, 1, 10), speak: String(n) };
+  },
+  first() {
+    const [em, w] = pick(WORDS), L = plain(w[0]);
+    return { q: 'Με ποιο γράμμα αρχίζει;', pic: `${em}<span class="word"><b>_</b>${w.slice(1)}</span>`, answer: L,
+      options: others(L, ABC), speak: w, done: `${em}<span class="word"><b>${w[0]}</b>${w.slice(1)}</span>` };
+  },
+  word() {
+    const [em, w] = pick(WORDS);
+    const opts = new Set([w]);
+    while (opts.size < 3) opts.add(pick(WORDS)[1]);
+    return { q: 'Ποια λέξη είναι;', pic: em, answer: w, options: shuffle([...opts]), speak: w };
+  },
+  pair() {
+    const i = rnd(ABC.length);
+    return { q: 'Βρες το μικρό γράμμα', pic: `<span class="word" style="font-size:120px">${ABC[i]}</span>`, answer: abc[i], options: others(abc[i], abc, 6) };
+  },
+  add() {
+    const a = 1 + rnd(9), b = 1 + rnd(10 - a), em = pick(THINGS);
+    return { q: `${a} + ${b} = ;`, pic: `${row(em, a)}<span class="op">+</span>${row(em, b)}`, answer: a + b, options: near(a + b, 2, 10), speak: String(a + b) };
+  },
+  sub() {
+    const a = 2 + rnd(9), b = 1 + rnd(a - 1), em = pick(THINGS);
+    return { q: `${a} − ${b} = ;`, pic: row(em, a - b) + ' ' + Array(b).fill(`<span class="gone">${em}</span>`).join(' '), answer: a - b, options: near(a - b, 1, 9), speak: String(a - b) };
+  },
+  clock() {
+    const h = 1 + rnd(12), m = pick([0, 30]), t = time(h, m);
+    const opts = new Set([t]);
+    while (opts.size < 3) opts.add(time(1 + rnd(12), pick([0, 30])));
+    return { q: 'Τι ώρα είναι;', pic: clockSvg(h, m), answer: t, options: shuffle([...opts]) };
+  },
+};
+const time = (h, m) => `${h}:${m ? '30' : '00'}`;
+function near(n, lo, hi) {            // 3 κοντινοί αριθμοί, ο σωστός ανάμεσα
+  const s = new Set([n]);
+  while (s.size < 3) { const x = n + pick([-2, -1, 1, 2]); if (x >= lo && x <= hi) s.add(x); }
+  return shuffle([...s]);
+}
+function others(right, pool, k = 4) {
+  const s = new Set([right]);
+  while (s.size < k) s.add(pool[rnd(pool.length)]);
+  return shuffle([...s]);
+}
+function clockSvg(h, m) {
+  const hand = (deg, len, w, c) => `<line x1="100" y1="100" x2="${100 + len * Math.sin(deg * Math.PI / 180)}" y2="${100 - len * Math.cos(deg * Math.PI / 180)}" stroke="${c}" stroke-width="${w}" stroke-linecap="round"/>`;
+  let nums = '';
+  for (let i = 1; i <= 12; i++) { const a = i * 30 * Math.PI / 180; nums += `<text x="${100 + 72 * Math.sin(a)}" y="${108 + 72 * -Math.cos(a)}" font-size="22" text-anchor="middle" fill="#1e3c72" font-weight="bold">${i}</text>`; }
+  return `<svg class="clock" viewBox="0 0 200 200"><circle cx="100" cy="100" r="95" fill="#fff" stroke="#ffb347" stroke-width="8"/>${nums}`
+    + hand((h % 12) * 30 + m / 2, 45, 8, '#1e3c72') + hand(m * 6, 70, 5, '#e53935') + `<circle cx="100" cy="100" r="6" fill="#1e3c72"/></svg>`;
+}
+
+let cur, round, stars, tries;
+function start(g) {
+  cur = g; stars = 0;
+  $('home').style.display = 'none'; $('game').style.display = 'flex'; $('toMenu').hidden = false;
+  next();
+}
+function next() {
+  round = GAMES[cur](); tries = 0;
+  $('q').textContent = round.q; $('pic').innerHTML = round.pic; $('msg').textContent = '';
+  $('stars').textContent = '⭐'.repeat(stars % 10) || ' ';
+  $('opts').innerHTML = '';
+  for (const o of round.options) {
+    const b = document.createElement('button'); b.textContent = o;
+    b.onclick = () => answer(b, o);
+    $('opts').append(b);
+  }
+}
+function answer(b, o) {
+  if (b.classList.contains('no') || $('opts').dataset.lock) return;
+  if (o !== round.answer) {
+    b.classList.add('no'); tries++; $('msg').textContent = '🤔 Ξαναδοκίμασε!';
+    if (window.GameSounds) GameSounds.wrong();
+    return;
+  }
+  b.classList.add('yes'); $('opts').dataset.lock = 1;
+  if (round.done) $('pic').innerHTML = round.done;
+  if (tries === 0) stars++;
+  const ten = stars > 0 && stars % 10 === 0 && tries === 0;
+  $('stars').textContent = ten ? '🏆 Μπράβο! 10 αστέρια!' : '⭐'.repeat(stars % 10);
+  $('msg').textContent = pick(['🎉 Μπράβο!', '👏 Σωστά!', '🌟 Τέλεια!']);
+  if (window.GameSounds) ten ? GameSounds.bigCorrect() : GameSounds.correct();
+  if (round.speak) say(round.speak);
+  setTimeout(() => { delete $('opts').dataset.lock; next(); }, ten ? 2600 : 1500);
+}
+document.querySelectorAll('.menu button').forEach(b => b.onclick = () => { if (window.GameSounds) GameSounds.unlock(); start(b.dataset.g); });
+$('toMenu').onclick = () => { $('game').style.display = $('typing').style.display = 'none'; $('home').style.display = 'block'; $('toMenu').hidden = true; tmode = null; };
+
+// ---- Πληκτρολόγηση: ελληνική διάταξη ανά φυσικό πλήκτρο (e.code), ώστε να γράφει ελληνικά ακόμα κι αν τα Windows είναι στα αγγλικά
+const KB = [
+  [['KeyQ', ';', 0], ['KeyW', 'ς', 1], ['KeyE', 'ε', 2], ['KeyR', 'ρ', 3], ['KeyT', 'τ', 3], ['KeyY', 'υ', 4], ['KeyU', 'θ', 4], ['KeyI', 'ι', 5], ['KeyO', 'ο', 6], ['KeyP', 'π', 7]],
+  [['KeyA', 'α', 0], ['KeyS', 'σ', 1], ['KeyD', 'δ', 2], ['KeyF', 'φ', 3], ['KeyG', 'γ', 3], ['KeyH', 'η', 4], ['KeyJ', 'ξ', 4], ['KeyK', 'κ', 5], ['KeyL', 'λ', 6], ['Semicolon', '΄', 7]],
+  [['KeyZ', 'ζ', 0], ['KeyX', 'χ', 1], ['KeyC', 'ψ', 2], ['KeyV', 'ω', 3], ['KeyB', 'β', 3], ['KeyN', 'ν', 4], ['KeyM', 'μ', 4], ['Backspace', '⌫', 7]],
+  [['Space', ' ', 8]],
+];
+const HOME_KEYS = ['KeyF', 'KeyJ'];
+const CH = {}, KEY = {};                 // code → γράμμα, γράμμα → code
+KB.flat().forEach(([c, ch]) => { CH[c] = ch; KEY[ch] = c; });
+const ACC = { α: 'ά', ε: 'έ', η: 'ή', ι: 'ί', ο: 'ό', υ: 'ύ', ω: 'ώ' };
+$('kb').innerHTML = KB.map(r => `<div class="r">${r.map(([c, ch, f]) =>
+  `<div class="k f${f}${HOME_KEYS.includes(c) ? ' home' : ''}${c === 'Space' ? ' sp' : ''}${c === 'Backspace' ? ' wide' : ''}" data-c="${c}">${c === 'Space' ? '' : ch === 'ς' ? 'ς' : ch.toUpperCase()}</div>`).join('')}</div>`).join('');
+const keyEl = c => document.querySelector(`#kb .k[data-c="${c}"]`);
+const flash = (c, cls) => { const k = keyEl(c); if (k) { k.classList.add(cls); setTimeout(() => k.classList.remove(cls), 180); } };
+
+let tmode = null, tword = '', tpos = 0, tstars = 0, tmiss = 0, accent = false;
+function startTyping(mode) {
+  tmode = mode; tstars = 0;
+  $('home').style.display = 'none'; $('typing').style.display = 'flex'; $('toMenu').hidden = false;
+  const free = mode === 'free';
+  $('ttext').style.display = free ? 'block' : 'none';
+  $('tpic').style.display = $('tword').style.display = $('tstars').style.display = free ? 'none' : 'block';
+  if (free) { $('ttext').focus(); markNext(null); } else nextWord();
+}
+function nextWord() {
+  const [em, w] = pick(WORDS); tword = w; tpos = 0; tmiss = 0;
+  $('tpic').textContent = em; $('tstars').textContent = '⭐'.repeat(tstars % 10) || ' ';
+  drawWord();
+}
+function drawWord() {
+  $('tword').innerHTML = [...tword].map((ch, i) => `<span class="${i < tpos ? 'ok' : i === tpos ? 'nx' : ''}">${ch === ' ' ? '&nbsp;' : ch}</span>`).join('');
+  const ch = tword[tpos];
+  markNext(ch === undefined ? null : ch === 'ς' ? 'KeyW' : KEY[plain(ch).toLowerCase()] || KEY[ch]);
+}
+function markNext(c) {
+  document.querySelectorAll('#kb .k.next').forEach(k => k.classList.remove('next'));
+  if (c) keyEl(c).classList.add('next');
+}
+function press(code, shift) {
+  if (!CH[code]) return false;
+  flash(code, 'hit');
+  if (tmode === 'free') {
+    const t = $('ttext');
+    if (code === 'Backspace') return false;          // ο φυλλομετρητής σβήνει μόνος του
+    if (code === 'Semicolon') { accent = true; return true; }
+    let ch = CH[code];
+    if (accent && ACC[ch]) ch = ACC[ch];
+    accent = false;
+    if (shift) ch = ch === 'ς' ? 'Σ' : ch.toUpperCase();
+    t.setRangeText(ch, t.selectionStart, t.selectionEnd, 'end');
+    return true;
+  }
+  if (tpos >= tword.length || code === 'Backspace' || code === 'Semicolon') return true;
+  if (plain(CH[code]) === plain(tword[tpos])) {
+    tpos++; drawWord();
+    if (tpos === tword.length) {
+      if (tmiss === 0) tstars++;
+      $('tstars').textContent = tstars % 10 === 0 && tmiss === 0 ? '🏆 Μπράβο! 10 αστέρια!' : '⭐'.repeat(tstars % 10);
+      if (window.GameSounds) GameSounds.correct();
+      say(tword);
+      setTimeout(nextWord, 1200);
+    }
+  } else { tmiss++; flash(code, 'bad'); if (window.GameSounds) GameSounds.wrong(); }
+  return true;
+}
+document.addEventListener('keydown', e => {
+  if (!tmode || e.ctrlKey || e.altKey || e.metaKey) return;
+  if (press(e.code, e.shiftKey)) e.preventDefault();
+});
+$('kb').onclick = e => {                     // πάτημα στα πλήκτρα της οθόνης (για τον πίνακα)
+  const k = e.target.closest('.k'); if (!k || !tmode) return;
+  if (tmode === 'free' && k.dataset.c === 'Backspace') { const t = $('ttext'); const s = t.selectionStart; if (s > 0) t.setRangeText('', s - 1, s, 'end'); flash('Backspace', 'hit'); }
+  else press(k.dataset.c, false);
+  if (tmode === 'free') $('ttext').focus();
+};
+document.querySelectorAll('.menu button[data-t]').forEach(b => b.onclick = () => { if (window.GameSounds) GameSounds.unlock(); startTyping(b.dataset.t); });
+console.assert(WORDS.every(([, w]) => [...w].every(ch => ch === 'ς' || KEY[plain(ch).toLowerCase()] || KEY[ch])), 'every word is typeable');
+
+// Αυτοέλεγχος: κάθε γύρος έχει τη σωστή απάντηση μέσα στις επιλογές, χωρίς διπλές
+for (const g in GAMES) for (let i = 0; i < 200; i++) {
+  const r = GAMES[g]();
+  console.assert(r.options.includes(r.answer) && new Set(r.options).size === r.options.length, g, r);
+}
+console.assert(WORDS.every(([, w]) => ABC.includes(plain(w[0]))), 'first letters');
+</script>
+</body>
+</html>

@@ -23,4 +23,5 @@ memory/
 Thumbs.db
 
 # Built offline bundle (python3 build-offline.py)
+Διαδραστικά.html
 dist/
