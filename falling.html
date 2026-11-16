@@ -74,6 +74,9 @@
   .kb.digits button { flex-basis: calc(16.66% - 5px); }
   .kb button:active { transform: translateY(3px); box-shadow: 0 1px 0 #9aa; }
   .kb button.del { background: #ffb347; }
+  .kb button.mod { background: #b0bec5 !important; font-size: 22px; }
+  .kb button.mod.on { background: #ffd23f !important; outline: 4px solid #ff9500; }
+  .kb.qw .row:nth-child(2), .kb.qw .row:nth-child(3) { padding-left: 0 !important; }
   /* QWERTY: τα πλήκτρα στη θέση του πραγματικού πληκτρολογίου, χρώμα ανά δάχτυλο */
   .kb.qw { flex-direction: column; align-items: stretch; flex-wrap: nowrap; }
   .kb.qw .row { display: flex; gap: 5px; }
@@ -207,9 +210,12 @@ function newTarget(kind) {
 }
 function wordItem(w, ok, pic) { return { text: show(w.w), html: (pic ? `<span class="em">${w.em}</span>` : '') + show(w.w), ok }; }
 // «Γράψ' τα»: ό,τι πέφτει χωρίς στόχο· key = τι πρέπει να γραφτεί
+// για το «Γράψ' τα»: χωρίς τόνους και ς = σ, αλλά κεφαλαία/μικρά μετράνε (γι' αυτό διαλέγεις «Γράμματα»)
+const fold = s => s.normalize('NFD').replace(/[\u0300-\u036f]/g, '').replace(/ς/g, 'σ');
+const isUpper = c => c !== c.toLowerCase();
 function typeItem(kind) {
-  if (kind === 'letters') { const i = rnd(UP.length); return { text: letterShow(i), key: UP[i] }; }
-  if (kind === 'words') { const w = pick(PIC_WORDS.filter(w => w.w.length <= 7)); return { text: show(w.w), html: `<span class="em">${w.em}</span>${show(w.w)}`, key: plain(w.w) }; }
+  if (kind === 'letters') { const ch = letterShow(rnd(UP.length)); return { text: ch, key: fold(ch) }; }
+  if (kind === 'words') { const w = pick(PIC_WORDS.filter(w => w.w.length <= 7)); return { text: show(w.w), html: `<span class="em">${w.em}</span>${show(w.w)}`, key: fold(show(w.w)) }; }
   const m = mathItem(kind); return { text: m.text + ' = ;', key: String(m.val) };
 }
 
@@ -237,12 +243,24 @@ function makeLane(p, two) {
     const kb = el.querySelector('.kb');
     if (!digits && cfg.kbl === 'qw') {
       kb.classList.add('qw');
-      kb.innerHTML = QW.map(r => '<div class="row">' + r.map(([ch, f]) => ch === ';' ? '<button class="blank"></button>'
+      // ⇪ στη θέση του Caps Lock (αριστερά από το Α), ⇧ στη θέση του Shift (αριστερά από το Ζ)
+      const MODS = ['', '<button class="mod" data-m="caps" title="Caps Lock">⇪</button>', '<button class="mod" data-m="shift" title="Shift">⇧</button>'];
+      kb.innerHTML = QW.map((r, ri) => '<div class="row">' + MODS[ri] + r.map(([ch, f]) => ch === ';' ? '<button class="blank"></button>'
         : ch === '⌫' ? '<button class="del" data-k="⌫">⌫</button>'
-        : `<button class="f${f}${ch === 'Φ' || ch === 'Ξ' ? ' home' : ''}" data-k="${ch === 'ς' ? 'Σ' : ch}">${ch}</button>`).join('') + '</div>').join('');
-    } else kb.innerHTML = keys.map(k => `<button data-k="${k}">${k}</button>`).join('') + '<button class="del" data-k="⌫">⌫</button>';
+        : `<button class="f${f}${ch === 'Φ' || ch === 'Ξ' ? ' home' : ''}" data-k="${ch === 'ς' ? 'Σ' : ch}"${ch === 'ς' ? ' data-fin="1"' : ''}>${ch}</button>`).join('') + '</div>').join('');
+    } else kb.innerHTML = keys.map(k => `<button data-k="${k}">${k}</button>`).join('')
+      + (digits ? '' : '<button class="mod" data-m="shift">⇧</button><button class="mod" data-m="caps">⇪</button>') + '<button class="del" data-k="⌫">⌫</button>';
     kb.hidden = !showOsk(two);
-    kb.addEventListener('pointerdown', e => { const b = e.target.closest('button[data-k]'); if (b) { e.preventDefault(); key(L, b.dataset.k); } });
+    L.shift = false; L.caps = false;
+    kb.addEventListener('pointerdown', e => {
+      const b = e.target.closest('button[data-k], button[data-m]'); if (!b) return;
+      e.preventDefault();
+      if (b.dataset.m) { L[b.dataset.m] = !L[b.dataset.m]; paintKb(L); return; }
+      let k = b.dataset.k;
+      if (!digits && k !== '⌫') { k = (L.shift !== L.caps) ? k : k.toLowerCase(); if (L.shift) { L.shift = false; paintKb(L); } }
+      key(L, k);
+    });
+    if (!digits) paintKb(L);
   } else {
     L.target = newTarget(cfg.what);
     el.querySelector('.target').innerHTML = L.target.html;
@@ -319,6 +337,15 @@ function tap(L, o) {
 }
 
 /* «Γράψ' τα»: γράφεις ό,τι πέφτει· πάντα στοχεύεις το πιο χαμηλό που ταιριάζει */
+// τα γράμματα της οθόνης φαίνονται όπως θα γραφτούν (μικρά ή κεφαλαία)
+function paintKb(L) {
+  const up = L.shift !== L.caps;
+  L.el.querySelectorAll('.kb button[data-k]').forEach(b => {
+    const k = b.dataset.k; if (k === '⌫' || /[0-9]/.test(k)) return;
+    b.textContent = up ? k : b.dataset.fin ? 'ς' : k.toLowerCase();
+  });
+  L.el.querySelectorAll('.kb button[data-m]').forEach(b => b.classList.toggle('on', !!L[b.dataset.m]));
+}
 function key(L, k) {
   if (!running) return;
   const tEl = L.el.querySelector('.typed');
@@ -327,7 +354,9 @@ function key(L, k) {
   const m = L.items.filter(o => !o.dead && o.key.startsWith(L.typed)).sort((a, b) => b.y - a.y)[0];
   L.items.forEach(o => o.el.classList.toggle('next', o === m && L.typed.length > 0));
   if (L.typed && !m) {  // λάθος γράμμα: κόκκινο και ξανά από την αρχή
-    tEl.classList.add('no'); tEl.textContent = L.typed;
+    // σωστό γράμμα σε λάθος μέγεθος; πες το
+    const n = L.typed.length, cs = L.items.find(o => !o.dead && o.key.toUpperCase().startsWith(L.typed.toUpperCase()));
+    tEl.classList.add('no'); tEl.textContent = cs ? (isUpper(cs.key[n - 1]) ? '⇧ Κεφαλαίο!' : 'Μικρό γράμμα!') : L.typed;
     L.streak = 0; try { GameSounds.thud(); } catch (e) {}
     setTimeout(() => { tEl.classList.remove('no'); L.typed = ''; tEl.innerHTML = '&nbsp;'; }, 350);
     L.typed = '\u0000';  // μπλοκάρει μέχρι να καθαρίσει
@@ -347,18 +376,23 @@ function key(L, k) {
 document.addEventListener('keydown', e => {
   if (!running || lanes.length !== 1 || e.ctrlKey || e.altKey || e.metaKey) return;
   const L = lanes[0];
-  let ch = e.key.length === 1 ? plain(e.key) : '';
-  if (!/[Α-Ω0-9]/.test(ch) && /^Key[A-Z]$/.test(e.code)) ch = plain(LATIN[e.code[3]] || '');  // αγγλική διάταξη → ελληνικά
+  let ch = e.key.length === 1 ? fold(e.key) : '';
+  if (!/[Α-Ωα-ω0-9]/.test(ch) && /^Key[A-Z]$/.test(e.code)) {  // αγγλική διάταξη → ελληνικά, με Shift/Caps Lock
+    const g = LATIN[e.code[3]] || '';
+    ch = (e.shiftKey !== e.getModifierState('CapsLock')) ? g : g.toLowerCase();
+  }
   if (!L.type) {
-    // «Πιάσε τα σωστά» με πληκτρολόγιο: το γράμμα πιάνει το πιο χαμηλό μπαλόνι που αρχίζει από αυτό
-    if (!/^[Α-Ω]$/.test(ch) || !['letters', 'words'].includes(cfg.what)) return;
-    const o = L.items.filter(o => !o.dead && !o.el.classList.contains('bad') && plain(o.text)[0] === ch).sort((a, b) => b.y - a.y)[0];
+    // «Πιάσε τα σωστά» με πληκτρολόγιο: το γράμμα πιάνει το πιο χαμηλό μπαλόνι —
+    // στα γράμματα πρέπει να ταιριάζει και το μέγεθος (Α ≠ α), στις λέξεις μόνο το αρχικό
+    if (!/^[Α-Ωα-ω]$/.test(ch) || !['letters', 'words'].includes(cfg.what)) return;
+    const hit = o => cfg.what === 'letters' ? fold(o.text) === ch : fold(o.text)[0].toUpperCase() === ch.toUpperCase();
+    const o = L.items.filter(o => !o.dead && !o.el.classList.contains('bad') && hit(o)).sort((a, b) => b.y - a.y)[0];
     if (o) tap(L, o); else L.streak = 0;  // κανένα τέτοιο μπαλόνι: δεν χάνεις ζωή
     e.preventDefault(); return;
   }
   if (!physKeys && cfg.osk === 'auto') { physKeys = true; const kb = L.el.querySelector('.kb'); if (kb) kb.hidden = true; }
   if (e.key === 'Backspace') { key(L, '⌫'); e.preventDefault(); return; }
-  if (/^[Α-Ω0-9]$/.test(ch)) { key(L, ch); e.preventDefault(); }
+  if (/^[Α-Ωα-ω0-9]$/.test(ch)) { key(L, ch); e.preventDefault(); }
 });
 const LATIN = { A: 'Α', B: 'Β', G: 'Γ', D: 'Δ', E: 'Ε', Z: 'Ζ', H: 'Η', U: 'Θ', I: 'Ι', K: 'Κ', L: 'Λ', M: 'Μ', N: 'Ν', J: 'Ξ', O: 'Ο', P: 'Π', R: 'Ρ', S: 'Σ', W: 'Σ', T: 'Τ', Y: 'Υ', F: 'Φ', X: 'Χ', C: 'Ψ', V: 'Ω' };
 
