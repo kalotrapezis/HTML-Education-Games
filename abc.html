@@ -1,6 +1,8 @@
 <!DOCTYPE html>
 <html lang="el">
 <head>
+<script src="longpress.js"></script>
+<script src="keypick.js"></script>
 <link rel="icon" type="image/svg+xml" href="favicon.svg">
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -17,11 +19,11 @@
   .back a, .back button { color: #fff; text-decoration: none; background: rgba(0,0,0,0.3); padding: 8px 14px; border-radius: 8px; border: 0; font: inherit; cursor: pointer; }
   h1 { font-size: 48px; margin-bottom: 30px; text-align: center; }
   .menu { display: grid; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); gap: 24px; max-width: 1100px; width: 100%; }
-  .menu button {
-    background: rgba(0,0,0,0.35); border: 2px solid transparent; border-radius: 18px; color: #fff;
+  .menu button, .menu a {
+    text-decoration: none; background: rgba(0,0,0,0.35); border: 2px solid transparent; border-radius: 18px; color: #fff;
     padding: 30px 20px; font: inherit; cursor: pointer; display: flex; flex-direction: column; align-items: center; gap: 10px;
   }
-  .menu button:hover { border-color: #ffb347; }
+  .menu button:hover, .menu a:hover { border-color: #ffb347; }
   .menu .em { font-size: 64px; }
   .menu .nm { font-size: 26px; font-weight: bold; color: #ffb347; }
   .menu .ds { font-size: 16px; opacity: .85; }
@@ -61,6 +63,9 @@
   #kb .k.bad { background: #e53935 !important; color: #fff; }
   .f0 { background: #f48fb1; } .f1 { background: #ffcc80; } .f2 { background: #fff59d; } .f3 { background: #a5d6a7; }
   .f4 { background: #90caf9; } .f5 { background: #ce93d8; } .f6 { background: #80cbc4; } .f7 { background: #bcaaa4; } .f8 { background: #e0e0e0; }
+  #tfile { display: flex; gap: 14px; justify-content: center; }
+  #tfile button { font: inherit; font-size: 22px; font-weight: bold; padding: 10px 22px; border: 0; border-radius: 12px; background: #ffb347; color: #1e3c72; box-shadow: 0 4px 0 #c47f1c; cursor: pointer; }
+  #tfile button:active { transform: translateY(3px); box-shadow: 0 1px 0 #c47f1c; }
   #hands { font-size: 18px; opacity: .85; text-align: center; }
 </style>
 </head>
@@ -79,6 +84,9 @@
     <button data-g="clock"><span class="em">🕒</span><span class="nm">Τι ώρα είναι;</span><span class="ds">Ακριβώς και μισή</span></button>
     <button data-t="copy"><span class="em">⌨️</span><span class="nm">Γράψε τη λέξη</span><span class="ds">Τυφλό σύστημα: κοίτα την οθόνη, όχι τα πλήκτρα</span></button>
     <button data-t="free"><span class="em">📝</span><span class="nm">Κειμενογράφος</span><span class="ds">Γράψε ό,τι θέλεις με μεγάλα γράμματα</span></button>
+    <a href="falling.html"><span class="em">🌧️</span><span class="nm">Βροχή από Γράμματα</span><span class="ds">Πιάσε τα σωστά γράμματα, λέξεις ή πράξεις · 1 ή 2 παίκτες</span></a>
+    <a href="lexeis.html"><span class="em">✂️</span><span class="nm">Παίζω με τις Λέξεις</span><span class="ds">Συλλαβές · Ανακατεμένα · Ποια λείπει; · Τυφλοπόντικας</span></a>
+    <a href="typing.html"><span class="em">⌨️</span><span class="nm">Γράψε και Τρέξε</span><span class="ds">Γράψε τη λέξη: ο ήρωας και τα τέρατα ή αγώνας · 1 ή 2 παίκτες</span></a>
   </div>
 </div>
 
@@ -95,11 +103,13 @@
   <div id="tpic"></div>
   <div id="tword"></div>
   <textarea id="ttext" spellcheck="false" placeholder="Γράψε εδώ…"></textarea>
+  <div id="tfile"><button id="saveTxt">💾 Αποθήκευση (.txt)</button><button id="loadTxt">📂 Άνοιγμα (.txt)</button><input type="file" id="txtFile" accept=".txt,text/plain" hidden></div>
   <div id="kb"></div>
   <div id="hands">Τα δάχτυλα πάνω στα πλήκτρα με το γραμματάκι κάτω: <b>Α Σ Δ Φ</b> (αριστερό) και <b>Ξ Κ Λ</b> (δεξί). Κάθε χρώμα είναι ένα δάχτυλο.</div>
 </div>
 
 <script src="sounds.js"></script>
+<script src="lexilogio.js"></script>
 <script>
 const $ = id => document.getElementById(id);
 const rnd = n => Math.floor(Math.random() * n);           // 0..n-1
@@ -128,6 +138,7 @@ const WORDS = [
   ['⛄', 'χιονάνθρωπος'], ['🐢', 'χελώνα'], ['✋', 'χέρι'],
   ['🐟', 'ψάρι'], ['🍞', 'ψωμί'],
 ];
+PIC_WORDS.forEach(p => { if (!WORDS.some(w => w[1] === p.w)) WORDS.push([p.em, p.w]); });  // + λέξεις με εικόνες από lexilogio.js
 const plain = s => s.normalize('NFD').replace(/[̀-ͯ]/g, '').toUpperCase();
 const row = (em, n) => Array(n).fill(em).join(' ');
 
@@ -256,6 +267,7 @@ function startTyping(mode) {
   $('home').style.display = 'none'; $('typing').style.display = 'flex'; $('toMenu').hidden = false;
   const free = mode === 'free';
   $('ttext').style.display = free ? 'block' : 'none';
+  $('tfile').style.display = free ? 'flex' : 'none';
   $('tpic').style.display = $('tword').style.display = $('tstars').style.display = free ? 'none' : 'block';
   if (free) { $('ttext').focus(); markNext(null); } else nextWord();
 }
@@ -302,8 +314,33 @@ function press(code, shift) {
 }
 document.addEventListener('keydown', e => {
   if (!tmode || e.ctrlKey || e.altKey || e.metaKey) return;
+  // Ελληνικά στα Windows: ο υπολογιστής γράφει μόνος του (και τόνο με νεκρό πλήκτρο ΄).
+  // Αν γράφαμε κι εμείς, θα έβγαινε διπλό: «΄ώώ». Μετατρέπουμε μόνο όταν το πληκτρολόγιο είναι στα αγγλικά.
+  if (tmode === 'free' && (e.isComposing || e.key === 'Dead' || /^[\u0370-\u03ff\u1f00-\u1fff΄]$/.test(e.key))) {
+    accent = false; if (CH[e.code]) flash(e.code, 'hit'); return;
+  }
   if (press(e.code, e.shiftKey)) e.preventDefault();
 });
+// ό,τι δεν είναι γράμμα (τελεία, κόμμα, !) δεν το πιάνουμε: το γράφει ο υπολογιστής όπως είναι
+
+/* ---- Αποθήκευση / άνοιγμα κειμένου (.txt) ---- */
+$('saveTxt').onclick = () => {
+  const name = (prompt('Όνομα αρχείου:', 'το κείμενό μου') || '').trim();
+  if (!name) return;
+  // BOM: για να ανοίγει σωστά τα ελληνικά και στο παλιό Σημειωματάριο
+  const url = URL.createObjectURL(new Blob(['\ufeff' + $('ttext').value], { type: 'text/plain;charset=utf-8' }));
+  const a = document.createElement('a'); a.href = url; a.download = name.replace(/\.txt$/i, '') + '.txt';
+  document.body.appendChild(a); a.click(); a.remove();
+  setTimeout(() => URL.revokeObjectURL(url), 2000);
+};
+$('loadTxt').onclick = () => $('txtFile').click();
+$('txtFile').onchange = e => {
+  const f = e.target.files[0]; if (!f) return;
+  const r = new FileReader();
+  r.onload = () => { $('ttext').value = String(r.result).replace(/^\ufeff/, ''); $('ttext').focus(); };
+  r.readAsText(f, 'utf-8');
+  e.target.value = '';
+};
 $('kb').onclick = e => {                     // πάτημα στα πλήκτρα της οθόνης (για τον πίνακα)
   const k = e.target.closest('.k'); if (!k || !tmode) return;
   if (tmode === 'free' && k.dataset.c === 'Backspace') { const t = $('ttext'); const s = t.selectionStart; if (s > 0) t.setRangeText('', s - 1, s, 'end'); flash('Backspace', 'hit'); }
@@ -319,6 +356,8 @@ for (const g in GAMES) for (let i = 0; i < 200; i++) {
   console.assert(r.options.includes(r.answer) && new Set(r.options).size === r.options.length, g, r);
 }
 console.assert(WORDS.every(([, w]) => ABC.includes(plain(w[0]))), 'first letters');
+// πληκτρολόγιο: γράψε την απάντηση (αριθμό, γράμμα ή λέξη) — ή 1, 2, 3 κατά σειρά
+KeyPick.watch('#opts button');
 </script>
 </body>
 </html>

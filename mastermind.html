@@ -1,6 +1,7 @@
 <!DOCTYPE html>
 <html lang="el">
 <head>
+<script src="longpress.js"></script>
 <link rel="icon" type="image/svg+xml" href="favicon.svg">
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
@@ -70,11 +71,29 @@
 
   .fb { display: flex; gap: 4px; align-items: center; }
   .fb i {
-    width: 14px; height: 14px; border-radius: 50%; background: rgba(255,255,255,0.10);
-    display: inline-block;
+    width: 18px; height: 18px; border-radius: 50%; background: transparent;
+    border: 2px dashed rgba(255,255,255,0.25); display: inline-block;
   }
-  .fb i.black { background: #111; border: 1px solid #555; }
-  .fb i.white { background: #fff; }
+  /* μαύρη = σωστό χρώμα & θέση, λευκή = σωστό χρώμα σε λάθος θέση — με περίγραμμα για να φαίνονται στο σκούρο φόντο */
+  .fb i.black { background: #111; border: 3px solid #4caf50; }
+  .fb i.white { background: #fff; border: 3px solid #ffd23f; }
+  .board.classic .fb { min-width: 170px; }
+  .fb .say { font-size: 14px; line-height: 1.3; white-space: nowrap; }
+  .peg { position: relative; }
+  .peg.hit::after, .peg.near::after {
+    position: absolute; right: -6px; bottom: -6px; width: 20px; height: 20px; border-radius: 50%;
+    font-size: 13px; font-weight: bold; display: flex; align-items: center; justify-content: center;
+  }
+  /* τα σήματα στα πιόνια = ίδια με τις ενδείξεις δεξιά: ✓ μαύρη με πράσινο, ? λευκή με κίτρινο */
+  .peg.hit::after, .lg.black { content: '✓'; background: #111; color: #7CFC00; border: 2px solid #4caf50; }
+  .peg.near::after, .lg.white { content: '?'; background: #fff; color: #1e3c72; border: 2px solid #ffd23f; }
+  .peg.near::after, .lg.white, .fb i.white::after { font-size: 19px; line-height: 1; font-family: Arial, sans-serif; }
+  .lg { display: inline-flex; width: 22px; height: 22px; border-radius: 50%; align-items: center; justify-content: center; font-size: 13px; font-weight: bold; vertical-align: middle; }
+  .fb i.black::after { content: '✓'; } .fb i.white::after { content: '?'; }
+  .fb i { font-style: normal; font-size: 10px; font-weight: bold; display: inline-flex; align-items: center; justify-content: center; color: #1e3c72; }
+  .fb i.black { color: #7CFC00; }
+  .grow.just { animation: pop .5s; }
+  @keyframes pop { 40% { transform: scale(1.06); } }
 
   .palette { display: flex; gap: 10px; flex-wrap: wrap; justify-content: center; margin-bottom: 10px; }
   .swatch {
@@ -126,7 +145,7 @@
 <div class="back"><a href="index.html">← Πίσω</a></div>
 
 <h1>🎯 Σπαστός Κώδικας</h1>
-<div class="info">Μάντεψε τον κρυφό κωδικό χρωμάτων! ⚫ = σωστό χρώμα &amp; θέση · ⚪ = σωστό χρώμα, λάθος θέση.</div>
+<div class="info">Μάντεψε τον κρυφό κωδικό χρωμάτων! <span class="lg black">✓</span> μαύρη = σωστό χρώμα &amp; θέση · <span class="lg white">?</span> λευκή = σωστό χρώμα, λάθος θέση · χωρίς ένδειξη = δεν υπάρχει (ή περισσεύει).</div>
 
 <!-- ΕΠΙΛΟΓΗ -->
 <div id="setup" class="screen active">
@@ -153,6 +172,7 @@
   <div class="controls">
     <button id="submitBtn" disabled>✓ Έλεγξε</button>
     <button class="ghost" id="clearBtn">✗ Καθάρισε</button>
+    <button class="ghost" id="pointBtn" title="Δείχνει σε ποιο πιόνι αντιστοιχεί κάθε ένδειξη">🎯 Δείξε ποιο πιόνι</button>
   </div>
   <div class="msg" id="msg"></div>
   <div class="secret" id="secret" style="display:none;"></div>
@@ -171,7 +191,9 @@
       <li><span class="dot black"></span> Μαύρη: ένα πιόνι έχει <b>σωστό χρώμα &amp; σωστή θέση</b></li>
       <li><span class="dot white"></span> Λευκή: ένα πιόνι έχει <b>σωστό χρώμα, αλλά σε λάθος θέση</b></li>
     </ul>
-    <div class="warn">⚠️ Οι ενδείξεις δείχνουν μόνο <b>πόσα</b> βρήκες — όχι <b>ποιο</b> πιόνι. Δοκίμασε με λογική &amp; αποκλεισμό μέχρι να σπάσεις τον κωδικό!</div>
+    <p><b>🎯 Δείχνω ποιο πιόνι</b> (ξεκινά έτσι): το ✓ και το ? μπαίνουν πάνω στο ίδιο το πιόνι, όπως στο «Βρες τη Λέξη».<br>
+    <b>🧠 Δύσκολο</b>: δεξιά γράφει μόνο <b>πόσα</b> — π.χ. «🎨 3 σωστά χρώματα · 📍 1 σωστή θέση» — όχι <b>ποια</b>!</p>
+    <div class="warn">⚠️ Στο <b>δύσκολο</b> οι ενδείξεις δεξιά δείχνουν μόνο <b>πόσα</b> βρήκες — όχι <b>ποιο</b> πιόνι. Δοκίμασε με λογική &amp; αποκλεισμό μέχρι να σπάσεις τον κωδικό!</div>
     <button id="closeHow">Κατάλαβα 👍</button>
   </div>
 </div>
@@ -196,6 +218,7 @@ let guesses = [];     // υποβληθέντα: [{guess:[], black, white}]
 let current = [];     // τρέχουσα σειρά (δείκτες ή null)
 let over = false;
 let howShown = false;
+let pointMode = true;  // ✓/? πάνω σε κάθε πιόνι (σαν το Wordle)· κλειστό = κλασικό Mastermind, μόνο πόσα
 const $ = id => document.getElementById(id);
 
 /* ---- setup ---- */
@@ -208,6 +231,7 @@ $('diffCards').addEventListener('click', e => {
 
 function startGame() {
   $('diffTag').textContent = `${cfg.pegs} θέσεις · ${cfg.colors} χρώματα`;
+  paintPointBtn();
   $('setup').classList.remove('active');
   $('game').classList.add('active');
   buildPalette();
@@ -285,6 +309,7 @@ function drawRowPegs(r) {
     let ci = null;
     if (submitted) ci = submitted.guess[i];
     else if (r === guesses.length) ci = current[i];
+    if (submitted && pointMode && submitted.marks[i]) peg.classList.add(submitted.marks[i]);
     if (ci != null) {
       peg.classList.add('filled');
       peg.style.background = COLORS[ci].c;
@@ -298,6 +323,11 @@ function drawRowPegs(r) {
 function drawRowFb(r) {
   const el = $('fb-' + r); el.innerHTML = '';
   const g = guesses[r];
+  if (g && !pointMode) {  // δύσκολο: λέει με λόγια πόσα χρώματα και πόσες θέσεις, όχι ποια
+    const c = g.black + g.white;
+    el.innerHTML = `<span class="say">🎨 ${c} ${c === 1 ? 'σωστό χρώμα' : 'σωστά χρώματα'}<br>📍 ${g.black} ${g.black === 1 ? 'σωστή θέση' : 'σωστές θέσεις'}</span>`;
+    return;
+  }
   const pips = [];
   if (g) {
     for (let i = 0; i < g.black; i++) pips.push('black');
@@ -322,25 +352,36 @@ function updateControls() {
   $('rowTag').textContent = `Γύρος ${Math.min(guesses.length + 1, cfg.rows)}`;
 }
 
-function score(guess) {
+/* marks[i]: 'hit' σωστό χρώμα & θέση, 'near' το χρώμα υπάρχει αλλού (μετριέται μία φορά ανά πιόνι του κωδικού) */
+function score(guess, secret = code) {
   let black = 0, white = 0;
-  const cg = guess.slice(), cc = code.slice();
-  for (let i = 0; i < cc.length; i++) if (cg[i] === cc[i]) { black++; cg[i] = -1; cc[i] = -2; }
+  const cg = guess.slice(), cc = secret.slice(), marks = guess.map(() => null);
+  for (let i = 0; i < cc.length; i++) if (cg[i] === cc[i]) { black++; marks[i] = 'hit'; cg[i] = -1; cc[i] = -2; }
   for (let i = 0; i < cg.length; i++) {
     if (cg[i] === -1) continue;
     const j = cc.indexOf(cg[i]);
-    if (j !== -1) { white++; cc[j] = -2; }
+    if (j !== -1) { white++; marks[i] = 'near'; cc[j] = -2; }
   }
-  return { black, white };
+  return { black, white, marks };
+}
+// self-check: διπλά χρώματα μετριούνται σωστά
+[[[0,0,1],[0,1,1],2,0],[[0,1,2,3],[3,2,1,0],0,4],[[0,0,1,1],[1,1,1,0],1,2],[[2,2,2],[2,3,3],1,0]].forEach(([c,g,b,w]) => {
+  const r = score(g, c); console.assert(r.black === b && r.white === w, 'score', c, g, r);
+});
+function paintPointBtn() {
+  $('pointBtn').textContent = pointMode ? '🎯 Δείχνω ποιο πιόνι' : '🧠 Δύσκολο: λέω μόνο πόσα';
+  $('pointBtn').style.background = pointMode ? '#4caf50' : '#8e24aa';
+  $('board').classList.toggle('classic', !pointMode);
 }
 
 function submit() {
   if (over || current.indexOf(null) !== -1) return;
   const guess = current.slice();
   const res = score(guess);
-  guesses.push({ guess, black: res.black, white: res.white });
+  guesses.push({ guess, black: res.black, white: res.white, marks: res.marks });
   drawRowPegs(guesses.length - 1);
   drawRowFb(guesses.length - 1);
+  const row = $('row-' + (guesses.length - 1)); row.classList.add('just');
 
   if (res.black === cfg.pegs) {
     over = true;
@@ -387,6 +428,10 @@ function finishUI() {
 $('startBtn').addEventListener('click', () => { try { GameSounds.unlock(); } catch (e) {} startGame(); });
 $('submitBtn').addEventListener('click', submit);
 $('clearBtn').addEventListener('click', () => { if (!over) { current = new Array(cfg.pegs).fill(null); renderActiveRow(); updateControls(); } });
+$('pointBtn').addEventListener('click', () => {
+  pointMode = !pointMode; paintPointBtn();
+  for (let r = 0; r < guesses.length; r++) { drawRowPegs(r); drawRowFb(r); }
+});
 $('helpBtn').addEventListener('click', () => $('howto').classList.add('open'));
 $('closeHow').addEventListener('click', () => $('howto').classList.remove('open'));
 $('howto').addEventListener('click', e => { if (e.target === $('howto')) $('howto').classList.remove('open'); });

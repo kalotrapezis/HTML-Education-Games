@@ -1,6 +1,8 @@
 <!DOCTYPE html>
 <html lang="el">
 <head>
+<script src="longpress.js"></script>
+<script src="keypick.js"></script>
 <link rel="icon" type="image/svg+xml" href="favicon.svg">
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -2188,6 +2190,8 @@ window.addEventListener('pointercancel', () => {
 });
 
 goModeMenu();
+// πληκτρολόγιο: γράψε τον αριθμό της σωστής φούσκας
+KeyPick.watch('.answer-bubble');
 </script>
 </body>
 </html>

@@ -1,0 +1,410 @@
+<!DOCTYPE html>
+<html lang="el">
+<head>
+<script src="longpress.js"></script>
+<link rel="icon" type="image/svg+xml" href="favicon.svg">
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
+<title>Γράψε και Τρέξε</title>
+<style>
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  html, body { height: 100%; }
+  body { font-family: 'Segoe UI', Tahoma, sans-serif; color: #fff; user-select: none; -webkit-user-select: none; overflow: hidden;
+    background: linear-gradient(135deg, #1e3c72, #2a5298 50%, #6b2a8a); -webkit-tap-highlight-color: transparent; }
+  .back { position: absolute; top: 10px; left: 10px; z-index: 20; display: flex; gap: 8px; }
+  .back a, .back button { color: #fff; text-decoration: none; background: rgba(0,0,0,0.35); padding: 8px 14px; border-radius: 8px; border: 0; font: inherit; cursor: pointer; }
+
+  #setup { height: 100%; overflow: auto; padding: 60px 16px 30px; display: flex; flex-direction: column; align-items: center; gap: 14px; }
+  h1 { font-size: 42px; text-align: center; }
+  .sub { opacity: .85; text-align: center; max-width: 720px; }
+  .box { background: rgba(0,0,0,.35); border-radius: 16px; padding: 14px 20px; width: 100%; max-width: 860px; }
+  .box h2 { color: #ffb347; font-size: 18px; margin-bottom: 10px; }
+  .opts { display: grid; grid-template-columns: repeat(auto-fit, minmax(140px, 1fr)); gap: 10px; }
+  .opt { background: rgba(255,255,255,.08); border: 3px solid transparent; border-radius: 14px; padding: 10px; cursor: pointer; text-align: center; }
+  .opt:hover { border-color: rgba(255,179,71,.5); }
+  .opt.on { border-color: #ffb347; background: rgba(255,179,71,.2); }
+  .opt .e { font-size: 32px; display: block; } .opt .t { font-weight: bold; } .opt .d { font-size: 12px; opacity: .75; }
+  .go { padding: 16px 50px; font-size: 26px; font-weight: bold; border: 0; border-radius: 14px; background: #ff9500; color: #fff; box-shadow: 0 5px 0 #c46c00; cursor: pointer; font-family: inherit; }
+  .go:active { transform: translateY(3px); box-shadow: 0 2px 0 #c46c00; }
+
+  #arena { display: none; height: 100%; gap: 6px; padding: 52px 6px 6px; }
+  #arena.on { display: flex; }
+  .lane { flex: 1; display: flex; flex-direction: column; border: 4px solid var(--c); border-radius: 14px; overflow: hidden; position: relative; min-width: 0; background: #1b2a4a; }
+  .lane[data-p="0"] { --c: #42a5f5; --cd: #1565c0; }
+  .lane[data-p="1"] { --c: #ef5350; --cd: #b71c1c; }
+  .bar { display: flex; align-items: center; gap: 10px; padding: 6px 12px; background: var(--cd); font-size: 20px; font-weight: bold; }
+  .bar .sp { flex: 1; }
+
+  /* σκηνή */
+  .scene { flex: 1; position: relative; overflow: hidden; min-height: 150px; background: linear-gradient(#7ec8ff, #c9ecff 65%); }
+  .hills { position: absolute; left: 0; right: 0; bottom: 60px; height: 45%; opacity: .8;
+    background: radial-gradient(ellipse 160px 110px at 120px 100%, #7cb342 98%, transparent) repeat-x, radial-gradient(ellipse 220px 140px at 300px 100%, #9ccc65 98%, transparent) repeat-x;
+    background-size: 400px 100%, 520px 100%; animation: slide 14s linear infinite; }
+  .ground { position: absolute; left: 0; right: 0; bottom: 0; height: 60px; background: repeating-linear-gradient(90deg, #8d6e63 0 40px, #795548 40px 80px); border-top: 8px solid #558b2f; animation: slide2 2s linear infinite; }
+  .scene.stop .hills, .scene.stop .ground, .scene.stop .road { animation-play-state: paused; }
+  @keyframes slide { to { background-position: -400px 0, -520px 0; } }
+  @keyframes slide2 { to { background-position: -80px 0; } }
+  .sprite { position: absolute; font-size: 74px; line-height: 1; will-change: transform; }
+  .hero { left: 6%; bottom: 52px; }
+  .hero span { display: inline-block; transform: scaleX(-1); animation: run .35s ease-in-out infinite alternate; }
+  @keyframes run { to { transform: scaleX(-1) translateY(-10px) rotate(-6deg); } }
+  .monster { bottom: 56px; }
+  .monster span { display: inline-block; animation: wob .5s ease-in-out infinite alternate; }
+  @keyframes wob { to { transform: translateY(-8px) rotate(5deg); } }
+  .star { position: absolute; font-size: 48px; bottom: 80px; }
+  .boom { position: absolute; font-size: 90px; bottom: 50px; pointer-events: none; }
+  .hearts { position: absolute; top: 8px; left: 10px; font-size: 26px; }
+  .prog { position: absolute; left: 12px; right: 12px; bottom: 16px; height: 14px; border-radius: 7px; background: rgba(0,0,0,.4); z-index: 2; }
+  .prog i { position: absolute; left: 0; top: 0; bottom: 0; border-radius: 7px; background: linear-gradient(90deg, #ffb347, #ffd23f); transition: width .3s; }
+  .prog b { position: absolute; top: -14px; right: -10px; font-size: 26px; }
+
+  /* αγώνας */
+  .scene.race { background: #4caf50; }
+  .road { position: absolute; left: 0; right: 0; height: 32%; background: #546e7a; border-top: 5px solid #fff; border-bottom: 5px solid #fff;
+    background-image: repeating-linear-gradient(90deg, #fff 0 40px, transparent 40px 90px); background-size: 90px 6px; background-repeat: repeat-x; background-position: 0 50%; animation: road 1s linear infinite; }
+  @keyframes road { to { background-position: -90px 50%; } }
+  .road.r0 { top: 14%; } .road.r1 { top: 54%; }
+  .car { position: absolute; font-size: 64px; line-height: 1; transition: left .35s ease-out; }
+  .car span { display: inline-block; transform: scaleX(-1); }
+  .car .tag { position: absolute; top: -20px; left: 50%; transform: translateX(-50%); font-size: 14px; font-weight: bold; background: rgba(0,0,0,.6); padding: 1px 6px; border-radius: 6px; white-space: nowrap; }
+  .finish { position: absolute; right: 3%; top: 10%; bottom: 10%; width: 22px; background: repeating-conic-gradient(#000 0 25%, #fff 0 50%) 0 0 / 22px 22px; }
+
+  /* λέξη */
+  .card { display: flex; align-items: center; justify-content: center; gap: 14px; padding: 10px; background: #fff; color: #1e3c72; min-height: 92px; }
+  .card .em { font-size: 54px; }
+  .card .w { font-size: 56px; font-weight: bold; letter-spacing: 4px; text-align: center; overflow-wrap: anywhere; }
+  .card .w .spc { color: #ffb347; }
+  .card .w .ok { color: #2e7d32; }
+  .card .w .nx { text-decoration: underline 6px #ffb347; text-underline-offset: 10px; }
+  .card.bad { animation: bad .3s; }
+  @keyframes bad { 30% { background: #ffcdd2; transform: translateX(-8px); } 70% { transform: translateX(8px); } }
+
+  .kb[hidden] { display: none; }
+  .bar .cnt { font-size: 17px; background: rgba(0,0,0,.3); padding: 2px 10px; border-radius: 10px; }
+  .kb { display: flex; flex-wrap: wrap; justify-content: center; gap: 5px; padding: 6px; background: rgba(0,0,0,.4); }
+  .kb button { flex: 0 0 calc(12.5% - 5px); min-height: 50px; font-size: 26px; font-weight: bold; border: 0; border-radius: 10px; background: #fff; color: #1e3c72; box-shadow: 0 4px 0 #9aa; cursor: pointer; font-family: inherit; }
+  .kb button:active { transform: translateY(3px); box-shadow: 0 1px 0 #9aa; }
+  .kb button.space, .kb.qw .row button.space { flex: 0 0 50%; font-size: 18px; }
+  .kb.qw .row.sp { justify-content: center; padding-left: 0; }
+  .lvlup { position: absolute; inset: 0; display: flex; align-items: center; justify-content: center; font-size: 54px; font-weight: bold; text-align: center; z-index: 4; pointer-events: none; text-shadow: 0 4px 12px rgba(0,0,0,.6); }
+  .kb button.hl { background: #ffd23f; outline: 4px solid #ff9500; }
+  /* QWERTY: τα πλήκτρα στη θέση που έχουν στο πραγματικό πληκτρολόγιο, χρώμα ανά δάχτυλο */
+  .kb.qw { flex-direction: column; align-items: stretch; }
+  .kb.qw .row { display: flex; gap: 5px; }
+  .kb.qw .row button { flex: 0 0 calc(10% - 5px); }
+  .kb.qw .row:nth-child(2) { padding-left: 3%; } .kb.qw .row:nth-child(3) { padding-left: 8%; }
+  .kb.qw button.home { position: relative; }
+  .kb.qw button.home::after { content: ''; position: absolute; left: 35%; right: 35%; bottom: 6px; height: 3px; border-radius: 2px; background: #1e3c72; }
+  .kb.qw button.blank { visibility: hidden; }
+  .f0 { background: #f48fb1 !important; } .f1 { background: #ffcc80 !important; } .f2 { background: #fff59d !important; } .f3 { background: #a5d6a7 !important; }
+  .f4 { background: #90caf9 !important; } .f5 { background: #ce93d8 !important; } .f6 { background: #80cbc4 !important; } .f7 { background: #bcaaa4 !important; }
+  .kb.qw button.hl { background: #fff !important; outline: 5px solid #ff9500; transform: scale(1.08); }
+
+  .over { position: absolute; inset: 0; background: rgba(0,0,0,.65); display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 14px; z-index: 5; text-align: center; padding: 10px; }
+  .over .big { font-size: 48px; font-weight: bold; }
+  .over .go { font-size: 22px; padding: 12px 30px; }
+</style>
+</head>
+<body>
+<div class="back"><a href="abc.html">← Πίσω</a><button id="toSetup" hidden>⚙ Ρυθμίσεις</button></div>
+
+<div id="setup">
+  <h1>⌨️ Γράψε και Τρέξε</h1>
+  <div class="sub">Γράψε σωστά τα γράμματα και τις λέξεις — με το πληκτρολόγιο ή με τα κουμπιά στην οθόνη (για τον πίνακα).</div>
+  <div class="box"><h2>Παιχνίδι</h2><div class="opts" data-k="mode">
+    <div class="opt on" data-v="hero"><span class="e">🏃⭐👾</span><span class="t">Ο ήρωας και τα τέρατα</span><br><span class="d">γράψε τη λέξη για να ρίξεις αστέρι πριν σε φτάσει το τέρας</span></div>
+    <div class="opt" data-v="race"><span class="e">🏎️🏁</span><span class="t">Αγώνας</span><br><span class="d">κάθε σωστό γράμμα σπρώχνει το αμαξάκι σου μπροστά</span></div>
+  </div></div>
+  <div class="box"><h2>Τι γράφεις;</h2><div class="opts" data-k="what">
+    <div class="opt" data-v="letters"><span class="e">🔤</span><span class="t">Γράμματα</span><br><span class="d">ένα-ένα</span></div>
+    <div class="opt" data-v="syl"><span class="e">👏</span><span class="t">Συλλαβές</span><br><span class="d">πα, τά, τα</span></div>
+    <div class="opt on" data-v="short"><span class="e">🐱</span><span class="t">Μικρές λέξεις</span><br><span class="d">ως 5 γράμματα</span></div>
+    <div class="opt" data-v="words"><span class="e">📝</span><span class="t">Λέξεις</span><br><span class="d">όλες</span></div>
+    <div class="opt" data-v="phrases"><span class="e">💬</span><span class="t">Φράσεις</span><br><span class="d">με κενό ανάμεσα</span></div>
+    <div class="opt" data-v="prog"><span class="e">📈</span><span class="t">Από γράμμα σε φράση</span><br><span class="d">γράμμα → δύο γράμματα → λέξη → φράση· 5 επίπεδα το καθένα, όλο και πιο γρήγορα</span></div>
+  </div></div>
+  <div class="box"><h2>Παίκτες</h2><div class="opts" data-k="players">
+    <div class="opt on" data-v="1"><span class="e">🧒</span><span class="t">Ένας</span><br><span class="d">στον αγώνα: με τον υπολογιστή</span></div>
+    <div class="opt" data-v="2"><span class="e">🧒🧒</span><span class="t">Δύο, δίπλα-δίπλα</span><br><span class="d">ίδιες λέξεις, ποιος τελειώνει πρώτος</span></div>
+  </div></div>
+  <div class="box"><h2>Επίπεδο</h2><div class="opts" data-k="level">
+    <div class="opt" data-v="0"><span class="e">🐌</span><span class="t">Πολύ αργά</span><br><span class="d">για όσους πρωτομαθαίνουν τα πλήκτρα</span></div>
+    <div class="opt" data-v="1"><span class="e">🐢</span><span class="t">Αργά</span></div>
+    <div class="opt on" data-v="2"><span class="e">🐇</span><span class="t">Κανονικά</span></div>
+    <div class="opt" data-v="3"><span class="e">🚀</span><span class="t">Γρήγορα</span></div>
+  </div></div>
+  <div class="box"><h2>Πληκτρολόγιο στην οθόνη</h2><div class="opts" data-k="kb">
+    <div class="opt on" data-v="abc"><span class="e">🔤</span><span class="t">ΑΒΓ</span><br><span class="d">με αλφαβητική σειρά — για τους μικρούς</span></div>
+    <div class="opt" data-v="qw"><span class="e">⌨️</span><span class="t">Όπως το κανονικό (QWERTY)</span><br><span class="d">μάθε πού είναι κάθε γράμμα· χρώμα ανά δάχτυλο</span></div>
+  </div></div>
+  <div class="box"><h2>Πληκτρολόγιο στην οθόνη — φαίνεται;</h2><div class="opts" data-k="osk">
+    <div class="opt on" data-v="auto"><span class="e">🤖</span><span class="t">Αυτόματα</span><br><span class="d">κρύβεται όταν γράφεις σε κανονικό πληκτρολόγιο</span></div>
+    <div class="opt" data-v="show"><span class="e">👁️</span><span class="t">Πάντα</span></div>
+    <div class="opt" data-v="hide"><span class="e">🙈</span><span class="t">Ποτέ</span><br><span class="d">στους δύο παίκτες φαίνεται πάντα</span></div>
+  </div></div>
+  <div class="box"><h2>Βοήθεια</h2><div class="opts" data-k="hint">
+    <div class="opt on" data-v="1"><span class="e">💡</span><span class="t">Φωτίζει το πλήκτρο</span></div>
+    <div class="opt" data-v="0"><span class="e">🙈</span><span class="t">Χωρίς βοήθεια</span></div>
+  </div></div>
+  <button class="go" id="go">▶ Πάμε!</button>
+</div>
+
+<div id="arena"></div>
+
+<script src="lexilogio.js"></script>
+<script src="sounds.js"></script>
+<script>
+const $ = id => document.getElementById(id);
+const rnd = n => Math.floor(Math.random() * n);
+const pick = a => a[rnd(a.length)];
+const UP = 'ΑΒΓΔΕΖΗΘΙΚΛΜΝΞΟΠΡΣΤΥΦΧΨΩ';
+const plain = s => s.normalize('NFD').replace(/[̀-ͯ]/g, '').toUpperCase();
+const snd = (k, a) => { try { GameSounds[k](a); } catch (e) {} };
+const MONSTERS = ['👾', '👻', '🐲', '🦖', '🐙', '🦂', '🧟', '🕷️', '🦇', '👹'];
+const GOAL = 15;  // τέρατα / λέξεις μέχρι τον τερματισμό
+
+const cfg = { mode: 'hero', what: 'short', players: '1', level: '2', hint: '1', kb: 'abc', osk: 'auto' };
+// οθόνη αφής; (πίνακας, tablet) — αλλιώς υποθέτουμε κανονικό πληκτρολόγιο
+const TOUCH = matchMedia('(pointer: coarse)').matches || navigator.maxTouchPoints > 0;
+let physKeys = false;  // πατήθηκε ήδη πλήκτρο σε κανονικό πληκτρολόγιο
+const showOsk = two => two || cfg.osk === 'show' || (cfg.osk === 'auto' && TOUCH && !physKeys);
+// ελληνική διάταξη ανά σειρά: [γράμμα, δάχτυλο]· το ς στέλνει Σ, το ; είναι κενή θέση
+const QW = [
+  [[';', 0], ['ς', 1], ['Ε', 2], ['Ρ', 3], ['Τ', 3], ['Υ', 4], ['Θ', 4], ['Ι', 5], ['Ο', 6], ['Π', 7]],
+  [['Α', 0], ['Σ', 1], ['Δ', 2], ['Φ', 3], ['Γ', 3], ['Η', 4], ['Ξ', 4], ['Κ', 5], ['Λ', 6]],
+  [['Ζ', 0], ['Χ', 1], ['Ψ', 2], ['Ω', 3], ['Β', 3], ['Ν', 4], ['Μ', 4]],
+];
+const kbHtml = () => cfg.kb === 'qw'
+  ? '<div class="kb qw">' + QW.map(r => '<div class="row">' + r.map(([ch, f]) => ch === ';' ? '<button class="blank"></button>'
+      : `<button class="f${f}${ch === 'Φ' || ch === 'Ξ' ? ' home' : ''}" data-k="${ch === 'ς' ? 'Σ' : ch}" data-id="${ch}">${ch}</button>`).join('') + '</div>').join('')
+    + `<div class="row sp">${SPACE}</div></div>`
+  : `<div class="kb">${UP.split('').map(k => `<button data-k="${k}" data-id="${k}">${k}</button>`).join('')}${SPACE}</div>`;
+const SPACE = '<button class="space" data-k=" " data-id=" ">␣ κενό</button>';
+document.querySelectorAll('.opts').forEach(box => box.addEventListener('click', e => {
+  const o = e.target.closest('.opt'); if (!o) return;
+  box.querySelectorAll('.opt').forEach(x => x.classList.toggle('on', x === o));
+  cfg[box.dataset.k] = o.dataset.v;
+}));
+
+const PHRASES = ['η γάτα τρώει', 'ο σκύλος τρέχει', 'το ψάρι κολυμπά', 'ο ήλιος λάμπει', 'η μαμά γελάει', 'πίνω νερό',
+  'τρώω ένα μήλο', 'το δέντρο είναι ψηλό', 'έχω μια μπάλα', 'η βάρκα πλέει', 'βρέχει πολύ', 'καλημέρα σε όλους',
+  'πάμε σχολείο', 'το τρένο φεύγει', 'η κότα κάνει αυγά', 'ο λαγός πηδά', 'διαβάζω ένα βιβλίο', 'ζωγραφίζω ένα σπίτι',
+  'το πουλί πετά', 'η θάλασσα είναι μπλε', 'το χιόνι είναι άσπρο', 'φοράω καπέλο', 'παίζω με τους φίλους',
+  'το μωρό κοιμάται', 'ανοίγω την πόρτα', 'κλείνω το παράθυρο', 'μου αρέσει το παγωτό', 'η μέλισσα φτιάχνει μέλι',
+  'ο παππούς λέει παραμύθι', 'καληνύχτα μαμά', 'το φεγγάρι βγήκε', 'η πάπια κάνει πα πα'];
+const PAIRS = [...new Set(PIC_WORDS.flatMap(w => w.syl).filter(s => plain(s).length === 2))];
+console.assert(PHRASES.every(f => [...plain(f)].every(c => c === ' ' || UP.includes(c))), 'phrases typeable');
+// πρόοδος: 4 στάδια × 5 επίπεδα, κάθε επίπεδο 6 τέρατα και λίγο πιο γρήγορα (όπως στο Tetris)
+const STAGES = [['letters', '🔤 Γράμματα'], ['pairs', '🔡 Δύο γράμματα'], ['words', '📝 Λέξεις'], ['phrases', '💬 Φράσεις']];
+const PER_LEVEL = 6, LEVELS = STAGES.length * 5;
+const stageOf = L => Math.min(STAGES.length - 1, Math.floor((L.level - 1) / 5));
+const kindOf = L => L.prog ? STAGES[stageOf(L)][0] : cfg.what;
+
+function makeList(n, what = cfg.what) {  // ίδια λίστα για τους δύο παίκτες: δίκαιος αγώνας
+  const out = [];
+  for (let i = 0; i < n; i++) {
+    // αγώνας «από γράμμα σε φράση»: η λίστα δυσκολεύει σιγά-σιγά
+    const k = what === 'prog' ? ['letters', 'letters', 'pairs', 'pairs', 'short', 'short', 'words', 'phrases', 'phrases', 'phrases'][Math.floor(i * 10 / n)] : what;
+    if (k === 'letters') { out.push({ t: UP[rnd(24)] }); continue; }
+    if (k === 'pairs') { out.push({ t: pick(PAIRS) }); continue; }
+    if (k === 'syl') { const w = pick(PIC_WORDS); out.push({ t: pick(w.syl) }); continue; }
+    if (k === 'phrases') { out.push({ t: pick(PHRASES) }); continue; }
+    const pool = PIC_WORDS.filter(w => k === 'short' ? w.w.length <= 5 : w.w.length <= 9);
+    const w = pick(pool); out.push({ t: w.w, em: w.em });
+  }
+  return out;
+}
+
+let lanes = [], running = false, raf = 0, last = 0;
+function makeLane(p, two, list) {
+  const el = document.createElement('div'); el.className = 'lane'; el.dataset.p = p;
+  const race = cfg.mode === 'race';
+  el.innerHTML = `<div class="bar"><span>${two ? (p ? '🔴 Παίκτης 2' : '🔵 Παίκτης 1') : '🧒'}</span><span class="cnt"></span><span class="sp"></span><span class="sc"></span></div>
+    <div class="scene${race ? ' race' : ''}">${race
+      ? `<div class="road r0"></div>${two ? '' : '<div class="road r1"></div>'}<div class="finish"></div>`
+      : '<div class="hills"></div><div class="ground"></div><div class="sprite hero"><span>🏃</span></div><div class="hearts"></div><div class="prog"><i></i><b>🏁</b></div>'}</div>
+    <div class="card"><span class="em"></span><span class="w"></span></div>
+    ${kbHtml()}`;
+  const L = { el, p, two, race, list, idx: 0, pos: 0, done: 0, lives: 3, letters: 0, mistakes: 0, scene: el.querySelector('.scene'),
+    prog: !race && cfg.what === 'prog', level: 1, inLevel: 0 };
+  L.total = list.reduce((a, x) => a + plain(x.t).length, 0);
+  el.querySelector('.kb').hidden = !showOsk(two);
+  el.querySelector('.kb').addEventListener('pointerdown', e => { const b = e.target.closest('button[data-k]'); if (b) { e.preventDefault(); type(L, b.dataset.k); } });
+  if (race) {
+    L.car = addCar(L, '🏎️', 'r0', two ? '' : 'Εσύ');
+    if (!two) { L.cpu = addCar(L, '🚙', 'r1', '💻 Υπολογιστής'); L.cpuPos = 0; }
+  } else L.monster = null;
+  return L;
+}
+function addCar(L, ch, road, tag) {
+  const c = document.createElement('div'); c.className = 'car'; c.innerHTML = `<span>${ch}</span>${tag ? `<span class="tag">${tag}</span>` : ''}`;
+  const r = L.scene.querySelector('.' + road); c.style.top = `calc(${r.style.top || (road === 'r0' ? '14%' : '54%')} + 2%)`; c.style.left = '2%';
+  L.scene.appendChild(c); return c;
+}
+
+function showWord(L) {
+  if (!L.race && L.idx >= L.list.length - 1) L.list.push(...makeList(10, kindOf(L)));
+  const item = L.list[L.idx]; if (!item) return;
+  const t = plain(item.t), k = L.pos;
+  L.el.querySelector('.em').textContent = item.em || '';
+  const w = L.el.querySelector('.w');
+  w.style.fontSize = t.length > 16 ? '30px' : t.length > 9 ? '40px' : '';
+  w.innerHTML = [...item.t].map((ch, i) => `<span class="${i < k ? 'ok' : i === k ? 'nx' : ''}${ch === ' ' ? ' spc' : ''}">${ch === ' ' ? (i === k ? '␣' : '&nbsp;') : ch}</span>`).join('');
+  const want = item.t[k] === 'ς' && cfg.kb === 'qw' ? 'ς' : t[k];  // τελικό ς: στο QWERTY είναι άλλο πλήκτρο
+  L.el.querySelectorAll('.kb button').forEach(b => b.classList.toggle('hl', cfg.hint === '1' && running && b.dataset.id === want));
+}
+function paint(L) {
+  L.el.querySelector('.cnt').textContent = `✓ ${L.letters}  ✗ ${L.mistakes}`;  // σωστά / λάθος πατήματα
+  if (L.race) {
+    L.car.style.left = `calc(2% + ${L.letters / L.total} * 82%)`;
+    L.el.querySelector('.sc').textContent = `✍️ ${L.idx}/${L.list.length}`;
+  } else {
+    L.el.querySelector('.hearts').textContent = L.two ? '' : '❤️'.repeat(Math.max(0, L.lives)) + '🖤'.repeat(Math.max(0, 3 - L.lives));
+    L.el.querySelector('.prog i').style.width = (100 * (L.prog ? L.inLevel / PER_LEVEL : L.done / GOAL)) + '%';
+    L.el.querySelector('.sc').textContent = L.prog ? `📈 Επίπεδο ${L.level}/${LEVELS} · ${STAGES[stageOf(L)][1]}` : `⭐ ${L.done}/${GOAL}`;
+  }
+}
+
+function type(L, k) {
+  if (!running || L.finished) return;
+  if (!L.race && !L.monster) return;  // ανάμεσα σε δύο τέρατα: η λέξη θα πήγαινε χαμένη
+  const item = L.list[L.idx]; if (!item) return;
+  const t = plain(item.t);
+  if (k !== t[L.pos]) {  // λάθος: δεν προχωράει, η κάρτα τρέμει
+    L.mistakes++; paint(L);  // χωρίς ήχο: φαίνεται από την κάρτα που τρέμει
+    const c = L.el.querySelector('.card'); c.classList.remove('bad'); void c.offsetWidth; c.classList.add('bad');
+    return;
+  }
+  L.pos++; L.letters++;  // χωρίς ήχο σε κάθε πλήκτρο: κουράζει· ήχος μόνο όταν τελειώνει η λέξη
+  if (L.pos >= t.length) {  // ολόκληρη η λέξη
+    L.pos = 0; L.idx++;
+    if (L.race) { snd('correct'); if (L.idx >= L.list.length) return finish(L); }
+    else throwStar(L);
+  }
+  showWord(L); paint(L);
+}
+
+/* ---- ο ήρωας ---- */
+function spawnMonster(L) {
+  const m = document.createElement('div'); m.className = 'sprite monster'; m.innerHTML = `<span>${pick(MONSTERS)}</span>`;
+  L.scene.appendChild(m);
+  L.monster = { el: m, x: L.scene.clientWidth + 10 };
+}
+function throwStar(L) {
+  const m = L.monster; if (!m) return;
+  L.monster = null;
+  const s = document.createElement('div'); s.className = 'star'; s.textContent = '⭐'; L.scene.appendChild(s);
+  const x0 = L.scene.clientWidth * .06 + 60;
+  s.animate([{ transform: `translateX(${x0}px) rotate(0)` }, { transform: `translateX(${m.x}px) rotate(720deg)` }], { duration: 280, easing: 'linear' }).onfinish = () => {
+    s.remove(); m.el.remove();
+    const b = document.createElement('div'); b.className = 'boom'; b.textContent = '💥'; b.style.left = m.x + 'px'; L.scene.appendChild(b);
+    b.animate([{ transform: 'scale(.4)', opacity: 1 }, { transform: 'scale(1.5)', opacity: 0 }], 450).onfinish = () => b.remove();
+    snd('correct');
+    L.done++;
+    if (L.prog) { if (++L.inLevel >= PER_LEVEL && levelUp(L)) return; }
+    else if (L.done >= GOAL) { paint(L); return finish(L); }
+    paint(L);
+    setTimeout(() => running && !L.finished && spawnMonster(L), 350);
+  };
+}
+
+function levelUp(L) {  // true αν τελείωσε το παιχνίδι
+  L.level++; L.inLevel = 0;
+  if (L.level > LEVELS) { L.level = LEVELS; paint(L); finish(L); return true; }
+  const newStage = (L.level - 1) % 5 === 0;
+  if (newStage) {  // νέο στάδιο: πιο δύσκολο περιεχόμενο, η ταχύτητα ξαναπέφτει, +1 ζωή
+    L.list.splice(L.idx, Infinity, ...makeList(10, kindOf(L))); L.pos = 0;
+    if (!L.two) L.lives = Math.min(5, L.lives + 1);
+    showWord(L);
+  }
+  const b = document.createElement('div'); b.className = 'lvlup';
+  b.innerHTML = newStage ? `Νέο στάδιο!<br>${STAGES[stageOf(L)][1]}` : `Επίπεδο ${L.level}! 🚀`;
+  L.scene.appendChild(b);
+  b.animate([{ transform: 'scale(.3)', opacity: 0 }, { transform: 'scale(1.1)', opacity: 1, offset: .3 }, { transform: 'scale(1)', opacity: 0 }], 1600).onfinish = () => b.remove();
+  snd('bigCorrect');
+  return false;
+}
+
+function loop(t) {
+  const dt = Math.min(.05, (t - last) / 1000); last = t;
+  if (running) for (const L of lanes) {
+    if (L.finished) continue;
+    if (L.race && L.cpu) {  // ο υπολογιστής «γράφει» με σταθερό ρυθμό
+      L.cpuPos = Math.min(L.total, L.cpuPos + dt * [0.3, 0.7, 1.2, 2][+cfg.level]);
+      L.cpu.style.left = `calc(2% + ${L.cpuPos / L.total} * 82%)`;
+      if (L.cpuPos >= L.total) finish(L, true);
+    }
+    if (!L.race && L.monster) {
+      // χρόνος να φτάσει το τέρας: πιο πολύς για μακριές λέξεις/φράσεις, λιγότερος σε κάθε επίπεδο (−12%)
+      const it = L.list[L.idx], len = it ? plain(it.t).length : 1;
+      const T = [18, 11, 7.5, 5][+cfg.level] * Math.max(1, len / 6) * (L.prog ? Math.pow(.88, (L.level - 1) % 5) : 1);
+      const W = L.scene.clientWidth, speed = W / T;
+      L.monster.x -= dt * speed;
+      L.monster.el.style.transform = `translateX(${L.monster.x}px)`;
+      if (L.monster.x < W * .06 + 50) {  // σε έφτασε
+        L.monster.el.remove(); L.monster = null; snd('wrong');
+        const h = L.el.querySelector('.hero'); h.animate([{ transform: 'translateX(0)' }, { transform: 'translateX(-30px) rotate(-20deg)' }, { transform: 'translateX(0)' }], 500);
+        if (L.two) L.done = Math.max(0, L.done - 1); else L.lives--;
+        L.pos = 0; L.idx++;
+        showWord(L); paint(L);
+        if (!L.two && L.lives <= 0) { finish(L, true); continue; }
+        setTimeout(() => running && !L.finished && spawnMonster(L), 500);
+      }
+    }
+  }
+  raf = requestAnimationFrame(loop);
+}
+
+function finish(L, lost) {
+  if (L.finished) return;
+  L.finished = true; L.scene.classList.add('stop');
+  const two = lanes.length === 2;
+  if (two) {  // ο πρώτος που τελειώνει κερδίζει· σταματάνε και οι δύο
+    running = false;
+    lanes.forEach(X => { X.finished = true; X.scene.classList.add('stop'); overlay(X, X === L ? '<div class="big">🏆 Νίκησες!</div>' : '<div class="big">👏 Μπράβο!</div>'); });
+  } else {
+    running = false;
+    overlay(L, lost ? (L.race ? '<div class="big">💻 Κέρδισε ο υπολογιστής!</div><div>Ξαναπροσπάθησε!</div>' : '<div class="big">😵 Τέλος οι ζωές!</div>')
+      : `<div class="big">🏆 ${L.race ? 'Πρώτος!' : 'Νίκησες τα τέρατα!'}</div>`);
+  }
+  snd(lost ? 'bigWrong' : 'bigCorrect');
+}
+function overlay(L, html) {
+  const ov = document.createElement('div'); ov.className = 'over';
+  const acc = L.letters + L.mistakes ? Math.round(100 * L.letters / (L.letters + L.mistakes)) : 100;
+  ov.innerHTML = html + (L.prog ? `<div style="font-size:26px">📈 Επίπεδο ${L.level} από ${LEVELS}</div>` : '')
+    + `<div style="font-size:24px">✓ ${L.letters} σωστά · ✗ ${L.mistakes} λάθος πατήματα</div><div>🎯 ${acc}% σωστά</div>` + (L.p === 0 ? '<button class="go">▶ Ξανά</button>' : '');
+  const b = ov.querySelector('button'); if (b) b.onclick = start;
+  L.el.appendChild(ov);
+}
+
+document.addEventListener('keydown', e => {
+  if (!running || !lanes.length) return;
+  if (!physKeys && lanes.length === 1 && cfg.osk === 'auto') {  // κανονικό πληκτρολόγιο: κρύψε της οθόνης
+    physKeys = true; lanes[0].el.querySelector('.kb').hidden = true;
+  }
+  if (e.code === 'Space') { type(lanes[0], ' '); e.preventDefault(); return; }
+  let ch = e.key.length === 1 ? plain(e.key) : '';
+  if (!/^[Α-Ω]$/.test(ch) && /^Key[A-Z]$/.test(e.code)) ch = LATIN[e.code[3]] || '';  // αγγλική διάταξη → ελληνικά
+  if (ch === 'Σ' || /^[Α-Ω]$/.test(ch)) { type(lanes[0], ch); e.preventDefault(); }
+});
+const LATIN = { A: 'Α', B: 'Β', G: 'Γ', D: 'Δ', E: 'Ε', Z: 'Ζ', H: 'Η', U: 'Θ', I: 'Ι', K: 'Κ', L: 'Λ', M: 'Μ', N: 'Ν', J: 'Ξ', O: 'Ο', P: 'Π', R: 'Ρ', S: 'Σ', W: 'Σ', T: 'Τ', Y: 'Υ', F: 'Φ', X: 'Χ', C: 'Ψ', V: 'Ω' };
+
+function start() {
+  snd('unlock');
+  cancelAnimationFrame(raf);
+  const two = cfg.players === '2';
+  const list = cfg.mode === 'race' ? makeList(10) : cfg.what === 'prog' ? makeList(10, 'letters') : makeList(GOAL + 10);
+  const arena = $('arena'); arena.innerHTML = '';
+  lanes = (two ? [0, 1] : [0]).map(p => makeLane(p, two, list.map(x => ({ ...x }))));
+  lanes.forEach(L => arena.appendChild(L.el));
+  $('setup').style.display = 'none'; arena.classList.add('on'); $('toSetup').hidden = false;
+  running = true;
+  lanes.forEach(L => { showWord(L); paint(L); if (!L.race) spawnMonster(L); });
+  last = performance.now(); raf = requestAnimationFrame(loop);
+}
+$('go').onclick = start;
+$('toSetup').onclick = () => { running = false; cancelAnimationFrame(raf); $('arena').classList.remove('on'); $('arena').innerHTML = ''; $('setup').style.display = ''; $('toSetup').hidden = true; };
+</script>
+</body>
+</html>

@@ -1,6 +1,7 @@
 <!DOCTYPE html>
 <html lang="el">
 <head>
+<script src="longpress.js"></script>
 <link rel="icon" type="image/svg+xml" href="favicon.svg">
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
@@ -319,6 +320,24 @@ function render() {
 
 addEventListener('resize', () => render());
 newGame();
+// πληκτρολόγιο: γράψε τη βολή — γράμμα και αριθμός, π.χ. Γ5 ή Κ10 — και Enter
+let aim = '';
+const LAT = { A: 'Α', B: 'Β', G: 'Γ', D: 'Δ', E: 'Ε', Z: 'Ζ', H: 'Η', U: 'Θ', I: 'Ι', K: 'Κ' };
+document.addEventListener('keydown', e => {
+  if (phase !== 'play' || turn !== 'me' || e.ctrlKey || e.altKey || e.metaKey) return;
+  let ch = e.key.length === 1 ? e.key.normalize('NFD').replace(/[\u0300-\u036f]/g, '').toUpperCase() : '';
+  if (!L.includes(ch) && /^Key[A-Z]$/.test(e.code)) ch = LAT[e.code[3]] || '';
+  if (e.key === 'Backspace') aim = aim.slice(0, -1);
+  else if (e.key === 'Escape') aim = '';
+  else if (ch && L.includes(ch)) aim = ch;                       // νέο γράμμα: ξεκινά από την αρχή
+  else if (/^[0-9]$/.test(e.key) && aim && aim.length < 3) aim += e.key;
+  else if (e.key === 'Enter' && /^.(10|[1-9])$/.test(aim)) {
+    const k = L.indexOf(aim[0]) * S + (+aim.slice(1) - 1); aim = '';
+    e.preventDefault(); tapPc(k); return;
+  } else return;
+  e.preventDefault();
+  $('info').innerHTML = aim ? `⌨️ Βολή: <b>${aim}</b> — πάτα <b>Enter</b>` : msg;
+});
 </script>
 </body>
 </html>

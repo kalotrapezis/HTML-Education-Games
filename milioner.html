@@ -1,6 +1,8 @@
 <!DOCTYPE html>
 <html lang="el">
 <head>
+<script src="longpress.js"></script>
+<script src="keypick.js"></script>
 <link rel="icon" type="image/svg+xml" href="favicon.svg">
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -1410,6 +1412,8 @@ const helpEl = document.getElementById('help');
 document.getElementById('helpBtn').onclick = () => helpEl.classList.remove('hidden');
 document.getElementById('helpClose').onclick = () => helpEl.classList.add('hidden');
 helpEl.onclick = (e) => { if(e.target === helpEl) helpEl.classList.add('hidden'); };
+// πληκτρολόγιο: A/B/C/D (ή Α/Β/Γ/Δ, ή 1–4)
+KeyPick.watch('.ans', el => (el.querySelector('.letter') || el).textContent.replace(':', ''));
 </script>
 </body>
 </html>
