@@ -1,0 +1,445 @@
+<!DOCTYPE html>
+<html lang="el">
+<head>
+<script src="longpress.js"></script>
+<link rel="icon" type="image/svg+xml" href="favicon.svg">
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
+<title>Βροχή από Γράμματα</title>
+<style>
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  html, body { height: 100%; }
+  body {
+    font-family: 'Segoe UI', Tahoma, sans-serif; color: #fff; user-select: none; -webkit-user-select: none;
+    background: linear-gradient(135deg, #1e3c72, #2a5298 50%, #6b2a8a); overflow: hidden;
+    -webkit-tap-highlight-color: transparent;
+  }
+  .back { position: absolute; top: 12px; left: 12px; z-index: 20; display: flex; gap: 8px; }
+  .back a, .back button { color: #fff; text-decoration: none; background: rgba(0,0,0,0.35); padding: 8px 14px; border-radius: 8px; border: 0; font: inherit; cursor: pointer; }
+
+  /* ---- επιλογές ---- */
+  #setup { height: 100%; overflow: auto; padding: 60px 16px 30px; display: flex; flex-direction: column; align-items: center; gap: 14px; }
+  h1 { font-size: 42px; text-align: center; }
+  .sub { opacity: .85; text-align: center; max-width: 700px; }
+  .box { background: rgba(0,0,0,.35); border-radius: 16px; padding: 16px 20px; width: 100%; max-width: 820px; }
+  .box h2 { color: #ffb347; font-size: 18px; margin-bottom: 10px; }
+  .opts { display: grid; grid-template-columns: repeat(auto-fit, minmax(140px, 1fr)); gap: 10px; }
+  .opt { background: rgba(255,255,255,.08); border: 3px solid transparent; border-radius: 14px; padding: 12px 10px; cursor: pointer; text-align: center; }
+  .opt:hover { border-color: rgba(255,179,71,.5); }
+  .opt.on { border-color: #ffb347; background: rgba(255,179,71,.2); }
+  .opt .e { font-size: 34px; display: block; }
+  .opt .t { font-weight: bold; font-size: 17px; }
+  .opt .d { font-size: 12px; opacity: .75; }
+  .go { padding: 16px 50px; font-size: 26px; font-weight: bold; border: 0; border-radius: 14px; background: #ff9500; color: #fff; box-shadow: 0 5px 0 #c46c00; cursor: pointer; }
+  .go:active { transform: translateY(3px); box-shadow: 0 2px 0 #c46c00; }
+
+  /* ---- παιχνίδι ---- */
+  #arena { display: none; height: 100%; gap: 6px; padding: 52px 6px 6px; }  /* από πάνω: τα κουμπιά Πίσω/Ρυθμίσεις */
+  #arena.on { display: flex; }
+  .lane { flex: 1; display: flex; flex-direction: column; border-radius: 14px; overflow: hidden; position: relative; border: 4px solid var(--c); min-width: 0; }
+  .lane[data-p="0"] { --c: #42a5f5; --cd: #1565c0; }
+  .lane[data-p="1"] { --c: #ef5350; --cd: #b71c1c; }
+  .bar { display: flex; align-items: center; gap: 10px; padding: 6px 12px; background: var(--cd); font-size: 22px; font-weight: bold; }
+  .bar .nm { flex: 1; text-align: center; }
+  .bar .sc { min-width: 70px; text-align: right; }
+  .target { text-align: center; font-size: 30px; font-weight: bold; padding: 6px; background: rgba(0,0,0,.45); min-height: 52px; }
+  .target b { color: #ffd23f; font-size: 38px; }
+  .target.flash { animation: flash .6s; }
+  @keyframes flash { 30% { background: #ffd23f; color: #1e3c72; } }
+
+  .field { flex: 1; position: relative; overflow: hidden; touch-action: manipulation;
+    background: linear-gradient(#5ec8f5, #a8e2ff 70%, #d7f3ff); }
+  .field::after { content: ''; position: absolute; left: 0; right: 0; bottom: 0; height: 22px;
+    background: repeating-linear-gradient(90deg, #4caf50 0 14px, #43a047 14px 28px); border-top: 3px solid #2e7d32; }
+  .cloud { position: absolute; font-size: 70px; opacity: .85; pointer-events: none; animation: drift linear infinite; }
+  @keyframes drift { from { transform: translateX(-120px); } to { transform: translateX(110vw); } }
+
+  .item { position: absolute; left: 0; top: 0; padding: 8px 18px; border-radius: 40px; font-weight: bold; font-size: 34px; white-space: nowrap;
+    color: #1e3c72; background: radial-gradient(circle at 30% 25%, #fff 0 12%, var(--b) 45%); box-shadow: 0 6px 0 rgba(0,0,0,.18), inset 0 -6px 0 rgba(0,0,0,.12);
+    cursor: pointer; will-change: transform; }
+  .item::after { content: ''; position: absolute; left: 50%; top: 100%; width: 2px; height: 26px; background: rgba(0,0,0,.25); }
+  .item .em { font-size: 30px; margin-right: 6px; }
+  .item.bad { background: #e53935; color: #fff; animation: shake .3s; }
+  .item.next { outline: 5px solid #ffd23f; }
+  .item .done { color: #2e7d32; text-decoration: underline; }
+  @keyframes shake { 25% { margin-left: -10px; } 75% { margin-left: 10px; } }
+  .spark { position: absolute; width: 14px; height: 14px; border-radius: 50%; pointer-events: none; }
+  .float { position: absolute; font-size: 34px; font-weight: bold; pointer-events: none; text-shadow: 0 2px 4px rgba(0,0,0,.4); }
+
+  .typed { text-align: center; font-size: 30px; font-weight: bold; min-height: 46px; background: rgba(0,0,0,.4); letter-spacing: 3px; }
+  .typed.no { color: #ff8a80; }
+  .kb[hidden] { display: none; }
+  .kb { display: flex; flex-wrap: wrap; justify-content: center; gap: 5px; padding: 6px; background: rgba(0,0,0,.4); }
+  .kb button { flex: 0 0 calc(12.5% - 5px); min-height: 50px; font-size: 26px; font-weight: bold; border: 0; border-radius: 10px; background: #fff; color: #1e3c72; box-shadow: 0 4px 0 #9aa; cursor: pointer; font-family: inherit; }
+  .kb.digits button { flex-basis: calc(16.66% - 5px); }
+  .kb button:active { transform: translateY(3px); box-shadow: 0 1px 0 #9aa; }
+  .kb button.del { background: #ffb347; }
+  /* QWERTY: τα πλήκτρα στη θέση του πραγματικού πληκτρολογίου, χρώμα ανά δάχτυλο */
+  .kb.qw { flex-direction: column; align-items: stretch; flex-wrap: nowrap; }
+  .kb.qw .row { display: flex; gap: 5px; }
+  .kb.qw .row button { flex: 0 0 calc(10% - 5px); }
+  .kb.qw .row:nth-child(2) { padding-left: 3%; } .kb.qw .row:nth-child(3) { padding-left: 8%; }
+  .kb.qw button.home { position: relative; }
+  .kb.qw button.home::after { content: ''; position: absolute; left: 35%; right: 35%; bottom: 6px; height: 3px; border-radius: 2px; background: #1e3c72; }
+  .kb.qw button.blank { visibility: hidden; }
+  .f0 { background: #f48fb1 !important; } .f1 { background: #ffcc80 !important; } .f2 { background: #fff59d !important; } .f3 { background: #a5d6a7 !important; }
+  .f4 { background: #90caf9 !important; } .f5 { background: #ce93d8 !important; } .f6 { background: #80cbc4 !important; } .f7 { background: #bcaaa4 !important; }
+
+  .over { position: absolute; inset: 0; background: rgba(0,0,0,.6); display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 16px; z-index: 5; text-align: center; padding: 10px; }
+  .over .big { font-size: 46px; font-weight: bold; }
+  .over .go { font-size: 22px; padding: 12px 30px; }
+  .count { position: absolute; inset: 0; display: flex; align-items: center; justify-content: center; font-size: 160px; font-weight: bold; z-index: 6; pointer-events: none; text-shadow: 0 6px 16px rgba(0,0,0,.5); }
+</style>
+</head>
+<body>
+<div class="back"><a href="abc.html">← Πίσω</a><button id="toSetup" hidden>⚙ Ρυθμίσεις</button></div>
+
+<div id="setup">
+  <h1>🌧️ Βροχή από Γράμματα</h1>
+  <div class="sub">Πέφτουν γράμματα, λέξεις ή πράξεις σαν μπαλόνια! Πάτα τα σωστά — ή γράψ' τα — πριν φτάσουν στο γρασίδι. Παίξτε και δύο μαζί, δίπλα-δίπλα.</div>
+  <div class="box"><h2>Τι πέφτει;</h2><div class="opts" data-k="what">
+    <div class="opt on" data-v="letters"><span class="e">🔤</span><span class="t">Γράμματα</span><br><span class="d">Α β γ…</span></div>
+    <div class="opt" data-v="words"><span class="e">📝</span><span class="t">Λέξεις</span><br><span class="d">με εικόνες</span></div>
+    <div class="opt" data-v="m10"><span class="e">➕</span><span class="t">Πράξεις ως το 10</span><br><span class="d">+ και −</span></div>
+    <div class="opt" data-v="m20"><span class="e">🔢</span><span class="t">Πράξεις ως το 20</span><br><span class="d">+ και −</span></div>
+    <div class="opt" data-v="mul"><span class="e">✖️</span><span class="t">Προπαίδεια</span><br><span class="d">×</span></div>
+  </div></div>
+  <div class="box"><h2>Πώς παίζεις;</h2><div class="opts" data-k="how">
+    <div class="opt on" data-v="tap"><span class="e">👆</span><span class="t">Πιάσε τα σωστά</span><br><span class="d">πάτα όσα ταιριάζουν στον στόχο</span></div>
+    <div class="opt" data-v="type"><span class="e">⌨️</span><span class="t">Γράψ' τα</span><br><span class="d">γράψε ό,τι πέφτει (ή το αποτέλεσμα)</span></div>
+  </div></div>
+  <div class="box"><h2>Παίκτες</h2><div class="opts" data-k="players">
+    <div class="opt on" data-v="1"><span class="e">🧒</span><span class="t">Ένας</span><br><span class="d">5 ζωές ❤️</span></div>
+    <div class="opt" data-v="2"><span class="e">🧒🧒</span><span class="t">Δύο, δίπλα-δίπλα</span><br><span class="d">ποιος μαζεύει τους περισσότερους σε 90″</span></div>
+  </div></div>
+  <div class="box"><h2>Γράμματα</h2><div class="opts" data-k="case">
+    <div class="opt" data-v="upper"><span class="e">🅰️</span><span class="t">Μόνο κεφαλαία</span><br><span class="d">ΑΒΓ — για τους μικρούς</span></div>
+    <div class="opt on" data-v="mixed"><span class="e">🔠🔡</span><span class="t">Κεφαλαία &amp; μικρά</span><br><span class="d">Α και α μαζί</span></div>
+    <div class="opt" data-v="lower"><span class="e">🔡</span><span class="t">Μόνο μικρά</span><br><span class="d">αβγ</span></div>
+  </div></div>
+  <div class="box"><h2>Διάταξη πληκτρολογίου (στο «Γράψ' τα»)</h2><div class="opts" data-k="kbl">
+    <div class="opt on" data-v="qw"><span class="e">⌨️</span><span class="t">Όπως το κανονικό (QWERTY)</span><br><span class="d">μάθε πού είναι κάθε γράμμα· χρώμα ανά δάχτυλο</span></div>
+    <div class="opt" data-v="abc"><span class="e">🔤</span><span class="t">ΑΒΓ</span><br><span class="d">με αλφαβητική σειρά — για τους μικρούς</span></div>
+  </div></div>
+  <div class="box"><h2>Πληκτρολόγιο στην οθόνη (στο «Γράψ' τα»)</h2><div class="opts" data-k="osk">
+    <div class="opt on" data-v="auto"><span class="e">🤖</span><span class="t">Αυτόματα</span><br><span class="d">κρύβεται όταν γράφεις σε κανονικό πληκτρολόγιο</span></div>
+    <div class="opt" data-v="show"><span class="e">👁️</span><span class="t">Πάντα</span></div>
+    <div class="opt" data-v="hide"><span class="e">🙈</span><span class="t">Ποτέ</span><br><span class="d">στους δύο παίκτες φαίνεται πάντα</span></div>
+  </div></div>
+  <div class="box"><h2>Ταχύτητα στην αρχή <span style="font-weight:normal;font-size:14px;opacity:.8">— κάθε 8 σωστά ανεβαίνει επίπεδο και πέφτουν πιο γρήγορα</span></h2><div class="opts" data-k="speed">
+    <div class="opt" data-v="0"><span class="e">🐢</span><span class="t">Αργά</span></div>
+    <div class="opt on" data-v="1"><span class="e">🐇</span><span class="t">Κανονικά</span></div>
+    <div class="opt" data-v="2"><span class="e">🚀</span><span class="t">Γρήγορα</span></div>
+  </div></div>
+  <div class="box"><h2>Επίπεδα</h2><div class="opts" data-k="levels">
+    <div class="opt on" data-v="up"><span class="e">📈</span><span class="t">Ανεβαίνουν</span><br><span class="d">από 1 έως 10</span></div>
+    <div class="opt" data-v="fixed"><span class="e">➖</span><span class="t">Σταθερή ταχύτητα</span><br><span class="d">για εξάσκηση χωρίς βιασύνη</span></div>
+  </div></div>
+  <button class="go" id="go">▶ Πάμε!</button>
+</div>
+
+<div id="arena"></div>
+
+<script src="lexilogio.js"></script>
+<script src="sounds.js"></script>
+<script>
+const $ = id => document.getElementById(id);
+const rnd = n => Math.floor(Math.random() * n);
+const pick = a => a[rnd(a.length)];
+const UP = 'ΑΒΓΔΕΖΗΘΙΚΛΜΝΞΟΠΡΣΤΥΦΧΨΩ', LOW = 'αβγδεζηθικλμνξοπρστυφχψω';
+const plain = s => s.normalize('NFD').replace(/[̀-ͯ]/g, '').toUpperCase().replace(/Σ$/, 'Σ');
+const COLORS = ['#ffd23f', '#7CFC00', '#ff9ec4', '#9ad0ff', '#ffb347', '#d6a2ff', '#80ffdb'];
+const CATS = { 'Ζώα': '🐾 Ζώα', 'Φαγητά': '🍽️ Φαγητά', 'Σπίτι': '🏠 Πράγματα', 'Φύση': '🌳 Φύση', 'Μεταφορικά': '🚗 Μεταφορικά', 'Σώμα': '🧍 Σώμα & άνθρωποι' };
+// γράμματα που έχουν αρκετές λέξεις στο λεξιλόγιο για στόχο «αρχίζει από»
+const FIRST = [...new Set(PIC_WORDS.map(w => plain(w.w[0])))].filter(L => PIC_WORDS.filter(w => plain(w.w[0]) === L).length >= 3);
+
+// οθόνη αφής → «Πιάσε τα σωστά» (πάτημα)· αλλιώς → «Γράψ' τα» (πληκτρολόγιο)
+const TOUCH = matchMedia('(pointer: coarse)').matches || navigator.maxTouchPoints > 0;
+const cfg = { what: 'letters', how: TOUCH ? 'tap' : 'type', players: '1', speed: '1', case: 'mixed', levels: 'up', osk: 'auto', kbl: 'qw' };
+// ελληνική διάταξη ανά σειρά: [γράμμα, δάχτυλο]· το ς στέλνει Σ, το ; είναι κενή θέση
+const QW = [
+  [[';', 0], ['ς', 1], ['Ε', 2], ['Ρ', 3], ['Τ', 3], ['Υ', 4], ['Θ', 4], ['Ι', 5], ['Ο', 6], ['Π', 7]],
+  [['Α', 0], ['Σ', 1], ['Δ', 2], ['Φ', 3], ['Γ', 3], ['Η', 4], ['Ξ', 4], ['Κ', 5], ['Λ', 6]],
+  [['Ζ', 0], ['Χ', 1], ['Ψ', 2], ['Ω', 3], ['Β', 3], ['Ν', 4], ['Μ', 4], ['⌫', 7]],
+];
+document.querySelectorAll('[data-k="how"] .opt').forEach(o => o.classList.toggle('on', o.dataset.v === cfg.how));
+let physKeys = false;
+const showOsk = two => two || cfg.osk === 'show' || (cfg.osk === 'auto' && TOUCH && !physKeys);
+// πώς φαίνεται ένα γράμμα/λέξη ανάλογα με τη ρύθμιση «Γράμματα» (κεφαλαία χωρίς τόνους)
+const show = s => cfg.case === 'upper' ? plain(s) : cfg.case === 'lower' ? s.toLowerCase() : s;
+const letterPair = i => cfg.case === 'upper' ? UP[i] : cfg.case === 'lower' ? LOW[i] : `${UP[i]} ${LOW[i]}`;
+const letterShow = j => cfg.case === 'upper' ? UP[j] : cfg.case === 'lower' ? LOW[j] : (Math.random() < .5 ? UP[j] : LOW[j]);
+document.querySelectorAll('.opts').forEach(box => box.addEventListener('click', e => {
+  const o = e.target.closest('.opt'); if (!o) return;
+  box.querySelectorAll('.opt').forEach(x => x.classList.toggle('on', x === o));
+  cfg[box.dataset.k] = o.dataset.v;
+}));
+
+/* ---------- περιεχόμενο ---------- */
+// κάθε στόχος: { html (μπάνερ), make(ok) → {text, html?, key} }  — key = τι γράφεις στο «Γράψ' τα»
+function mathItem(kind) {
+  if (kind === 'mul') { const a = 1 + rnd(10), b = 1 + rnd(10); return { text: `${a}×${b}`, val: a * b }; }
+  const max = kind === 'm10' ? 10 : 20;
+  if (Math.random() < .5) { const a = rnd(max + 1), b = rnd(max - a + 1); return { text: `${a}+${b}`, val: a + b }; }
+  const a = 1 + rnd(max), b = rnd(a + 1); return { text: `${a}−${b}`, val: a - b };
+}
+function newTarget(kind) {
+  if (kind === 'letters') {
+    const i = rnd(UP.length);
+    return { html: `Πιάσε το <b>${letterPair(i)}</b>`,
+      make: ok => { const j = ok ? i : (i + 1 + rnd(UP.length - 1)) % UP.length; return { text: letterShow(j), ok } } };
+  }
+  if (kind === 'words') {
+    if (Math.random() < .5) {
+      const L = pick(FIRST), yes = PIC_WORDS.filter(w => plain(w.w[0]) === L), no = PIC_WORDS.filter(w => plain(w.w[0]) !== L);
+      return { html: `Λέξεις που αρχίζουν από <b>${L}</b>`, make: ok => wordItem(pick(ok ? yes : no), ok, true) };
+    }
+    const c = pick(Object.keys(CATS)), yes = PIC_WORDS.filter(w => w.cat === c), no = PIC_WORDS.filter(w => w.cat !== c);
+    return { html: `Πιάσε: <b>${CATS[c]}</b>`, make: ok => wordItem(pick(ok ? yes : no), ok, false) };
+  }
+  // πράξεις: στόχος ένα αποτέλεσμα, σωστά όσα κάνουν τόσο
+  let n, tries = 0, sample;
+  do { sample = mathItem(kind); n = sample.val; } while ((n < 2 || (kind === 'mul' && n < 6)) && ++tries < 50);
+  return { html: `Πιάσε ό,τι κάνει <b>${n}</b>`, make: ok => {
+    for (let k = 0; k < 400; k++) { const m = mathItem(kind); if ((m.val === n) === ok) return { text: m.text, ok }; }
+    return { text: sample.text, ok: true };
+  } };
+}
+function wordItem(w, ok, pic) { return { text: show(w.w), html: (pic ? `<span class="em">${w.em}</span>` : '') + show(w.w), ok }; }
+// «Γράψ' τα»: ό,τι πέφτει χωρίς στόχο· key = τι πρέπει να γραφτεί
+function typeItem(kind) {
+  if (kind === 'letters') { const i = rnd(UP.length); return { text: letterShow(i), key: UP[i] }; }
+  if (kind === 'words') { const w = pick(PIC_WORDS.filter(w => w.w.length <= 7)); return { text: show(w.w), html: `<span class="em">${w.em}</span>${show(w.w)}`, key: plain(w.w) }; }
+  const m = mathItem(kind); return { text: m.text + ' = ;', key: String(m.val) };
+}
+
+/* ---------- λωρίδα (ένας παίκτης) ---------- */
+const SPEED = [ { fall: 10, every: 1.9 }, { fall: 7, every: 1.35 }, { fall: 4.8, every: .95 } ];
+let lanes = [], running = false, last = 0, clock = 0, raf = 0;
+const GAME_TIME = 90;
+
+function makeLane(p, two) {
+  const el = document.createElement('div');
+  el.className = 'lane'; el.dataset.p = p;
+  const type = cfg.how === 'type', digits = cfg.what.startsWith('m') || cfg.what === 'mul';
+  el.innerHTML = `<div class="bar"><span>${two ? (p ? '🔴' : '🔵') : '🧒'}</span><span class="nm">${two ? 'Παίκτης ' + (p + 1) : ''}</span><span class="lv"></span><span class="sc">0</span></div>`
+    + (type ? '' : '<div class="target"></div>')
+    + '<div class="field"></div>'
+    + (type ? `<div class="typed">&nbsp;</div><div class="kb${digits ? ' digits' : ''}"></div>` : '');
+  const L = { el, p, field: el.querySelector('.field'), items: [], score: 0, lives: 5, streak: 0, caught: 0, level: 1, spawnIn: .3, typed: '', two, type };
+  for (let i = 0; i < 3; i++) {  // σύννεφα που κινούνται
+    const c = document.createElement('div'); c.className = 'cloud'; c.textContent = '☁️';
+    c.style.top = (5 + i * 22) + '%'; c.style.animationDuration = (40 + i * 17) + 's'; c.style.animationDelay = (-i * 13) + 's';
+    L.field.appendChild(c);
+  }
+  if (type) {
+    const keys = digits ? '1234567890'.split('') : UP.split('');
+    const kb = el.querySelector('.kb');
+    if (!digits && cfg.kbl === 'qw') {
+      kb.classList.add('qw');
+      kb.innerHTML = QW.map(r => '<div class="row">' + r.map(([ch, f]) => ch === ';' ? '<button class="blank"></button>'
+        : ch === '⌫' ? '<button class="del" data-k="⌫">⌫</button>'
+        : `<button class="f${f}${ch === 'Φ' || ch === 'Ξ' ? ' home' : ''}" data-k="${ch === 'ς' ? 'Σ' : ch}">${ch}</button>`).join('') + '</div>').join('');
+    } else kb.innerHTML = keys.map(k => `<button data-k="${k}">${k}</button>`).join('') + '<button class="del" data-k="⌫">⌫</button>';
+    kb.hidden = !showOsk(two);
+    kb.addEventListener('pointerdown', e => { const b = e.target.closest('button[data-k]'); if (b) { e.preventDefault(); key(L, b.dataset.k); } });
+  } else {
+    L.target = newTarget(cfg.what);
+    el.querySelector('.target').innerHTML = L.target.html;
+    L.field.addEventListener('pointerdown', e => { const it = e.target.closest('.item'); if (it) tap(L, it._it); });
+  }
+  return L;
+}
+
+function paintBar(L) {
+  L.el.querySelector('.sc').textContent = (cfg.levels === 'up' ? `📈${L.level}  ` : '') + '⭐ ' + L.score;
+  L.el.querySelector('.lv').textContent = L.two ? '⏱ ' + Math.max(0, Math.ceil(GAME_TIME - clock)) : '❤️'.repeat(Math.max(0, L.lives));
+}
+
+function spawn(L) {
+  let d;
+  if (L.type) d = typeItem(cfg.what);
+  else d = L.target.make(Math.random() < .42);
+  const it = document.createElement('div');
+  it.className = 'item'; it.innerHTML = d.html || d.text; it.style.setProperty('--b', pick(COLORS));
+  L.field.appendChild(it);
+  const W = L.field.clientWidth, w = it.offsetWidth;
+  const o = { ...d, el: it, x: rnd(Math.max(1, W - w - 10)) + 5, y: -it.offsetHeight - 30, phase: Math.random() * 6, dead: false };
+  it._it = o;
+  L.items.push(o);
+}
+
+function fx(L, o, good) {
+  const cx = o.x + o.el.offsetWidth / 2, cy = o.y + o.el.offsetHeight / 2;
+  if (good) for (let i = 0; i < 10; i++) {  // σπίθες προς όλες τις μεριές
+    const s = document.createElement('div'); s.className = 'spark';
+    s.style.background = pick(COLORS); s.style.left = cx + 'px'; s.style.top = cy + 'px';
+    L.field.appendChild(s);
+    const a = Math.PI * 2 * i / 10, r = 60 + rnd(50);
+    s.animate([{ transform: 'translate(0,0) scale(1)', opacity: 1 }, { transform: `translate(${Math.cos(a) * r}px,${Math.sin(a) * r}px) scale(.2)`, opacity: 0 }], { duration: 550, easing: 'ease-out' }).onfinish = () => s.remove();
+  }
+  const f = document.createElement('div'); f.className = 'float';
+  f.textContent = good ? '+1' : '−1'; f.style.color = good ? '#7CFC00' : '#ff5252';
+  f.style.left = cx + 'px'; f.style.top = cy + 'px'; L.field.appendChild(f);
+  f.animate([{ transform: 'translate(-50%,0)', opacity: 1 }, { transform: 'translate(-50%,-70px)', opacity: 0 }], { duration: 800 }).onfinish = () => f.remove();
+}
+
+function remove(L, o) { o.dead = true; o.el.remove(); L.items = L.items.filter(x => x !== o); }
+
+function good(L, o) {
+  L.score++; L.streak++; L.caught++;
+  fx(L, o, true); remove(L, o);
+  try { GameSounds.pop(L.streak); } catch (e) {}
+  if (cfg.levels === 'up' && L.caught % 8 === 0 && L.level < 10) {
+    L.level++;
+    const b = document.createElement('div'); b.className = 'count'; b.style.fontSize = '64px';
+    b.textContent = `Επίπεδο ${L.level}! 🚀`; L.el.appendChild(b);
+    b.animate([{ transform: 'scale(.3)', opacity: 0 }, { transform: 'scale(1.1)', opacity: 1, offset: .3 }, { transform: 'scale(1)', opacity: 0 }], 1400).onfinish = () => b.remove();
+    try { GameSounds.correct(); } catch (e) {}
+  }
+  if (!L.type && L.caught % 5 === 0) {  // νέος στόχος κάθε 5 σωστά
+    L.target = newTarget(cfg.what);
+    const t = L.el.querySelector('.target'); t.innerHTML = L.target.html;
+    t.classList.remove('flash'); void t.offsetWidth; t.classList.add('flash');
+    L.items.slice().forEach(x => { x.el.animate([{ opacity: 1 }, { opacity: 0 }], 250).onfinish = () => remove(L, x); });
+  }
+  paintBar(L);
+}
+function bad(L, o) {
+  L.streak = 0;
+  if (L.two) L.score = Math.max(0, L.score - 1); else L.lives--;
+  if (o) { o.el.classList.add('bad'); fx(L, o, false); setTimeout(() => !o.dead && remove(L, o), 300); }
+  try { GameSounds.thud(); } catch (e) {}
+  paintBar(L);
+}
+
+function tap(L, o) {
+  if (!running || !o || o.dead || o.el.classList.contains('bad')) return;
+  if (o.ok) good(L, o); else bad(L, o);
+}
+
+/* «Γράψ' τα»: γράφεις ό,τι πέφτει· πάντα στοχεύεις το πιο χαμηλό που ταιριάζει */
+function key(L, k) {
+  if (!running) return;
+  const tEl = L.el.querySelector('.typed');
+  if (k === '⌫') L.typed = L.typed.slice(0, -1);
+  else L.typed += k;
+  const m = L.items.filter(o => !o.dead && o.key.startsWith(L.typed)).sort((a, b) => b.y - a.y)[0];
+  L.items.forEach(o => o.el.classList.toggle('next', o === m && L.typed.length > 0));
+  if (L.typed && !m) {  // λάθος γράμμα: κόκκινο και ξανά από την αρχή
+    tEl.classList.add('no'); tEl.textContent = L.typed;
+    L.streak = 0; try { GameSounds.thud(); } catch (e) {}
+    setTimeout(() => { tEl.classList.remove('no'); L.typed = ''; tEl.innerHTML = '&nbsp;'; }, 350);
+    L.typed = '\u0000';  // μπλοκάρει μέχρι να καθαρίσει
+    return;
+  }
+  clearTimeout(L.wait);
+  const exact = L.items.find(o => !o.dead && o.key === L.typed);
+  if (exact) {
+    // «1» και «10» μαζί: περίμενε λίγο μήπως γράφεται το μακρύτερο
+    const longer = L.items.some(o => !o.dead && o.key !== L.typed && o.key.startsWith(L.typed));
+    const done = () => { if (exact.dead) return; L.typed = ''; tEl.innerHTML = '&nbsp;'; good(L, exact); };
+    if (!longer) { done(); return; }
+    L.wait = setTimeout(done, 800);
+  }
+  tEl.innerHTML = L.typed || '&nbsp;';
+}
+document.addEventListener('keydown', e => {
+  if (!running || lanes.length !== 1 || e.ctrlKey || e.altKey || e.metaKey) return;
+  const L = lanes[0];
+  let ch = e.key.length === 1 ? plain(e.key) : '';
+  if (!/[Α-Ω0-9]/.test(ch) && /^Key[A-Z]$/.test(e.code)) ch = plain(LATIN[e.code[3]] || '');  // αγγλική διάταξη → ελληνικά
+  if (!L.type) {
+    // «Πιάσε τα σωστά» με πληκτρολόγιο: το γράμμα πιάνει το πιο χαμηλό μπαλόνι που αρχίζει από αυτό
+    if (!/^[Α-Ω]$/.test(ch) || !['letters', 'words'].includes(cfg.what)) return;
+    const o = L.items.filter(o => !o.dead && !o.el.classList.contains('bad') && plain(o.text)[0] === ch).sort((a, b) => b.y - a.y)[0];
+    if (o) tap(L, o); else L.streak = 0;  // κανένα τέτοιο μπαλόνι: δεν χάνεις ζωή
+    e.preventDefault(); return;
+  }
+  if (!physKeys && cfg.osk === 'auto') { physKeys = true; const kb = L.el.querySelector('.kb'); if (kb) kb.hidden = true; }
+  if (e.key === 'Backspace') { key(L, '⌫'); e.preventDefault(); return; }
+  if (/^[Α-Ω0-9]$/.test(ch)) { key(L, ch); e.preventDefault(); }
+});
+const LATIN = { A: 'Α', B: 'Β', G: 'Γ', D: 'Δ', E: 'Ε', Z: 'Ζ', H: 'Η', U: 'Θ', I: 'Ι', K: 'Κ', L: 'Λ', M: 'Μ', N: 'Ν', J: 'Ξ', O: 'Ο', P: 'Π', R: 'Ρ', S: 'Σ', W: 'Σ', T: 'Τ', Y: 'Υ', F: 'Φ', X: 'Χ', C: 'Ψ', V: 'Ω' };
+
+/* ---------- βρόχος ---------- */
+function loop(t) {
+  const dt = Math.min(.05, (t - last) / 1000); last = t;
+  if (running) {
+    clock += dt;
+    for (const L of lanes) {
+      const sp = SPEED[+cfg.speed], slow = L.type && cfg.what === 'words' ? 1.6 : 1;  // λέξεις για γράψιμο: πιο αργά
+      const boost = 1 + (L.level - 1) * .12;  // κάθε επίπεδο 12% πιο γρήγορα (επίπεδο 10 ≈ διπλάσια)
+      const H = L.field.clientHeight - 22;
+      L.spawnIn -= dt;
+      if (L.spawnIn <= 0) { spawn(L); L.spawnIn = sp.every * slow / boost; }
+      for (const o of L.items.slice()) {
+        if (o.dead || o.el.classList.contains('bad')) continue;
+        o.y += dt * H * boost / (sp.fall * slow);
+        o.phase += dt * 2;
+        o.el.style.transform = `translate(${o.x + Math.sin(o.phase) * 10}px,${o.y}px) rotate(${Math.sin(o.phase) * 4}deg)`;
+        if (o.y + o.el.offsetHeight > H) {  // έφτασε στο γρασίδι
+          const lost = L.type || o.ok;
+          o.el.animate([{ opacity: 1 }, { opacity: 0, transform: o.el.style.transform + ' scale(1.4,.3)' }], 250);
+          remove(L, o);
+          if (lost) bad(L, null);
+        }
+      }
+      paintBar(L);
+      if (!L.two && L.lives <= 0) return end();
+    }
+    if (lanes[0].two && clock >= GAME_TIME) return end();
+  }
+  raf = requestAnimationFrame(loop);
+}
+
+function start() {
+  try { GameSounds.unlock(); } catch (e) {}
+  cancelAnimationFrame(raf);
+  const arena = $('arena'); arena.innerHTML = '';
+  const two = cfg.players === '2';
+  lanes = two ? [makeLane(0, true), makeLane(1, true)] : [makeLane(0, false)];
+  lanes.forEach(L => { arena.appendChild(L.el); paintBar(L); });
+  $('setup').style.display = 'none'; arena.classList.add('on'); $('toSetup').hidden = false;
+  clock = 0; running = false;
+  // 3-2-1 πριν ξεκινήσει
+  const c = document.createElement('div'); c.className = 'count'; arena.appendChild(c);
+  let n = 3;
+  const tick = () => {
+    if (n === 0) { c.remove(); running = true; return; }
+    c.textContent = n--; c.animate([{ transform: 'scale(1.6)', opacity: 0 }, { transform: 'scale(1)', opacity: 1 }], 300);
+    try { GameSounds.pop(n * 4); } catch (e) {}
+    setTimeout(tick, 700);
+  };
+  tick();
+  last = performance.now(); raf = requestAnimationFrame(loop);
+}
+
+function end() {
+  running = false;
+  const two = lanes.length === 2;
+  lanes.forEach(L => {
+    L.items.slice().forEach(o => remove(L, o));
+    const ov = document.createElement('div'); ov.className = 'over';
+    let msg;
+    if (!two) msg = `<div class="big">⭐ ${L.score}</div><div>Τέλος οι ζωές!</div>`;
+    else {
+      const other = lanes[1 - L.p];
+      msg = L.score > other.score ? '<div class="big">🏆 Νίκησες!</div>' : L.score < other.score ? '<div class="big">👏 Μπράβο!</div>' : '<div class="big">🤝 Ισοπαλία!</div>';
+      msg += `<div style="font-size:28px">⭐ ${L.score}</div>`;
+    }
+    ov.innerHTML = msg + (L.p === 0 ? '<button class="go">▶ Ξανά</button>' : '');
+    const b = ov.querySelector('button'); if (b) b.onclick = start;
+    L.el.appendChild(ov);
+  });
+  try { GameSounds.bigCorrect(); } catch (e) {}
+}
+
+$('go').onclick = start;
+$('toSetup').onclick = () => {
+  running = false; cancelAnimationFrame(raf);
+  $('arena').classList.remove('on'); $('arena').innerHTML = ''; $('setup').style.display = ''; $('toSetup').hidden = true;
+};
+</script>
+</body>
+</html>

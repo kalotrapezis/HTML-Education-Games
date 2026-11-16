@@ -13,6 +13,7 @@
      GameSounds.bigCorrect()      // rich win fanfare (pillow / big correct)
      GameSounds.wrong()           // simple wrong (tu-tuu)
      GameSounds.bigWrong()        // big wrong (tu-tuu-tuuu-crash)
+     GameSounds.pop(step) / thud() // short blips for fast games
      GameSounds.stopAll()
    ============================================================ */
 (function(){
@@ -149,6 +150,10 @@
     noise(c, 0.5, {vol:0.10, hp:300});
   }
 
+  // σύντομα για γρήγορα παιχνίδια: pop ανεβαίνει με το σερί, thud = χάθηκε κάτι
+  function pop(step){ note(N(72 + (step||0) % 12), 0, 0.09, {type:'triangle', vol:0.22}); }
+  function thud(){ note(N(45), 0, 0.14, {type:'square', vol:0.12, glideTo:N(38)}); }
+
   function stopAll(){ backgroundStop(); suspenseStop(); }
 
   window.GameSounds = {
@@ -157,6 +162,7 @@
     suspense, suspenseStop,
     correct, bigCorrect,
     wrong, bigWrong,
+    pop, thud,
     stopAll
   };
 })();

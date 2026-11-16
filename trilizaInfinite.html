@@ -1,6 +1,7 @@
 <!DOCTYPE html>
 <html lang="el">
 <head>
+<script src="longpress.js"></script>
 <link rel="icon" type="image/svg+xml" href="favicon.svg">
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -498,6 +499,13 @@ function isInThreat(b, idx, player) {
   }
   return false;
 }
+// πληκτρολόγιο: τα κουτάκια όπως στο αριθμητικό πληκτρολόγιο (7 8 9 πάνω, 1 2 3 κάτω)
+document.addEventListener('keydown', e => {
+  const d = (e.code.match(/^(?:Digit|Numpad)([1-9])$/) || [])[1];
+  if (!d || e.ctrlKey || e.altKey || e.metaKey || !boardEl.children.length) return;
+  const i = { 7: 0, 8: 1, 9: 2, 4: 3, 5: 4, 6: 5, 1: 6, 2: 7, 3: 8 }[d];
+  if (boardEl.children[i]) { e.preventDefault(); onCellClick(i); }
+});
 </script>
 
 </body>

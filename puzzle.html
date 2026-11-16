@@ -1,0 +1,503 @@
+<!DOCTYPE html>
+<html lang="el">
+<head>
+<script src="longpress.js"></script>
+<link rel="icon" type="image/svg+xml" href="favicon.svg">
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
+<title>Παζλ</title>
+<style>
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  html, body { height: 100%; }
+  body { font-family: 'Segoe UI', Tahoma, sans-serif; color: #fff; user-select: none; -webkit-user-select: none; overflow: hidden;
+    background: linear-gradient(135deg, #1e3c72, #2a5298 50%, #6b2a8a); -webkit-tap-highlight-color: transparent; }
+  .back { position: absolute; top: 10px; left: 10px; z-index: 20; display: flex; gap: 8px; }
+  .back a, .back button { color: #fff; text-decoration: none; background: rgba(0,0,0,0.35); padding: 8px 14px; border-radius: 8px; border: 0; font: inherit; cursor: pointer; }
+
+  #setup { height: 100%; overflow: auto; padding: 60px 16px 30px; display: flex; flex-direction: column; align-items: center; gap: 14px; }
+  h1 { font-size: 42px; text-align: center; }
+  .box { background: rgba(0,0,0,.35); border-radius: 16px; padding: 16px 20px; width: 100%; max-width: 900px; }
+  .box h2 { color: #ffb347; font-size: 18px; margin-bottom: 10px; }
+  .opts { display: grid; grid-template-columns: repeat(auto-fit, minmax(120px, 1fr)); gap: 10px; }
+  .opt { background: rgba(255,255,255,.08); border: 3px solid transparent; border-radius: 14px; padding: 10px; cursor: pointer; text-align: center; }
+  .opt:hover { border-color: rgba(255,179,71,.5); }
+  .opt.on { border-color: #ffb347; background: rgba(255,179,71,.2); }
+  .opt .e { font-size: 30px; display: block; }
+  .opt .t { font-weight: bold; }
+  .opt .d { font-size: 12px; opacity: .75; }
+  .pics { display: grid; grid-template-columns: repeat(auto-fill, minmax(130px, 1fr)); gap: 10px; }
+  .pic { border: 4px solid transparent; border-radius: 12px; overflow: hidden; cursor: pointer; position: relative; background: #000; }
+  .pic img { width: 100%; display: block; aspect-ratio: 4/3; object-fit: cover; }
+  .pic.on { border-color: #ffb347; }
+  .pic.on::after { content: '✓'; position: absolute; top: 4px; right: 6px; background: #ffb347; color: #1e3c72; border-radius: 50%; width: 26px; height: 26px; text-align: center; font-weight: bold; line-height: 26px; }
+  .pic .x { position: absolute; left: 4px; top: 4px; background: rgba(0,0,0,.6); border-radius: 6px; padding: 0 6px; font-size: 13px; }
+  .load { display: flex; align-items: center; justify-content: center; flex-direction: column; aspect-ratio: 4/3; border: 3px dashed #ffb347; border-radius: 12px; cursor: pointer; font-weight: bold; text-align: center; padding: 6px; }
+  .load span { font-size: 36px; }
+  .hint { font-size: 13px; opacity: .8; margin-top: 8px; }
+  .go { padding: 16px 50px; font-size: 26px; font-weight: bold; border: 0; border-radius: 14px; background: #ff9500; color: #fff; box-shadow: 0 5px 0 #c46c00; cursor: pointer; }
+  .go:active { transform: translateY(3px); box-shadow: 0 2px 0 #c46c00; }
+
+  #arena { display: none; height: 100%; gap: 6px; padding: 52px 6px 6px; }
+  #arena.on { display: flex; }
+  .lane { flex: 1; display: flex; flex-direction: column; border: 4px solid var(--c); border-radius: 14px; overflow: hidden; position: relative; min-width: 0; }
+  .lane[data-p="0"] { --c: #42a5f5; --cd: #1565c0; }
+  .lane[data-p="1"] { --c: #ef5350; --cd: #b71c1c; }
+  .lane.solo { --c: #ffb347; --cd: #8a5a14; }
+  .bar { display: flex; align-items: center; gap: 8px; padding: 6px 10px; background: var(--cd); font-size: 20px; font-weight: bold; flex-wrap: wrap; }
+  .bar .sp { flex: 1; }
+  .bar button { background: rgba(0,0,0,.3); color: #fff; border: 0; border-radius: 8px; padding: 6px 10px; font: inherit; font-size: 16px; cursor: pointer; }
+  .bar button.on { background: #4caf50; }
+  /* το canvas σε σταθερό κουτί: το δικό του μέγεθος σε pixel να μην αλλάζει τη διάταξη */
+  .cvbox { flex: 1; position: relative; min-height: 0; }
+  canvas { position: absolute; inset: 0; width: 100%; height: 100%; display: block; touch-action: none; }
+  .win { position: absolute; left: 50%; top: 45%; transform: translate(-50%,-50%); background: rgba(0,0,0,.75); padding: 20px 30px; border-radius: 20px; text-align: center; font-size: 26px; font-weight: bold; z-index: 3; }
+  .win .big { font-size: 48px; }
+  .win button { margin-top: 12px; font-size: 20px; padding: 10px 24px; }
+</style>
+</head>
+<body>
+<div class="back"><a href="index.html">← Πίσω</a><button id="toSetup" hidden>⚙ Ρυθμίσεις</button></div>
+
+<div id="setup">
+  <h1>🧩 Παζλ</h1>
+  <div class="box"><h2>Είδος</h2><div class="opts" data-k="kind">
+    <div class="opt on" data-v="jigsaw"><span class="e">🧩</span><span class="t">Κλασικό παζλ</span><br><span class="d">κομμάτια με «αυτάκια»</span></div>
+    <div class="opt" data-v="square"><span class="e">⬛</span><span class="t">Τετράγωνα</span><br><span class="d">πιο εύκολο</span></div>
+    <div class="opt" data-v="slide"><span class="e">🔢</span><span class="t">Συρόμενο</span><br><span class="d">σπρώξε τα κομμάτια στο κενό</span></div>
+  </div></div>
+  <div class="box"><h2>Κομμάτια</h2><div class="opts" data-k="size" id="sizes"></div></div>
+  <div class="box"><h2>Βοήθεια</h2><div class="opts" data-k="help">
+    <div class="opt on" data-v="on"><span class="e">💡</span><span class="t">Με βοήθεια</span><br><span class="d">αχνή εικόνα, σχήματα στο ταμπλό, αριθμοί, 🖼️ ματιά</span></div>
+    <div class="opt" data-v="off"><span class="e">🙈</span><span class="t">Χωρίς βοήθεια</span><br><span class="d">άδειο ταμπλό — μόνο τα κομμάτια</span></div>
+  </div></div>
+  <div class="box"><h2>Παίκτες</h2><div class="opts" data-k="players">
+    <div class="opt on" data-v="1"><span class="e">🧒</span><span class="t">Ένας</span></div>
+    <div class="opt" data-v="2"><span class="e">🧒🧒</span><span class="t">Δύο, δίπλα-δίπλα</span><br><span class="d">ποιος τελειώνει πρώτος — άλλη εικόνα, ίδια κομμάτια</span></div>
+  </div></div>
+  <div class="box"><h2>Εικόνα <span style="font-weight:normal;font-size:14px;opacity:.8">— διάλεξε μία (ή καμία για τυχαία)· στα δύο παίκτες παίρνει η καθεμιά πλευρά άλλη</span></h2>
+    <div class="pics" id="pics">
+      <label class="load"><span>📷</span>Φόρτωσε δικές σου εικόνες<input type="file" accept="image/*" multiple hidden id="file"></label>
+    </div>
+    <div class="hint">Οι δικές σου εικόνες μένουν μόνο σε αυτόν τον υπολογιστή — δεν ανεβαίνουν πουθενά.</div>
+  </div>
+  <button class="go" id="go">▶ Πάμε!</button>
+</div>
+
+<div id="arena"></div>
+
+<script src="sounds.js"></script>
+<script>
+const $ = id => document.getElementById(id);
+const rnd = n => Math.floor(Math.random() * n);
+const pick = a => a[rnd(a.length)];
+const shuffle = a => { for (let i = a.length - 1; i > 0; i--) { const j = rnd(i + 1); [a[i], a[j]] = [a[j], a[i]]; } return a; };
+
+/* ---------- έτοιμες εικόνες: ζωγραφίζονται εδώ (δεν χρειάζονται αρχεία) ---------- */
+const IW = 1200, IH = 900;
+function seeded(s) { return () => (s = (s * 16807) % 2147483647) / 2147483647; }
+function canvasOf(draw, seed) {
+  const c = document.createElement('canvas'); c.width = IW; c.height = IH;
+  const g = c.getContext('2d'), R = seeded(seed);
+  const em = (ch, x, y, s) => { g.font = `${s}px "Segoe UI Emoji","Noto Color Emoji","Apple Color Emoji",sans-serif`; g.textAlign = 'center'; g.textBaseline = 'middle'; g.fillText(ch, x, y); };
+  const grad = (stops, y0 = 0, y1 = IH) => { const l = g.createLinearGradient(0, y0, 0, y1); stops.forEach((c, i) => l.addColorStop(i / (stops.length - 1), c)); return l; };
+  draw(g, R, em, grad);
+  return c;
+}
+const SCENES = [
+  ['Φάρμα', (g, R, em, grad) => {
+    g.fillStyle = grad(['#4fc3f7', '#b3e5fc']); g.fillRect(0, 0, IW, IH);
+    em('☀️', 1050, 120, 150); for (let i = 0; i < 4; i++) em('☁️', 120 + i * 260 + R() * 80, 90 + R() * 80, 110);
+    g.fillStyle = '#66bb6a'; g.beginPath(); g.ellipse(300, 560, 600, 200, 0, 0, 7); g.fill();
+    g.fillStyle = '#43a047'; g.beginPath(); g.ellipse(950, 600, 550, 210, 0, 0, 7); g.fill();
+    g.fillStyle = '#2e7d32'; g.fillRect(0, 620, IW, 280);
+    g.strokeStyle = '#8d6e63'; g.lineWidth = 10; for (let x = 20; x < IW; x += 70) { g.beginPath(); g.moveTo(x, 640); g.lineTo(x, 720); g.stroke(); }
+    g.beginPath(); g.moveTo(0, 665); g.lineTo(IW, 665); g.moveTo(0, 700); g.lineTo(IW, 700); g.stroke();
+    em('🏡', 250, 470, 230); em('🌳', 820, 430, 200); em('🚜', 1000, 620, 160);
+    ['🐄', '🐖', '🐑', '🐔', '🐴', '🦆', '🐐'].forEach((a, i) => em(a, 90 + i * 170, 790 + (i % 2) * 40, 110));
+    for (let i = 0; i < 18; i++) em(pick(['🌻', '🌼', '🌷']), R() * IW, 860 + R() * 30, 40);
+  }],
+  ['Βυθός', (g, R, em, grad) => {
+    g.fillStyle = grad(['#4dd0e1', '#0277bd', '#01579b']); g.fillRect(0, 0, IW, IH);
+    g.fillStyle = '#ffe0b2'; g.beginPath(); g.moveTo(0, 780); for (let x = 0; x <= IW; x += 100) g.quadraticCurveTo(x + 50, 740 + R() * 40, x + 100, 780); g.lineTo(IW, IH); g.lineTo(0, IH); g.fill();
+    g.fillStyle = 'rgba(255,255,255,.35)'; for (let i = 0; i < 40; i++) { g.beginPath(); g.arc(R() * IW, R() * 700, 4 + R() * 14, 0, 7); g.fill(); }
+    em('🐳', 300, 200, 220); em('🐬', 900, 170, 160); em('🐢', 650, 420, 150); em('🐙', 1000, 560, 160);
+    ['🐠', '🐟', '🐡', '🐠', '🐟'].forEach((f, i) => em(f, 100 + i * 230 + R() * 60, 330 + R() * 300, 90));
+    for (let i = 0; i < 7; i++) em('🌿', 60 + i * 175, 760, 120);
+    em('🦀', 380, 840, 90); em('🐚', 760, 850, 70); em('⭐', 980, 850, 70); em('🐚', 160, 860, 60);
+  }],
+  ['Διάστημα', (g, R, em, grad) => {
+    g.fillStyle = grad(['#0d0221', '#2a0e61', '#1a237e']); g.fillRect(0, 0, IW, IH);
+    for (let i = 0; i < 220; i++) { g.fillStyle = `rgba(255,255,255,${.3 + R() * .7})`; g.fillRect(R() * IW, R() * IH, 2 + R() * 3, 2 + R() * 3); }
+    em('🌍', 260, 650, 300); em('🪐', 950, 220, 240); em('🌙', 180, 150, 120); em('🚀', 650, 400, 200);
+    em('🛸', 1000, 620, 140); em('☄️', 520, 120, 110); em('🧑‍🚀', 820, 760, 130); em('⭐', 420, 800, 60); em('✨', 1100, 450, 70);
+  }],
+  ['Ζούγκλα', (g, R, em, grad) => {
+    g.fillStyle = grad(['#aed581', '#558b2f', '#33691e']); g.fillRect(0, 0, IW, IH);
+    for (let i = 0; i < 9; i++) em(pick(['🌴', '🌳', '🌿']), 70 + i * 135, 180 + R() * 120, 170);
+    g.fillStyle = '#795548'; g.fillRect(0, 760, IW, 140);
+    em('🦁', 250, 600, 200); em('🐘', 700, 560, 230); em('🦒', 1040, 470, 220); em('🐒', 450, 240, 120);
+    em('🦜', 880, 200, 110); em('🐊', 950, 800, 140); em('🐍', 120, 820, 100); em('🦓', 480, 780, 130);
+    for (let i = 0; i < 12; i++) em(pick(['🌺', '🌸', '🍌']), R() * IW, 380 + R() * 360, 50);
+  }],
+  ['Πόλη', (g, R, em, grad) => {
+    g.fillStyle = grad(['#ff8a65', '#ffcc80', '#fff3e0']); g.fillRect(0, 0, IW, IH);
+    em('☀️', 600, 300, 180);
+    for (let x = 0; x < IW; x += 120 + R() * 60) {
+      const h = 220 + R() * 300, w = 100 + R() * 50;
+      g.fillStyle = pick(['#5c6bc0', '#7e57c2', '#26a69a', '#ef5350', '#8d6e63', '#42a5f5']); g.fillRect(x, 640 - h, w, h);
+      g.fillStyle = '#fff59d'; for (let y = 660 - h; y < 610; y += 45) for (let wx = x + 12; wx < x + w - 20; wx += 32) if (R() < .7) g.fillRect(wx, y, 18, 24);
+    }
+    g.fillStyle = '#455a64'; g.fillRect(0, 640, IW, 260);
+    g.fillStyle = '#fff'; for (let x = 0; x < IW; x += 120) g.fillRect(x, 765, 70, 12);
+    em('🚗', 200, 710, 120); em('🚌', 650, 710, 150); em('🚕', 1000, 830, 120); em('🚲', 420, 840, 100); em('🚦', 1120, 560, 120); em('🌳', 60, 570, 110);
+  }],
+  ['Χειμώνας', (g, R, em, grad) => {
+    g.fillStyle = grad(['#90caf9', '#e3f2fd']); g.fillRect(0, 0, IW, IH);
+    g.fillStyle = '#fff'; g.beginPath(); g.ellipse(300, 650, 700, 200, 0, 0, 7); g.fill(); g.beginPath(); g.ellipse(1000, 700, 600, 220, 0, 0, 7); g.fill(); g.fillRect(0, 700, IW, 200);
+    for (let i = 0; i < 8; i++) em('🌲', 60 + i * 155, 470 + R() * 60, 170);
+    em('⛄', 350, 690, 220); em('🏠', 850, 560, 200); em('🦌', 1050, 760, 140); em('🛷', 600, 820, 120); em('🐧', 150, 800, 110);
+    for (let i = 0; i < 40; i++) em('❄️', R() * IW, R() * 420, 24 + R() * 30);
+  }],
+  ['Γλυκά', (g, R, em, grad) => {
+    g.fillStyle = grad(['#f8bbd0', '#f48fb1']); g.fillRect(0, 0, IW, IH);
+    for (let y = 560; y < IH; y += 60) for (let x = 0; x < IW; x += 60) { g.fillStyle = ((x + y) / 60) % 2 ? '#fff' : '#e53935'; g.fillRect(x, y, 60, 60); }
+    em('🎂', 600, 420, 300); em('🍰', 220, 480, 160); em('🧁', 980, 470, 160); em('🍩', 180, 760, 130); em('🍪', 450, 770, 120);
+    em('🍭', 760, 760, 130); em('🍫', 1030, 770, 130); em('🍓', 360, 220, 100); em('🍬', 880, 200, 100); em('🎈', 100, 150, 120); em('🎈', 1120, 150, 120);
+  }],
+  ['Δεινόσαυροι', (g, R, em, grad) => {
+    g.fillStyle = grad(['#ffb74d', '#ffe082']); g.fillRect(0, 0, IW, IH);
+    em('🌋', 850, 330, 360); g.fillStyle = '#8d6e63'; g.fillRect(0, 640, IW, 260);
+    g.fillStyle = '#6d4c41'; for (let i = 0; i < 30; i++) { g.beginPath(); g.arc(R() * IW, 660 + R() * 230, 6 + R() * 12, 0, 7); g.fill(); }
+    em('🦕', 280, 520, 280); em('🦖', 1000, 640, 230); em('🌴', 560, 480, 200); em('🌴', 80, 470, 170);
+    em('🥚', 560, 760, 80); em('🥚', 620, 780, 70); em('🪨', 160, 800, 110); em('🦴', 820, 840, 100); em('☁️', 300, 120, 120);
+  }],
+];
+const PICS = SCENES.map(([name, draw], i) => ({ name, canvas: canvasOf(draw, 1000 + i * 77) }));
+let selectedPic = null;  // δείκτης στο PICS ή null = τυχαία
+function renderPics() {
+  const box = $('pics');
+  box.querySelectorAll('.pic').forEach(x => x.remove());
+  PICS.forEach((p, i) => {
+    const d = document.createElement('div'); d.className = 'pic' + (selectedPic === i ? ' on' : '');
+    const img = new Image(); img.src = p.thumb || (p.thumb = p.canvas.toDataURL('image/jpeg', .6));
+    d.append(img); if (p.own) d.insertAdjacentHTML('beforeend', '<span class="x">📷 δική σου</span>');
+    d.onclick = () => { selectedPic = selectedPic === i ? null : i; renderPics(); };
+    box.append(d);
+  });
+}
+$('file').onchange = e => {
+  [...e.target.files].forEach(f => {
+    const img = new Image();
+    img.onload = () => {  // κόψε στη μέση σε 4:3, ώστε όλα τα παζλ να έχουν ίδιο σχήμα
+      const c = document.createElement('canvas'); c.width = IW; c.height = IH;
+      const s = Math.max(IW / img.width, IH / img.height);
+      c.getContext('2d').drawImage(img, (IW - img.width * s) / 2, (IH - img.height * s) / 2, img.width * s, img.height * s);
+      PICS.unshift({ name: f.name, canvas: c, own: true });
+      selectedPic = 0; renderPics(); URL.revokeObjectURL(img.src);
+    };
+    img.src = URL.createObjectURL(f);
+  });
+  e.target.value = '';
+};
+
+/* ---------- επιλογές ---------- */
+const SIZES = { jigsaw: [[2, 2], [3, 2], [4, 3], [6, 4], [8, 6], [10, 7]], square: [[2, 2], [3, 2], [4, 3], [6, 4], [8, 6], [10, 7]], slide: [[3, 3], [4, 3], [4, 4], [5, 4], [5, 5]] };
+const SIZE_ICON = ['🐣', '🐥', '🐤', '🦊', '🦁', '🐲'];
+const cfg = { kind: 'jigsaw', size: '2', players: '1', help: 'on' };
+function renderSizes() {
+  const list = SIZES[cfg.kind];
+  if (+cfg.size >= list.length) cfg.size = String(list.length - 1);
+  $('sizes').innerHTML = list.map(([c, r], i) => `<div class="opt${+cfg.size === i ? ' on' : ''}" data-v="${i}"><span class="e">${SIZE_ICON[i]}</span><span class="t">${c * r} κομμάτια</span><br><span class="d">${c}×${r}</span></div>`).join('');
+}
+document.querySelectorAll('.opts').forEach(box => box.addEventListener('click', e => {
+  const o = e.target.closest('.opt'); if (!o) return;
+  box.querySelectorAll('.opt').forEach(x => x.classList.toggle('on', x === o));
+  cfg[box.dataset.k] = o.dataset.v;
+  if (box.dataset.k === 'kind') renderSizes();
+}));
+
+/* ---------- κομμάτι παζλ: περίγραμμα με «αυτάκια» ---------- */
+// e: 0 ίσια, 1 αυτάκι προς τα έξω, −1 τρύπα. Η κορυφή του αυτιού φτάνει περίπου στο T.
+function edge(p, x0, y0, x1, y1, e, T) {
+  if (!e) { p.lineTo(x1, y1); return; }
+  const L = Math.hypot(x1 - x0, y1 - y0), ux = (x1 - x0) / L, uy = (y1 - y0) / L, nx = uy, ny = -ux, h = e * T;
+  const P = (s, v) => [x0 + ux * s * L + nx * v * h, y0 + uy * s * L + ny * v * h];
+  p.lineTo(...P(.39, 0));
+  p.bezierCurveTo(...P(.43, .25), ...P(.28, .45), ...P(.32, .75));
+  p.bezierCurveTo(...P(.36, 1.05), ...P(.64, 1.05), ...P(.68, .75));
+  p.bezierCurveTo(...P(.72, .45), ...P(.57, .25), ...P(.61, 0));
+  p.lineTo(x1, y1);
+}
+function piecePath(w, h, [t, r, b, l], T) {
+  const p = new Path2D(); p.moveTo(0, 0);
+  edge(p, 0, 0, w, 0, t, T); edge(p, w, 0, w, h, r, T); edge(p, w, h, 0, h, b, T); edge(p, 0, h, 0, 0, l, T);
+  p.closePath(); return p;
+}
+const hitCtx = document.createElement('canvas').getContext('2d');
+
+/* ---------- ένας πίνακας (ένας παίκτης) ---------- */
+function Board(lane, pic, cols, rows, kind, p, two) {
+  const cv = lane.querySelector('canvas'), ctx = cv.getContext('2d');
+  const B = { cols, rows, kind, pic, pieces: [], drag: new Map(), ghost: kind !== 'slide' && cfg.help === 'on', nums: cfg.help === 'on', done: false, t0: 0, moves: 0, confetti: [] };
+  const N = cols * rows;
+  // τυχαία αυτάκια σε κάθε εσωτερική ένωση
+  const Hs = [], Vs = [];
+  for (let r = 0; r < rows; r++) { Hs.push([]); Vs.push([]); for (let c = 0; c < cols; c++) { Hs[r].push(Math.random() < .5 ? 1 : -1); Vs[r].push(Math.random() < .5 ? 1 : -1); } }
+  for (let r = 0; r < rows; r++) for (let c = 0; c < cols; c++) {
+    const e = kind === 'jigsaw' ? [r ? -Hs[r - 1][c] : 0, c < cols - 1 ? Vs[r][c] : 0, r < rows - 1 ? Hs[r][c] : 0, c ? -Vs[r][c - 1] : 0] : [0, 0, 0, 0];
+    B.pieces.push({ r, c, e, fx: 0, fy: 0, locked: false, slot: r * cols + c });
+  }
+
+  function layout() {
+    const dpr = window.devicePixelRatio || 1, W = cv.clientWidth, H = cv.clientHeight;
+    cv.width = W * dpr; cv.height = H * dpr; ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+    const big = kind === 'slide' ? .92 : .6;  // στο κλασικό αφήνουμε χώρο γύρω για τα σκόρπια κομμάτια
+    const s = Math.min(W * (kind === 'slide' ? .95 : (W > H ? .62 : .9)) / IW, H * (kind === 'slide' ? .95 : (W > H ? .8 : big)) / IH);
+    const bw = IW * s, bh = IH * s;
+    B.W = W; B.H = H; B.bw = bw; B.bh = bh;
+    B.bx = (W - bw) / 2; B.by = kind === 'slide' || W > H ? (H - bh) / 2 : 12;
+    B.pw = bw / cols; B.ph = bh / rows; B.T = Math.min(B.pw, B.ph) * .22; B.m = Math.ceil(B.T * 1.1) + 2;
+    // κάθε κομμάτι ζωγραφίζεται μία φορά σε δικό του canvas
+    for (const pc of B.pieces) {
+      const o = document.createElement('canvas'); o.width = (B.pw + 2 * B.m) * dpr; o.height = (B.ph + 2 * B.m) * dpr;
+      const g = o.getContext('2d'); g.scale(dpr, dpr); g.translate(B.m, B.m);
+      pc.path = piecePath(B.pw, B.ph, pc.e, B.T);
+      g.save(); g.clip(pc.path); g.drawImage(pic, -pc.c * B.pw, -pc.r * B.ph, bw, bh); g.restore();
+      g.lineWidth = 3; g.strokeStyle = 'rgba(0,0,0,.45)'; g.stroke(pc.path);
+      g.lineWidth = 1.2; g.strokeStyle = 'rgba(255,255,255,.7)'; g.stroke(pc.path);
+      pc.img = o;
+    }
+  }
+  const home = pc => [B.bx + pc.c * B.pw, B.by + pc.r * B.ph];
+  const pos = pc => [pc.fx * B.W, pc.fy * B.H];
+
+  function scatter() {
+    if (kind === 'slide') {
+      // λύνεται πάντα: ξεκινάμε λυμένο και κάνουμε τυχαίες σωστές κινήσεις
+      B.empty = N - 1;
+      let prev = -1;
+      for (let k = 0; k < N * 30; k++) {
+        const nb = neighbours(B.empty).filter(x => x !== prev);
+        const s = pick(nb), pc = B.pieces.find(x => x.slot === s);
+        prev = B.empty; pc.slot = B.empty; B.empty = s;
+      }
+      B.pieces.forEach(pc => { pc.ax = pc.slot % cols; pc.ay = Math.floor(pc.slot / cols); });
+      return;
+    }
+    const board = [B.bx - B.pw * .3, B.by - B.ph * .3, B.bx + B.bw + B.pw * .3, B.by + B.bh + B.ph * .3];
+    for (const pc of shuffle(B.pieces.slice())) {
+      let x, y;
+      // στενή λωρίδα (2 παίκτες): τα κομμάτια πάνε κάτω από το ταμπλό
+      const below = B.W <= B.H && B.H - board[3] > B.ph;
+      for (let k = 0; k < 60; k++) {
+        // φαρδιά οθόνη: στις λωρίδες αριστερά/δεξιά του ταμπλό (λίγο πάνω στην άκρη του αν δεν χωράει)
+        x = below ? rnd(Math.max(1, B.W - B.pw))
+          : Math.random() < .5 ? rnd(Math.max(1, board[0] - B.pw * .5))
+          : board[2] - B.pw * .5 + rnd(Math.max(1, B.W - board[2] - B.pw * .5));
+        y = below ? board[3] + rnd(Math.max(1, B.H - board[3] - B.ph)) : rnd(Math.max(1, B.H - B.ph));
+        if (below || x + B.pw < board[0] || x > board[2] || y + B.ph < board[1] || y > board[3]) break;
+      }
+      pc.fx = x / B.W; pc.fy = y / B.H;
+    }
+    B.order = shuffle(B.pieces.slice());
+  }
+  function neighbours(s) {
+    const c = s % cols, r = Math.floor(s / cols), out = [];
+    if (c) out.push(s - 1); if (c < cols - 1) out.push(s + 1); if (r) out.push(s - cols); if (r < rows - 1) out.push(s + cols);
+    return out;
+  }
+
+  function draw() {
+    ctx.clearRect(0, 0, B.W, B.H);
+    ctx.fillStyle = '#3e2723'; ctx.fillRect(0, 0, B.W, B.H);  // τραπέζι
+    ctx.fillStyle = 'rgba(255,255,255,.04)'; for (let y = 0; y < B.H; y += 18) ctx.fillRect(0, y, B.W, 8);
+    ctx.fillStyle = 'rgba(0,0,0,.45)'; ctx.fillRect(B.bx - 6, B.by - 6, B.bw + 12, B.bh + 12);
+    if (kind === 'slide') {
+      for (const pc of B.pieces) {
+        const tx = (pc.slot % cols), ty = Math.floor(pc.slot / cols);
+        pc.ax += (tx - pc.ax) * .35; pc.ay += (ty - pc.ay) * .35;  // ομαλή κίνηση
+        const isLast = pc.r * cols + pc.c === N - 1;
+        if (isLast && !B.done) continue;  // το τελευταίο κομμάτι λείπει (το κενό)
+        const x = B.bx + pc.ax * B.pw, y = B.by + pc.ay * B.ph;
+        ctx.drawImage(pc.img, x - B.m, y - B.m, B.pw + 2 * B.m, B.ph + 2 * B.m);
+        if (B.nums && !B.done) {
+          ctx.fillStyle = 'rgba(0,0,0,.6)'; ctx.beginPath(); ctx.arc(x + 18, y + 18, 15, 0, 7); ctx.fill();
+          ctx.fillStyle = '#fff'; ctx.font = 'bold 17px Segoe UI, sans-serif'; ctx.textAlign = 'center'; ctx.textBaseline = 'middle';
+          ctx.fillText(pc.r * cols + pc.c + 1, x + 18, y + 19);
+        }
+      }
+    } else {
+      if (B.ghost) { ctx.globalAlpha = .22; ctx.drawImage(pic, B.bx, B.by, B.bw, B.bh); ctx.globalAlpha = 1; }
+      ctx.strokeStyle = 'rgba(255,255,255,.12)'; ctx.lineWidth = 1;
+      if (cfg.help === 'on') for (const pc of B.pieces) { const [hx, hy] = home(pc); ctx.save(); ctx.translate(hx, hy); ctx.stroke(pc.path); ctx.restore(); }
+      for (const pc of B.order) {
+        const [x, y] = pc.locked ? home(pc) : pos(pc);
+        const lifted = [...B.drag.values()].some(d => d.pc === pc);
+        if (lifted) { ctx.shadowColor = 'rgba(0,0,0,.6)'; ctx.shadowBlur = 18; ctx.shadowOffsetY = 8; }
+        ctx.drawImage(pc.img, x - B.m, y - B.m, B.pw + 2 * B.m, B.ph + 2 * B.m);
+        ctx.shadowColor = 'transparent'; ctx.shadowBlur = 0; ctx.shadowOffsetY = 0;
+        if (pc.flash > 0) { pc.flash -= .04; ctx.save(); ctx.translate(x, y); ctx.globalAlpha = pc.flash; ctx.fillStyle = '#fff'; ctx.fill(pc.path); ctx.restore(); }
+      }
+    }
+    for (const c of B.confetti) {  // κομφετί στο τέλος
+      c.x += c.vx; c.y += c.vy; c.vy += .25; c.a += c.va;
+      ctx.save(); ctx.translate(c.x, c.y); ctx.rotate(c.a); ctx.fillStyle = c.col; ctx.fillRect(-6, -3, 12, 6); ctx.restore();
+    }
+    B.confetti = B.confetti.filter(c => c.y < B.H + 20);
+  }
+
+  function at(x, y) {  // το πάνω-πάνω ελεύθερο κομμάτι κάτω από το δάχτυλο
+    for (let i = B.order.length - 1; i >= 0; i--) {
+      const pc = B.order[i]; if (pc.locked) continue;
+      const [px, py] = pos(pc);
+      if (x < px - B.m || x > px + B.pw + B.m || y < py - B.m || y > py + B.ph + B.m) continue;
+      if (hitCtx.isPointInPath(pc.path, x - px, y - py)) return pc;
+    }
+    return null;
+  }
+  const local = e => { const b = cv.getBoundingClientRect(); return [e.clientX - b.left, e.clientY - b.top]; };
+  cv.addEventListener('pointerdown', e => {
+    if (B.done) return;
+    try { GameSounds.unlock(); } catch (er) {}
+    if (!B.t0) B.t0 = performance.now();
+    const [x, y] = local(e);
+    if (kind === 'slide') {
+      const c = Math.floor((x - B.bx) / B.pw), r = Math.floor((y - B.by) / B.ph);
+      if (c < 0 || r < 0 || c >= cols || r >= rows) return;
+      B.slide(r * cols + c); return;
+    }
+    const pc = at(x, y); if (!pc) return;
+    try { cv.setPointerCapture(e.pointerId); } catch (er) {}
+    const [px, py] = pos(pc);
+    B.drag.set(e.pointerId, { pc, dx: x - px, dy: y - py });
+    B.order = B.order.filter(q => q !== pc).concat(pc);  // στην κορυφή
+  });
+  cv.addEventListener('pointermove', e => {
+    const d = B.drag.get(e.pointerId); if (!d) return;
+    const [x, y] = local(e);
+    d.pc.fx = Math.min(Math.max(x - d.dx, -B.pw / 2), B.W - B.pw / 2) / B.W;
+    d.pc.fy = Math.min(Math.max(y - d.dy, -B.ph / 2), B.H - B.ph / 2) / B.H;
+  });
+  const up = e => {
+    const d = B.drag.get(e.pointerId); if (!d) return;
+    B.drag.delete(e.pointerId);
+    const pc = d.pc, [x, y] = pos(pc), [hx, hy] = home(pc);
+    if (Math.abs(x - hx) < B.pw * .28 && Math.abs(y - hy) < B.ph * .28) {  // κούμπωσε!
+      pc.locked = true; pc.flash = 1; B.moves++;
+      B.order = B.order.filter(q => q !== pc); B.order.unshift(pc);  // τα κουμπωμένα από κάτω
+      try { GameSounds.pop(B.pieces.filter(q => q.locked).length); } catch (er) {}
+      check();
+    }
+  };
+  cv.addEventListener('pointerup', up); cv.addEventListener('pointercancel', up);
+
+  B.slide = s => {  // σπρώξε το κομμάτι της θέσης s στο κενό (αν είναι δίπλα)
+    if (B.done) return;
+    if (!B.t0) B.t0 = performance.now();
+    if (!neighbours(B.empty).includes(s)) { try { GameSounds.thud(); } catch (er) {} return; }
+    const pc = B.pieces.find(q => q.slot === s); pc.slot = B.empty; B.empty = s; B.moves++;
+    try { GameSounds.pop(B.moves % 8); } catch (er) {}
+    check();
+  };
+  // βελάκι: το κομμάτι από την αντίθετη μεριά του κενού γλιστράει προς τα εκεί (← φέρνει το δεξί κομμάτι αριστερά)
+  B.arrow = (dc, dr) => {
+    const c = B.empty % cols - dc, r = Math.floor(B.empty / cols) - dr;
+    if (c >= 0 && r >= 0 && c < cols && r < rows) B.slide(r * cols + c);
+  };
+  function check() {
+    const done = kind === 'slide' ? B.pieces.every(pc => pc.slot === pc.r * cols + pc.c) : B.pieces.every(pc => pc.locked);
+    paint();
+    if (!done) return;
+    B.done = true; B.time = (performance.now() - B.t0) / 1000;
+    for (let i = 0; i < 160; i++) B.confetti.push({ x: B.W / 2, y: B.H / 3, vx: (Math.random() - .5) * 18, vy: -Math.random() * 14 - 2, a: 0, va: Math.random() * .3, col: pick(['#ffd23f', '#ef5350', '#42a5f5', '#66bb6a', '#ab47bc', '#fff']) });
+    try { GameSounds.bigCorrect(); } catch (er) {}
+    B.onDone && B.onDone(B);
+  }
+  function paint() {
+    const placed = kind === 'slide' ? B.pieces.filter(pc => pc.slot === pc.r * cols + pc.c).length : B.pieces.filter(pc => pc.locked).length;
+    lane.querySelector('.cnt').textContent = kind === 'slide' ? `👣 ${B.moves}` : `🧩 ${placed}/${N}`;
+  }
+  B.tick = () => {
+    if (B.t0 && !B.done) lane.querySelector('.tm').textContent = '⏱ ' + fmt((performance.now() - B.t0) / 1000);
+    draw();
+  };
+  B.resize = () => { layout(); if (kind === 'slide') B.pieces.forEach(pc => { pc.ax = pc.slot % cols; pc.ay = Math.floor(pc.slot / cols); }); };
+  layout(); scatter(); paint();
+  return B;
+}
+const fmt = s => `${Math.floor(s / 60)}:${String(Math.floor(s % 60)).padStart(2, '0')}`;
+
+/* ---------- ξεκίνημα ---------- */
+let boards = [], raf = 0;
+function start() {
+  try { GameSounds.unlock(); } catch (e) {}
+  const two = cfg.players === '2';
+  const [cols, rows] = SIZES[cfg.kind][+cfg.size];
+  // διαφορετική εικόνα για κάθε παίκτη (η επιλεγμένη πρώτη)
+  const order = shuffle(PICS.map((_, i) => i));
+  if (selectedPic != null) { order.splice(order.indexOf(selectedPic), 1); order.unshift(selectedPic); }
+  const arena = $('arena'); arena.innerHTML = '';
+  $('setup').style.display = 'none'; arena.classList.add('on'); $('toSetup').hidden = false;
+  boards = [];
+  // πρώτα όλες οι λωρίδες, μετά οι πίνακες: αλλιώς ο πρώτος μετριέται σε όλο το πλάτος
+  const lanes = (two ? [0, 1] : [0]).map(p => {
+    const lane = document.createElement('div'); lane.className = 'lane' + (two ? '' : ' solo'); lane.dataset.p = p;
+    lane.innerHTML = `<div class="bar"><span>${two ? (p ? '🔴 Παίκτης 2' : '🔵 Παίκτης 1') : '🧩'}</span><span class="cnt"></span><span class="sp"></span><span class="tm">⏱ 0:00</span>`
+      + (cfg.help === 'off' ? '' : (cfg.kind === 'slide' ? '<button class="nm on">🔢</button>' : '<button class="gh on" title="Αχνή εικόνα στο ταμπλό">👻</button>')
+        + '<button class="pv" title="Κράτα πατημένο για να δεις την εικόνα">🖼️</button>')
+      + '</div><div class="cvbox"><canvas></canvas></div>';
+    arena.appendChild(lane);
+    return lane;
+  });
+  lanes.forEach((lane, p) => {
+    const B = Board(lane, PICS[order[p % order.length]].canvas, cols, rows, cfg.kind, p, two);
+    const gh = lane.querySelector('.gh'), nm = lane.querySelector('.nm');
+    if (gh) gh.onclick = () => { B.ghost = !B.ghost; gh.classList.toggle('on', B.ghost); };
+    if (nm) nm.onclick = () => { B.nums = !B.nums; nm.classList.toggle('on', B.nums); };
+    const pv = lane.querySelector('.pv');  // κράτα πατημένο για να δεις όλη την εικόνα
+    if (pv) pv.onpointerdown = () => showPeek(lane, B, true);
+    if (pv) pv.onpointerup = pv.onpointerleave = () => showPeek(lane, B, false);
+    B.onDone = b => {
+      const others = boards.filter(x => x !== b);
+      const first = two && !others.some(x => x.done && x.time < b.time);
+      const w = document.createElement('div'); w.className = 'win';
+      w.innerHTML = (two ? (first ? '<div class="big">🏆 Πρώτος!</div>' : '<div class="big">👏 Τέλος!</div>') : '<div class="big">🎉 Μπράβο!</div>')
+        + `<div>⏱ ${fmt(b.time)}${cfg.kind === 'slide' ? ` · 👣 ${b.moves} κινήσεις` : ''}</div>`
+        + (!two || boards.every(x => x.done) ? '<button class="go">▶ Νέο παζλ</button>' : '');
+      lane.appendChild(w);
+      const again = () => { const btn = w.querySelector('button'); if (btn) btn.onclick = start; };
+      again();
+      if (two && boards.every(x => x.done)) document.querySelectorAll('.win').forEach(x => { if (!x.querySelector('button')) x.insertAdjacentHTML('beforeend', '<button class="go">▶ Νέο παζλ</button>'); x.querySelector('button').onclick = start; });
+    };
+    boards.push(B);
+  });
+  cancelAnimationFrame(raf);
+  const loop = () => { boards.forEach(b => b.tick()); raf = requestAnimationFrame(loop); };
+  loop();
+}
+function showPeek(lane, B, on) {
+  let d = lane.querySelector('.peek');
+  if (on && !d) {
+    d = document.createElement('div'); d.className = 'peek';
+    d.style.cssText = 'position:absolute;inset:50px 10px 10px;background:rgba(0,0,0,.85) center/contain no-repeat;border-radius:10px;z-index:4;pointer-events:none';
+    d.style.backgroundImage = `url(${B.pic.toDataURL('image/jpeg', .8)})`;
+    lane.appendChild(d);
+  } else if (!on && d) d.remove();
+}
+window.addEventListener('resize', () => boards.forEach(b => b.resize()));
+// συρόμενο με πληκτρολόγιο: βελάκια (στους δύο: Παίκτης 1 = W A S D, Παίκτης 2 = βελάκια)
+const ARROWS = { ArrowLeft: [-1, 0], ArrowRight: [1, 0], ArrowUp: [0, -1], ArrowDown: [0, 1] };
+const WASD = { KeyA: [-1, 0], KeyD: [1, 0], KeyW: [0, -1], KeyS: [0, 1] };
+document.addEventListener('keydown', e => {
+  if (!boards.length || cfg.kind !== 'slide') return;
+  const two = boards.length === 2;
+  const d = ARROWS[e.code] || WASD[e.code]; if (!d) return;
+  const b = two ? boards[WASD[e.code] ? 0 : 1] : boards[0];
+  e.preventDefault(); b.arrow(...d);
+});
+$('go').onclick = start;
+$('toSetup').onclick = () => { cancelAnimationFrame(raf); boards = []; $('arena').classList.remove('on'); $('arena').innerHTML = ''; $('setup').style.display = ''; $('toSetup').hidden = true; };
+renderSizes(); renderPics();
+</script>
+</body>
+</html>

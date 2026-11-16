@@ -125,6 +125,7 @@ document.addEventListener('click',function(e){var a=e.target.closest&&e.target.c
 def main():
     home = (ROOT / 'index.html').read_text(encoding='utf-8')
     home = home.replace('href="favicon.svg"', f'href="{data_uri(ROOT / "favicon.svg")}"')
+    home = inline_scripts(home)
     home = re.sub(r'src="(thumbs/[^"]+)"', lambda m: f'src="{data_uri(ROOT / m.group(1))}"', home)
     pages = {}
     todo = [h for h in LOCAL.findall(home) if h not in HOME]
