@@ -34,6 +34,7 @@
   .lane[data-p="1"] { --c: #ef5350; --cd: #b71c1c; }
   .bar { display: flex; align-items: center; gap: 10px; padding: 6px 12px; background: var(--cd); font-size: 20px; font-weight: bold; }
   .bar .sp { flex: 1; }
+  .bar .camb { font: inherit; font-size: 17px; border: 0; border-radius: 10px; background: rgba(0,0,0,.3); color: #fff; padding: 2px 10px; cursor: pointer; }
 
   /* σκηνή */
   .scene { flex: 1; position: relative; overflow: hidden; min-height: 150px; background: linear-gradient(#7ec8ff, #c9ecff 65%); }
@@ -146,6 +147,10 @@
     <div class="opt on" data-v="1"><span class="e">🧒</span><span class="t">Ένας</span><br><span class="d">στον αγώνα: με τον υπολογιστή</span></div>
     <div class="opt" data-v="2"><span class="e">🧒🧒</span><span class="t">Δύο, δίπλα-δίπλα</span><br><span class="d">ίδιες λέξεις, ποιος τελειώνει πρώτος</span></div>
   </div></div>
+  <div class="box"><h2>Κάμερα στον αγώνα</h2><div class="opts" data-k="cam">
+    <div class="opt on" data-v="in"><span class="e">🧑‍✈️</span><span class="t">Από μέσα</span><br><span class="d">στη θέση του οδηγού, με τιμόνι και ταμπλό</span></div>
+    <div class="opt" data-v="out"><span class="e">🎥🏎️</span><span class="t">Από πίσω</span><br><span class="d">βλέπεις το αμάξι σου να τρέχει</span></div>
+  </div></div>
   <div class="box"><h2>Επίπεδο</h2><div class="opts" data-k="level">
     <div class="opt" data-v="0"><span class="e">🐌</span><span class="t">Πολύ αργά</span><br><span class="d">για όσους πρωτομαθαίνουν τα πλήκτρα</span></div>
     <div class="opt" data-v="1"><span class="e">🐢</span><span class="t">Αργά</span></div>
@@ -182,7 +187,7 @@ const snd = (k, a) => { try { GameSounds[k](a); } catch (e) {} };
 const MONSTERS = ['👾', '👻', '🐲', '🦖', '🐙', '🦂', '🧟', '🕷️', '🦇', '👹'];
 const GOAL = 15;  // τέρατα / λέξεις μέχρι τον τερματισμό
 
-const cfg = { mode: 'hero', what: 'short', players: '1', level: '2', hint: '1', kb: 'abc', osk: 'auto' };
+const cfg = { mode: 'hero', what: 'short', players: '1', level: '2', hint: '1', kb: 'abc', osk: 'auto', cam: 'in' };
 // οθόνη αφής; (πίνακας, tablet) — αλλιώς υποθέτουμε κανονικό πληκτρολόγιο
 const TOUCH = matchMedia('(pointer: coarse)').matches || navigator.maxTouchPoints > 0;
 let physKeys = false;  // πατήθηκε ήδη πλήκτρο σε κανονικό πληκτρολόγιο
@@ -245,7 +250,7 @@ let lanes = [], running = false, raf = 0, last = 0;
 function makeLane(p, two, list) {
   const el = document.createElement('div'); el.className = 'lane'; el.dataset.p = p;
   const race = cfg.mode === 'race';
-  el.innerHTML = `<div class="bar"><span>${two ? (p ? '🔴 Παίκτης 2' : '🔵 Παίκτης 1') : '🧒'}</span><span class="cnt"></span><span class="sp"></span><span class="sc"></span></div>
+  el.innerHTML = `<div class="bar"><span>${two ? (p ? '🔴 Παίκτης 2' : '🔵 Παίκτης 1') : '🧒'}</span><span class="cnt"></span>${race ? '<button class="camb"></button>' : ''}<span class="sp"></span><span class="sc"></span></div>
     <div class="scene${race ? ' race' : ''}">${race
       ? '<canvas></canvas><div class="act"></div>'
       : '<div class="cloud" style="top:6%;animation-duration:40s">☁️</div><div class="cloud" style="top:20%;animation-duration:55s;animation-delay:-25s;font-size:44px">☁️</div><div class="cloud" style="top:12%;animation-duration:70s;animation-delay:-50s;font-size:80px">☁️</div>'
@@ -257,6 +262,11 @@ function makeLane(p, two, list) {
   L.total = list.reduce((a, x) => a + plain(x.t).length, 0);
   el.querySelector('.kb').hidden = !showOsk(two);
   el.querySelector('.kb').addEventListener('pointerdown', e => { const b = e.target.closest('button[data-k]'); if (b) { e.preventDefault(); type(L, b.dataset.k); } });
+  if (race) {  // κάμερα: από μέσα ↔ από πίσω, αλλάζει και την ώρα του αγώνα
+    const b = el.querySelector('.camb'), lbl = () => b.textContent = L.cam === 'in' ? '🎥 από πίσω' : '🎥 από μέσα';
+    L.cam = cfg.cam; lbl();
+    b.onpointerdown = e => { e.preventDefault(); L.cam = L.cam === 'in' ? 'out' : 'in'; lbl(); };
+  }
   if (race) Object.assign(L, { cv: el.querySelector('canvas'), act: el.querySelector('.act'), slow: 0, shake: 0, rev: 0, brake: 0, steer: 0, kick: 0, sky: 0, gear: 1, gearFlash: 0, crashT: 0 });
   else { L.monsters = []; L.spawnT = 0; }
   L.t0 = performance.now();
@@ -450,14 +460,15 @@ function raceStep(dt) {
   }
 }
 function quad(g, x1, y1, w1, x2, y2, w2, col) { g.fillStyle = col; g.beginPath(); g.moveTo(x1 - w1, y1); g.lineTo(x2 - w2, y2); g.lineTo(x2 + w2, y2); g.lineTo(x1 + w1, y1); g.fill(); }
-function carRear(g, x, y, w, col, tag) {  // αμάξι από πίσω
+function carRear(g, x, y, w, col, tag, br) {  // αμάξι από πίσω· br = φρενάρει
   const h = w * .55;
   g.fillStyle = 'rgba(0,0,0,.35)'; g.fillRect(x - w * .55, y - h * .06, w * 1.1, h * .12);
   g.fillStyle = '#111'; g.fillRect(x - w * .48, y - h * .32, w * .2, h * .32); g.fillRect(x + w * .28, y - h * .32, w * .2, h * .32);
   g.fillStyle = col; g.beginPath(); g.roundRect(x - w / 2, y - h * .9, w, h * .65, w * .08); g.fill();
   g.beginPath(); g.roundRect(x - w * .36, y - h * 1.3, w * .72, h * .5, w * .1); g.fill();
   g.fillStyle = '#9fd3ff'; g.beginPath(); g.roundRect(x - w * .3, y - h * 1.22, w * .6, h * .34, w * .06); g.fill();
-  g.fillStyle = '#ff1744'; g.fillRect(x - w * .46, y - h * .72, w * .18, h * .14); g.fillRect(x + w * .28, y - h * .72, w * .18, h * .14);
+  g.fillStyle = '#ff1744'; if (br) { g.shadowColor = '#ff1744'; g.shadowBlur = w * .15; }
+  g.fillRect(x - w * .46, y - h * .72, w * .18, h * .14); g.fillRect(x + w * .28, y - h * .72, w * .18, h * .14); g.shadowBlur = 0;
   g.fillStyle = '#fff'; g.fillRect(x - w * .12, y - h * .5, w * .24, h * .14);
   if (tag && w > 24) { g.font = `${Math.round(w * .16)}px sans-serif`; g.textAlign = 'center'; g.fillText(tag, x, y - h * 1.4); }
 }
@@ -465,10 +476,11 @@ function drawRace(L) {
   const cv = L.cv, W = cv.clientWidth, H = cv.clientHeight; if (!W || !H || !L.me) return;
   if (cv.width !== W || cv.height !== H) { cv.width = W; cv.height = H; }
   const g = cv.getContext('2d'), me = L.me, { segs, cars } = world;
-  const dashH = Math.min(H * .28, 140), hz = H * .4 + Math.max(0, L.brake) * 16;  // φρενάρισμα: «σκύβει» μπροστά
-  const camZ = me.z - SEG, bi = Math.floor(camZ / SEG), pct = camZ / SEG - bi;
+  const out = L.cam === 'out';  // από πίσω: η κάμερα πιο πίσω και πιο ψηλά, φαίνεται το αμάξι σου
+  const dashH = Math.min(H * .28, 140), hz = H * (out ? .36 : .4) + Math.max(0, L.brake) * (out ? 0 : 16);  // φρενάρισμα: «σκύβει» μπροστά
+  const camZ = me.z - (out ? 5 : 1) * SEG, bi = Math.floor(camZ / SEG), pct = camZ / SEG - bi;
   const yAt = i => segs[Math.min(Math.max(i, 0), segs.length - 1)].y;
-  const camY = yAt(bi) + (yAt(bi + 1) - yAt(bi)) * pct + CAM_H, cu = segAt(me.z).curve;
+  const camY = yAt(bi) + (yAt(bi + 1) - yAt(bi)) * pct + (out ? 1000 : CAM_H), cu = segAt(me.z).curve;
   const camX = me.x * RW - cu * Math.min(1, me.v / (15 * SEG)) * 120;  // στη στροφή το αμάξι «γέρνει» προς τα έξω
   const sh = L.shake * 14;
   g.save();
@@ -516,11 +528,18 @@ function drawRace(L) {
     const s = segs[p.i];
     if (s.deco) { const sz = p.s * 700 * W / 2; if (sz > 3) { g.font = `${Math.round(sz)}px sans-serif`; g.fillText(s.deco[0], p.X + p.s * s.deco[1] * RW * W / 2, p.Y); } }
     if (p.i === world.fin && p.R > 4) { g.font = `${Math.round(p.R * .5)}px sans-serif`; g.fillText('🏁 ΤΕΡΜΑΤΙΣΜΟΣ 🏁', p.X, p.Y - p.R * .5); }
-    for (const c of cars) if (c !== me && c.z > me.z && Math.floor(c.z / SEG) === p.i) carRear(g, p.X + p.s * c.x * RW * W / 2, p.Y, p.s * 650 * W / 2, c.col, c.tag);
+    for (const c of cars) if ((out ? c.z > camZ + SEG : c !== me && c.z > me.z) && Math.floor(c.z / SEG) === p.i) {
+      const q = P[n + 1] || p, f = c.z / SEG - p.i, sc = DEPTH / (c.z - camZ);  // ανάμεσα σε δύο κομμάτια: ομαλή κίνηση
+      const cx = p.X + (q.X - p.X) * f + sc * c.x * RW * W / 2, cy = p.Y + (q.Y - p.Y) * f;
+      if (c !== me) { carRear(g, cx, cy, sc * 650 * W / 2, c.col, c.tag, false); continue; }
+      g.save(); g.translate(cx, cy); g.rotate(L.steer * .12); carRear(g, 0, 0, sc * 650 * W / 2, c.col, '', L.brake > 0); g.restore();
+    }
     g.restore();
   }
   g.restore();
-  // ταμπλό: κολόνες, καθρέφτης, τιμόνι, κοντέρ, ταχύτητα
+  // ταμπλό: κολόνες, καθρέφτης, τιμόνι, κοντέρ, ταχύτητα (από πίσω: μόνο κοντέρ και ταχύτητα)
+  const r = Math.min(dashH * .45, W * .1), cx = W * (out ? .12 : .2), cy = out ? H - r - 10 : H - dashH * .45;
+  if (!out) {
   g.fillStyle = '#151515';
   g.beginPath(); g.moveTo(0, 0); g.lineTo(W * .05, 0); g.lineTo(W * .1, H - dashH); g.lineTo(0, H - dashH); g.fill();
   g.beginPath(); g.moveTo(W, 0); g.lineTo(W * .95, 0); g.lineTo(W * .9, H - dashH); g.lineTo(W, H - dashH); g.fill();
@@ -532,18 +551,19 @@ function drawRace(L) {
   if (back) { const k = 1 - (me.z - back.z) / (10 * SEG), bw = 12 + k * 30; g.fillStyle = back.col; g.fillRect(W / 2 - (back.x - me.x) * mw * .4 - bw / 2, 38 - bw * .55, bw, bw * .55); }
   const dg = g.createLinearGradient(0, H - dashH, 0, H); dg.addColorStop(0, '#2b2b2b'); dg.addColorStop(1, '#000');
   g.fillStyle = dg; g.beginPath(); g.moveTo(0, H); g.lineTo(0, H - dashH); g.quadraticCurveTo(W / 2, H - dashH - 30, W, H - dashH); g.lineTo(W, H); g.fill();
-  const r = Math.min(dashH * .45, W * .1), cx = W * .2, cy = H - dashH * .45;  // κοντέρ
+  }
   g.fillStyle = '#111'; g.beginPath(); g.arc(cx, cy, r, 0, 7); g.fill();
   g.strokeStyle = '#fff'; g.lineWidth = 2;
   for (let k = 0; k <= 8; k++) { const a = Math.PI * (.75 + k * .1875); g.beginPath(); g.moveTo(cx + Math.cos(a) * r * .78, cy + Math.sin(a) * r * .78); g.lineTo(cx + Math.cos(a) * r * .92, cy + Math.sin(a) * r * .92); g.stroke(); }
   const na = Math.PI * (.75 + Math.min(1, (L.kmh || 0) / 160) * 1.5);
   g.strokeStyle = '#ff5252'; g.lineWidth = 4; g.beginPath(); g.moveTo(cx, cy); g.lineTo(cx + Math.cos(na) * r * .85, cy + Math.sin(na) * r * .85); g.stroke();
   g.fillStyle = '#fff'; g.textAlign = 'center'; g.textBaseline = 'middle'; g.font = `bold ${Math.round(r * .4)}px sans-serif`; g.fillText(L.kmh || 0, cx, cy + r * .5);
-  const gx = W * .8;  // ταχύτητα (κιβώτιο)
+  const gx = W * (out ? .88 : .8);  // ταχύτητα (κιβώτιο)
   g.fillStyle = L.gearFlash > 0 ? '#ff9500' : '#111'; g.beginPath(); g.roundRect(gx - r * .8, cy - r * .8, r * 1.6, r * 1.6, 12); g.fill();
   g.fillStyle = '#fff'; g.font = `bold ${Math.round(r * .9)}px sans-serif`; g.fillText(L.gear, gx, cy + r * .05);
   g.font = `${Math.round(r * .32)}px sans-serif`; g.fillText('⚙️ ταχύτητα', gx, cy - r * 1.05);
-  if (L.brake > 0) { g.font = `${Math.round(r * .6)}px sans-serif`; g.fillText('🛑', W * .35, cy); }
+  if (L.brake > 0 && !out) { g.font = `${Math.round(r * .6)}px sans-serif`; g.fillText('🛑', W * .35, cy); }
+  if (out) return;
   const wr = Math.min(dashH * .95, W * .17), wx = W / 2, wy = H - dashH * .15;  // τιμόνι με τα χέρια
   g.save(); g.translate(wx, wy); g.rotate(L.steer);
   g.strokeStyle = '#1b1b1b'; g.lineWidth = wr * .17; g.beginPath(); g.arc(0, 0, wr * .85, 0, 7); g.stroke();
@@ -555,6 +575,7 @@ function drawRace(L) {
   g.restore();
 }
 function popText(L, txt) {
+  L.scene.querySelectorAll('.pop').forEach(x => x.remove());  // μία λέξη τη φορά, να μη μπλέκονται
   const b = document.createElement('div'); b.className = 'pop'; b.textContent = txt; L.scene.appendChild(b);
   b.animate([{ transform: 'translateX(-50%) scale(.3) rotate(-10deg)', opacity: 1 }, { transform: 'translateX(-50%) scale(1.2) rotate(4deg)', opacity: 1, offset: .3 }, { transform: 'translateX(-50%) translateY(-30px) scale(1)', opacity: 0 }], 1000).onfinish = () => b.remove();
 }
