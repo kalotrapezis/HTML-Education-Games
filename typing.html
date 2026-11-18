@@ -67,16 +67,26 @@
   .prog i { position: absolute; left: 0; top: 0; bottom: 0; border-radius: 7px; background: linear-gradient(90deg, #ffb347, #ffd23f); transition: width .3s; }
   .prog b { position: absolute; top: -14px; right: -10px; font-size: 26px; }
 
-  /* αγώνας */
-  .scene.race { background: #4caf50; }
-  .road { position: absolute; left: 0; right: 0; height: 32%; background: #546e7a; border-top: 5px solid #fff; border-bottom: 5px solid #fff;
-    background-image: repeating-linear-gradient(90deg, #fff 0 40px, transparent 40px 90px); background-size: 90px 6px; background-repeat: repeat-x; background-position: 0 50%; animation: road 1s linear infinite; }
-  @keyframes road { to { background-position: -90px 50%; } }
-  .road.r0 { top: 14%; } .road.r1 { top: 54%; }
-  .car { position: absolute; font-size: 64px; line-height: 1; transition: left .35s ease-out; }
-  .car span { display: inline-block; transform: scaleX(-1); }
-  .car .tag { position: absolute; top: -20px; left: 50%; transform: translateX(-50%); font-size: 14px; font-weight: bold; background: rgba(0,0,0,.6); padding: 1px 6px; border-radius: 6px; white-space: nowrap; }
-  .finish { position: absolute; right: 3%; top: 10%; bottom: 10%; width: 22px; background: repeating-conic-gradient(#000 0 25%, #fff 0 50%) 0 0 / 22px 22px; }
+  .cloud { position: absolute; left: 100%; font-size: 64px; opacity: .9; animation: cloud linear infinite; }
+  @keyframes cloud { to { transform: translateX(calc(-100vw - 200px)); } }
+  .scene.stop .cloud { animation-play-state: paused; }
+
+  /* αγώνας: θέα από τη θέση του οδηγού */
+  .scene.race { background: #000; }
+  .scene canvas { position: absolute; inset: 0; width: 100%; height: 100%; display: block; }
+  .act { position: absolute; top: 54px; left: 50%; transform: translateX(-50%); z-index: 2; background: rgba(0,0,0,.65); padding: 4px 16px; border-radius: 12px; font-size: 24px; font-weight: bold; white-space: nowrap; }
+  .act:empty { display: none; }
+  .pop { position: absolute; left: 50%; top: 30%; font-size: 50px; font-weight: 900; color: #ffeb3b; -webkit-text-stroke: 2px #000; text-shadow: 3px 3px 0 #e53935; white-space: nowrap; pointer-events: none; z-index: 3; }
+
+  /* πίνακας με τους καλύτερους */
+  .board { background: rgba(255,255,255,.12); border-radius: 14px; padding: 10px 18px; min-width: 260px; font-size: 18px; }
+  .board .sc2 { font-size: 30px; font-weight: bold; color: #ffd23f; margin-bottom: 6px; }
+  .board .name { display: flex; gap: 8px; justify-content: center; margin-bottom: 8px; }
+  .board input { font: inherit; font-size: 22px; padding: 6px 10px; border-radius: 10px; border: 0; width: 210px; user-select: text; -webkit-user-select: text; }
+  .board .go { font-size: 18px; padding: 8px 16px; }
+  .board h3 { color: #ffb347; font-size: 20px; }
+  .board ol { text-align: left; margin-left: 28px; }
+  .board li.me { color: #ffd23f; font-weight: bold; }
 
   /* λέξη */
   .card { display: flex; align-items: center; justify-content: center; gap: 14px; padding: 10px; background: #fff; color: #1e3c72; min-height: 92px; }
@@ -109,7 +119,7 @@
   .f4 { background: #90caf9 !important; } .f5 { background: #ce93d8 !important; } .f6 { background: #80cbc4 !important; } .f7 { background: #bcaaa4 !important; }
   .kb.qw button.hl { background: #fff !important; outline: 5px solid #ff9500; transform: scale(1.08); }
 
-  .over { position: absolute; inset: 0; background: rgba(0,0,0,.65); display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 14px; z-index: 5; text-align: center; padding: 10px; }
+  .over { position: absolute; inset: 0; background: rgba(0,0,0,.65); display: flex; flex-direction: column; align-items: center; justify-content: safe center; gap: 12px; overflow: auto; z-index: 5; text-align: center; padding: 10px; }
   .over .big { font-size: 48px; font-weight: bold; }
   .over .go { font-size: 22px; padding: 12px 30px; }
 </style>
@@ -122,7 +132,7 @@
   <div class="sub">Γράψε σωστά τα γράμματα και τις λέξεις — με το πληκτρολόγιο ή με τα κουμπιά στην οθόνη (για τον πίνακα).</div>
   <div class="box"><h2>Παιχνίδι</h2><div class="opts" data-k="mode">
     <div class="opt on" data-v="hero"><span class="e">🏃⭐👾</span><span class="t">Ο ήρωας και τα τέρατα</span><br><span class="d">κάθε σωστό γράμμα χτυπάει το τέρας· από κοντά με σπαθί, γροθιά ή κλωτσιά!</span></div>
-    <div class="opt" data-v="race"><span class="e">🏎️🏁</span><span class="t">Αγώνας</span><br><span class="d">κάθε σωστό γράμμα σπρώχνει το αμαξάκι σου μπροστά</span></div>
+    <div class="opt" data-v="race"><span class="e">🏎️🏁</span><span class="t">Αγώνας</span><br><span class="d">μέσα από το τιμόνι: κάθε γράμμα γκάζι, κάθε λέξη προσπέραση· στροφές, ταχύτητες, τρακαρίσματα!</span></div>
   </div></div>
   <div class="box"><h2>Τι γράφεις;</h2><div class="opts" data-k="what">
     <div class="opt" data-v="letters"><span class="e">🔤</span><span class="t">Γράμματα</span><br><span class="d">ένα-ένα</span></div>
@@ -237,8 +247,9 @@ function makeLane(p, two, list) {
   const race = cfg.mode === 'race';
   el.innerHTML = `<div class="bar"><span>${two ? (p ? '🔴 Παίκτης 2' : '🔵 Παίκτης 1') : '🧒'}</span><span class="cnt"></span><span class="sp"></span><span class="sc"></span></div>
     <div class="scene${race ? ' race' : ''}">${race
-      ? `<div class="road r0"></div>${two ? '' : '<div class="road r1"></div>'}<div class="finish"></div>`
-      : '<div class="hills"></div><div class="ground"></div><div class="sprite hero"><span>🏃</span></div><div class="hearts"></div><div class="prog"><i></i><b>🏁</b></div>'}</div>
+      ? '<canvas></canvas><div class="act"></div>'
+      : '<div class="cloud" style="top:6%;animation-duration:40s">☁️</div><div class="cloud" style="top:20%;animation-duration:55s;animation-delay:-25s;font-size:44px">☁️</div><div class="cloud" style="top:12%;animation-duration:70s;animation-delay:-50s;font-size:80px">☁️</div>'
+        + '<div class="hills"></div><div class="ground"></div><div class="sprite hero"><span>🏃</span></div><div class="hearts"></div><div class="prog"><i></i><b>🏁</b></div>'}</div>
     <div class="card"><span class="em"></span><span class="w"></span></div>
     ${kbHtml()}`;
   const L = { el, p, two, race, list, idx: 0, pos: 0, done: 0, lives: 3, letters: 0, mistakes: 0, scene: el.querySelector('.scene'),
@@ -246,24 +257,18 @@ function makeLane(p, two, list) {
   L.total = list.reduce((a, x) => a + plain(x.t).length, 0);
   el.querySelector('.kb').hidden = !showOsk(two);
   el.querySelector('.kb').addEventListener('pointerdown', e => { const b = e.target.closest('button[data-k]'); if (b) { e.preventDefault(); type(L, b.dataset.k); } });
-  if (race) {
-    L.car = addCar(L, '🏎️', 'r0', two ? '' : 'Εσύ');
-    if (!two) { L.cpu = addCar(L, '🚙', 'r1', '💻 Υπολογιστής'); L.cpuPos = 0; }
-  } else { L.monsters = []; L.spawnT = 0; }
+  if (race) Object.assign(L, { cv: el.querySelector('canvas'), act: el.querySelector('.act'), slow: 0, shake: 0, rev: 0, brake: 0, steer: 0, kick: 0, sky: 0, gear: 1, gearFlash: 0, crashT: 0 });
+  else { L.monsters = []; L.spawnT = 0; }
+  L.t0 = performance.now();
   return L;
-}
-function addCar(L, ch, road, tag) {
-  const c = document.createElement('div'); c.className = 'car'; c.innerHTML = `<span>${ch}</span>${tag ? `<span class="tag">${tag}</span>` : ''}`;
-  const r = L.scene.querySelector('.' + road); c.style.top = `calc(${r.style.top || (road === 'r0' ? '14%' : '54%')} + 2%)`; c.style.left = '2%';
-  L.scene.appendChild(c); return c;
 }
 
 function showWord(L) {
   const f = !L.race && L.monsters[0];  // ήρωας: η κάρτα δείχνει τη λέξη του πρώτου τέρατος
-  const item = f ? f.item : L.list[L.idx]; if (!item) return;
+  const item = f ? f.item : L.list[L.idx], w = L.el.querySelector('.w');
+  L.el.querySelector('.em').textContent = item ? item.em || '' : '';
+  if (!item) { w.textContent = '🏁'; return; }  // αγώνας: γράφτηκαν όλες, το αμάξι τρέχει στον τερματισμό
   const t = plain(item.t), k = f ? f.hits : L.pos;
-  L.el.querySelector('.em').textContent = item.em || '';
-  const w = L.el.querySelector('.w');
   w.style.fontSize = t.length > 16 ? '30px' : t.length > 9 ? '40px' : '';
   w.innerHTML = [...item.t].map((ch, i) => `<span class="${i < k ? 'ok' : i === k ? 'nx' : ''}${ch === ' ' ? ' spc' : ''}">${ch === ' ' ? (i === k ? '␣' : '&nbsp;') : ch}</span>`).join('');
   const want = item.t[k] === 'ς' && cfg.kb === 'qw' ? 'ς' : t[k];  // τελικό ς: στο QWERTY είναι άλλο πλήκτρο
@@ -272,7 +277,6 @@ function showWord(L) {
 function paint(L) {
   L.el.querySelector('.cnt').textContent = `✓ ${L.letters}  ✗ ${L.mistakes}`;  // σωστά / λάθος πατήματα
   if (L.race) {
-    L.car.style.left = `calc(2% + ${L.letters / L.total} * 82%)`;
     L.el.querySelector('.sc').textContent = `✍️ ${L.idx}/${L.list.length}`;
   } else {
     L.el.querySelector('.hearts').textContent = L.two ? '' : '❤️'.repeat(Math.max(0, L.lives)) + '🖤'.repeat(Math.max(0, 3 - L.lives));
@@ -282,7 +286,7 @@ function paint(L) {
 }
 
 function type(L, k) {
-  if (!running || L.finished) return;
+  if (!running || L.finished || L.allTyped) return;
   const f = !L.race && L.monsters[0];
   if (!L.race && !f) return;  // ανάμεσα σε δύο τέρατα: η λέξη θα πήγαινε χαμένη
   const item = f ? f.item : L.list[L.idx]; if (!item) return;
@@ -290,13 +294,19 @@ function type(L, k) {
   if (k !== t[f ? f.hits : L.pos]) {  // λάθος: δεν προχωράει, η κάρτα τρέμει
     L.mistakes++; paint(L);  // χωρίς ήχο: φαίνεται από την κάρτα που τρέμει
     const c = L.el.querySelector('.card'); c.classList.remove('bad'); void c.offsetWidth; c.classList.add('bad');
+    if (L.race) { L.brake = .5; L.slow = Math.max(L.slow, .3); SFX.screech(); }  // λάθος = φρένο
     return;
   }
   L.letters++;  // χωρίς ήχο σε κάθε πλήκτρο: κουράζει· ήχος μόνο όταν τελειώνει η λέξη
   if (f) hit(L, f);
-  else if (++L.pos >= t.length) {  // αγώνας: ολόκληρη η λέξη
-    L.pos = 0; L.idx++;
-    snd('correct'); if (L.idx >= L.list.length) return finish(L);
+  else {  // αγώνας: κάθε γράμμα γκάζι· μέσα στη στροφή γυρίζει και το τιμόνι
+    L.rev = 1;
+    const cu = segAt(L.me.z).curve; if (Math.abs(cu) > 1.5) L.kick = Math.sign(cu) * .35;
+    if (++L.pos >= t.length) {  // ολόκληρη η λέξη: προσπέραση αν έχεις αμάξι μπροστά
+      L.pos = 0; L.idx++; snd('correct');
+      const a = ahead(L.me); if (a && a.z - L.me.z < 12 * SEG) { L.me.tx = -L.me.tx; SFX.whoosh(); popText(L, 'Προσπέραση! 💨'); }
+      if (L.idx >= L.list.length) { L.allTyped = true; L.tEnd = performance.now(); }
+    }
   }
   showWord(L); paint(L);
 }
@@ -307,7 +317,8 @@ function spawnMonster(L) {  // κάθε τέρας φέρνει τη δική τ
   const item = L.list[L.idx++];
   const m = document.createElement('div'); m.className = 'sprite monster'; m.innerHTML = `<div class="hp"></div><span class="mo">${pick(MONSTERS)}</span>`;
   L.scene.appendChild(m);
-  const M = { el: m, x: L.scene.clientWidth + 10, item, t: plain(item.t), hits: 0 };
+  const em = m.querySelector('.mo').textContent;
+  const M = { el: m, x: L.scene.clientWidth + 10, item, t: plain(item.t), hits: 0, ph: Math.random() * 6, fly: ['👻', '🦇', '🐲'].includes(em) };
   L.monsters.push(M); drawHp(M);
   if (L.monsters.length === 1) showWord(L);
 }
@@ -336,12 +347,14 @@ function hit(L, M) {  // κάθε σωστό γράμμα χτυπάει το π
     if (!dead) M.x += 40;  // το σπρώχνει λίγο πίσω
     return;
   }
+  L.el.querySelector('.hero').animate([{ transform: 'none' }, { transform: 'translateY(-16px) rotate(-10deg) scale(1.08)' }, { transform: 'none' }], 200);  // ρίχνει
   const s = document.createElement('div'); s.className = 'star'; s.textContent = '⭐'; L.scene.appendChild(s);
   const x0 = heroX(L) + 10;
   s.animate([{ transform: `translateX(${x0}px) rotate(0)` }, { transform: `translateX(${M.x}px) rotate(540deg)` }], { duration: 120 + Math.max(0, M.x - x0) / 4, easing: 'linear' }).onfinish = () => { s.remove(); done(); };
 }
-function die(L, M) {
-  M.el.remove();
+function die(L, M) {  // πετάει στον αέρα στριφογυρίζοντας
+  M.el.querySelector('.hp').remove();
+  M.el.querySelector('.mo').animate([{ transform: 'none', opacity: 1 }, { transform: 'translate(90px,-160px) rotate(720deg) scale(.3)', opacity: 0 }], { duration: 650, easing: 'ease-out', fill: 'forwards' }).onfinish = () => M.el.remove();
   const b = document.createElement('div'); b.className = 'boom'; b.textContent = '💥'; b.style.left = M.x + 'px'; L.scene.appendChild(b);
   b.animate([{ transform: 'scale(.4)', opacity: 1 }, { transform: 'scale(1.5)', opacity: 0 }], 450).onfinish = () => b.remove();
   if (L.finished) return;
@@ -373,15 +386,206 @@ function levelUp(L) {  // true αν τελείωσε το παιχνίδι
   return false;
 }
 
+/* ---- αγώνας: θέα από τη θέση του οδηγού, δρόμος με στροφές και λόφους (ψευδο-3D) ---- */
+const SEG = 200, RW = 1000, CAM_H = 650, DEPTH = .84, DRAW = 110, PER_LETTER = 4, GAP = 3 * SEG;
+const CAR_COL = ['#1e88e5', '#e53935', '#43a047', '#fb8c00', '#8e24aa'];
+let world = null;
+const segAt = z => world.segs[Math.min(world.segs.length - 1, Math.max(0, Math.floor(z / SEG)))];
+// το πιο κοντινό αμάξι μπροστά, στην ίδια λωρίδα
+const ahead = c => world.cars.filter(o => o !== c && Math.abs(o.x - c.x) < .6 && o.z > c.z).sort((a, b) => a.z - b.z)[0];
+function buildWorld(two, total) {
+  const segs = [], add = (len, curve) => { for (let i = 0; i < len; i++) segs.push({ curve: curve * Math.min(1, i / 12, (len - i) / 12) }); };
+  const START = 10 * SEG, FINISH = START + total * PER_LETTER * SEG;
+  add(30, 0);
+  while (segs.length * SEG < FINISH + (DRAW + 60) * SEG) { add(25 + rnd(40), 0); add(40 + rnd(50), (rnd(2) ? 1 : -1) * (2 + rnd(5))); }
+  segs.forEach((s, i) => {
+    s.y = (Math.sin(i / 31) * 500 + Math.sin(i / 11) * 120) * Math.min(1, i / 40);  // λόφοι
+    s.deco = i % 5 ? null : [pick(['🌳', '🌲', '🌳', '🌲', '🏠', '🌻', '🐄', '🌳']), (rnd(2) ? 1 : -1) * (1.6 + Math.random() * .8)];
+  });
+  const cars = (two ? [0, 1] : [0]).map(p => ({ p, z: START, x: p ? .5 : -.5, tx: p ? .5 : -.5, col: CAR_COL[p], tag: two ? (p ? '🔴' : '🔵') : '', v: 0 }));
+  if (!two) [.85, 1, 1.12].forEach((k, i) => { const x = i % 2 ? -.5 : .5; cars.push({ cpu: k, z: START + (i + 1) * 6 * SEG, x, tx: x, col: CAR_COL[2 + i], tag: '💻', v: 0, bl: 0 }); });
+  world = { segs, cars, START, FINISH, fin: Math.floor(FINISH / SEG), order: [] };
+}
+function raceStep(dt) {
+  if (!(dt > 0)) return;
+  const { cars, FINISH, START } = world;
+  for (const c of cars) {
+    const L = c.p == null ? null : lanes[c.p], z0 = c.z;
+    if (L) {  // παίκτης: κάθε σωστό γράμμα τον σπρώχνει μπροστά (στο τέλος περνάει τη γραμμή)
+      const zT = L.allTyped ? FINISH + 25 * SEG : START + L.letters / L.total * (FINISH - START);
+      c.z += Math.max(0, zT - c.z) * Math.min(1, dt * (L.slow > 0 ? .7 : 2.6));
+    } else c.z += c.z < FINISH ? [0.3, 0.7, 1.2, 2][+cfg.level] * PER_LETTER * SEG * c.cpu * dt : Math.max(0, FINISH + 15 * SEG - c.z) * dt;
+    c.x += (c.tx - c.x) * Math.min(1, dt * 4);
+    const a = cars.filter(o => o !== c && Math.abs(o.x - c.x) < .6 && o.z > z0).sort((p, q) => p.z - q.z)[0];
+    c.blocked = false;
+    if (a && c.z > a.z - GAP) {  // δεν περνάς μέσα από το αμάξι μπροστά σου
+      const want = (c.z - z0) / dt;
+      c.z = Math.max(z0, a.z - GAP); c.blocked = true;
+      if (L && !L.allTyped && L.crashT <= 0 && want - a.v > 6 * SEG) {  // έπεσες πάνω του!
+        c.z = Math.max(z0 - SEG, a.z - GAP - SEG); a.z += SEG / 2;
+        L.slow = 1.2; L.shake = 1; L.crashT = 2.5; SFX.crash(); popText(L, 'ΜΠΑΜ! 💥');
+      }
+      if (c.cpu && (c.bl += dt) > .6) { c.tx = -c.tx; c.bl = 0; }  // ο υπολογιστής αλλάζει λωρίδα
+    }
+    c.v = (c.z - z0) / dt;
+    if (z0 < FINISH && c.z >= FINISH) {
+      world.order.push(c);
+      if (L) { L.place = world.order.length; finish(L); }
+    }
+    if (!L) continue;
+    L.slow -= dt; L.crashT -= dt; L.shake = Math.max(0, L.shake - dt * 1.6); L.brake -= dt; L.rev = Math.max(0, L.rev - dt * 3);
+    L.kick *= Math.pow(.02, dt); L.gearFlash = Math.max(0, L.gearFlash - dt);
+    const cu = segAt(c.z).curve;
+    L.steer += (cu * .09 + (c.tx - c.x) * .9 + L.kick - L.steer) * Math.min(1, dt * 6);
+    L.sky -= cu * c.v / SEG * dt * 5;
+    L.kmh = Math.round(c.v / SEG * 8);
+    const g = 1 + (L.kmh > 25) + (L.kmh > 50) + (L.kmh > 80) + (L.kmh > 110);
+    if (g > L.gear) { L.gearFlash = .8; SFX.shift(); }
+    L.gear = g;
+    const lo = [0, 0, 25, 50, 80, 110][g], r = Math.min(1, (L.kmh - lo) / 30);
+    if (L.eng) L.eng.set(48 + g * 6 + r * 70 + L.rev * 18, L.finished ? 0 : .05);
+    const nxt = ahead(c), turn = world.segs.slice(Math.floor(c.z / SEG), Math.floor(c.z / SEG) + 25).find(s => Math.abs(s.curve) > 2.5);
+    const act = L.allTyped ? '🏁 Τερματισμός!' : nxt && nxt.z - c.z < 12 * SEG ? '🚙 Τελείωσε τη λέξη για προσπέραση!' : turn ? (turn.curve > 0 ? '↪️ Στροφή δεξιά!' : '↩️ Στροφή αριστερά!') : '';
+    if (L.act.textContent !== act) L.act.textContent = act;
+  }
+}
+function quad(g, x1, y1, w1, x2, y2, w2, col) { g.fillStyle = col; g.beginPath(); g.moveTo(x1 - w1, y1); g.lineTo(x2 - w2, y2); g.lineTo(x2 + w2, y2); g.lineTo(x1 + w1, y1); g.fill(); }
+function carRear(g, x, y, w, col, tag) {  // αμάξι από πίσω
+  const h = w * .55;
+  g.fillStyle = 'rgba(0,0,0,.35)'; g.fillRect(x - w * .55, y - h * .06, w * 1.1, h * .12);
+  g.fillStyle = '#111'; g.fillRect(x - w * .48, y - h * .32, w * .2, h * .32); g.fillRect(x + w * .28, y - h * .32, w * .2, h * .32);
+  g.fillStyle = col; g.beginPath(); g.roundRect(x - w / 2, y - h * .9, w, h * .65, w * .08); g.fill();
+  g.beginPath(); g.roundRect(x - w * .36, y - h * 1.3, w * .72, h * .5, w * .1); g.fill();
+  g.fillStyle = '#9fd3ff'; g.beginPath(); g.roundRect(x - w * .3, y - h * 1.22, w * .6, h * .34, w * .06); g.fill();
+  g.fillStyle = '#ff1744'; g.fillRect(x - w * .46, y - h * .72, w * .18, h * .14); g.fillRect(x + w * .28, y - h * .72, w * .18, h * .14);
+  g.fillStyle = '#fff'; g.fillRect(x - w * .12, y - h * .5, w * .24, h * .14);
+  if (tag && w > 24) { g.font = `${Math.round(w * .16)}px sans-serif`; g.textAlign = 'center'; g.fillText(tag, x, y - h * 1.4); }
+}
+function drawRace(L) {
+  const cv = L.cv, W = cv.clientWidth, H = cv.clientHeight; if (!W || !H || !L.me) return;
+  if (cv.width !== W || cv.height !== H) { cv.width = W; cv.height = H; }
+  const g = cv.getContext('2d'), me = L.me, { segs, cars } = world;
+  const dashH = Math.min(H * .28, 140), hz = H * .4 + Math.max(0, L.brake) * 16;  // φρενάρισμα: «σκύβει» μπροστά
+  const camZ = me.z - SEG, bi = Math.floor(camZ / SEG), pct = camZ / SEG - bi;
+  const yAt = i => segs[Math.min(Math.max(i, 0), segs.length - 1)].y;
+  const camY = yAt(bi) + (yAt(bi + 1) - yAt(bi)) * pct + CAM_H, cu = segAt(me.z).curve;
+  const camX = me.x * RW - cu * Math.min(1, me.v / (15 * SEG)) * 120;  // στη στροφή το αμάξι «γέρνει» προς τα έξω
+  const sh = L.shake * 14;
+  g.save();
+  g.translate(W / 2 + (Math.random() - .5) * sh, hz + (Math.random() - .5) * sh); g.rotate(-cu * .012 - L.steer * .05); g.translate(-W / 2, -hz);
+  // ουρανός, ήλιος, βουνά (κινούνται στις στροφές)
+  const sky = g.createLinearGradient(0, -H * .5, 0, hz); sky.addColorStop(0, '#3a7bd5'); sky.addColorStop(1, '#bfe6ff');
+  g.fillStyle = sky; g.fillRect(-W * .3, -H * .5, W * 1.6, hz + H * .5 + 2);
+  g.fillStyle = '#fff59d'; g.beginPath(); g.arc(W * .78, hz * .3, 26, 0, 7); g.fill();
+  [[.5, '#7e9cc0', 90], [1, '#5d8a4e', 55]].forEach(([k, col, hh]) => {
+    const off = ((L.sky * k) % 320 + 320) % 320;
+    g.fillStyle = col; g.beginPath(); g.moveTo(-W * .3, hz);
+    for (let x = -W * .3 - off; x < W * 1.3 + 320; x += 160) { g.lineTo(x + 80, hz - hh * (.6 + .4 * Math.abs(Math.sin(x * .013)))); g.lineTo(x + 160, hz); }
+    g.lineTo(W * 1.3, hz); g.fill();
+  });
+  g.fillStyle = '#4caf50'; g.fillRect(-W * .3, hz, W * 1.6, H);
+  // δρόμος από κοντά προς τα μακριά· ό,τι κρύβεται πίσω από λόφο δεν ζωγραφίζεται
+  let x = 0, dx = -segs[bi].curve * pct, maxy = H;
+  const P = [];
+  for (let n = 0; n < DRAW; n++) {
+    const i = bi + n, s = segs[i]; if (!s) break;
+    const z1 = (i * SEG) - camZ, z2 = z1 + SEG;
+    const s1 = DEPTH / Math.max(z1, 1), s2 = DEPTH / z2;
+    const X1 = W / 2 + s1 * (x - camX) * W / 2, Y1 = hz + s1 * (camY - s.y) * W / 2, R1 = s1 * RW * W / 2;
+    const X2 = W / 2 + s2 * (x + dx - camX) * W / 2, Y2 = hz + s2 * (camY - yAt(i + 1)) * W / 2, R2 = s2 * RW * W / 2;
+    x += dx; dx += s.curve;
+    P[n] = { i, X: X1, Y: Y1, R: R1, s: s1, clip: maxy };
+    if (z1 <= 0 || Y2 >= maxy || Y2 >= Y1) continue;
+    const alt = Math.floor(i / 3) % 2;
+    g.fillStyle = alt ? '#4caf50' : '#43a047'; g.fillRect(-W * .3, Y2, W * 1.6, Y1 - Y2 + 1);
+    quad(g, X1, Y1, R1 * 1.18, X2, Y2, R2 * 1.18, alt ? '#e53935' : '#fff');
+    quad(g, X1, Y1, R1, X2, Y2, R2, alt ? '#5b5b5b' : '#616161');
+    if (alt) quad(g, X1, Y1, R1 * .03, X2, Y2, R2 * .03, '#fff');
+    if (i === world.fin || i === world.fin + 1) for (let k = 0; k < 8; k++) {  // καρό γραμμή τερματισμού
+      const a = -1 + k / 4, b = a + .25;
+      g.fillStyle = (k + i) % 2 ? '#000' : '#fff'; g.beginPath();
+      g.moveTo(X1 + R1 * a, Y1); g.lineTo(X2 + R2 * a, Y2); g.lineTo(X2 + R2 * b, Y2); g.lineTo(X1 + R1 * b, Y1); g.fill();
+    }
+    maxy = Y2;
+  }
+  // δέντρα, σπίτια και αμάξια: από μακριά προς τα κοντά
+  g.textAlign = 'center'; g.textBaseline = 'bottom';
+  for (let n = P.length - 1; n > 0; n--) {
+    const p = P[n]; if (!p) continue;
+    g.save(); g.beginPath(); g.rect(-W * .3, -H, W * 1.6, p.clip + H); g.clip();
+    const s = segs[p.i];
+    if (s.deco) { const sz = p.s * 700 * W / 2; if (sz > 3) { g.font = `${Math.round(sz)}px sans-serif`; g.fillText(s.deco[0], p.X + p.s * s.deco[1] * RW * W / 2, p.Y); } }
+    if (p.i === world.fin && p.R > 4) { g.font = `${Math.round(p.R * .5)}px sans-serif`; g.fillText('🏁 ΤΕΡΜΑΤΙΣΜΟΣ 🏁', p.X, p.Y - p.R * .5); }
+    for (const c of cars) if (c !== me && c.z > me.z && Math.floor(c.z / SEG) === p.i) carRear(g, p.X + p.s * c.x * RW * W / 2, p.Y, p.s * 650 * W / 2, c.col, c.tag);
+    g.restore();
+  }
+  g.restore();
+  // ταμπλό: κολόνες, καθρέφτης, τιμόνι, κοντέρ, ταχύτητα
+  g.fillStyle = '#151515';
+  g.beginPath(); g.moveTo(0, 0); g.lineTo(W * .05, 0); g.lineTo(W * .1, H - dashH); g.lineTo(0, H - dashH); g.fill();
+  g.beginPath(); g.moveTo(W, 0); g.lineTo(W * .95, 0); g.lineTo(W * .9, H - dashH); g.lineTo(W, H - dashH); g.fill();
+  g.fillRect(0, 0, W, 10);
+  const mw = Math.min(150, W * .22);
+  g.fillStyle = '#222'; g.beginPath(); g.roundRect(W / 2 - mw / 2 - 4, 8, mw + 8, 36, 10); g.fill();
+  g.fillStyle = '#9ccff0'; g.beginPath(); g.roundRect(W / 2 - mw / 2, 12, mw, 28, 8); g.fill();
+  const back = cars.filter(o => o !== me && o.z < me.z && me.z - o.z < 10 * SEG).sort((a, b) => b.z - a.z)[0];
+  if (back) { const k = 1 - (me.z - back.z) / (10 * SEG), bw = 12 + k * 30; g.fillStyle = back.col; g.fillRect(W / 2 - (back.x - me.x) * mw * .4 - bw / 2, 38 - bw * .55, bw, bw * .55); }
+  const dg = g.createLinearGradient(0, H - dashH, 0, H); dg.addColorStop(0, '#2b2b2b'); dg.addColorStop(1, '#000');
+  g.fillStyle = dg; g.beginPath(); g.moveTo(0, H); g.lineTo(0, H - dashH); g.quadraticCurveTo(W / 2, H - dashH - 30, W, H - dashH); g.lineTo(W, H); g.fill();
+  const r = Math.min(dashH * .45, W * .1), cx = W * .2, cy = H - dashH * .45;  // κοντέρ
+  g.fillStyle = '#111'; g.beginPath(); g.arc(cx, cy, r, 0, 7); g.fill();
+  g.strokeStyle = '#fff'; g.lineWidth = 2;
+  for (let k = 0; k <= 8; k++) { const a = Math.PI * (.75 + k * .1875); g.beginPath(); g.moveTo(cx + Math.cos(a) * r * .78, cy + Math.sin(a) * r * .78); g.lineTo(cx + Math.cos(a) * r * .92, cy + Math.sin(a) * r * .92); g.stroke(); }
+  const na = Math.PI * (.75 + Math.min(1, (L.kmh || 0) / 160) * 1.5);
+  g.strokeStyle = '#ff5252'; g.lineWidth = 4; g.beginPath(); g.moveTo(cx, cy); g.lineTo(cx + Math.cos(na) * r * .85, cy + Math.sin(na) * r * .85); g.stroke();
+  g.fillStyle = '#fff'; g.textAlign = 'center'; g.textBaseline = 'middle'; g.font = `bold ${Math.round(r * .4)}px sans-serif`; g.fillText(L.kmh || 0, cx, cy + r * .5);
+  const gx = W * .8;  // ταχύτητα (κιβώτιο)
+  g.fillStyle = L.gearFlash > 0 ? '#ff9500' : '#111'; g.beginPath(); g.roundRect(gx - r * .8, cy - r * .8, r * 1.6, r * 1.6, 12); g.fill();
+  g.fillStyle = '#fff'; g.font = `bold ${Math.round(r * .9)}px sans-serif`; g.fillText(L.gear, gx, cy + r * .05);
+  g.font = `${Math.round(r * .32)}px sans-serif`; g.fillText('⚙️ ταχύτητα', gx, cy - r * 1.05);
+  if (L.brake > 0) { g.font = `${Math.round(r * .6)}px sans-serif`; g.fillText('🛑', W * .35, cy); }
+  const wr = Math.min(dashH * .95, W * .17), wx = W / 2, wy = H - dashH * .15;  // τιμόνι με τα χέρια
+  g.save(); g.translate(wx, wy); g.rotate(L.steer);
+  g.strokeStyle = '#1b1b1b'; g.lineWidth = wr * .17; g.beginPath(); g.arc(0, 0, wr * .85, 0, 7); g.stroke();
+  g.strokeStyle = '#3d3d3d'; g.lineWidth = wr * .05; g.beginPath(); g.arc(0, 0, wr * .9, Math.PI * 1.15, Math.PI * 1.85); g.stroke();
+  g.strokeStyle = '#1b1b1b'; g.lineWidth = wr * .12;
+  [Math.PI, 0, Math.PI / 2].forEach(a => { g.beginPath(); g.moveTo(0, 0); g.lineTo(Math.cos(a) * wr * .8, Math.sin(a) * wr * .8); g.stroke(); });
+  g.fillStyle = me.col; g.beginPath(); g.arc(0, 0, wr * .22, 0, 7); g.fill();
+  g.fillStyle = '#f1c27d'; [-1, 1].forEach(sd => { g.beginPath(); g.ellipse(sd * wr * .78, -wr * .45, wr * .14, wr * .19, sd * .5, 0, 7); g.fill(); });
+  g.restore();
+}
+function popText(L, txt) {
+  const b = document.createElement('div'); b.className = 'pop'; b.textContent = txt; L.scene.appendChild(b);
+  b.animate([{ transform: 'translateX(-50%) scale(.3) rotate(-10deg)', opacity: 1 }, { transform: 'translateX(-50%) scale(1.2) rotate(4deg)', opacity: 1, offset: .3 }, { transform: 'translateX(-50%) translateY(-30px) scale(1)', opacity: 0 }], 1000).onfinish = () => b.remove();
+}
+// ήχοι αγώνα: μηχανή που ακολουθεί την ταχύτητα, λάστιχα, τρακάρισμα, προσπέραση
+function engine() {
+  try {
+    const c = GameSounds.unlock(), o = c.createOscillator(), o2 = c.createOscillator(), f = c.createBiquadFilter(), gn = c.createGain();
+    o.type = 'sawtooth'; o2.type = 'square'; f.type = 'lowpass'; f.frequency.value = 600; gn.gain.value = 0;
+    o.connect(f); o2.connect(f); f.connect(gn).connect(c.destination); o.start(); o2.start();
+    let off = false;
+    return {
+      set(hz, vol) { if (off) return; const t = c.currentTime; o.frequency.setTargetAtTime(hz, t, .05); o2.frequency.setTargetAtTime(hz / 2, t, .05); gn.gain.setTargetAtTime(vol, t, .15); },
+      stop() { if (off) return; off = true; gn.gain.setTargetAtTime(0, c.currentTime, .1); o.stop(c.currentTime + .6); o2.stop(c.currentTime + .6); },
+    };
+  } catch (e) { return null; }
+}
+function sfx(dur, f0, f1, vol) {
+  try {
+    const c = GameSounds.unlock(), n = Math.floor(c.sampleRate * dur), b = c.createBuffer(1, n, c.sampleRate), d = b.getChannelData(0);
+    for (let i = 0; i < n; i++) d[i] = (Math.random() * 2 - 1) * (1 - i / n);
+    const s = c.createBufferSource(), f = c.createBiquadFilter(), gn = c.createGain(), t = c.currentTime;
+    s.buffer = b; f.type = 'bandpass'; f.Q.value = 1.5; f.frequency.setValueAtTime(f0, t); f.frequency.exponentialRampToValueAtTime(f1, t + dur); gn.gain.value = vol;
+    s.connect(f).connect(gn).connect(c.destination); s.start();
+  } catch (e) {}
+}
+const SFX = { screech: () => sfx(.4, 2600, 1700, .5), crash: () => { sfx(.7, 1200, 60, 1.2); snd('thud'); }, whoosh: () => sfx(.55, 250, 2600, .8), shift: () => sfx(.07, 1800, 900, .5) };
+
 function loop(t) {
   const dt = Math.min(.05, (t - last) / 1000); last = t;
   if (running) for (const L of lanes) {
     if (L.finished) continue;
-    if (L.race && L.cpu) {  // ο υπολογιστής «γράφει» με σταθερό ρυθμό
-      L.cpuPos = Math.min(L.total, L.cpuPos + dt * [0.3, 0.7, 1.2, 2][+cfg.level]);
-      L.cpu.style.left = `calc(2% + ${L.cpuPos / L.total} * 82%)`;
-      if (L.cpuPos >= L.total) finish(L, true);
-    }
     if (!L.race) {
       const W = L.scene.clientWidth;
       L.spawnT -= dt;
@@ -389,7 +593,9 @@ function loop(t) {
       L.monsters.forEach((M, i) => {
         M.x -= dt * W / crossT(L, M.t.length);
         if (i) M.x = Math.max(M.x, L.monsters[i - 1].x + 100);  // στη σειρά: κανένα δεν προσπερνά το μπροστινό
-        M.el.style.transform = `translateX(${M.x}px)`;
+        // τα ιπτάμενα κάνουν κύματα ψηλά, τα άλλα χοροπηδάνε
+        const y = M.fly ? 45 + Math.sin(t / 400 + M.ph) * 28 : Math.abs(Math.sin(t / 160 + M.ph)) * 16;
+        M.el.style.transform = `translate(${M.x}px, ${-y}px)`;
         M.el.classList.toggle('front', !i);
       });
       const M = L.monsters[0];
@@ -403,6 +609,7 @@ function loop(t) {
       }
     }
   }
+  if (world) { raceStep(dt); lanes.forEach(drawRace); }  // ο αγώνας κινείται και μετά τον τερματισμό, κάτω από τα αποτελέσματα
   raf = requestAnimationFrame(loop);
 }
 
@@ -415,18 +622,47 @@ function finish(L, lost) {
     lanes.forEach(X => { X.finished = true; X.scene.classList.add('stop'); overlay(X, X === L ? '<div class="big">🏆 Νίκησες!</div>' : '<div class="big">👏 Μπράβο!</div>'); });
   } else {
     running = false;
-    overlay(L, lost ? (L.race ? '<div class="big">💻 Κέρδισε ο υπολογιστής!</div><div>Ξαναπροσπάθησε!</div>' : '<div class="big">😵 Τέλος οι ζωές!</div>')
-      : `<div class="big">🏆 ${L.race ? 'Πρώτος!' : 'Νίκησες τα τέρατα!'}</div>`);
+    if (L.race) lost = L.place > 1;
+    overlay(L, L.race ? `<div class="big">${['', '🏆 Πρώτος!', '🥈 2η θέση!', '🥉 3η θέση!', '4η θέση'][L.place]}</div>${lost ? '<div>Ξαναπροσπάθησε για την πρώτη θέση!</div>' : ''}`
+      : lost ? '<div class="big">😵 Τέλος οι ζωές!</div>' : '<div class="big">🏆 Νίκησες τα τέρατα!</div>');
   }
+  lanes.forEach(X => X.eng && setTimeout(() => X.eng.stop(), 1500));
   snd(lost ? 'bigWrong' : 'bigCorrect');
 }
 function overlay(L, html) {
   const ov = document.createElement('div'); ov.className = 'over';
   const acc = L.letters + L.mistakes ? Math.round(100 * L.letters / (L.letters + L.mistakes)) : 100;
+  const mode = L.race ? 'race' : 'hero', score = scoreOf(L);
   ov.innerHTML = html + (L.prog ? `<div style="font-size:26px">📈 Επίπεδο ${L.level} από ${LEVELS}</div>` : '')
-    + `<div style="font-size:24px">✓ ${L.letters} σωστά · ✗ ${L.mistakes} λάθος πατήματα</div><div>🎯 ${acc}% σωστά</div>` + (L.p === 0 ? '<button class="go">▶ Ξανά</button>' : '');
-  const b = ov.querySelector('button'); if (b) b.onclick = start;
+    + `<div style="font-size:24px">✓ ${L.letters} σωστά · ✗ ${L.mistakes} λάθος πατήματα</div><div>🎯 ${acc}% σωστά</div>`
+    + `<div class="board"><div class="sc2">${L.race ? `⚡ ${score} γράμματα το λεπτό` : `⭐ ${score} πόντοι`}</div>
+       <div class="name"><input maxlength="14" placeholder="Το όνομά σου"><button class="go sv">💾 Γράψε με</button></div>
+       <h3>🏆 Οι καλύτεροι</h3><div class="list">${boardHtml(mode, -1)}</div></div>`
+    + (L.p === 0 ? '<button class="go again">▶ Ξανά</button>' : '');
+  const b = ov.querySelector('.again'); if (b) b.onclick = start;
+  const inp = ov.querySelector('input'), sv = ov.querySelector('.sv');
+  try { if (L.p === 0) inp.value = localStorage.getItem('typing-name') || ''; } catch (e) {}
+  const save = () => {
+    const n = inp.value.trim(); if (!n) { inp.focus(); return; }
+    const kind = document.querySelector(`[data-k=what] [data-v="${cfg.what}"] .e`).textContent;
+    const e = { n, s: score, k: kind }, list = loadBoard(mode).concat(e).sort((a, b) => b.s - a.s).slice(0, 10);
+    try { localStorage.setItem('typing-board-' + mode, JSON.stringify(list)); if (L.p === 0) localStorage.setItem('typing-name', n); } catch (err) {}
+    ov.querySelector('.name').remove();
+    ov.querySelector('.list').innerHTML = boardHtml(mode, list.indexOf(e)) + (list.includes(e) ? '' : '<div>Λίγο ακόμα για τον πίνακα!</div>');
+  };
+  sv.onclick = save; inp.onkeydown = e => { e.stopPropagation(); if (e.key === 'Enter') save(); };
   L.el.appendChild(ov);
+  if (L.p === 0 && !TOUCH) inp.focus();
+}
+// πίνακας με τους καλύτερους, χωριστά για ήρωα και αγώνα· μένει στον υπολογιστή (localStorage)
+// ήρωας: τέρατα × 10 + σωστά γράμματα · αγώνας: σωστά γράμματα το λεπτό, επί το ποσοστό σωστών
+const loadBoard = m => { try { return JSON.parse(localStorage.getItem('typing-board-' + m)) || []; } catch (e) { return []; } };
+const esc = s => String(s).replace(/[&<>"]/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' })[c]);
+const boardHtml = (m, me) => { const b = loadBoard(m); return b.length ? '<ol>' + b.map((e, i) => `<li${i === me ? ' class="me"' : ''}>${esc(e.n)} ${esc(e.k || '')} — ${e.s}</li>`).join('') + '</ol>' : '<div>Κανείς ακόμα: γίνε ο πρώτος!</div>'; };
+function scoreOf(L) {
+  if (!L.race) return L.done * 10 + L.letters;
+  const min = Math.max(.05, ((L.tEnd || performance.now()) - L.t0) / 60000);
+  return Math.round(L.letters / min * L.letters / Math.max(1, L.letters + L.mistakes));
 }
 
 document.addEventListener('keydown', e => {
@@ -443,19 +679,22 @@ const LATIN = { A: 'Α', B: 'Β', G: 'Γ', D: 'Δ', E: 'Ε', Z: 'Ζ', H: 'Η', U
 
 function start() {
   snd('unlock');
-  cancelAnimationFrame(raf);
+  cancelAnimationFrame(raf); stopEngines();
   const two = cfg.players === '2';
   const list = cfg.mode === 'race' ? makeList(10) : cfg.what === 'prog' ? makeList(10, 'letters') : makeList(GOAL + 10);
   const arena = $('arena'); arena.innerHTML = '';
   lanes = (two ? [0, 1] : [0]).map(p => makeLane(p, two, list.map(x => ({ ...x }))));
   lanes.forEach(L => arena.appendChild(L.el));
+  world = null;
+  if (cfg.mode === 'race') { buildWorld(two, lanes[0].total); lanes.forEach(L => { L.me = world.cars[L.p]; L.eng = engine(); }); }
   $('setup').style.display = 'none'; arena.classList.add('on'); $('toSetup').hidden = false;
   running = true;
   lanes.forEach(L => { showWord(L); paint(L); });  // τα τέρατα τα βγάζει το loop
   last = performance.now(); raf = requestAnimationFrame(loop);
 }
 $('go').onclick = start;
-$('toSetup').onclick = () => { running = false; cancelAnimationFrame(raf); $('arena').classList.remove('on'); $('arena').innerHTML = ''; $('setup').style.display = ''; $('toSetup').hidden = true; };
+const stopEngines = () => lanes.forEach(L => L.eng && L.eng.stop());
+$('toSetup').onclick = () => { running = false; stopEngines(); world = null; cancelAnimationFrame(raf); $('arena').classList.remove('on'); $('arena').innerHTML = ''; $('setup').style.display = ''; $('toSetup').hidden = true; };
 </script>
 </body>
 </html>
