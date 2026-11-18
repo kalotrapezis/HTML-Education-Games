@@ -49,9 +49,18 @@
   .hero span { display: inline-block; transform: scaleX(-1); animation: run .35s ease-in-out infinite alternate; }
   @keyframes run { to { transform: scaleX(-1) translateY(-10px) rotate(-6deg); } }
   .monster { bottom: 56px; }
-  .monster span { display: inline-block; animation: wob .5s ease-in-out infinite alternate; }
+  .monster .mo { display: inline-block; animation: wob .5s ease-in-out infinite alternate; }
   @keyframes wob { to { transform: translateY(-8px) rotate(5deg); } }
-  .star { position: absolute; font-size: 48px; bottom: 80px; }
+  /* η λέξη του τέρατος είναι η ζωή του: τα γράμματα που χτύπησες γκριζάρουν, η μπάρα μικραίνει */
+  .monster .hp { position: absolute; bottom: 100%; left: 50%; transform: translateX(-50%); margin-bottom: 6px; padding: 2px 8px 9px; border-radius: 10px;
+    background: rgba(255,255,255,.93); color: #1e3c72; font-size: 22px; font-weight: bold; letter-spacing: 2px; white-space: nowrap; box-shadow: 0 2px 6px rgba(0,0,0,.35); }
+  .monster .hp .g { color: #bbb; text-decoration: line-through 3px #e53935; }
+  .monster .hp i { position: absolute; left: 6px; right: 6px; bottom: 3px; height: 5px; border-radius: 3px; background: #ddd; }
+  .monster .hp i b { display: block; height: 100%; border-radius: 3px; background: #43a047; transition: width .2s; }
+  .monster.front .hp { outline: 4px solid #ff9500; }
+  .star { position: absolute; font-size: 40px; bottom: 80px; pointer-events: none; }
+  .fx { position: absolute; bottom: 60px; font-size: 90px; line-height: 1; pointer-events: none; z-index: 3; }
+  .pow { position: absolute; bottom: 190px; font-size: 42px; font-weight: 900; color: #ffeb3b; -webkit-text-stroke: 2px #000; text-shadow: 3px 3px 0 #e53935; white-space: nowrap; pointer-events: none; z-index: 3; }
   .boom { position: absolute; font-size: 90px; bottom: 50px; pointer-events: none; }
   .hearts { position: absolute; top: 8px; left: 10px; font-size: 26px; }
   .prog { position: absolute; left: 12px; right: 12px; bottom: 16px; height: 14px; border-radius: 7px; background: rgba(0,0,0,.4); z-index: 2; }
@@ -112,7 +121,7 @@
   <h1>⌨️ Γράψε και Τρέξε</h1>
   <div class="sub">Γράψε σωστά τα γράμματα και τις λέξεις — με το πληκτρολόγιο ή με τα κουμπιά στην οθόνη (για τον πίνακα).</div>
   <div class="box"><h2>Παιχνίδι</h2><div class="opts" data-k="mode">
-    <div class="opt on" data-v="hero"><span class="e">🏃⭐👾</span><span class="t">Ο ήρωας και τα τέρατα</span><br><span class="d">γράψε τη λέξη για να ρίξεις αστέρι πριν σε φτάσει το τέρας</span></div>
+    <div class="opt on" data-v="hero"><span class="e">🏃⭐👾</span><span class="t">Ο ήρωας και τα τέρατα</span><br><span class="d">κάθε σωστό γράμμα χτυπάει το τέρας· από κοντά με σπαθί, γροθιά ή κλωτσιά!</span></div>
     <div class="opt" data-v="race"><span class="e">🏎️🏁</span><span class="t">Αγώνας</span><br><span class="d">κάθε σωστό γράμμα σπρώχνει το αμαξάκι σου μπροστά</span></div>
   </div></div>
   <div class="box"><h2>Τι γράφεις;</h2><div class="opts" data-k="what">
@@ -199,6 +208,13 @@ const STAGES = [['letters', '🔤 Γράμματα'], ['pairs', '🔡 Δύο γ�
 const PER_LEVEL = 6, LEVELS = STAGES.length * 5;
 const stageOf = L => Math.min(STAGES.length - 1, Math.floor((L.level - 1) / 5));
 const kindOf = L => L.prog ? STAGES[stageOf(L)][0] : cfg.what;
+// ήρωας: επίπεδο 1-5 (στην πρόοδο μέσα στο στάδιο, αλλιώς κάθε 3 τέρατα)· πιο ψηλά = πιο γρήγορα και περισσότερα τέρατα μαζί
+const lvl = L => L.prog ? (L.level - 1) % 5 + 1 : Math.min(5, 1 + Math.floor(L.done / 3));
+const maxOn = L => [1, 1, 2, 2, 3][lvl(L) - 1];
+// δευτερόλεπτα για να φτάσει το τέρας: πιο πολλά για μακριές λέξεις/φράσεις, −12% σε κάθε επίπεδο
+const crossT = (L, len) => [18, 11, 7.5, 5][+cfg.level] * Math.max(1, len / 6) * Math.pow(.88, lvl(L) - 1);
+const heroX = L => L.scene.clientWidth * .06 + 50;  // εδώ το τέρας σε φτάνει
+const nearX = L => heroX(L) + Math.max(110, L.scene.clientWidth * .14);  // πιο κοντά από εδώ: σώμα με σώμα
 
 function makeList(n, what = cfg.what) {  // ίδια λίστα για τους δύο παίκτες: δίκαιος αγώνας
   const out = [];
@@ -233,7 +249,7 @@ function makeLane(p, two, list) {
   if (race) {
     L.car = addCar(L, '🏎️', 'r0', two ? '' : 'Εσύ');
     if (!two) { L.cpu = addCar(L, '🚙', 'r1', '💻 Υπολογιστής'); L.cpuPos = 0; }
-  } else L.monster = null;
+  } else { L.monsters = []; L.spawnT = 0; }
   return L;
 }
 function addCar(L, ch, road, tag) {
@@ -243,9 +259,9 @@ function addCar(L, ch, road, tag) {
 }
 
 function showWord(L) {
-  if (!L.race && L.idx >= L.list.length - 1) L.list.push(...makeList(10, kindOf(L)));
-  const item = L.list[L.idx]; if (!item) return;
-  const t = plain(item.t), k = L.pos;
+  const f = !L.race && L.monsters[0];  // ήρωας: η κάρτα δείχνει τη λέξη του πρώτου τέρατος
+  const item = f ? f.item : L.list[L.idx]; if (!item) return;
+  const t = plain(item.t), k = f ? f.hits : L.pos;
   L.el.querySelector('.em').textContent = item.em || '';
   const w = L.el.querySelector('.w');
   w.style.fontSize = t.length > 16 ? '30px' : t.length > 9 ? '40px' : '';
@@ -261,51 +277,86 @@ function paint(L) {
   } else {
     L.el.querySelector('.hearts').textContent = L.two ? '' : '❤️'.repeat(Math.max(0, L.lives)) + '🖤'.repeat(Math.max(0, 3 - L.lives));
     L.el.querySelector('.prog i').style.width = (100 * (L.prog ? L.inLevel / PER_LEVEL : L.done / GOAL)) + '%';
-    L.el.querySelector('.sc').textContent = L.prog ? `📈 Επίπεδο ${L.level}/${LEVELS} · ${STAGES[stageOf(L)][1]}` : `⭐ ${L.done}/${GOAL}`;
+    L.el.querySelector('.sc').textContent = L.prog ? `📈 Επίπεδο ${L.level}/${LEVELS} · ${STAGES[stageOf(L)][1]}` : `⭐ ${L.done}/${GOAL} · Επίπεδο ${lvl(L)}`;
   }
 }
 
 function type(L, k) {
   if (!running || L.finished) return;
-  if (!L.race && !L.monster) return;  // ανάμεσα σε δύο τέρατα: η λέξη θα πήγαινε χαμένη
-  const item = L.list[L.idx]; if (!item) return;
+  const f = !L.race && L.monsters[0];
+  if (!L.race && !f) return;  // ανάμεσα σε δύο τέρατα: η λέξη θα πήγαινε χαμένη
+  const item = f ? f.item : L.list[L.idx]; if (!item) return;
   const t = plain(item.t);
-  if (k !== t[L.pos]) {  // λάθος: δεν προχωράει, η κάρτα τρέμει
+  if (k !== t[f ? f.hits : L.pos]) {  // λάθος: δεν προχωράει, η κάρτα τρέμει
     L.mistakes++; paint(L);  // χωρίς ήχο: φαίνεται από την κάρτα που τρέμει
     const c = L.el.querySelector('.card'); c.classList.remove('bad'); void c.offsetWidth; c.classList.add('bad');
     return;
   }
-  L.pos++; L.letters++;  // χωρίς ήχο σε κάθε πλήκτρο: κουράζει· ήχος μόνο όταν τελειώνει η λέξη
-  if (L.pos >= t.length) {  // ολόκληρη η λέξη
+  L.letters++;  // χωρίς ήχο σε κάθε πλήκτρο: κουράζει· ήχος μόνο όταν τελειώνει η λέξη
+  if (f) hit(L, f);
+  else if (++L.pos >= t.length) {  // αγώνας: ολόκληρη η λέξη
     L.pos = 0; L.idx++;
-    if (L.race) { snd('correct'); if (L.idx >= L.list.length) return finish(L); }
-    else throwStar(L);
+    snd('correct'); if (L.idx >= L.list.length) return finish(L);
   }
   showWord(L); paint(L);
 }
 
 /* ---- ο ήρωας ---- */
-function spawnMonster(L) {
-  const m = document.createElement('div'); m.className = 'sprite monster'; m.innerHTML = `<span>${pick(MONSTERS)}</span>`;
+function spawnMonster(L) {  // κάθε τέρας φέρνει τη δική του λέξη
+  if (L.idx >= L.list.length - 1) L.list.push(...makeList(10, kindOf(L)));
+  const item = L.list[L.idx++];
+  const m = document.createElement('div'); m.className = 'sprite monster'; m.innerHTML = `<div class="hp"></div><span class="mo">${pick(MONSTERS)}</span>`;
   L.scene.appendChild(m);
-  L.monster = { el: m, x: L.scene.clientWidth + 10 };
+  const M = { el: m, x: L.scene.clientWidth + 10, item, t: plain(item.t), hits: 0 };
+  L.monsters.push(M); drawHp(M);
+  if (L.monsters.length === 1) showWord(L);
 }
-function throwStar(L) {
-  const m = L.monster; if (!m) return;
-  L.monster = null;
+function drawHp(M) {
+  M.el.querySelector('.hp').innerHTML = [...M.item.t].map((ch, i) => `<span${i < M.hits ? ' class="g"' : ''}>${ch === ' ' ? '&nbsp;' : ch}</span>`).join('')
+    + `<i><b style="width:${100 * (1 - M.hits / M.t.length)}%"></b></i>`;
+}
+// σώμα με σώμα: [όπλο, επιφώνημα, κίνηση]
+const MELEE = [
+  ['🗡️', 'ΤΣΑΦ!', [{ transform: 'translate(-30px,-30px) rotate(-90deg) scale(.8)' }, { transform: 'translate(10px,10px) rotate(110deg) scale(1.5)' }]],
+  ['🤜', 'ΜΠΑΜ!', [{ transform: 'translateX(-90px) scale(.6)' }, { transform: 'translateX(10px) scale(1.6)' }]],
+  ['🦵', 'ΓΚΝΤΟΥΠ!', [{ transform: 'translate(-60px,50px) rotate(70deg)' }, { transform: 'translate(10px,-20px) rotate(-30deg) scale(1.5)' }]],
+];
+function hit(L, M) {  // κάθε σωστό γράμμα χτυπάει το πρώτο τέρας· με το τελευταίο γράμμα πεθαίνει
+  M.hits++; drawHp(M);
+  const dead = M.hits >= M.t.length;
+  if (dead) L.monsters.shift();
+  const done = () => dead ? die(L, M) : M.el.querySelector('.mo').animate([{ filter: 'brightness(3)', transform: 'translateX(16px) rotate(15deg)' }, { filter: 'none', transform: 'none' }], 250);
+  if (M.x < nearX(L)) {  // πολύ κοντά: σπαθί, γροθιά ή κλωτσιά
+    const [em, word, kf] = pick(MELEE);
+    L.el.querySelector('.hero').animate([{ transform: 'none' }, { transform: `translateX(${Math.max(0, Math.min(120, M.x - heroX(L) - 30))}px) scale(1.15)` }, { transform: 'none' }], 300);
+    const fx = document.createElement('div'); fx.className = 'fx'; fx.textContent = em; fx.style.left = (M.x - 40) + 'px'; L.scene.appendChild(fx);
+    fx.animate(kf, { duration: 220, easing: 'ease-out' }).onfinish = () => { fx.remove(); done(); };
+    const p = document.createElement('div'); p.className = 'pow'; p.textContent = word; p.style.left = (M.x - 10) + 'px'; L.scene.appendChild(p);
+    p.animate([{ transform: 'scale(.3) rotate(-15deg)' }, { transform: 'scale(1.3) rotate(8deg)', offset: .35 }, { transform: 'translateY(-30px)', opacity: 0 }], 750).onfinish = () => p.remove();
+    if (!dead) M.x += 40;  // το σπρώχνει λίγο πίσω
+    return;
+  }
   const s = document.createElement('div'); s.className = 'star'; s.textContent = '⭐'; L.scene.appendChild(s);
-  const x0 = L.scene.clientWidth * .06 + 60;
-  s.animate([{ transform: `translateX(${x0}px) rotate(0)` }, { transform: `translateX(${m.x}px) rotate(720deg)` }], { duration: 280, easing: 'linear' }).onfinish = () => {
-    s.remove(); m.el.remove();
-    const b = document.createElement('div'); b.className = 'boom'; b.textContent = '💥'; b.style.left = m.x + 'px'; L.scene.appendChild(b);
-    b.animate([{ transform: 'scale(.4)', opacity: 1 }, { transform: 'scale(1.5)', opacity: 0 }], 450).onfinish = () => b.remove();
-    snd('correct');
-    L.done++;
-    if (L.prog) { if (++L.inLevel >= PER_LEVEL && levelUp(L)) return; }
-    else if (L.done >= GOAL) { paint(L); return finish(L); }
-    paint(L);
-    setTimeout(() => running && !L.finished && spawnMonster(L), 350);
-  };
+  const x0 = heroX(L) + 10;
+  s.animate([{ transform: `translateX(${x0}px) rotate(0)` }, { transform: `translateX(${M.x}px) rotate(540deg)` }], { duration: 120 + Math.max(0, M.x - x0) / 4, easing: 'linear' }).onfinish = () => { s.remove(); done(); };
+}
+function die(L, M) {
+  M.el.remove();
+  const b = document.createElement('div'); b.className = 'boom'; b.textContent = '💥'; b.style.left = M.x + 'px'; L.scene.appendChild(b);
+  b.animate([{ transform: 'scale(.4)', opacity: 1 }, { transform: 'scale(1.5)', opacity: 0 }], 450).onfinish = () => b.remove();
+  if (L.finished) return;
+  snd('correct');
+  L.done++;
+  if (L.prog) { if (++L.inLevel >= PER_LEVEL && levelUp(L)) return; }
+  else if (L.done >= GOAL) { paint(L); return finish(L); }
+  else if (L.done % 3 === 0) banner(L, `Επίπεδο ${lvl(L)}! 🚀<br>${'👾'.repeat(maxOn(L))}`);
+  if (!L.monsters.length) L.spawnT = Math.min(L.spawnT, .35);
+  paint(L);
+}
+function banner(L, html) {
+  const b = document.createElement('div'); b.className = 'lvlup'; b.innerHTML = html;
+  L.scene.appendChild(b);
+  b.animate([{ transform: 'scale(.3)', opacity: 0 }, { transform: 'scale(1.1)', opacity: 1, offset: .3 }, { transform: 'scale(1)', opacity: 0 }], 1600).onfinish = () => b.remove();
 }
 
 function levelUp(L) {  // true αν τελείωσε το παιχνίδι
@@ -317,10 +368,7 @@ function levelUp(L) {  // true αν τελείωσε το παιχνίδι
     if (!L.two) L.lives = Math.min(5, L.lives + 1);
     showWord(L);
   }
-  const b = document.createElement('div'); b.className = 'lvlup';
-  b.innerHTML = newStage ? `Νέο στάδιο!<br>${STAGES[stageOf(L)][1]}` : `Επίπεδο ${L.level}! 🚀`;
-  L.scene.appendChild(b);
-  b.animate([{ transform: 'scale(.3)', opacity: 0 }, { transform: 'scale(1.1)', opacity: 1, offset: .3 }, { transform: 'scale(1)', opacity: 0 }], 1600).onfinish = () => b.remove();
+  banner(L, newStage ? `Νέο στάδιο!<br>${STAGES[stageOf(L)][1]}` : `Επίπεδο ${L.level}! 🚀<br>${'👾'.repeat(maxOn(L))}`);
   snd('bigCorrect');
   return false;
 }
@@ -334,21 +382,24 @@ function loop(t) {
       L.cpu.style.left = `calc(2% + ${L.cpuPos / L.total} * 82%)`;
       if (L.cpuPos >= L.total) finish(L, true);
     }
-    if (!L.race && L.monster) {
-      // χρόνος να φτάσει το τέρας: πιο πολύς για μακριές λέξεις/φράσεις, λιγότερος σε κάθε επίπεδο (−12%)
-      const it = L.list[L.idx], len = it ? plain(it.t).length : 1;
-      const T = [18, 11, 7.5, 5][+cfg.level] * Math.max(1, len / 6) * (L.prog ? Math.pow(.88, (L.level - 1) % 5) : 1);
-      const W = L.scene.clientWidth, speed = W / T;
-      L.monster.x -= dt * speed;
-      L.monster.el.style.transform = `translateX(${L.monster.x}px)`;
-      if (L.monster.x < W * .06 + 50) {  // σε έφτασε
-        L.monster.el.remove(); L.monster = null; snd('wrong');
+    if (!L.race) {
+      const W = L.scene.clientWidth;
+      L.spawnT -= dt;
+      if (L.spawnT <= 0 && L.monsters.length < maxOn(L)) { spawnMonster(L); L.spawnT = crossT(L, 6) * .4; }
+      L.monsters.forEach((M, i) => {
+        M.x -= dt * W / crossT(L, M.t.length);
+        if (i) M.x = Math.max(M.x, L.monsters[i - 1].x + 100);  // στη σειρά: κανένα δεν προσπερνά το μπροστινό
+        M.el.style.transform = `translateX(${M.x}px)`;
+        M.el.classList.toggle('front', !i);
+      });
+      const M = L.monsters[0];
+      if (M && M.x < heroX(L)) {  // σε έφτασε
+        L.monsters.shift(); M.el.remove(); snd('wrong');
         const h = L.el.querySelector('.hero'); h.animate([{ transform: 'translateX(0)' }, { transform: 'translateX(-30px) rotate(-20deg)' }, { transform: 'translateX(0)' }], 500);
         if (L.two) L.done = Math.max(0, L.done - 1); else L.lives--;
-        L.pos = 0; L.idx++;
         showWord(L); paint(L);
         if (!L.two && L.lives <= 0) { finish(L, true); continue; }
-        setTimeout(() => running && !L.finished && spawnMonster(L), 500);
+        if (!L.monsters.length) L.spawnT = Math.min(L.spawnT, .5);
       }
     }
   }
@@ -400,7 +451,7 @@ function start() {
   lanes.forEach(L => arena.appendChild(L.el));
   $('setup').style.display = 'none'; arena.classList.add('on'); $('toSetup').hidden = false;
   running = true;
-  lanes.forEach(L => { showWord(L); paint(L); if (!L.race) spawnMonster(L); });
+  lanes.forEach(L => { showWord(L); paint(L); });  // τα τέρατα τα βγάζει το loop
   last = performance.now(); raf = requestAnimationFrame(loop);
 }
 $('go').onclick = start;
