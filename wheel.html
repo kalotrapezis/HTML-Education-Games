@@ -103,6 +103,7 @@
   .dlg { background: linear-gradient(160deg, #4527a0, #1e1b4b); border: 4px solid #ffd23f; border-radius: 22px; padding: 22px; width: 100%; max-width: 760px; display: flex; flex-direction: column; gap: 14px; align-items: center; text-align: center; }
   .dlg h3 { font-size: 28px; color: #ffd23f; }
   .dlg .q { font-size: 24px; }
+  .dlg .say { font-size: 22px; padding: 2px 10px; margin-left: 10px; vertical-align: middle; }
   .dlg .ans { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; width: 100%; }
   .dlg .ans button { font: inherit; font-size: 20px; padding: 14px; border-radius: 12px; border: 0; background: #fff; color: #1e1b4b; cursor: pointer; font-weight: bold; }
   .dlg .ans button.yes { background: #4caf50; color: #fff; } .dlg .ans button.no { background: #e53935; color: #fff; }
@@ -195,6 +196,8 @@
 <script src="lexilogio.js"></script>
 <script src="wordsource.js"></script>
 <script src="bank/manifest.js"></script>
+<script src="voice.js"></script>
+<script src="voices/bank/index.js"></script>
 <script>
 const $ = id => document.getElementById(id);
 const rnd = n => Math.floor(Math.random() * n);
@@ -291,7 +294,7 @@ function makeDeck() {
   }
   if (cfg.src === 'bank') return shuffle(bankItems($('grade').value, $('subject').value));
   // λεξούλες: λέξεις με εικόνα + τα θεματικά πακέτα του WordSource
-  const out = PIC_WORDS.filter(w => w.w.length >= 4).map(w => ({ phrase: plain(w.w), clue: `Κατηγορία: <b>${w.cat === 'Σπίτι' ? 'Πράγματα' : w.cat === 'Σώμα' ? 'Σώμα & άνθρωποι' : w.cat}</b>`, show: w.w, em: w.em }));
+  const out = PIC_WORDS.filter(w => w.w.length >= 4).map(w => ({ phrase: plain(w.w), clue: `Κατηγορία: <b>${w.cat === 'Σπίτι' ? 'Πράγματα' : w.cat}</b>`, show: w.w, em: w.em }));
   try {
     WordSource.packs().filter(p => !p.grade && p.gradeName !== 'Χώρες').forEach(p =>
       WordSource.words({ packId: p.id, minLen: 4, maxLen: 14 }).forEach(w => out.push({ phrase: w, clue: `Κατηγορία: <b>${p.icon} ${p.subjectName}</b>`, show: w })));
@@ -668,8 +671,11 @@ function askQuestion() {
     const opts = shuffle([right, ...shuffle(UP.split('').filter(L => L !== right)).slice(0, 3)]);
     q = { q: `${w.em} Ποιο γράμμα λείπει; <b>${plain(w.w).split('').map((c, i) => i === k ? '_' : c).join('')}</b>`, answers: opts, correct: opts.indexOf(right) };
   }
-  modal(`<h3>❓ Ερώτηση για +${QUESTION_PTS}</h3><div class="q">${q.q}</div><div class="ans">${q.answers.map((a, i) => `<button data-i="${i}">${a}</button>`).join('')}</div>`);
+  modal(`<h3>❓ Ερώτηση για +${QUESTION_PTS}</h3><div class="q">${q.q}${Voice.has(q.q) ? '<button class="say" title="Άκου">🔊</button>' : ''}</div><div class="ans">${q.answers.map((a, i) => `<button data-i="${i}">${a}</button>`).join('')}</div>`);
+  const sayBtn = document.querySelector('.dlg .say');
+  if (sayBtn) { sayBtn.onclick = () => Voice.say([q.q, ...q.answers.map(String)]); sayBtn.onclick(); }  // διαβάζει μόνο του· 🔊 = ξανά (make-voices.js)
   document.querySelectorAll('.dlg .ans button').forEach(b => b.onclick = () => {
+    Voice.stop();
     const ok = +b.dataset.i === q.correct;
     document.querySelectorAll('.dlg .ans button').forEach(x => { x.disabled = true; if (+x.dataset.i === q.correct) x.classList.add('yes'); });
     if (!ok) b.classList.add('no');

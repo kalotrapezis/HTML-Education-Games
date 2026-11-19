@@ -87,6 +87,7 @@
     animation: tick 0.5s infinite alternate;
   }
   #qTimer.hidden { display: none; }
+  #question .say { font-size: 26px; padding: 2px 10px; margin-left: 14px; flex: none; }
   #question {
     background: linear-gradient(180deg, #0a1942, #1a3a8a);
     border: 3px solid #ffd700;
@@ -733,6 +734,8 @@
 </div>
 
 <script src="bank/manifest.js"></script>
+<script src="voice.js"></script>
+<script src="voices/bank/index.js"></script>
 <script src="sounds.js"></script>
 <script>
 const PRIZES = [500, 1000, 2000, 3000, 5000, 7500, 10000, 12500, 15000, 25000, 50000, 100000, 250000, 500000, 1000000];
@@ -875,6 +878,7 @@ function renderLadder(){
   pointsEl.innerHTML = '💰 Παίζεις για <b>' + formatPrize(cur) + '</b>';
 }
 
+const LETTERS = ['Α', 'Β', 'Γ', 'Δ'];  // ελληνικά, όπως τα λέει η φωνή
 function showQuestion(){
   if(currentLevel >= questions.length){
     endGame('won');
@@ -887,12 +891,19 @@ function showQuestion(){
   startQuestionTimer();
   const q = questions[currentLevel];
   qEl.textContent = q.q;
+  Voice.stop();
+  if (Voice.has(q.q)) {  // 🔊 διαβάζει ερώτηση και απαντήσεις (έτοιμος ήχος, make-voices.js)
+    const say = document.createElement('button'); say.className = 'say'; say.textContent = '🔊'; say.title = 'Άκου';
+    // σαν παρουσιαστής: ερώτηση, μετά «Άλφα: …, Βήτα: …» (μετά το 50:50 μόνο όσες μένουν)
+    say.onclick = () => Voice.say([q.q, ...[...ansEl.querySelectorAll('.ans')].flatMap((b, i) => b.classList.contains('disabled') ? [] : [LETTERS[i], String(q.answers[i])])]);
+    qEl.appendChild(say);
+    say.onclick();  // διαβάζει μόνο του· 🔊 = ξανά
+  }
   ansEl.innerHTML = '';
-  const letters = ['A', 'B', 'C', 'D'];
   q.answers.forEach((a, i) => {
     const btn = document.createElement('button');
     btn.className = 'ans';
-    btn.innerHTML = '<span class="letter">' + letters[i] + ':</span> <span>' + a + '</span>';
+    btn.innerHTML = '<span class="letter">' + LETTERS[i] + ':</span> <span>' + a + '</span>';
     btn.onclick = () => answerClicked(i, btn);
     ansEl.appendChild(btn);
   });
@@ -903,6 +914,7 @@ function showQuestion(){
 function answerClicked(idx, btn){
   if(isAnswering) return;
   isAnswering = true;
+  Voice.stop();
   stopLifelineTimer();
   stopQuestionTimer();
   walkBtn.style.display = 'none';

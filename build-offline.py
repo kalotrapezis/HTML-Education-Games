@@ -28,7 +28,8 @@ def data_uri(p):
 def assets(text):
     """Files a game loads at runtime by path (bank/x.js, presets/x.png, Sounds/x.mp3)."""
     files = {}
-    for folder in ('bank', 'presets', 'Sounds'):
+    voices = sorted(set(re.findall(r'voices/[\w-]+(?=/index\.js)', text)))  # only the voice packs this page loads
+    for folder in ('bank', 'presets', 'Sounds', *voices):
         if folder + '/' in text:
             for p in sorted((ROOT / folder).iterdir()):
                 if p.is_file() and p.name != 'manifest.js':
