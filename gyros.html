@@ -573,8 +573,8 @@ function ask(tl) {
     if (ok && forStar) tm.stars.add(tl.s);
     const all = ok && forStar && ready(tm);
     snd(ok && forStar ? 'bigCorrect' : ok ? 'correct' : 'wrong');
-    $('dlg').querySelector('.res').textContent = ok ? (all ? '⭐ Τα μάζεψες όλα! Τώρα γύρνα ακριβώς στο κέντρο 🏁!' : forStar ? `⭐ Κέρδισες το αστέρι: ${info.name}!` : '✅ Σωστά! Ξαναρίχνεις!') : '❌ Λάθος… σειρά της επόμενης ομάδας.';
-    setTimeout(() => { $('modal').classList.remove('on'); hint(''); done(ok); }, ok ? 1800 : 2600);
+    $('dlg').querySelector('.res').textContent = ok ? (all ? '⭐ Τα μάζεψες όλα! Την επόμενη φορά γύρνα ακριβώς στο κέντρο 🏁!' : forStar ? `⭐ Κέρδισες το αστέρι: ${info.name}! Σειρά της επόμενης ομάδας.` : '✅ Σωστά! Ξαναρίχνεις!') : '❌ Λάθος… σειρά της επόμενης ομάδας.';
+    setTimeout(() => { $('modal').classList.remove('on'); hint(''); done(ok && !forStar); }, ok ? 2200 : 2600);  // αστέρι = η σειρά περνά στην επόμενη ομάδα
   });
 }
 function winner(tm) {
