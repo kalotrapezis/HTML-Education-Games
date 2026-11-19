@@ -14,6 +14,10 @@
      GameSounds.wrong()           // simple wrong (tu-tuu)
      GameSounds.bigWrong()        // big wrong (tu-tuu-tuuu-crash)
      GameSounds.pop(step) / thud() // short blips for fast games
+     GameSounds.spinMusic(rate)   // upbeat loop while a wheel spins; rate() → speed (1 = normal)
+     GameSounds.spinMusicStop()
+     GameSounds.ratchet(step) / boing() // winding a spring / letting it go
+     GameSounds.tak(step)         // a wheel's flapper hitting a peg (lower step = higher)
      GameSounds.stopAll()
    ============================================================ */
 (function(){
@@ -154,7 +158,29 @@
   function pop(step){ note(N(72 + (step||0) % 12), 0, 0.09, {type:'triangle', vol:0.22}); }
   function thud(){ note(N(45), 0, 0.14, {type:'square', vol:0.12, glideTo:N(38)}); }
 
-  function stopAll(){ backgroundStop(); suspenseStop(); }
+  // ---- spin music: χαρούμενο λουπάκι όσο γυρνάει ο τροχός, επιβραδύνει μαζί του ----
+  const SPIN_MEL  = [72,76,79,76, 74,77,81,77, 72,76,79,84, 83,79,74,71];
+  const SPIN_BASS = [48,0,55,0,   50,0,57,0,   48,0,55,0,   43,0,50,0];
+  let spinT = null;
+  function spinMusic(rate){
+    spinMusicStop();
+    let i = 0;
+    const step = ()=>{
+      const r = Math.max(0.4, Math.min(1.8, rate ? rate() : 1)), d = 0.12 / r;
+      note(N(SPIN_MEL[i%16]), 0, d*0.9, {type:'square', vol:0.06});
+      if(SPIN_BASS[i%16]) note(N(SPIN_BASS[i%16]), 0, d*1.8, {type:'triangle', vol:0.18});
+      noise(0, 0.03, {vol: i%2 ? 0.03 : 0.06, hp:6000});
+      i++; spinT = setTimeout(step, d*1000);
+    };
+    step();
+  }
+  function spinMusicStop(){ clearTimeout(spinT); spinT = null; }
+  // κούρδισμα: «κρρκ» της καστάνιας, ψηλότερα όσο σφίγγει· boing: το ελατήριο ξεκουρδίζεται
+  function ratchet(step){ noise(0, 0.025, {vol:0.12, hp:2500}); note(N(40 + (step||0)), 0, 0.03, {type:'square', vol:0.06}); }
+  function tak(step){ noise(0, 0.018, {vol:0.22, hp:1800}); note(N(79 - (step||0)), 0, 0.035, {type:'triangle', vol:0.2, glideTo:N(67 - (step||0))}); }
+  function boing(){ note(N(50), 0, 0.5, {type:'sine', vol:0.25, glideTo:N(74), vibrato:12}); }
+
+  function stopAll(){ backgroundStop(); suspenseStop(); spinMusicStop(); }
 
   window.GameSounds = {
     unlock: ac,
@@ -163,6 +189,7 @@
     correct, bigCorrect,
     wrong, bigWrong,
     pop, thud,
+    spinMusic, spinMusicStop, ratchet, boing, tak,
     stopAll
   };
 })();
