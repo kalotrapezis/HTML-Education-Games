@@ -99,6 +99,7 @@
   .instr .ref { margin-left: auto; font-size: 17px; opacity: 0.75; white-space: nowrap; }
   .instr .texts { display: flex; flex-direction: column; gap: 4px; }
   .instr .guide { font-size: 19px; opacity: 0.8; }
+  button.say { font-size: 26px; padding: 4px 10px; margin-left: 10px; vertical-align: middle; background: #29a3e8; box-shadow: 0 4px 0 #1a6fa0; flex: none; }
   .why-box { position: absolute; left: 50%; bottom: 0; transform: translateX(-50%); max-width: 1250px; width: max-content; background: #fff8e1; color: #3e2723; border-radius: 16px; padding: 14px 20px 14px 24px; font-size: 25px; line-height: 1.4; box-shadow: 0 8px 30px rgba(0,0,0,0.45); z-index: 30; display: flex; gap: 16px; align-items: center; }
   .why-box button { font-size: 20px; padding: 6px 14px; }
   .q-explain { background: #fff8e1; color: #3e2723; border-radius: 14px; padding: 12px 20px; font-size: 25px; max-width: 1200px; }
@@ -747,7 +748,7 @@
       <div class="lesson-title" id="lessonTitle"></div>
       <div class="pips" id="pips"></div>
     </div>
-    <div class="instr"><span class="kind" id="kind"></span><span class="texts"><span id="instr"></span><span class="guide" id="guide"></span></span><span class="ref" id="ref"></span></div>
+    <div class="instr"><span class="kind" id="kind"></span><button class="say" id="sayBtn" title="Άκου" hidden>🔊</button><span class="texts"><span id="instr"></span><span class="guide" id="guide"></span></span><span class="ref" id="ref"></span></div>
     <div class="area" id="area"></div>
     <div class="bottombar">
       <button class="secondary" id="prevBtn">◀ Πίσω</button>
@@ -757,6 +758,8 @@
   </div>
 </div>
 
+<script src="voice.js"></script>
+<script src="voices/pliroforiki/index.js"></script>
 <script>
 // ============================================================================
 // ΠΕΡΙΕΧΟΜΕΝΟ — από τα βιβλία «Πληροφορική Α΄ Δημοτικού»:
@@ -12721,6 +12724,13 @@ const $ = id => document.getElementById(id);
 const shuffle = a => { for (let i = a.length - 1; i > 0; i--) { const j = Math.floor(Math.random() * (i + 1)); [a[i], a[j]] = [a[j], a[i]]; } return a; };
 const sleep = ms => new Promise(r => setTimeout(r, ms));
 const el = (tag, cls, html) => { const e = document.createElement(tag); if (cls) e.className = cls; if (html != null) e.innerHTML = html; return e; };
+// 🔊 που διαβάζει τα κείμενα, μόνο αν υπάρχει έτοιμος ήχος (voices/, make-voices.js)
+function sayBtn(parent, texts) {
+  if (!Voice.has(texts[0])) return;
+  const b = el('button', 'say', '🔊'); b.title = 'Άκου';
+  b.onclick = e => { e.stopPropagation(); Voice.say(texts); };
+  parent.appendChild(b);
+}
 
 let gradeIdx = Math.max(0, BOOKS.findIndex(b => b.hash === location.hash));
 let chapterIdx = 0, lessonIdx = 0, actIdx = 0;
@@ -12981,7 +12991,11 @@ function renderAct() {
   $('kind').textContent = act.ext ? '🌍 Διαδίκτυο' : (act.practice ? '💪 Εξάσκηση · ' : '') + KIND_NAMES[act.type];
   $('kind').classList.toggle('px', !!act.practice);
   $('instr').textContent = act.text;
-  $('guide').textContent = '❔ ' + (act.guide || GUIDE[act.type + '.' + act.mode] || GUIDE[act.type]);
+  const guide = act.guide || GUIDE[act.type + '.' + act.mode] || GUIDE[act.type];
+  $('guide').textContent = '❔ ' + guide;
+  Voice.stop();
+  $('sayBtn').hidden = !Voice.has(act.text);
+  $('sayBtn').onclick = () => Voice.say([act.text, guide]);
   $('ref').textContent = act.ref ? '📖 ' + act.ref : '';
   $('prevBtn').disabled = actIdx === 0;
   $('nextBtn').textContent = actIdx === les.acts.length - 1 ? 'Τέλος 🏁' : 'Επόμενο ▶';
@@ -13143,6 +13157,7 @@ RENDER.info = (act, area) => {
   for (const [em, html, prog] of act.cards) {
     const c = el('div', 'card', `<span class="em">${em}</span><span>${html}</span>`);
     if (prog) c.lastChild.appendChild(stripEl(prog));
+    sayBtn(c, [html]);
     box.appendChild(c);
   }
   area.appendChild(box);
@@ -13154,8 +13169,11 @@ RENDER.info = (act, area) => {
 // ---- Θεωρία: sections = [[τίτλος, εξήγηση, [παραδείγματα]], …]
 RENDER.theory = (act, area) => {
   const box = el('div', 'theory');
-  for (const [h, p, ex = []] of act.sections)
-    box.appendChild(el('div', 'sec', `<h3>${h}</h3><div>${p}</div>` + ex.map(e => `<div class="ex">${e}</div>`).join('')));
+  for (const [h, p, ex = []] of act.sections) {
+    const sec = el('div', 'sec', `<h3>${h}</h3><div>${p}</div>` + ex.map(e => `<div class="ex">${e}</div>`).join(''));
+    sayBtn(sec.firstChild, [h, p, ...ex]);
+    box.appendChild(sec);
+  }
   area.appendChild(box);
   complete('👍 Πάμε παρακάτω!');
 };

@@ -119,7 +119,7 @@
   <div class="menu">
     <button data-s="syl"><span class="em">✂️</span><span class="nm">Συλλαβές</span><span class="ds">Άνοιξε μια κάρτα και χώρισε τη λέξη: πα-τά-τα</span></button>
     <button data-s="ana"><span class="em">🔀</span><span class="nm">Ανακατεμένα</span><span class="ds">Βάλε τα γράμματα (ή τις συλλαβές) στη σειρά</span></button>
-    <button data-s="miss"><span class="em">🧩</span><span class="nm">Ποια συλλαβή λείπει;</span><span class="ds">πα-__-τα → τά</span></button>
+    <button data-s="miss"><span class="em">🧩</span><span class="nm">Ποιο λείπει;</span><span class="ds">Άκου τη λέξη και βρες το γράμμα ή τη συλλαβή: γ_τα → ά</span></button>
     <button data-s="mole"><span class="em">🔨</span><span class="nm">Τυφλοπόντικας</span><span class="ds">Χτύπα όποιον κρατά το σωστό: γράμμα, συλλαβές ή πράξη</span></button>
   </div>
 </div>
@@ -151,8 +151,13 @@
   </div>
 </div>
 
-<!-- Ποια συλλαβή λείπει -->
+<!-- Ποιο γράμμα / ποια συλλαβή λείπει -->
 <div id="miss" class="screen">
+  <div class="top">
+    <button class="chip on" data-x="letter">🔤 Γράμμα</button>
+    <button class="chip" data-x="syl">🧱 Συλλαβή</button>
+    <span id="missCats"></span>
+  </div>
   <div class="dlg" style="max-width:1000px">
     <div class="big" id="missPic"></div>
     <div class="word" id="missWord"></div>
@@ -177,6 +182,8 @@
 </div>
 
 <script src="lexilogio.js"></script>
+<script src="voice.js"></script>
+<script src="voices/words/index.js"></script>
 <script src="sounds.js"></script>
 <script>
 const $ = id => document.getElementById(id);
@@ -185,12 +192,7 @@ const pick = a => a[rnd(a.length)];
 const shuffle = a => { for (let i = a.length - 1; i > 0; i--) { const j = rnd(i + 1); [a[i], a[j]] = [a[j], a[i]]; } return a; };
 const snd = k => { try { GameSounds[k](); } catch (e) {} };
 const W = PIC_WORDS;
-function say(text) {  // μόνο αν υπάρχει ελληνική φωνή
-  try {
-    const v = speechSynthesis.getVoices().find(v => v.lang.startsWith('el')); if (!v) return;
-    speechSynthesis.cancel(); const u = new SpeechSynthesisUtterance(text); u.voice = v; u.lang = v.lang; u.rate = .8; speechSynthesis.speak(u);
-  } catch (e) {}
-}
+const say = text => Voice.say(text);  // έτοιμη φωνή από voices/words (make-voices.js)
 function claps(n) { for (let i = 0; i < n; i++) setTimeout(() => { try { GameSounds.pop(i * 3); } catch (e) {} }, i * 320); }
 
 /* ---------- μενού ---------- */
@@ -309,18 +311,49 @@ document.querySelectorAll('#ana [data-a]').forEach(b => b.onclick = () => {
   anaBy = b.dataset.a; document.querySelectorAll('#ana [data-a]').forEach(x => x.classList.toggle('on', x === b)); anaNext();
 });
 
-/* ---------- Ποια συλλαβή λείπει ---------- */
+/* ---------- Ποιο λείπει: γράμμα ή συλλαβή, ανά κατηγορία · η φωνή λέει τη λέξη ---------- */
 const ALL_SYL = [...new Set(W.flatMap(w => w.syl))];
+let missBy = 'letter', missCat = '';
+// 🗺️ όλες οι κατηγορίες με τη σειρά, TOUR_N λέξεις η καθεμιά (make-voices.js διαβάζει τις φράσεις)
+const TOUR = [['Χρώματα', 'Πάμε στα χρώματα!'], ['Ζώα', 'Πάμε στα ζώα!'], ['Φυτά', 'Πάμε στα φυτά!'], ['Σώμα', 'Πάμε στο σώμα μας!'],
+  ['Άνθρωποι', 'Πάμε στους ανθρώπους!'], ['Φαγητά', 'Πάμε στα φαγητά!'], ['Φύση', 'Πάμε στη φύση!'], ['Σπίτι', 'Πάμε στο σπίτι!'], ['Μεταφορικά', 'Πάμε στα μεταφορικά!']];
+const TOUR_DONE = 'Μπράβο! Πέρασες από όλες τις κατηγορίες!', TOUR_N = 10;  // ως 10 λέξεις ανά κατηγορία (τα χρώματα είναι 10)
+let tour = -1, tourN = 0, missDeck = [], missKey = '';
+const fits = (w, cat) => (!cat || w.cat === cat) && (missBy === 'letter' ? w.w.length >= 3 : w.syl.length >= 2);
+$('missCats').innerHTML = '<button class="chip" data-c="tour">🗺️ Όλες με τη σειρά</button> '
+  + ['', ...new Set(W.map(w => w.cat))].map(c => `<button class="chip${c ? '' : ' on'}" data-c="${c}">${c || 'Όλα'}</button>`).join(' ');
+document.querySelectorAll('#miss [data-x], #miss [data-c]').forEach(b => b.onclick = () => {
+  const k = b.dataset.x ? 'x' : 'c';
+  if (k === 'x') missBy = b.dataset.x;
+  else { tour = b.dataset.c === 'tour' ? 0 : -1; tourN = 0; missCat = tour < 0 ? b.dataset.c : ''; }
+  document.querySelectorAll(`#miss [data-${k}]`).forEach(x => x.classList.toggle('on', x === b)); missNext();
+});
 function missNext() {
-  const w = pick(W.filter(w => w.syl.length >= 2)), k = rnd(w.syl.length), right = w.syl[k];
-  $('missPic').textContent = w.em; $('missMsg').textContent = '';
-  $('missWord').innerHTML = w.syl.map((s, i) => i === k ? '<span class="blank">&nbsp;</span>' : s).join('-');
+  const intro = [];
+  if (tour >= 0) {
+    if (tourN >= Math.min(TOUR_N, W.filter(w => fits(w, TOUR[tour][0])).length)) { tourN = 0; tour++; }
+    if (tour === TOUR.length) { tour = 0; intro.push(TOUR_DONE); snd('bigCorrect'); }  // τέλος: ξανά από την αρχή
+    if (tourN === 0) intro.push(TOUR[tour][1]);
+    missCat = TOUR[tour][0]; tourN++;
+  }
+  // τράπουλα: καμία λέξη δεν ξαναβγαίνει πριν βγουν όλες της κατηγορίας
+  if (missKey !== missBy + missCat || !missDeck.length) {
+    const pool = W.filter(w => fits(w, missCat));
+    missDeck = shuffle(pool.length ? pool : W.filter(w => fits(w, ''))); missKey = missBy + missCat;
+  }
+  const w = missDeck.pop();
+  const parts = missBy === 'letter' ? [...w.w] : w.syl, sep = missBy === 'letter' ? '' : '-';
+  const plainAt = parts.map((c, i) => i).filter(i => /^[α-ως]$/.test(parts[i]));  // χωρίς τόνο: ο τόνος θα πρόδιδε τη σωστή απάντηση
+  const k = missBy === 'letter' && plainAt.length ? pick(plainAt) : rnd(parts.length), right = parts[k];
+  $('missPic').textContent = w.em; $('missMsg').textContent = tour >= 0 ? `🗺️ ${missCat} · ${tourN}/${Math.min(TOUR_N, W.filter(w => fits(w, missCat)).length)}` : '';
+  $('missWord').innerHTML = parts.map((s, i) => i === k ? '<span class="blank">&nbsp;</span>' : s).join(sep);
+  Voice.say([...intro, w.w]);
   const opts = new Set([right]);
-  while (opts.size < 4) opts.add(pick(ALL_SYL));
+  while (opts.size < 4) opts.add(missBy === 'letter' ? pick([...'αβγδεζηθικλμνξοπρστυφχψω']) : pick(ALL_SYL));
   $('missOpts').innerHTML = shuffle([...opts]).map(s => `<button>${s}</button>`).join('');
   $('missOpts').querySelectorAll('button').forEach(b => b.onclick = () => {
     if (b.textContent === right) {
-      b.classList.add('yes'); $('missWord').innerHTML = w.syl.map((s, i) => i === k ? `<span style="color:#7CFC00">${s}</span>` : s).join('-');
+      b.classList.add('yes'); $('missWord').innerHTML = parts.map((s, i) => i === k ? `<span style="color:#7CFC00">${s}</span>` : s).join(sep);
       $('missMsg').textContent = '🎉 ' + w.w; snd('correct'); say(w.w); setTimeout(missNext, 1500);
     } else { b.classList.add('no'); snd('wrong'); }
   });
