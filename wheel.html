@@ -426,7 +426,8 @@ function frame(now) {
     if (w) dir = Math.sign(w);
     pegSound(now);
     if (!tense && Math.abs(w) < 3) { tense = true; sv.classList.add('tense'); snd('spinMusicStop'); snd('suspense'); }
-    if (Math.abs(w) < .02 && Math.abs(pegOffset()) >= ZA) { if (++still > 15) stopSpin(); } else still = 0;
+    // σταμάτησε (κι αν ακουμπά καρφάκι: στην άκρη του η τριβή νικά τη γλωττίδα και θα περίμενε για πάντα)
+    if (Math.abs(w) < .02) { if (++still > 15) stopSpin(); } else still = 0;
   }
   if ((spinning || dragging) && sliceIdx() !== curShown) { curShown = sliceIdx(); $('live').textContent = BIG_LABEL(SLICES[curShown]); }
   if (sv.classList.contains('on')) drawWheel(bctx, BS, true, now); else drawWheel(sctx, 840, false, now);
@@ -480,10 +481,11 @@ bigCv.addEventListener('pointermove', e => {
 const release = () => {
   if (!dragging) return;
   dragging = false; bigCv.classList.remove('drag');
-  const turns = Math.abs(wound) / TAU, jitter = .9 + Math.random() * .2;
+  // όχι γραμμικό (√στροφές) και ±3 τυχαία: ±3 στην ταχύτητα ≈ ±2 στροφές στο σταμάτημα, δεν «υπολογίζεται»
+  const turns = Math.abs(wound) / TAU, jitter = Math.random() * 6 - 3;
   // σκέτο πάτημα = κανονικό γύρισμα· αλλιώς το ελατήριο τον στέλνει από την άλλη μεριά
   if (Math.abs(wound) < .35) go(10 + Math.random() * 6);
-  else snd('boing'), go(-Math.sign(wound) * Math.min(45, 6 + 7 * turns) * jitter);
+  else snd('boing'), go(-Math.sign(wound) * Math.max(6, Math.min(45, 6 + 13 * Math.sqrt(turns)) + jitter));
   wound = 0;
 };
 bigCv.addEventListener('pointerup', release);
