@@ -57,6 +57,7 @@
   .btn { padding: 14px 28px; font-size: 24px; font-weight: bold; border: 0; border-radius: 14px; background: #ff9500; color: #fff; box-shadow: 0 5px 0 #c46c00; cursor: pointer; font-family: inherit; }
   .btn:active { transform: translateY(3px); box-shadow: 0 2px 0 #c46c00; }
   .btn.ghost { background: rgba(0,0,0,.35); box-shadow: none; }
+  .hear { font-size: 20px; padding: 6px 18px; margin: 2px auto 10px; display: block; }
   .msg { font-size: 30px; min-height: 40px; font-weight: bold; }
 
   /* --- επιλογές με μεγάλα κουμπιά --- */
@@ -145,6 +146,7 @@
   </div>
   <div class="dlg" style="max-width:1000px">
     <div class="big" id="anaPic"></div>
+    <button class="btn ghost hear" id="anaSay">🔊 Άκου</button>
     <div class="slots" id="anaSlots"></div>
     <div class="opts tiles" id="anaTiles"></div>
     <div class="msg" id="anaMsg"></div>
@@ -160,6 +162,7 @@
   </div>
   <div class="dlg" style="max-width:1000px">
     <div class="big" id="missPic"></div>
+    <button class="btn ghost hear" id="missSay">🔊 Άκου</button>
     <div class="word" id="missWord"></div>
     <div class="opts" id="missOpts"></div>
     <div class="msg" id="missMsg"></div>
@@ -268,6 +271,7 @@ function openWord(i) {
     });
   }
   const s = $('sayIt'); if (s) s.onclick = () => { say(w.w); };
+  say(w.w);
   const c = $('cls'); if (c) c.onclick = () => $('modal').classList.remove('on');
   $('modal').classList.add('on');
 }
@@ -275,6 +279,7 @@ $('modal').onclick = e => { if (e.target === $('modal')) $('modal').classList.re
 
 /* ---------- Ανακατεμένα ---------- */
 let anaBy = 'letters', anaW, anaParts, anaPicked;
+$('anaSay').onclick = () => say(anaW.w);
 function anaNext() {
   anaW = pick(W.filter(w => anaBy === 'syl' ? w.syl.length >= 2 : w.w.length <= 7));
   anaParts = anaBy === 'syl' ? anaW.syl.slice() : [...anaW.w];
@@ -282,7 +287,7 @@ function anaNext() {
   anaPicked = [];
   $('anaPic').textContent = anaW.em; $('anaMsg').textContent = '';
   $('anaTiles').innerHTML = order.map(i => `<button data-i="${i}">${anaParts[i]}</button>`).join('');
-  anaPaint();
+  anaPaint(); say(anaW.w);
 }
 function anaPaint() {
   $('anaSlots').className = 'slots';
@@ -347,7 +352,7 @@ function missNext() {
   const k = missBy === 'letter' && plainAt.length ? pick(plainAt) : rnd(parts.length), right = parts[k];
   $('missPic').textContent = w.em; $('missMsg').textContent = tour >= 0 ? `🗺️ ${missCat} · ${tourN}/${Math.min(TOUR_N, W.filter(w => fits(w, missCat)).length)}` : '';
   $('missWord').innerHTML = parts.map((s, i) => i === k ? '<span class="blank">&nbsp;</span>' : s).join(sep);
-  Voice.say([...intro, w.w]);
+  Voice.say([...intro, w.w]); $('missSay').onclick = () => say(w.w);
   const opts = new Set([right]);
   while (opts.size < 4) opts.add(missBy === 'letter' ? pick([...'αβγδεζηθικλμνξοπρστυφχψω']) : pick(ALL_SYL));
   $('missOpts').innerHTML = shuffle([...opts]).map(s => `<button>${s}</button>`).join('');

@@ -170,7 +170,7 @@ const GAMES = {
     const [em, w] = pick(WORDS);
     const opts = new Set([w]);
     while (opts.size < 3) opts.add(pick(WORDS)[1]);
-    return { q: 'Ποια λέξη είναι;', pic: em, answer: w, options: shuffle([...opts]), speak: w };
+    return { q: 'Ποια λέξη είναι;', pic: em, answer: w, options: shuffle([...opts]), speak: w, intro: [w] };
   },
   pair() {
     const i = rnd(ABC.length);
