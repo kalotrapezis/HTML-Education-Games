@@ -30,6 +30,7 @@
   #game { display: none; flex-direction: column; align-items: center; gap: 26px; width: 100%; max-width: 1100px; }
   #stars { font-size: 34px; min-height: 44px; letter-spacing: 2px; }
   #q { font-size: 34px; text-align: center; }
+  #q .say { font-size: 26px; margin-left: 12px; padding: 2px 12px; border: 0; border-radius: 12px; background: rgba(255,255,255,.18); color: #fff; cursor: pointer; vertical-align: middle; }
   #pic { font-size: 70px; line-height: 1.25; text-align: center; max-width: 900px; min-height: 100px; }
   #pic .op { color: #ffb347; font-weight: bold; margin: 0 18px; }
   #pic .gone { opacity: .3; text-decoration: line-through; }
@@ -163,7 +164,7 @@ const GAMES = {
   first() {
     const [em, w] = pick(WORDS), L = plain(w[0]);
     return { q: 'Με ποιο γράμμα αρχίζει;', pic: `${em}<span class="word"><b>_</b>${w.slice(1)}</span>`, answer: L,
-      options: others(L, ABC), speak: w, done: `${em}<span class="word"><b>${w[0]}</b>${w.slice(1)}</span>` };
+      options: others(L, ABC), speak: w, intro: [w], done: `${em}<span class="word"><b>${w[0]}</b>${w.slice(1)}</span>` };
   },
   word() {
     const [em, w] = pick(WORDS);
@@ -220,9 +221,13 @@ function next() {
   $('q').textContent = round.q; $('pic').innerHTML = round.pic; $('msg').textContent = '';
   $('stars').textContent = '⭐'.repeat(stars % 10) || ' ';
   $('opts').innerHTML = '';
-  if (round.intro) Voice.say(round.intro, i => {  // σε κάθε αριθμό φωτίζεται το αντίστοιχο αντικείμενο
-    document.querySelectorAll('#pic .one').forEach((s, k) => s.classList.toggle('hit', k === i - 2));
-  });
+  if (round.intro) {  // λέει τη λέξη / μετράει μόνο του· 🔊 = ξανά
+    const sayIntro = () => Voice.say(round.intro, i => {  // σε κάθε αριθμό φωτίζεται το αντίστοιχο αντικείμενο
+      document.querySelectorAll('#pic .one').forEach((s, k) => s.classList.toggle('hit', k === i - 2));
+    });
+    const b = document.createElement('button'); b.className = 'say'; b.textContent = '🔊'; b.title = 'Άκου ξανά';
+    b.onclick = sayIntro; $('q').append(b); sayIntro();
+  }
   for (const o of round.options) {
     const b = document.createElement('button'); b.textContent = o;
     b.onclick = () => answer(b, o);
