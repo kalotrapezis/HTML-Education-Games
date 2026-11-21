@@ -61,7 +61,7 @@ window.registerQuiz({
         { q: "Ποια πρόταση είναι σωστή;", answers: ["Pandas can climb trees.", "Pandas cans climb trees.", "Pandas is can climb trees.", "Pandas are can climb trees."], correct: 0, d: "medium" },
         { q: "Πώς λέμε «Δεν μπορεί να τρέξει»;", answers: ["He can't run.", "He cants run.", "He not can run.", "He is can't run."], correct: 0, d: "medium" },
         { q: "Ποια είναι η αρνητική απάντηση στο «Can you fly?»", answers: ["No, I can't.", "No, I cannot.", "No, I cann't.", "No, I not can."], correct: 0, d: "easy" },
-        { q: "Συμπλήρωσε: «Koalas ___ swim but they can't fly.»", answers: ["can't", "can", "are", "have"], correct: 0, d: "medium" },
+        { q: "Συμπλήρωσε: «Koalas ___ swim but they can't fly.»", answers: ["can't", "can", "are", "have"], correct: 1, d: "medium" },
         { q: "Ποια ερώτηση είναι σωστή;", answers: ["Can the duck swim?", "Does the duck can swim?", "Is the duck can swim?", "The duck can swim?"], correct: 0, d: "medium" },
         { q: "Τι σημαίνει «I can run»;", answers: ["Μπορώ να τρέξω.", "Τρέχω κάθε μέρα.", "Τρέχω τώρα.", "Δεν μπορώ να τρέξω."], correct: 0, d: "easy" },
         { q: "Ποια πρόταση ΔΕΝ είναι σωστή;", answers: ["She cans swim.", "She can swim.", "She can't swim.", "Can she swim?"], correct: 0, d: "medium" },

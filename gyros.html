@@ -22,12 +22,17 @@
   .sub { text-align: center; max-width: 760px; background: rgba(0,0,0,.3); padding: 10px 16px; border-radius: 12px; }
   .box { background: #fdf3dc; color: #4a2c12; border-radius: 16px; padding: 14px 20px; width: 100%; max-width: 820px; box-shadow: 0 6px 0 #3d230d; }
   .box h2 { color: #b5541c; font-size: 18px; margin-bottom: 10px; }
+  .box h2 .opt { float: right; font-size: 15px; font-weight: normal; color: #4a2c12; cursor: pointer; }
+  .box h2 .opt input { width: 18px; height: 18px; vertical-align: -3px; margin-right: 4px; }
   .chips { display: flex; flex-wrap: wrap; gap: 8px; }
   .chip { background: #fff; border: 3px solid #e2cfa8; border-radius: 14px; padding: 8px 14px; color: #4a2c12; font-size: 17px; }
   .chip.on { border-color: #e07b24; background: #ffe7c2; font-weight: bold; }
   .chip .dot { display: inline-block; width: 14px; height: 14px; border-radius: 50%; margin-right: 6px; vertical-align: -1px; border: 2px solid #fff; box-shadow: 0 0 0 1px #0003; }
   #names { display: flex; gap: 10px; flex-wrap: wrap; margin-top: 10px; }
-  #names input { font: inherit; font-size: 17px; padding: 8px 12px; border-radius: 10px; border: 3px solid; background: #fff; color: #4a2c12; width: 180px; }
+  #names .tm { display: flex; flex-direction: column; gap: 4px; }
+  #names .tm label { font-size: 15px; margin-right: 8px; white-space: nowrap; }
+  #names input[type=checkbox] { width: 18px; height: 18px; vertical-align: -3px; margin-right: 2px; }
+  #names input[type=text] { font: inherit; font-size: 17px; padding: 8px 12px; border-radius: 10px; border: 3px solid; background: #fff; color: #4a2c12; width: 180px; }
   .go { padding: 16px 50px; font-size: 26px; font-weight: bold; border: 0; border-radius: 14px; background: linear-gradient(#ffb347, #e07b24); color: #3d1f05; box-shadow: 0 6px 0 #8a4410; }
   .go:active { transform: translateY(3px); box-shadow: 0 3px 0 #8a4410; }
   .go:disabled { opacity: .45; cursor: default; }
@@ -137,9 +142,10 @@
   <div class="sub">Όλοι ξεκινούν από το κέντρο 🏁. Κουνήστε το ποτήρι, ρίξτε το ζάρι και διαλέξτε πού θα πάτε: γύρω-γύρω ή από τον σταυρό. Κάθε χρώμα είναι ένα μάθημα· στα κουτάκια με το χρυσό ⭐ η σωστή απάντηση δίνει το αστέρι του μαθήματος, στα 🎲 ξαναρίχνετε. Σωστή απάντηση = ξαναρίχνεις! Με όλα τα αστέρια γυρίστε στο κέντρο: πρέπει να πέσετε ακριβώς πάνω του για να νικήσετε.</div>
   <div class="box"><h2>1. Τάξη (μία ή περισσότερες)</h2><div class="chips" id="grades">Φορτώνει…</div></div>
   <div class="box"><h2>2. Μαθήματα σε 4 χρώματα (ένα ⭐ για κάθε χρώμα)</h2><div class="chips" id="subjects">Διάλεξε πρώτα τάξη.</div></div>
-  <div class="box"><h2>3. Ομάδες</h2>
+  <div class="box"><h2>3. Ομάδες<label class="opt" title="Κάθε ομάδα παίζει τις δικές της τάξεις"><input type="checkbox" id="perTeam">Εξατομικευμένη μάθηση</label></h2>
     <div class="chips" id="count"><button class="chip" data-n="2">2</button><button class="chip on" data-n="3">3</button><button class="chip" data-n="4">4</button></div>
     <div id="names"></div>
+    <div id="namesHint" style="font-size:14px;opacity:.75;margin-top:6px" hidden></div>
   </div>
   <div class="box"><h2>4. Μαζεύεις αστέρια και γυρνάς ακριβώς στο κέντρο 🏁</h2>
     <div class="chips" id="goal"><button class="chip on" data-g="all">⭐ Όλα τα αστέρια</button><button class="chip" data-g="3">⭐⭐⭐ 3 αστέρια (πιο γρήγορο)</button></div>
@@ -210,8 +216,8 @@ function loadGrade(g, cb) {  // μόνο τα αρχεία της τάξης (ba
   files.forEach(f => { const s = document.createElement('script'); s.src = 'bank/' + f; s.onload = s.onerror = () => { if (--left === 0) { loaded[g] = 1; cb(); } }; document.body.append(s); });
 }
 // ερωτήσεις ενός μαθήματος (από όλες τις τάξεις που διαλέχτηκαν) ή ενός χρώματος (όλα τα μαθήματά του)
-const questionsOf = s => CAT[s] ? CAT[s].subs.flatMap(id => questionsOf(id).map(q => ({ ...q, subj: id })))
-  : QUIZ_BANK.filter(e => grades.includes(e.grade) && e.subject === s).flatMap(e => e.chapters.flatMap(c => c.questions));
+const questionsOf = (s, gs = grades) => CAT[s] ? CAT[s].subs.flatMap(id => questionsOf(id, gs).map(q => ({ ...q, subj: id })))
+  : QUIZ_BANK.filter(e => gs.includes(e.grade) && e.subject === s).flatMap(e => e.chapters.flatMap(c => c.questions));
 const subjInfo = s => CAT[s] || M.subjects.find(x => x.id === s);
 const colorOf = s => CAT[s] ? CAT[s].c : groupOf[s] >= 0 ? GROUP[groupOf[s]] : '#ccc';
 function autoGroups() {  // συγγενικά μαθήματα στο ίδιο χρώμα· κανένα χρώμα άδειο αν γίνεται
@@ -232,6 +238,7 @@ $('grades').onclick = e => {
   const b = e.target.closest('[data-g]'); if (!b) return;
   b.classList.toggle('on');
   grades = [...$('grades').querySelectorAll('.on')].map(x => x.dataset.g);
+  renderNames();
   if (!grades.length) { avail = []; $('subjects').textContent = 'Διάλεξε πρώτα τάξη.'; return check(); }
   $('subjects').textContent = 'Φορτώνει…';
   let left = grades.length;
@@ -247,10 +254,18 @@ $('subjects').onclick = e => {
   renderSubjects();
 };
 function check() { $('start').disabled = new Set(avail.map(s => groupOf[s]).filter(g => g >= 0)).size < 2; }
+const teamOff = TEAM.map(() => new Set());  // τάξεις που μια ομάδα ΔΕΝ παίζει (νέα τάξη = τσεκαρισμένη)
+const gradeShort = g => M.grades.find(x => x.id === g).name.split(' ')[0].replace("'", '΄');
+const teamGrades = i => { const gs = $('perTeam').checked ? grades.filter(g => !teamOff[i].has(g)) : grades; return gs.length ? gs : grades; };  // κανένα τσεκ = όλες
 function renderNames() {
-  const old = [...$('names').querySelectorAll('input')].map(i => i.value);
-  $('names').innerHTML = TEAM.slice(0, teamsN).map(([n, c], i) => `<input maxlength="16" style="border-color:${c}" value="${old[i] || n}">`).join('');
+  const old = [...$('names').querySelectorAll('input[type=text]')].map(i => i.value), many = grades.length > 1 && $('perTeam').checked;
+  $('names').innerHTML = TEAM.slice(0, teamsN).map(([n, c], i) => `<div class="tm"><input type="text" maxlength="16" style="border-color:${c}" value="${old[i] || n}">
+    ${many ? `<div>${grades.map(g => `<label><input type="checkbox" data-t="${i}" data-g="${g}"${teamOff[i].has(g) ? '' : ' checked'}>${gradeShort(g)}</label>`).join('')}</div>` : ''}</div>`).join('');
+  $('namesHint').hidden = !$('perTeam').checked;
+  $('namesHint').textContent = many ? 'Κάτω από κάθε ομάδα: ποιες τάξεις παίζει (π.χ. Κόκκινοι Α΄ και Β΄, Πράσινοι Ε΄ και ΣΤ΄).' : 'Διάλεξε πάνω δύο ή περισσότερες τάξεις.';
 }
+$('perTeam').onchange = () => renderNames();
+$('names').onchange = e => { const b = e.target; if (b.type === 'checkbox') teamOff[b.dataset.t][b.checked ? 'delete' : 'add'](b.dataset.g); };
 $('count').onclick = e => { const b = e.target.closest('[data-n]'); if (!b) return; teamsN = +b.dataset.n; [...$('count').children].forEach(x => x.classList.toggle('on', x === b)); renderNames(); };
 $('goal').onclick = e => { const b = e.target.closest('[data-g]'); if (!b) return; goal = b.dataset.g; [...$('goal').children].forEach(x => x.classList.toggle('on', x === b)); };
 renderNames();
@@ -319,7 +334,7 @@ $('start').onclick = () => {
     CAT[id] = { subs, c, icon: subs.map(s => M.subjects.find(x => x.id === s).icon).join(''), name: subs.map(s => M.subjects.find(x => x.id === s).name).join(' · ') };
   });
   buildBoard();
-  teams = [...$('names').querySelectorAll('input')].map((inp, i) => ({ name: inp.value.trim() || TEAM[i][0], c: TEAM[i][1], pos: hub, stars: new Set() }));
+  teams = [...$('names').querySelectorAll('input[type=text]')].map((inp, i) => ({ name: inp.value.trim() || TEAM[i][0], c: TEAM[i][1], pos: hub, stars: new Set(), gs: teamGrades(i) }));
   decks = {}; cur = 0; busy = false; choices = null;
   $('setup').style.display = 'none'; $('game').classList.add('on'); $('toSetup').hidden = false;
   drawBoard(); sizeDie(); paint(); hint('Πάτα «🎲 Ρίξε το ζάρι!»');
@@ -399,7 +414,7 @@ function paint() {
   $('turn').innerHTML = `Σειρά: <span style="color:${teams[cur].c}">${teams[cur].name}</span>`;
   $('teams').innerHTML = teams.map((tm, k) => `<div class="team${k === cur ? ' now' : ''}">
     <svg class="p" viewBox="-26 -62 52 72"><path d="${PAWN}" fill="${tm.c}" stroke="#4a2c12" stroke-width="3"/></svg>
-    <span class="n">${tm.name}${ready(tm) ? ' → 🏁' : ''}</span>
+    <span class="n">${tm.name}${ready(tm) ? ' → 🏁' : ''}${tm.gs.length < grades.length ? `<br><small style="font-weight:normal;opacity:.75">${tm.gs.map(gradeShort).join(' ')}</small>` : ''}</span>
     <span class="st">${subjects.map(s => `<svg viewBox="-11 -11 22 22"><path d="${STAR}" fill="${tm.stars.has(s) ? colorOf(s) : '#e8dcc2'}" stroke="${tm.stars.has(s) ? '#8a5a00' : '#c9b48a'}"/></svg>`).join('')}</span>
     </div>`).join('') + `<div style="text-align:center;margin-top:6px;font-size:14px;opacity:.8">Μάζεψε ${need()} ⭐ και γύρνα ακριβώς στο κέντρο 🏁</div>`
     + `<div class="legend">${subjects.map(s => `<div><span class="dot" style="background:${colorOf(s)}"></span>${subjInfo(s).icon} ${subjInfo(s).name}</div>`).join('')}</div>`;
@@ -470,8 +485,9 @@ function throwDie(dir) {
   const x1 = Math.max(18, Math.min(82, xc + dir * (24 + rnd(14)))), y1 = 68 + rnd(8);  // πού σταματά στην τσόχα
   // το ζάρι κυλάει μόνο προς τα εκεί που πηγαίνει (γύρω από τον κάθετο άξονα), πάνω στη θέση που δείχνει το v μπροστά:
   // έτσι η πλευρά που μένει μπροστά στο τέλος είναι πάντα ο αριθμός που ανακοινώνεται
-  const [rx1, ry1] = SHOW[v], base = `rotateX(${rx1}deg) rotateY(${ry1}deg)`, turns = 360 * (2 + rnd(2));
-  const pose = (roll, tilt = 0) => `rotateY(${dir * roll}deg) rotateX(${tilt}deg) ${base}`;
+  // side: πέφτει πίσω (0°) ή μπροστά (90°)· με μετατόπιση off η τελική έδρα είναι πάντα το v
+  const [rx1, ry1] = SHOW[v], base = `rotateX(${rx1}deg) rotateY(${ry1}deg)`, turns = 360 * (2 + rnd(2)), off = 90 * rnd(2), fake = rnd(2);
+  const pose = (roll, tilt = 0) => `rotateY(${dir * (roll - off)}deg) rotateX(${tilt}deg) ${base}`;
   const box = $('dieBox'), sh = $('dieShadow'), cube = $('cube');
   box.hidden = sh.hidden = false; box.classList.remove('glow');
   const T = 1700, t0 = performance.now(); let bounce = 0;
@@ -489,12 +505,13 @@ function throwDie(dir) {
     if (t < 1) return nextFrame(frame);
     teeter();
   })(t0);
-  function teeter() {  // ισορροπεί στην ακμή… τικ-τακ… και πέφτει μπροστά
+  function teeter() {  // ισορροπεί στην ακμή… τικ-τακ… (μερικές φορές γέρνει προς τη μία) και πέφτει από τη μία ή την άλλη
     snd('suspense'); $('tray').classList.add('tense');
     const T2 = 1500, t1 = performance.now();
     (function wob(now) {
       const u = Math.min(1, (now - t1) / T2);
-      const a = u < .7 ? 45 + 9 * Math.sin(u * 26) * (1 - u) : 45 * (1 - Math.pow((u - .7) / .3, 2));
+      const lean = fake && u > .4 && u < .7 ? (45 - off) * .6 * Math.sin((u - .4) / .3 * Math.PI) : 0;  // ψεύτικο γέρσιμο προς την άλλη πλευρά
+      const a = u < .7 ? 45 + 9 * Math.sin(u * 26) * (1 - u) + lean : 45 + (off - 45) * Math.pow((u - .7) / .3, 2);
       cube.style.transform = pose(a);
       if (u < 1) return nextFrame(wob);
       cube.style.transform = base;
@@ -549,12 +566,19 @@ function chooseSubject() {  // στο κέντρο: η ομάδα διαλέγε
 }
 
 /* ---------- ερώτηση ---------- */
-function draw(s) {  // καμία ερώτηση δεν ξαναβγαίνει πριν τελειώσουν όλες του μαθήματος
-  if (!decks[s] || !decks[s].length) decks[s] = shuffle(questionsOf(s).slice());
-  return decks[s].pop();
+function draw(s, gs) {  // καμία ερώτηση δεν ξαναβγαίνει πριν τελειώσουν όλες του μαθήματος (χωριστή τράπουλα ανά σετ τάξεων)
+  const k = s + ':' + gs;
+  if (!decks[k] || !decks[k].length) {
+    // χρώμα χωρίς ερωτήσεις για αυτές τις τάξεις (π.χ. Ιστορία για Α΄–Β΄): η πιο κοντινή τάξη που έχει
+    const ord = g => M.grades.findIndex(x => x.id === g), dist = g => Math.min(...gs.map(h => Math.abs(ord(g) - ord(h))));
+    const near = grades.slice().sort((x, y) => dist(x) - dist(y)).find(g => questionsOf(s, [g]).length);
+    const own = questionsOf(s, gs);
+    decks[k] = shuffle(own.length ? own : near ? questionsOf(s, [near]) : questionsOf(s));
+  }
+  return decks[k].pop();
 }
 function ask(tl) {
-  const tm = teams[cur], x = draw(tl.s), info = subjInfo(tl.s), real = subjInfo(x.subj);
+  const tm = teams[cur], x = draw(tl.s, tm.gs), info = subjInfo(tl.s), real = subjInfo(x.subj);
   const order = shuffle(x.answers.map((a, i) => i)), answers = order.map(i => String(x.answers[i])), right = order.indexOf(x.correct);
   const forStar = tl.star && !tm.stars.has(tl.s);
   $('dlg').style.setProperty('--c', colorOf(tl.s));

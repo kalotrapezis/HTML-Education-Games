@@ -96,8 +96,8 @@ window.registerQuiz({
       id: "animals-jobs-d", name: "Ζώα & επαγγέλματα",
       questions: [
         { q: "Πώς λέμε στα Αγγλικά τον \"σκύλο\";", answers: ["cat", "dog", "bird", "fish"], correct: 1, d: "easy" },
-        { q: "Τι σημαίνει η αγγλική λέξη \"cat\";", answers: ["σκύλος", "ψάρι", "γάτα", "πουλί"], correct: 2, d: "easy" },
-        { q: "Πώς λέμε στα Αγγλικά το \"πουλί\";", answers: ["bird", "horse", "cow", "duck"], correct: 0, d: "easy" },
+        { q: "Τι σημαίνει η αγγλική λέξη \"library\";", answers: ["νοσοκομείο", "φούρνος", "βιβλιοθήκη", "πάρκο"], correct: 2, d: "easy" },
+        { q: "Πώς λέμε στα Αγγλικά το \"φαρμακείο\";", answers: ["pharmacy", "bakery", "library", "station"], correct: 0, d: "easy" },
         { q: "Τι σημαίνει η αγγλική λέξη \"goldfish\";", answers: ["χελώνα", "άλογο", "γάτα", "χρυσόψαρο"], correct: 3, d: "medium" },
         { q: "Τι σημαίνει η αγγλική λέξη \"horse\";", answers: ["άλογο", "αγελάδα", "πρόβατο", "πάπια"], correct: 0, d: "easy" },
         { q: "Πώς λέμε στα Αγγλικά την \"αγελάδα\";", answers: ["duck", "cow", "wolf", "bear"], correct: 1, d: "medium" },

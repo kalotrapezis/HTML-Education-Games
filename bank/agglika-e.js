@@ -29,7 +29,7 @@ window.registerQuiz({
     {
       id: "places-directions-e", name: "Τόποι & κατευθύνσεις",
       questions: [
-        { q: "Πώς λέμε στα Αγγλικά το «σχολείο»;", answers: ["school", "church", "bank", "beach"], correct: 0, d: "easy" },
+        { q: "Πώς λέμε στα Αγγλικά το «αεροδρόμιο»;", answers: ["airport", "church", "bank", "beach"], correct: 0, d: "easy" },
         { q: "Τι σημαίνει η αγγλική λέξη «church»;", answers: ["τράπεζα", "εκκλησία", "γυμναστήριο", "βιβλιοπωλείο"], correct: 1, d: "easy" },
         { q: "Πώς λέμε στα Αγγλικά την «τράπεζα»;", answers: ["post office", "supermarket", "bank", "bookshop"], correct: 2, d: "easy" },
         { q: "Τι σημαίνει η αγγλική λέξη «bookshop»;", answers: ["βιβλιοπωλείο", "ταχυδρομείο", "φούρνος", "παιχνιδάδικο"], correct: 0, d: "medium" },
@@ -131,7 +131,7 @@ window.registerQuiz({
         { q: "Ποια πρόθεση δηλώνει «πάνω σε» (επιφάνεια);", answers: ["in", "on", "at", "under"], correct: 1, d: "medium" },
         { q: "Ποια πρόθεση σημαίνει «κάτω από»;", answers: ["over", "next to", "under", "between"], correct: 2, d: "medium" },
         { q: "Ποια πρόταση είναι σωστή; «There ___ two books on the table.»", answers: ["is", "are", "am", "be"], correct: 1, d: "medium" },
-        { q: "Πώς λέμε στα Αγγλικά «το καλοκαίρι»;", answers: ["winter", "summer", "autumn", "spring"], correct: 1, d: "easy" },
+        { q: "Πώς λέμε στα Αγγλικά «το φθινόπωρο»;", answers: ["winter", "summer", "autumn", "spring"], correct: 2, d: "easy" },
         { q: "Τι σημαίνει η αγγλική λέξη «beach»;", answers: ["βουνό", "παραλία", "δάσος", "λίμνη"], correct: 1, d: "easy" },
         { q: "Ποιος είναι ο σωστός τύπος παρελθόντος του «do»;", answers: ["doed", "done", "did", "dided"], correct: 2, d: "hard" }
       ]
