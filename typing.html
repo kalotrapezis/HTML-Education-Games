@@ -93,6 +93,8 @@
   .card { display: flex; align-items: center; justify-content: center; gap: 14px; padding: 10px; background: #fff; color: #1e3c72; min-height: 92px; }
   .card .em { font-size: 54px; }
   .card .w { font-size: 56px; font-weight: bold; letter-spacing: 4px; text-align: center; overflow-wrap: anywhere; }
+  .card .kh { font-size: 19px; font-weight: bold; color: #1e3c72; background: #ffe9c2; border-radius: 12px; padding: 6px 12px; line-height: 1.25; }
+  .card .kh:empty { display: none; }
   .card .w .spc { color: #ffb347; }
   .card .w .ok { color: #2e7d32; }
   .card .w .nx { text-decoration: underline 6px #ffb347; text-underline-offset: 10px; }
@@ -168,6 +170,7 @@
   </div></div>
   <div class="box"><h2>Βοήθεια</h2><div class="opts" data-k="hint">
     <div class="opt on" data-v="1"><span class="e">💡</span><span class="t">Φωτίζει το πλήκτρο</span></div>
+    <div class="opt" data-v="pos"><span class="e">🔢</span><span class="t">Λέει σειρά και θέση</span><br><span class="d">δεν φωτίζει· γράφει π.χ. «1η σειρά · 3ο πλήκτρο» — ψάξ' το μόνος σου</span></div>
     <div class="opt" data-v="0"><span class="e">🙈</span><span class="t">Χωρίς βοήθεια</span></div>
   </div></div>
   <button class="go" id="go">▶ Πάμε!</button>
@@ -204,6 +207,14 @@ const kbHtml = () => cfg.kb === 'qw'
     + `<div class="row sp">${SPACE}</div></div>`
   : `<div class="kb">${UP.split('').map(k => `<button data-k="${k}" data-id="${k}">${k}</button>`).join('')}${SPACE}</div>`;
 const SPACE = '<button class="space" data-k=" " data-id=" ">␣ κενό</button>';
+const ORD = ['1ο', '2ο', '3ο', '4ο', '5ο', '6ο', '7ο', '8ο', '9ο', '10ο'];
+// πάντα με βάση το ΚΑΝΟΝΙΚΟ πληκτρολόγιο (εκεί γράφει το παιδί), όχι τη διάταξη της οθόνης
+function keyPlace(id) {
+  if (id === ' ') return 'το μεγάλο πλήκτρο κάτω (κενό)';
+  const row = QW.findIndex(r => r.some(([ch]) => ch === id));
+  if (row < 0) return '';
+  return `${row + 1}η σειρά · ${ORD[QW[row].findIndex(([ch]) => ch === id)]} πλήκτρο`;
+}
 document.querySelectorAll('.opts').forEach(box => box.addEventListener('click', e => {
   const o = e.target.closest('.opt'); if (!o) return;
   box.querySelectorAll('.opt').forEach(x => x.classList.toggle('on', x === o));
@@ -255,7 +266,7 @@ function makeLane(p, two, list) {
       ? '<canvas></canvas><div class="act"></div>'
       : '<div class="cloud" style="top:6%;animation-duration:40s">☁️</div><div class="cloud" style="top:20%;animation-duration:55s;animation-delay:-25s;font-size:44px">☁️</div><div class="cloud" style="top:12%;animation-duration:70s;animation-delay:-50s;font-size:80px">☁️</div>'
         + '<div class="hills"></div><div class="ground"></div><div class="sprite hero"><span>🏃</span></div><div class="hearts"></div><div class="prog"><i></i><b>🏁</b></div>'}</div>
-    <div class="card"><span class="em"></span><span class="w"></span></div>
+    <div class="card"><span class="em"></span><span class="w"></span><span class="kh"></span></div>
     ${kbHtml()}`;
   const L = { el, p, two, race, list, idx: 0, pos: 0, done: 0, lives: 3, letters: 0, mistakes: 0, scene: el.querySelector('.scene'),
     prog: !race && cfg.what === 'prog', level: 1, inLevel: 0 };
@@ -283,6 +294,7 @@ function showWord(L) {
   w.innerHTML = [...item.t].map((ch, i) => `<span class="${i < k ? 'ok' : i === k ? 'nx' : ''}${ch === ' ' ? ' spc' : ''}">${ch === ' ' ? (i === k ? '␣' : '&nbsp;') : ch}</span>`).join('');
   const want = item.t[k] === 'ς' && cfg.kb === 'qw' ? 'ς' : t[k];  // τελικό ς: στο QWERTY είναι άλλο πλήκτρο
   L.el.querySelectorAll('.kb button').forEach(b => b.classList.toggle('hl', cfg.hint === '1' && running && b.dataset.id === want));
+  L.el.querySelector('.kh').textContent = cfg.hint === 'pos' && running && want ? keyPlace(want) : '';
 }
 function paint(L) {
   L.el.querySelector('.cnt').textContent = `✓ ${L.letters}  ✗ ${L.mistakes}`;  // σωστά / λάθος πατήματα

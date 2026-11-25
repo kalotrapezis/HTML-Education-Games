@@ -64,6 +64,7 @@
   #kb .k.next { outline: 6px solid #fff; transform: scale(1.12); }
   #kb .k.hit { transform: translateY(4px); box-shadow: none; }
   #kb .k.bad { background: #e53935 !important; color: #fff; }
+  #kb.look .k { pointer-events: none; opacity: .72; }  /* δύσκολο: φαίνεται και δείχνει, αλλά δεν πατιέται */
   .f0 { background: #f48fb1; } .f1 { background: #ffcc80; } .f2 { background: #fff59d; } .f3 { background: #a5d6a7; }
   .f4 { background: #90caf9; } .f5 { background: #ce93d8; } .f6 { background: #80cbc4; } .f7 { background: #bcaaa4; } .f8 { background: #e0e0e0; }
   #tfile { display: flex; gap: 14px; justify-content: center; }
@@ -86,6 +87,7 @@
     <button data-g="sub"><span class="em">🎈🎈🎈 − 🎈</span><span class="nm">Αφαίρεση</span><span class="ds">Μέχρι το 10, με εικόνες</span></button>
     <button data-g="clock"><span class="em">🕒</span><span class="nm">Τι ώρα είναι;</span><span class="ds">Ακριβώς και μισή</span></button>
     <button data-t="copy"><span class="em">⌨️</span><span class="nm">Γράψε τη λέξη</span><span class="ds">Τυφλό σύστημα: κοίτα την οθόνη, όχι τα πλήκτρα</span></button>
+    <button data-t="hard"><span class="em">🚫⌨️</span><span class="nm">Γράψε τη λέξη — δύσκολο</span><span class="ds">Το πληκτρολόγιο της οθόνης δείχνει το πλήκτρο, αλλά δεν πατιέται</span></button>
     <button data-t="free"><span class="em">📝</span><span class="nm">Κειμενογράφος</span><span class="ds">Γράψε ό,τι θέλεις με μεγάλα γράμματα</span></button>
     <a href="falling.html"><span class="em">🌧️</span><span class="nm">Βροχή από Γράμματα</span><span class="ds">Πιάσε τα σωστά γράμματα, λέξεις ή πράξεις · 1 ή 2 παίκτες</span></a>
     <a href="lexeis.html"><span class="em">✂️</span><span class="nm">Παίζω με τις Λέξεις</span><span class="ds">Συλλαβές · Ανακατεμένα · Ποια λείπει; · Τυφλοπόντικας</span></a>
@@ -275,6 +277,7 @@ function startTyping(mode) {
   tmode = mode; tstars = 0;
   $('home').style.display = 'none'; $('typing').style.display = 'flex'; $('toMenu').hidden = false;
   const free = mode === 'free';
+  $('kb').classList.toggle('look', mode === 'hard');  // δείχνει το επόμενο πλήκτρο, δεν δέχεται κλικ
   $('ttext').style.display = free ? 'block' : 'none';
   $('tfile').style.display = free ? 'flex' : 'none';
   $('tpic').style.display = $('tword').style.display = $('tstars').style.display = free ? 'none' : 'block';
