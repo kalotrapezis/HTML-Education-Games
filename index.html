@@ -13,21 +13,21 @@
     background: linear-gradient(135deg, #1e3c72, #2a5298 50%, #6b2a8a);
     color: #fff;
     min-height: 100vh;
-    padding: 60px 30px;
+    padding: 24px 20px;
     display: flex;
     flex-direction: column;
     align-items: center;
   }
-  h1 { font-size: 60px; margin-bottom: 16px; text-align: center; }
-  .subtitle { font-size: 22px; opacity: 0.85; margin-bottom: 60px; text-align: center; }
+  h1 { font-size: 40px; margin-bottom: 8px; text-align: center; }
+  .subtitle { font-size: 19px; opacity: 0.85; margin-bottom: 24px; text-align: center; }
   .category {
-    font-size: 36px;
+    font-size: 28px;
     color: #ffb347;
-    margin: 50px 0 30px;
+    margin: 24px 0 16px;
     text-align: center;
     width: 100%;
     max-width: 1100px;
-    padding-bottom: 14px;
+    padding-bottom: 8px;
     border-bottom: 2px solid rgba(255,179,71,0.3);
   }
   .category:first-of-type { margin-top: 10px; }
@@ -41,20 +41,20 @@
   .card::before { content: counter(cat, greek-cap) counter(card); position: absolute; top: 10px; right: 12px; background: #ffb347; color: #1e3c72; font-weight: bold; font-size: 22px; padding: 2px 12px; border-radius: 12px; }
   .grid {
     display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
-    gap: 32px;
+    grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+    gap: 16px;
     max-width: 1100px;
     width: 100%;
   }
   .card {
     background: rgba(0,0,0,0.35);
     border-radius: 18px;
-    padding: 40px 32px;
+    padding: 18px 20px;
     text-decoration: none;
     color: #fff;
     display: flex;
     flex-direction: column;
-    gap: 14px;
+    gap: 8px;
     box-shadow: 0 6px 18px rgba(0,0,0,0.3);
     transition: transform 0.15s, box-shadow 0.15s;
     border: 2px solid transparent;
@@ -64,39 +64,40 @@
     box-shadow: 0 10px 24px rgba(0,0,0,0.4);
     border-color: #ffb347;
   }
-  .card .header { display: flex; align-items: center; gap: 16px; }
-  .card .emoji { font-size: 56px; }
-  .card .name { font-size: 26px; font-weight: bold; color: #ffb347; }
+  .card .header { display: flex; align-items: center; gap: 12px; }
+  .card .header > div { min-width: 0; overflow-wrap: anywhere; }
+  .card .emoji { font-size: 40px; }
+  .card .name { font-size: 21px; font-weight: bold; color: #ffb347; }
   .card .year {
     display: inline-block; font-size: 13px; padding: 3px 10px;
     background: rgba(255,179,71,0.2); color: #ffb347; border-radius: 12px;
     margin-top: 4px; font-weight: bold;
   }
-  .card .desc { font-size: 16px; opacity: 0.9; line-height: 1.55; }
+  .card .desc { font-size: 15px; opacity: 0.9; line-height: 1.45; }
   .card .fact {
     font-size: 14px; opacity: 0.75; line-height: 1.5; margin-top: 6px;
     border-left: 3px solid #ffb347; padding-left: 12px; font-style: italic;
   }
   .card .thumb { width: 100%; aspect-ratio: 16 / 9; object-fit: cover; border-radius: 12px; }
-  .catnav { display: grid; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); gap: 32px; max-width: 1100px; width: 100%; }
+  .catnav { display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 18px; max-width: 1100px; width: 100%; }
   .catcard {
     font: inherit; cursor: pointer; text-align: center; color: #fff;
     background: rgba(0,0,0,0.35); border: 2px solid transparent; border-radius: 18px;
-    padding: 40px 24px; box-shadow: 0 6px 18px rgba(0,0,0,0.3);
+    padding: 26px 20px; box-shadow: 0 6px 18px rgba(0,0,0,0.3);
     transition: transform 0.15s, box-shadow 0.15s;
   }
   .catcard:hover { transform: translateY(-4px); box-shadow: 0 10px 24px rgba(0,0,0,0.4); border-color: #ffb347; }
-  .catcard .emoji { font-size: 64px; }
-  .catcard .name { font-size: 26px; font-weight: bold; color: #ffb347; margin-top: 10px; }
+  .catcard .emoji { font-size: 48px; }
+  .catcard .name { font-size: 22px; font-weight: bold; color: #ffb347; margin-top: 10px; }
   .catcard .count { font-size: 15px; opacity: 0.75; margin-top: 6px; }
   .back {
     font: inherit; font-size: 20px; cursor: pointer; color: #1e3c72; background: #ffb347;
-    border: 0; border-radius: 14px; padding: 12px 26px; margin-bottom: 30px; font-weight: bold;
+    border: 0; border-radius: 14px; padding: 10px 22px; margin-bottom: 18px; font-weight: bold;
   }
   /* shortcut: κρύβουμε εκτός οθόνης κι όχι με display:none, ώστε να μη χαθεί η αρίθμηση Α1/Β3 (οι CSS counters δεν τρέχουν σε display:none) */
   .off { position: absolute; left: -99999px; top: 0; visibility: hidden; }
-  .grid.wide { grid-template-columns: 1fr; max-width: 1100px; gap: 22px; }
-  .card.prog { display: flex; flex-direction: column; gap: 12px; padding: 28px 44px 28px 32px; }
+  .grid.wide { grid-template-columns: 1fr; max-width: 1100px; gap: 16px; }
+  .card.prog { display: flex; flex-direction: column; gap: 10px; padding: 20px 44px 20px 24px; }
   .card.prog > .name { order: 1; font-size: 28px; }
   .card.prog > .logo { order: 2; width: 110px; height: 110px; object-fit: contain; align-self: flex-start; }
   .card.prog > .year { order: 3; align-self: flex-start; margin-top: 0; }
@@ -108,7 +109,7 @@
   .intro {
     max-width: 1100px; width: 100%; font-size: 17px; line-height: 1.6;
     background: rgba(0,0,0,0.25); border-left: 4px solid #ffb347;
-    border-radius: 12px; padding: 18px 22px; margin-bottom: 30px;
+    border-radius: 12px; padding: 14px 18px; margin-bottom: 18px;
   }
   .card .logo { width: 64px; height: 64px; object-fit: contain; flex: 0 0 64px; }
   .card.prog .name { font-size: 24px; }
