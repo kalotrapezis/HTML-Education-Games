@@ -714,6 +714,10 @@
   .sb select { font-size: 18px; border-radius: 12px; padding: 1px 6px; margin: 0 2px; font-family: inherit; }
   .cell.lamp { background: #29b6f6 !important; } .cell.lamp.lit { background: #fff176 !important; box-shadow: inset 0 0 20px #fbc02d; }
   .teachbox { position: absolute; left: 50%; top: 50%; transform: translate(-50%, -50%); z-index: 50; background: #1b3a6b; border: 3px solid #ffb347; border-radius: 18px; padding: 28px 34px; text-align: center; box-shadow: 0 16px 40px rgba(0,0,0,0.5); }
+  .booklinks { display: flex; gap: 8px; align-items: center; justify-content: center; flex-wrap: wrap; font-size: 15px; opacity: 0.9; }
+  #homeBooks { margin: -10px 0 16px; }
+  .booklinks a { color: #fff; text-decoration: none; background: rgba(255,255,255,0.12); border: 1px solid rgba(255,255,255,0.25); border-radius: 10px; padding: 3px 10px; white-space: nowrap; }
+  .booklinks a:hover { background: #ffb347; color: #1e3c72; }
   .ref a { color: inherit; text-decoration: underline; text-underline-offset: 3px; }
   .ref a:hover { color: #ffb347; }
   .teachexit { background: #ffb347 !important; color: #1e3c72 !important; }
@@ -739,6 +743,7 @@
     <div class="tabs grades" id="grades"></div>
     <div class="tabs" id="tabs"></div>
     <div class="chapter-title" id="chapterTitle"></div>
+    <div class="booklinks" id="homeBooks"></div>
     <div class="lessons" id="lessons"></div>
   </div>
 
@@ -759,6 +764,7 @@
       <button class="secondary" id="homeBtn">← Μαθήματα</button>
       <button class="secondary teachexit" id="teachExit" hidden>🔓 Έξοδος δασκάλου</button>
       <div class="lesson-title" id="lessonTitle"></div>
+      <span class="booklinks" id="bookLinks"></span>
       <div class="pips" id="pips"></div>
     </div>
     <div class="instr"><span class="kind" id="kind"></span><button class="say" id="sayBtn" title="Άκου" hidden>🔊</button><span class="texts"><span id="instr"></span><span class="guide" id="guide"></span></span><span class="ref" id="ref"></span></div>
@@ -12772,6 +12778,12 @@ const BOOK_PDF = {
   '#e': { '6.0': ['books/e-v60.pdf', 1], 'v08': ['books/e-v08.pdf', 2] },
   '#f': { '8.0': ['books/f-v80.pdf', 2], '8.02': ['books/f-v802.pdf', 2] },
 };
+// σύνδεσμοι προς τα βιβλία της τάξης, δίπλα στον τίτλο
+function bookLinksHTML() {
+  const map = BOOK_PDF[BOOKS[gradeIdx].hash] || {};
+  return Object.entries(map).map(([v, [f]], i) =>
+    `<a href="${f}" target="_blank" rel="noopener" title="Άνοιγμα του βιβλίου σε νέα καρτέλα">${['📕', '📗'][i] || '📘'} έκδ. ${v}</a>`).join('');
+}
 const esc = t => { const d = document.createElement('div'); d.textContent = t; return d.innerHTML; };
 function refHTML(ref) {
   const map = BOOK_PDF[BOOKS[gradeIdx].hash] || {};
@@ -12842,6 +12854,7 @@ function renderHome() {
   });
   const ch = book()[chapterIdx];
   $('chapterTitle').textContent = ch.title;
+  $('homeBooks').innerHTML = BOOKS[gradeIdx].extra ? '' : '📖 Τα βιβλία της τάξης: ' + bookLinksHTML();
   const box = $('lessons');
   box.innerHTML = '';
   if (!ch.lessons.length) {
@@ -13048,6 +13061,7 @@ function renderAct() {
   runId++;
   const les = book()[chapterIdx].lessons[lessonIdx];
   $('lessonTitle').textContent = `${teacher ? '🔑 ' : ''}${les.icon} ${lessonIdx + 1}. ${les.title}`;
+  $('bookLinks').innerHTML = bookLinksHTML();
   if (actIdx >= les.acts.length) return renderFinish(les);
   const act = les.acts[actIdx];
   $('kind').textContent = act.ext ? '🌍 Διαδίκτυο' : (act.practice ? '💪 Εξάσκηση · ' : '') + KIND_NAMES[act.type];
