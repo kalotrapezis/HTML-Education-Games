@@ -78,11 +78,57 @@
     border-left: 3px solid #ffb347; padding-left: 12px; font-style: italic;
   }
   .card .thumb { width: 100%; aspect-ratio: 16 / 9; object-fit: cover; border-radius: 12px; }
+  .catnav { display: grid; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); gap: 32px; max-width: 1100px; width: 100%; }
+  .catcard {
+    font: inherit; cursor: pointer; text-align: center; color: #fff;
+    background: rgba(0,0,0,0.35); border: 2px solid transparent; border-radius: 18px;
+    padding: 40px 24px; box-shadow: 0 6px 18px rgba(0,0,0,0.3);
+    transition: transform 0.15s, box-shadow 0.15s;
+  }
+  .catcard:hover { transform: translateY(-4px); box-shadow: 0 10px 24px rgba(0,0,0,0.4); border-color: #ffb347; }
+  .catcard .emoji { font-size: 64px; }
+  .catcard .name { font-size: 26px; font-weight: bold; color: #ffb347; margin-top: 10px; }
+  .catcard .count { font-size: 15px; opacity: 0.75; margin-top: 6px; }
+  .back {
+    font: inherit; font-size: 20px; cursor: pointer; color: #1e3c72; background: #ffb347;
+    border: 0; border-radius: 14px; padding: 12px 26px; margin-bottom: 30px; font-weight: bold;
+  }
+  /* shortcut: κρύβουμε εκτός οθόνης κι όχι με display:none, ώστε να μη χαθεί η αρίθμηση Α1/Β3 (οι CSS counters δεν τρέχουν σε display:none) */
+  .off { position: absolute; left: -99999px; top: 0; visibility: hidden; }
+  .grid.wide { grid-template-columns: 1fr; max-width: 1100px; gap: 22px; }
+  .card.prog { display: flex; flex-direction: column; gap: 12px; padding: 28px 44px 28px 32px; }
+  .card.prog > .name { order: 1; font-size: 28px; }
+  .card.prog > .logo { order: 2; width: 110px; height: 110px; object-fit: contain; align-self: flex-start; }
+  .card.prog > .year { order: 3; align-self: flex-start; margin-top: 0; }
+  .card.prog > .desc { order: 4; }
+  .card.prog > .howto { order: 5; }
+  .card.prog > .fact { order: 6; }
+  .card.prog > .dl { order: 7; }
+  .card.prog > .qrs { order: 8; margin-top: 4px; }
+  .intro {
+    max-width: 1100px; width: 100%; font-size: 17px; line-height: 1.6;
+    background: rgba(0,0,0,0.25); border-left: 4px solid #ffb347;
+    border-radius: 12px; padding: 18px 22px; margin-bottom: 30px;
+  }
+  .card .logo { width: 64px; height: 64px; object-fit: contain; flex: 0 0 64px; }
+  .card.prog .name { font-size: 24px; }
+  .howto { font-size: 15px; opacity: 0.9; line-height: 1.55; }
+  .dl {
+    display: inline-block; align-self: flex-start; font-size: 15px; font-weight: bold;
+    color: #1e3c72; background: #ffb347; border-radius: 10px; padding: 8px 14px; text-decoration: none;
+  }
+  .dl:hover { background: #ffc877; }
+  .qrs { display: flex; flex-wrap: wrap; gap: 14px; }
+  .qr { text-decoration: none; color: #fff; text-align: center; font-size: 13px; }
+  .qr img { width: 92px; height: 92px; background: #fff; border-radius: 8px; padding: 2px; display: block; }
+  .qr span { display: block; margin-top: 4px; opacity: 0.85; }
 </style>
 </head>
 <body>
 <h1>🎮 Διαδραστικά Παιχνίδια</h1>
-<div class="subtitle">Διάλεξε ένα παιχνίδι για να παίξεις</div>
+<div class="subtitle">Διάλεξε κατηγορία</div>
+<div class="catnav" id="catnav"></div>
+<button class="back off" id="back">⬅ Πίσω στις κατηγορίες</button>
 
 <h2 class="category">📚 Για το μάθημα</h2>
 <div class="grid">
@@ -363,6 +409,17 @@
     </div>
     <div class="desc">Γράψε τη λέξη για να ρίξει ο νίντζα το αστέρι του στο τέρας (Turtle Diary). Ανοίγει σε νέα καρτέλα.</div>
   </a>
+  <a class="card" href="https://toonytool.com/" target="_blank" rel="noopener noreferrer">
+    <div class="header">
+      <div class="emoji">💬</div>
+      <div>
+        <div class="name">ToonyTool</div>
+        <div class="year">Γ′–ΣΤ′</div>
+      </div>
+    </div>
+    <div class="desc">Φτιάχνουμε τα δικά μας κόμικς: βάζουμε φόντο και ήρωες, προσθέτουμε συννεφάκια με διαλόγους και αποθηκεύουμε την ιστορία μας. Δουλεύει μέσα από τον browser, χωρίς εγκατάσταση. Ανοίγει σε νέα καρτέλα.</div>
+    <div class="fact">Χωρίς λογαριασμό — η έτοιμη εικόνα κατεβαίνει ως αρχείο, οπότε τα παιδιά τη βάζουν εύκολα σε κείμενο ή παρουσίαση.</div>
+  </a>
 </div>
 
 <h2 class="category">🎉 Για διασκέδαση</h2>
@@ -453,6 +510,331 @@
     <div class="desc">Drones, τρακτέρ χωρίς οδηγό, ρομπότ αρμέγματος και ψηφιακοί φράχτες: πώς βοηθά η τεχνολογία τους αγρότες, τους κτηνοτρόφους και το περιβάλλον. Κάθε μαθητής την ανοίγει στη δική του οθόνη και τα βίντεο ανοίγουν σε νέα καρτέλα.</div>
     <div class="fact">eTwinning «Παράδοση και Περιβάλλον». Μετά την παρουσίαση οι ομάδες χτίζουν δύο ρομπότ TPBot με micro:bit.</div>
   </a>
+  <a class="card" href="https://docs.google.com/presentation/d/15JZmzNKDsUpvcvPTLir3gSDzixB0rkLvjdKSxJgh3MM/present" target="_blank" rel="noopener noreferrer">
+    <img class="thumb" src="thumbs/syskeves-eisodou.jpg" alt="Πρώτη διαφάνεια: Συσκευές Εισόδου και Εξόδου">
+    <div class="name">Συσκευές Εισόδου και Εξόδου</div>
+        <div class="year">Πληροφορική Β′–ΣΤ′</div>
+    <div class="desc">Ο υπολογιστής μάς συστήνει τους φίλους του: ποντίκι, πληκτρολόγιο, οθόνη, εκτυπωτής και ηχεία — ποιος δίνει πληροφορίες στον υπολογιστή και ποιος μας τις επιστρέφει. Ανοίγει σε νέα καρτέλα, έτοιμη για προβολή.</div>
+    <div class="fact">Η προτελευταία διαφάνεια είναι παιχνίδι: για κάθε συσκευή τα παιδιά δείχνουν ένα δάχτυλο αν είναι εισόδου και δύο αν είναι εξόδου — με κάθε κλικ εμφανίζεται η σωστή απάντηση, μία-μία.</div>
+  </a>
+  <a class="card" href="https://www.canva.com/design/DAHb5NChoYs/OJfWOQ8sCfQcmmAWUFFFZQ/view" target="_blank" rel="noopener noreferrer">
+    <img class="thumb" src="thumbs/mystikos-pyrgos.jpg" alt="Πρώτη διαφάνεια: Ο Μυστικός Κόσμος του Πύργου">
+    <div class="name">Ο Μυστικός Κόσμος του Πύργου</div>
+        <div class="year">Πληροφορική Δ′–ΣΤ′</div>
+    <div class="desc">Το εσωτερικό του υπολογιστή σαν πύργος: επεξεργαστής, μνήμη, σκληρός δίσκος και κάρτες δουλεύουν μαζί σαν μια ομάδα που δεν χάνει τον ρυθμό. Ανοίγει στο Canva, σε νέα καρτέλα.</div>
+  </a>
+  <a class="card" href="https://www.canva.com/design/DAHb5Ig9AI8/VlgKiTtvlSRRO3apOv6GRg/view" target="_blank" rel="noopener noreferrer">
+    <img class="thumb" src="thumbs/open-source.jpg" alt="Πρώτη διαφάνεια: Λογισμικό Ανοιχτού Κώδικα">
+    <div class="name">Λογισμικό Ανοιχτού Κώδικα</div>
+        <div class="year">Πληροφορική Ε′–ΣΤ′</div>
+    <div class="desc">Οι μεγάλες εταιρείες (Apple, Google, Microsoft, Amazon, Meta, ByteDance) και απέναντι ο κόσμος του ανοιχτού κώδικα: Linux, LibreOffice, VLC, GIMP και οι υπόλοιποι. Ανοίγει στο Canva, σε νέα καρτέλα.</div>
+    <div class="fact">Συνοδεύει την κατηγορία «Προγράμματα υπολογιστή» πιο κάτω.</div>
+  </a>
 </div>
+<h2 class="category">💾 Προγράμματα υπολογιστή</h2>
+<div class="intro">Σχεδόν όλα όσα ακολουθούν είναι <b>δωρεάν και χωρίς διαφημίσεις</b>: τα περισσότερα είναι λογισμικό ανοιχτού κώδικα, δηλαδή ο κώδικάς τους είναι ανοιχτός σε όλους, δεν πληρώνεις τίποτα και δεν πουλάει κανείς τα δεδομένα σου. Μερικά (όπως το Timez Attack) είναι κλειστού κώδικα αλλά δωρεάν. Σκάναρε το QR με την κάμερα του κινητού ή του τάμπλετ και πηγαίνεις κατευθείαν στην εφαρμογή· για τον υπολογιστή πάτα τη «Σελίδα λήψης». Κατεβάζουμε <b>πάντα από την επίσημη σελίδα</b> και ρωτάμε γονιό ή δάσκαλο πριν εγκαταστήσουμε κάτι.</div>
+<div class="grid wide">
+  <div class="card prog">
+    <img class="logo" src="thumbs/logos/scratch.png" alt="Λογότυπο Scratch 3">
+    <div class="name">Scratch 3</div>
+    <div class="year">Ανοιχτού κώδικα · Windows, Android</div>
+    <div class="desc">Φτιάχνουμε δικά μας παιχνίδια, ιστορίες και κινούμενα σχέδια ενώνοντας χρωματιστά τουβλάκια κώδικα σαν παζλ. Παίζει και μέσα από τον browser, χωρίς εγκατάσταση.</div>
+    <div class="howto"><b>Πώς το βάζω:</b> Στον υπολογιστή: πάτα «Direct download», άνοιξε το αρχείο και «Επόμενο» μέχρι το τέλος. Δεν χρειάζεται λογαριασμός για να παίξεις — μόνο αν θες να αποθηκεύεις online.</div>
+    <div class="fact"><b>Πρόσεχε:</b> Η εφαρμογή Android δουλεύει μόνο σε τάμπλετ, όχι σε κινητό.</div>
+    <a class="dl" href="https://scratch.mit.edu/download" target="_blank" rel="noopener noreferrer">⬇ Σελίδα λήψης — scratch.mit.edu/download</a>
+    <div class="qrs">
+      <a class="qr" href="https://play.google.com/store/apps/details?id=org.scratch" target="_blank" rel="noopener noreferrer"><img src="thumbs/qr/scratch-play.png" alt="QR: Play Store (τάμπλετ)"><span>Play Store (τάμπλετ)</span></a>
+      <a class="qr" href="https://scratch.mit.edu/" target="_blank" rel="noopener noreferrer"><img src="thumbs/qr/scratch-web.png" alt="QR: Online"><span>Online</span></a>
+    </div>
+  </div>
+  <div class="card prog">
+    <img class="logo" src="thumbs/logos/microbit.png" alt="Λογότυπο micro:bit MakeCode">
+    <div class="name">micro:bit MakeCode</div>
+    <div class="year">Ανοιχτού κώδικα · online, Android, iOS</div>
+    <div class="desc">Προγραμματίζουμε με τουβλάκια έναν μικρό υπολογιστή με φωτάκια, κουμπιά και αισθητήρες — καρδούλες, βήματα, ρομπότ. Έχει και προσομοιωτή στην οθόνη.</div>
+    <div class="howto"><b>Πώς το βάζω:</b> Στα Windows δεν θέλει εγκατάσταση: γράφεις μέσα στον browser και περνάς το πρόγραμμα με καλώδιο USB. Στο κινητό το στέλνεις με Bluetooth.</div>
+    <div class="fact"><b>Πρόσεχε:</b> Το ίδιο το micro:bit είναι ξεχωριστή συσκευή· χωρίς αυτό δουλεύει μόνο ο προσομοιωτής.</div>
+    <a class="dl" href="https://makecode.microbit.org/" target="_blank" rel="noopener noreferrer">⬇ Σελίδα λήψης — makecode.microbit.org</a>
+    <div class="qrs">
+      <a class="qr" href="https://play.google.com/store/apps/details?id=com.samsung.microbit" target="_blank" rel="noopener noreferrer"><img src="thumbs/qr/microbit-play.png" alt="QR: Play Store"><span>Play Store</span></a>
+      <a class="qr" href="https://apps.apple.com/app/micro-bit/id1092687276" target="_blank" rel="noopener noreferrer"><img src="thumbs/qr/microbit-apple.png" alt="QR: App Store"><span>App Store</span></a>
+    </div>
+  </div>
+  <div class="card prog">
+    <img class="logo" src="thumbs/logos/toonytool.png" alt="Λογότυπο ToonyTool">
+    <div class="name">ToonyTool</div>
+    <div class="year">Δωρεάν · online</div>
+    <div class="desc">Φτιάχνουμε κόμικς: διαλέγουμε φόντο και ήρωες, βάζουμε συννεφάκια με διαλόγους και κατεβάζουμε την εικόνα.</div>
+    <div class="howto"><b>Πώς το βάζω:</b> Δεν εγκαθίσταται και δεν θέλει λογαριασμό: ανοίγεις τη σελίδα και ξεκινάς. Στο τέλος πατάς λήψη για να σώσεις το κόμικ ως εικόνα.</div>
+    <div class="fact"><b>Πρόσεχε:</b> Αν δεν πατήσεις λήψη, η δουλειά σου χάνεται όταν κλείσεις τη σελίδα.</div>
+    <a class="dl" href="https://toonytool.com/" target="_blank" rel="noopener noreferrer">⬇ Σελίδα λήψης — toonytool.com</a>
+    <div class="qrs">
+      <a class="qr" href="https://toonytool.com/" target="_blank" rel="noopener noreferrer"><img src="thumbs/qr/toonytool-site.png" alt="QR: Σελίδα"><span>Σελίδα</span></a>
+    </div>
+  </div>
+  <div class="card prog">
+    <img class="logo" src="thumbs/logos/onlyoffice.png" alt="Λογότυπο ONLYOFFICE">
+    <div class="name">ONLYOFFICE</div>
+    <div class="year">Ανοιχτού κώδικα · Windows, Android, iOS</div>
+    <div class="desc">Πρόγραμμα γραφείου: κείμενα, πίνακες με αριθμούς και παρουσιάσεις. Ανοίγει και αποθηκεύει αρχεία Word, Excel και PowerPoint.</div>
+    <div class="howto"><b>Πώς το βάζω:</b> Διάλεξε «Desktop Editors» για Windows και τρέξε το αρχείο. Στο πρώτο άνοιγμα σού ζητά λογαριασμό — πάτα «Παράλειψη», δουλεύει και χωρίς.</div>
+    <div class="fact"><b>Πρόσεχε:</b> Μην μπερδευτείς με την επιλογή «Cloud/Docs Server» — αυτή είναι για διακομιστές, όχι για το σπίτι.</div>
+    <a class="dl" href="https://www.onlyoffice.com/download-desktop.aspx" target="_blank" rel="noopener noreferrer">⬇ Σελίδα λήψης — onlyoffice.com/download-desktop</a>
+    <div class="qrs">
+      <a class="qr" href="https://play.google.com/store/apps/details?id=com.onlyoffice.documents" target="_blank" rel="noopener noreferrer"><img src="thumbs/qr/onlyoffice-play.png" alt="QR: Play Store"><span>Play Store</span></a>
+      <a class="qr" href="https://apps.apple.com/app/id944896972" target="_blank" rel="noopener noreferrer"><img src="thumbs/qr/onlyoffice-apple.png" alt="QR: App Store"><span>App Store</span></a>
+    </div>
+  </div>
+  <div class="card prog">
+    <img class="logo" src="thumbs/logos/libreoffice.png" alt="Λογότυπο LibreOffice">
+    <div class="name">LibreOffice</div>
+    <div class="year">Ανοιχτού κώδικα · Windows, macOS, Linux</div>
+    <div class="desc">Πλήρης σουίτα γραφείου στα ελληνικά: Writer για κείμενα, Calc για πίνακες, Impress για παρουσιάσεις.</div>
+    <div class="howto"><b>Πώς το βάζω:</b> Κατέβασε την έκδοση για τα Windows και τρέξε την. Θες και τα ελληνικά μενού; Κατέβασε επιπλέον το «Μεταφρασμένο περιβάλλον» από την ίδια σελίδα.</div>
+    <div class="fact"><b>Πρόσεχε:</b> Κατέβασέ το μόνο από το libreoffice.org — υπάρχουν σελίδες που το δίνουν με διαφημίσεις μέσα.</div>
+    <a class="dl" href="https://el.libreoffice.org/download/" target="_blank" rel="noopener noreferrer">⬇ Σελίδα λήψης — el.libreoffice.org/download</a>
+    <div class="qrs">
+      <a class="qr" href="https://el.libreoffice.org/download/" target="_blank" rel="noopener noreferrer"><img src="thumbs/qr/libreoffice-site.png" alt="QR: Σελίδα λήψης"><span>Σελίδα λήψης</span></a>
+    </div>
+  </div>
+  <div class="card prog">
+    <img class="logo" src="thumbs/logos/gcompris.png" alt="Λογότυπο GCompris">
+    <div class="name">GCompris</div>
+    <div class="year">Ανοιχτού κώδικα · Windows, Android</div>
+    <div class="desc">Δεκάδες μικρές δραστηριότητες: ποντίκι και πληκτρολόγιο, αριθμοί, η ώρα, ζωγραφική, γρίφοι. Υπάρχει και στα ελληνικά.</div>
+    <div class="howto"><b>Πώς το βάζω:</b> Στα Windows κατέβασε το αρχείο .exe και τρέξε το. Τη γλώσσα την αλλάζεις από το γρανάζι κάτω δεξιά.</div>
+    <div class="fact"><b>Πρόσεχε:</b> Στο Play Store η πλήρης έκδοση είναι επί πληρωμή· από τη σελίδα του GCompris για υπολογιστή είναι δωρεάν ολόκληρη.</div>
+    <a class="dl" href="https://gcompris.net/downloads-en.html" target="_blank" rel="noopener noreferrer">⬇ Σελίδα λήψης — gcompris.net/downloads</a>
+    <div class="qrs">
+      <a class="qr" href="https://play.google.com/store/apps/details?id=net.gcompris.full" target="_blank" rel="noopener noreferrer"><img src="thumbs/qr/gcompris-play.png" alt="QR: Play Store"><span>Play Store</span></a>
+      <a class="qr" href="https://gcompris.net/downloads-en.html" target="_blank" rel="noopener noreferrer"><img src="thumbs/qr/gcompris-site.png" alt="QR: Σελίδα λήψης"><span>Σελίδα λήψης</span></a>
+    </div>
+  </div>
+  <div class="card prog">
+    <img class="logo" src="thumbs/logos/tuxmath.png" alt="Λογότυπο Tux Math">
+    <div class="name">Tux Math</div>
+    <div class="year">Ανοιχτού κώδικα · μόνο υπολογιστής</div>
+    <div class="desc">Μετεωρίτες με πράξεις πέφτουν στα ιγκλού των πιγκουίνων· γράφεις γρήγορα το σωστό αποτέλεσμα και τους σώζεις.</div>
+    <div class="howto"><b>Πώς το βάζω:</b> Πάτα το πράσινο «Download», άνοιξε το αρχείο και «Επόμενο». Διάλεξε πράξη και επίπεδο από το μενού του παιχνιδιού.</div>
+    <div class="fact"><b>Πρόσεχε:</b> Στο SourceForge υπάρχουν μεγάλα διαφημιστικά κουμπιά «Download» — πάτα μόνο το πράσινο πάνω από το όνομα του προγράμματος.</div>
+    <a class="dl" href="https://sourceforge.net/projects/tuxmath/" target="_blank" rel="noopener noreferrer">⬇ Σελίδα λήψης — sourceforge.net/projects/tuxmath</a>
+    <div class="qrs">
+      <a class="qr" href="https://sourceforge.net/projects/tuxmath/" target="_blank" rel="noopener noreferrer"><img src="thumbs/qr/tuxmath-site.png" alt="QR: Σελίδα λήψης"><span>Σελίδα λήψης</span></a>
+    </div>
+  </div>
+  <div class="card prog">
+    <img class="logo" src="thumbs/logos/supertux.png" alt="Λογότυπο SuperTux">
+    <div class="name">SuperTux</div>
+    <div class="year">Ανοιχτού κώδικα · μόνο υπολογιστής</div>
+    <div class="desc">Παιχνίδι πλατφόρμας: τρέχεις, πηδάς πάνω στους εχθρούς και μαζεύεις νομίσματα ως το τέλος της πίστας.</div>
+    <div class="howto"><b>Πώς το βάζω:</b> Κατέβασε την έκδοση για Windows, άνοιξε το αρχείο και τρέξε το. Δεν θέλει λογαριασμό ούτε σύνδεση στο ίντερνετ.</div>
+    <div class="fact"><b>Πρόσεχε:</b> Αν το Windows Defender ρωτήσει, διάλεξε «Περισσότερα → Εκτέλεση»: το αρχείο είναι από την επίσημη σελίδα.</div>
+    <a class="dl" href="https://supertux.org/download.html" target="_blank" rel="noopener noreferrer">⬇ Σελίδα λήψης — supertux.org/download</a>
+    <div class="qrs">
+      <a class="qr" href="https://supertux.org/download.html" target="_blank" rel="noopener noreferrer"><img src="thumbs/qr/supertux-site.png" alt="QR: Σελίδα λήψης"><span>Σελίδα λήψης</span></a>
+    </div>
+  </div>
+  <div class="card prog">
+    <img class="logo" src="thumbs/logos/supertuxkart.png" alt="Λογότυπο SuperTuxKart">
+    <div class="name">SuperTuxKart</div>
+    <div class="year">Ανοιχτού κώδικα · Windows, Android, iOS</div>
+    <div class="desc">Αγώνες με καρτ: διαλέγεις ήρωα, μαζεύεις δώρα στην πίστα και τρέχεις ενάντια στους φίλους σου ή στον υπολογιστή.</div>
+    <div class="howto"><b>Πώς το βάζω:</b> Στα Windows κατέβασε το αρχείο και τρέξε το. Παίζεται και δύο άτομα στον ίδιο υπολογιστή από το μενού «Split screen».</div>
+    <div class="fact"><b>Πρόσεχε:</b> Θέλει αρκετή κάρτα γραφικών· αν κολλάει, χαμήλωσε τα γραφικά από τις ρυθμίσεις.</div>
+    <a class="dl" href="https://supertuxkart.net/Download" target="_blank" rel="noopener noreferrer">⬇ Σελίδα λήψης — supertuxkart.net/Download</a>
+    <div class="qrs">
+      <a class="qr" href="https://play.google.com/store/apps/details?id=org.supertuxkart.stk" target="_blank" rel="noopener noreferrer"><img src="thumbs/qr/supertuxkart-play.png" alt="QR: Play Store"><span>Play Store</span></a>
+      <a class="qr" href="https://apps.apple.com/gr/app/supertuxkart/id6737858957" target="_blank" rel="noopener noreferrer"><img src="thumbs/qr/supertuxkart-apple.png" alt="QR: App Store"><span>App Store</span></a>
+    </div>
+  </div>
+  <div class="card prog">
+    <img class="logo" src="thumbs/logos/etracer.png" alt="Λογότυπο Extreme Tux Racer">
+    <div class="name">Extreme Tux Racer</div>
+    <div class="year">Ανοιχτού κώδικα · μόνο υπολογιστής</div>
+    <div class="desc">Ο Tux γλιστράει με την κοιλιά σε χιονισμένες πλαγιές: στρίβεις, αποφεύγεις τα δέντρα και μαζεύεις ψάρια.</div>
+    <div class="howto"><b>Πώς το βάζω:</b> Πάτα το πράσινο «Download» και τρέξε το αρχείο. Παίζεται με τα βελάκια του πληκτρολογίου.</div>
+    <div class="fact"><b>Πρόσεχε:</b> Και εδώ πρόσεχε τις διαφημίσεις-«Download» γύρω από το πραγματικό κουμπί.</div>
+    <a class="dl" href="https://sourceforge.net/projects/extremetuxracer/" target="_blank" rel="noopener noreferrer">⬇ Σελίδα λήψης — sourceforge.net/projects/extremetuxracer</a>
+    <div class="qrs">
+      <a class="qr" href="https://sourceforge.net/projects/extremetuxracer/" target="_blank" rel="noopener noreferrer"><img src="thumbs/qr/etracer-site.png" alt="QR: Σελίδα λήψης"><span>Σελίδα λήψης</span></a>
+    </div>
+  </div>
+  <div class="card prog">
+    <img class="logo" src="thumbs/logos/timezattack.png" alt="Λογότυπο Timez Attack">
+    <div class="name">Timez Attack</div>
+    <div class="year">Δωρεάν · μόνο στο εργαστήριο</div>
+    <div class="desc">Περιπέτεια σε τρισδιάστατο κόσμο: για να περάσεις τα τέρατα και τις πόρτες απαντάς σωστά και γρήγορα στην προπαίδεια.</div>
+    <div class="howto"><b>Πώς το βάζω:</b> Το παίζουμε μόνο στους υπολογιστές του εργαστηρίου· δεν χρειάζεται να εγκαταστήσεις κάτι.</div>
+    <div class="fact"><b>Πρόσεχε:</b> Η επίσημη σελίδα του δεν λειτουργεί πια — μην το κατεβάσεις από άγνωστα sites.</div>
+  </div>
+  <div class="card prog">
+    <img class="logo" src="thumbs/logos/firefox.png" alt="Λογότυπο Firefox + uBlock Origin">
+    <div class="name">Firefox + uBlock Origin</div>
+    <div class="year">Ανοιχτού κώδικα · Windows, Android</div>
+    <div class="desc">Ο browser με τον οποίο μπαίνουμε στο ίντερνετ. Με το πρόσθετο uBlock Origin κόβει διαφημίσεις, αναδυόμενα παράθυρα και πολλές επικίνδυνες σελίδες.</div>
+    <div class="howto"><b>Πώς το βάζω:</b> Εγκατέστησε τον Firefox. Μετά γράψε «uBlock Origin» στα πρόσθετα, πάτα «Προσθήκη στον Firefox» και θα εμφανιστεί μια κόκκινη ασπίδα πάνω δεξιά (αν δεν τη βλέπεις, πάτα το κομματάκι παζλ).</div>
+    <div class="fact"><b>Πρόσεχε:</b> Αν μια σελίδα δεν δουλεύει, πάτα την ασπίδα και το μεγάλο μπλε κουμπί — πρώτα όμως ρώτα δάσκαλο ή γονιό. Το uBlock δεν μας προστατεύει από όλα: ποτέ κωδικούς σε αγνώστους. Στο iPhone ο Firefox δεν δέχεται uBlock Origin.</div>
+    <a class="dl" href="https://www.mozilla.org/firefox/" target="_blank" rel="noopener noreferrer">⬇ Σελίδα λήψης — mozilla.org/firefox</a>
+    <div class="qrs">
+      <a class="qr" href="https://play.google.com/store/apps/details?id=org.mozilla.firefox" target="_blank" rel="noopener noreferrer"><img src="thumbs/qr/firefox-play.png" alt="QR: Play Store"><span>Play Store</span></a>
+      <a class="qr" href="https://apps.apple.com/app/firefox-private-safe-browser/id989804926" target="_blank" rel="noopener noreferrer"><img src="thumbs/qr/firefox-apple.png" alt="QR: App Store"><span>App Store</span></a>
+    </div>
+  </div>
+  <div class="card prog">
+    <img class="logo" src="thumbs/logos/brave.png" alt="Λογότυπο Brave">
+    <div class="name">Brave</div>
+    <div class="year">Ανοιχτού κώδικα · Windows, Android, iOS</div>
+    <div class="desc">Γρήγορος browser που κόβει μόνος του διαφημίσεις και ιχνηλάτες. Έχει γονικά φίλτρα και συγχρονισμό με κινητό και τάμπλετ.</div>
+    <div class="howto"><b>Πώς το βάζω:</b> Κατέβασε και τρέξε το αρχείο· στο τέλος σε ρωτά αν θες να γίνει ο βασικός browser.</div>
+    <div class="fact"><b>Πρόσεχε:</b> Έχει δικές του «ανώνυμες διαφημίσεις» και κρυπτονόμισμα (BAT) — κλείσ' τα από Settings → Brave Rewards.</div>
+    <a class="dl" href="https://brave.com/download/" target="_blank" rel="noopener noreferrer">⬇ Σελίδα λήψης — brave.com/download</a>
+    <div class="qrs">
+      <a class="qr" href="https://play.google.com/store/apps/details?id=com.brave.browser" target="_blank" rel="noopener noreferrer"><img src="thumbs/qr/brave-play.png" alt="QR: Play Store"><span>Play Store</span></a>
+      <a class="qr" href="https://apps.apple.com/app/brave-private-web-browser/id1052879175" target="_blank" rel="noopener noreferrer"><img src="thumbs/qr/brave-apple.png" alt="QR: App Store"><span>App Store</span></a>
+    </div>
+  </div>
+  <div class="card prog">
+    <img class="logo" src="thumbs/logos/thunderbird.png" alt="Λογότυπο Thunderbird">
+    <div class="name">Thunderbird</div>
+    <div class="year">Ανοιχτού κώδικα · Windows, macOS, Linux, Android</div>
+    <div class="desc">Εφαρμογή αλληλογραφίας από τη Mozilla: πολλά email, επαφές, ημερολόγια και υπενθυμίσεις σε ένα παράθυρο.</div>
+    <div class="howto"><b>Πώς το βάζω:</b> Μετά την εγκατάσταση γράφεις email και κωδικό και τα βρίσκει μόνο του τα υπόλοιπα.</div>
+    <div class="fact"><b>Πρόσεχε:</b> Τον κωδικό του email τον βάζει ο γονιός ή ο δάσκαλος — δεν τον δίνουμε σε κανέναν άλλο. Για iPhone δεν υπάρχει.</div>
+    <a class="dl" href="https://www.thunderbird.net/" target="_blank" rel="noopener noreferrer">⬇ Σελίδα λήψης — thunderbird.net</a>
+    <div class="qrs">
+      <a class="qr" href="https://play.google.com/store/apps/details?id=net.thunderbird.android" target="_blank" rel="noopener noreferrer"><img src="thumbs/qr/thunderbird-play.png" alt="QR: Play Store"><span>Play Store</span></a>
+      <a class="qr" href="https://www.thunderbird.net/" target="_blank" rel="noopener noreferrer"><img src="thumbs/qr/thunderbird-site.png" alt="QR: Σελίδα λήψης"><span>Σελίδα λήψης</span></a>
+    </div>
+  </div>
+  <div class="card prog">
+    <img class="logo" src="thumbs/logos/stirlingpdf.png" alt="Λογότυπο Stirling PDF">
+    <div class="name">Stirling PDF</div>
+    <div class="year">Ανοιχτού κώδικα · online</div>
+    <div class="desc">Δουλεύουμε με PDF μέσα από τον browser: ένωση, χώρισμα, περιστροφή, συμπίεση και μετατροπή σελίδων.</div>
+    <div class="howto"><b>Πώς το βάζω:</b> Δεν εγκαθίσταται: ανοίγεις τη σελίδα, ανεβάζεις το PDF, διαλέγεις εργαλείο και κατεβάζεις το αποτέλεσμα.</div>
+    <div class="fact"><b>Πρόσεχε:</b> Μην ανεβάζεις έγγραφα με προσωπικά στοιχεία σε διαδικτυακό εργαλείο.</div>
+    <a class="dl" href="https://stirlingpdf.io/" target="_blank" rel="noopener noreferrer">⬇ Σελίδα λήψης — stirlingpdf.io</a>
+    <div class="qrs">
+      <a class="qr" href="https://stirlingpdf.io/" target="_blank" rel="noopener noreferrer"><img src="thumbs/qr/stirlingpdf-site.png" alt="QR: Σελίδα"><span>Σελίδα</span></a>
+    </div>
+  </div>
+  <div class="card prog">
+    <img class="logo" src="thumbs/logos/vlc.png" alt="Λογότυπο VLC Media Player">
+    <div class="name">VLC Media Player</div>
+    <div class="year">Ανοιχτού κώδικα · όλες οι συσκευές</div>
+    <div class="desc">Ανοίγει σχεδόν κάθε βίντεο και τραγούδι, χωρίς διαφημίσεις και χωρίς να συλλέγει δεδομένα.</div>
+    <div class="howto"><b>Πώς το βάζω:</b> Κατέβασε και τρέξε το αρχείο· μετά κάνε δεξί κλικ σε ένα βίντεο → «Άνοιγμα με → VLC».</div>
+    <div class="fact"><b>Πρόσεχε:</b> Κατέβασέ το μόνο από το videolan.org· κυκλοφορούν αντίγραφα με πρόσθετα προγράμματα.</div>
+    <a class="dl" href="https://www.videolan.org/vlc/" target="_blank" rel="noopener noreferrer">⬇ Σελίδα λήψης — videolan.org/vlc</a>
+    <div class="qrs">
+      <a class="qr" href="https://play.google.com/store/apps/details?id=org.videolan.vlc" target="_blank" rel="noopener noreferrer"><img src="thumbs/qr/vlc-play.png" alt="QR: Play Store"><span>Play Store</span></a>
+      <a class="qr" href="https://apps.apple.com/app/vlc-media-player/id650377962" target="_blank" rel="noopener noreferrer"><img src="thumbs/qr/vlc-apple.png" alt="QR: App Store"><span>App Store</span></a>
+    </div>
+  </div>
+  <div class="card prog">
+    <img class="logo" src="thumbs/logos/mpv.png" alt="Λογότυπο MPV">
+    <div class="name">MPV</div>
+    <div class="year">Ανοιχτού κώδικα · Windows, Android</div>
+    <div class="desc">Πολύ απλό και γρήγορο πρόγραμμα αναπαραγωγής: σέρνεις το βίντεο πάνω του και παίζει.</div>
+    <div class="howto"><b>Πώς το βάζω:</b> Στα Windows γράψε «mpv» στην αναζήτηση του Microsoft Store και πάτα «Λήψη».</div>
+    <div class="fact"><b>Πρόσεχε:</b> Χρήσιμα πλήκτρα: Διάστημα παύση, ← → πίσω/μπροστά, F πλήρης οθόνη, 9 και 0 ήχος, Q κλείσιμο.</div>
+    <a class="dl" href="https://apps.microsoft.com/detail/9p3jfr0clll6" target="_blank" rel="noopener noreferrer">⬇ Σελίδα λήψης — Microsoft Store: «mpv»</a>
+    <div class="qrs">
+      <a class="qr" href="https://apps.microsoft.com/detail/9p3jfr0clll6" target="_blank" rel="noopener noreferrer"><img src="thumbs/qr/mpv-ms.png" alt="QR: Microsoft Store"><span>Microsoft Store</span></a>
+      <a class="qr" href="https://play.google.com/store/apps/details?id=is.xyz.mpv" target="_blank" rel="noopener noreferrer"><img src="thumbs/qr/mpv-play.png" alt="QR: Play Store"><span>Play Store</span></a>
+    </div>
+  </div>
+  <div class="card prog">
+    <img class="logo" src="thumbs/logos/gimp.png" alt="Λογότυπο GIMP">
+    <div class="name">GIMP</div>
+    <div class="year">Ανοιχτού κώδικα · Windows, macOS, Linux</div>
+    <div class="desc">Επεξεργασία εικόνας: σχεδιασμός, φωτομοντάζ και διόρθωση φωτογραφιών — εναλλακτική του Photoshop.</div>
+    <div class="howto"><b>Πώς το βάζω:</b> Κατέβασε την έκδοση για Windows και τρέξε την. Η πρώτη εκκίνηση αργεί λίγο — είναι φυσιολογικό.</div>
+    <div class="fact"><b>Πρόσεχε:</b> Έχει πολλά παράθυρα· αν «χαθούν», Παράθυρα → Επαναφορά διάταξης.</div>
+    <a class="dl" href="https://www.gimp.org/downloads/" target="_blank" rel="noopener noreferrer">⬇ Σελίδα λήψης — gimp.org/downloads</a>
+    <div class="qrs">
+      <a class="qr" href="https://www.gimp.org/downloads/" target="_blank" rel="noopener noreferrer"><img src="thumbs/qr/gimp-site.png" alt="QR: Σελίδα λήψης"><span>Σελίδα λήψης</span></a>
+    </div>
+  </div>
+  <div class="card prog">
+    <img class="logo" src="thumbs/logos/kdenlive.png" alt="Λογότυπο Kdenlive">
+    <div class="name">Kdenlive</div>
+    <div class="year">Ανοιχτού κώδικα · Windows, macOS, Linux</div>
+    <div class="desc">Μοντάζ βίντεο με πολλά κανάλια, εφέ, τίτλους και ήχο — για αρχάριους και για προχωρημένους.</div>
+    <div class="howto"><b>Πώς το βάζω:</b> Διάλεξε «Windows» και τρέξε το αρχείο. Σέρνεις τα βίντεο στη γραμμή χρόνου και στο τέλος πατάς «Απόδοση».</div>
+    <div class="fact"><b>Πρόσεχε:</b> Αποθήκευε συχνά το έργο σου: η επεξεργασία βίντεο ζορίζει τον υπολογιστή.</div>
+    <a class="dl" href="https://kdenlive.org/download/" target="_blank" rel="noopener noreferrer">⬇ Σελίδα λήψης — kdenlive.org/download</a>
+    <div class="qrs">
+      <a class="qr" href="https://kdenlive.org/download/" target="_blank" rel="noopener noreferrer"><img src="thumbs/qr/kdenlive-site.png" alt="QR: Σελίδα λήψης"><span>Σελίδα λήψης</span></a>
+    </div>
+  </div>
+  <div class="card prog">
+    <img class="logo" src="thumbs/logos/audacity.png" alt="Λογότυπο Audacity">
+    <div class="name">Audacity</div>
+    <div class="year">Ανοιχτού κώδικα · Windows, macOS, Linux</div>
+    <div class="desc">Εγγραφή και επεξεργασία ήχου: κόψιμο, αντιγραφή, φίλτρα και εφέ σε WAV, MP3, FLAC και Ogg.</div>
+    <div class="howto"><b>Πώς το βάζω:</b> Κατέβασε και τρέξε το αρχείο. Για εγγραφή πάτα το κόκκινο κουμπί — πρώτα διάλεξε το μικρόφωνο από πάνω.</div>
+    <div class="fact"><b>Πρόσεχε:</b> Για να βγάλεις MP3 πάτα Αρχείο → Εξαγωγή· η απλή αποθήκευση φτιάχνει αρχείο που ανοίγει μόνο το Audacity.</div>
+    <a class="dl" href="https://www.audacityteam.org/download/" target="_blank" rel="noopener noreferrer">⬇ Σελίδα λήψης — audacityteam.org/download</a>
+    <div class="qrs">
+      <a class="qr" href="https://www.audacityteam.org/download/" target="_blank" rel="noopener noreferrer"><img src="thumbs/qr/audacity-site.png" alt="QR: Σελίδα λήψης"><span>Σελίδα λήψης</span></a>
+    </div>
+  </div>
+  <div class="card prog">
+    <img class="logo" src="thumbs/logos/obs.png" alt="Λογότυπο OBS Studio">
+    <div class="name">OBS Studio</div>
+    <div class="year">Ανοιχτού κώδικα · Windows, macOS, Linux</div>
+    <div class="desc">Εγγραφή οθόνης και ζωντανή μετάδοση, με σκηνές και πολλές πηγές εικόνας και ήχου.</div>
+    <div class="howto"><b>Πώς το βάζω:</b> Μετά την εγκατάσταση τρέξε τον «Οδηγό αυτόματης ρύθμισης» και διάλεξε «Βελτιστοποίηση για εγγραφή».</div>
+    <div class="fact"><b>Πρόσεχε:</b> Πριν μεταδώσεις κάτι ζωντανά, ρώτα γονιό ή δάσκαλο — φαίνεται ό,τι έχεις στην οθόνη.</div>
+    <a class="dl" href="https://obsproject.com/download" target="_blank" rel="noopener noreferrer">⬇ Σελίδα λήψης — obsproject.com/download</a>
+    <div class="qrs">
+      <a class="qr" href="https://obsproject.com/download" target="_blank" rel="noopener noreferrer"><img src="thumbs/qr/obs-site.png" alt="QR: Σελίδα λήψης"><span>Σελίδα λήψης</span></a>
+    </div>
+  </div>
+  <div class="card prog">
+    <img class="logo" src="thumbs/logos/linuxmint.png" alt="Λογότυπο Linux Mint">
+    <div class="name">Linux Mint</div>
+    <div class="year">Ανοιχτού κώδικα · λειτουργικό σύστημα</div>
+    <div class="desc">Ελεύθερο λειτουργικό σύστημα, εναλλακτικό των Windows. Ο πυρήνας Linux ξεκίνησε το 1991 από τον Linus Torvalds.</div>
+    <div class="howto"><b>Πώς το βάζω:</b> Κατεβάζεις ένα αρχείο .iso, το γράφεις σε στικάκι και ο υπολογιστής ξεκινά από εκεί — μπορείς να το δοκιμάσεις χωρίς να το εγκαταστήσεις.</div>
+    <div class="fact"><b>Πρόσεχε:</b> Η εγκατάσταση σβήνει αρχεία αν διαλέξεις λάθος δίσκο — γίνεται πάντα με μεγάλο.</div>
+    <a class="dl" href="https://linuxmint.com/download.php" target="_blank" rel="noopener noreferrer">⬇ Σελίδα λήψης — linuxmint.com/download</a>
+    <div class="qrs">
+      <a class="qr" href="https://linuxmint.com/download.php" target="_blank" rel="noopener noreferrer"><img src="thumbs/qr/linuxmint-site.png" alt="QR: Σελίδα λήψης"><span>Σελίδα λήψης</span></a>
+    </div>
+  </div>
+</div>
+<script>
+// Αρχική: grid κατηγοριών· με το κλικ εμφανίζονται οι κάρτες της κατηγορίας.
+const cats = [...document.querySelectorAll('h2.category')].map(h => {
+  const extra = []; let g = h.nextElementSibling;
+  while (g && !g.classList.contains('grid')) { extra.push(g); g = g.nextElementSibling; }
+  return { h, grid: g, extra };
+});
+const nav = document.getElementById('catnav'), back = document.getElementById('back');
+function show(sel) {
+  cats.forEach(c => { const on = c === sel; [c.h, c.grid, ...c.extra].forEach(e => e.classList.toggle('off', !on)); });
+  nav.classList.toggle('off', !!sel);
+  back.classList.toggle('off', !sel);
+  document.querySelector('.subtitle').textContent = sel ? 'Διάλεξε παιχνίδι' : 'Διάλεξε κατηγορία';
+  scrollTo(0, 0);
+}
+// κάθε κατηγορία έχει δικό της σύνδεσμο (#programs, #b …) ώστε να ανοίγει κατευθείαν από QR
+const SLUG = ['mathima', 'syndesmoi', 'diaskedasi', 'parousiaseis', 'programmata'];
+cats.forEach((c, i) => {
+  c.slug = SLUG[i] || 'k' + (i + 1);
+  const [, emoji, label] = c.h.textContent.match(/^(\S+)\s+([\s\S]*)$/);
+  const b = document.createElement('button');
+  b.className = 'catcard';
+  b.innerHTML = `<div class="emoji">${emoji}</div><div class="name">${'ΑΒΓΔΕΖΗΘ'[i]}. ${label}</div><div class="count">${c.grid.children.length} ${c.grid.children.length === 1 ? 'κάρτα' : 'κάρτες'}</div>`;
+  b.onclick = () => { location.hash = c.slug; };
+  nav.append(b);
+});
+back.onclick = () => { location.hash = ''; };
+const fromHash = () => show(cats.find(c => c.slug === location.hash.replace(/^#/, '')) || null);
+addEventListener('hashchange', fromHash);
+fromHash();
+</script>
 </body>
 </html>
