@@ -714,6 +714,8 @@
   .sb select { font-size: 18px; border-radius: 12px; padding: 1px 6px; margin: 0 2px; font-family: inherit; }
   .cell.lamp { background: #29b6f6 !important; } .cell.lamp.lit { background: #fff176 !important; box-shadow: inset 0 0 20px #fbc02d; }
   .teachbox { position: absolute; left: 50%; top: 50%; transform: translate(-50%, -50%); z-index: 50; background: #1b3a6b; border: 3px solid #ffb347; border-radius: 18px; padding: 28px 34px; text-align: center; box-shadow: 0 16px 40px rgba(0,0,0,0.5); }
+  .ref a { color: inherit; text-decoration: underline; text-underline-offset: 3px; }
+  .ref a:hover { color: #ffb347; }
   .teachexit { background: #ffb347 !important; color: #1e3c72 !important; }
   .teachbox h3 { font-size: 30px; margin-bottom: 8px; }
   .teachbox p { font-size: 18px; opacity: 0.85; max-width: 420px; margin-bottom: 16px; }
@@ -12760,6 +12762,25 @@ const spotSave = () => {
 const spotLesson = sp => sp && !BOOKS[sp.g]?.extra && BOOKS[sp.g]?.chapters?.[sp.c]?.lessons?.[sp.l] || null;
 const key = (c, l, a) => `${gradeIdx}-${c}-${l}-${a}`;
 
+// ---- Τα σχολικά βιβλία σε PDF (φάκελος books/): ανά τάξη και έκδοση, μαζί με τη διαφορά
+// ανάμεσα στην αρίθμηση του βιβλίου και στη σελίδα του PDF, ώστε «σελ. 13» να ανοίγει τη σωστή.
+const BOOK_PDF = {
+  '#a': { '6.0': ['books/a-v60.pdf', 1], 'v09': ['books/a-v09.pdf', 1] },
+  '#b': { '7.0': ['books/b-v70.pdf', 1], 'v08': ['books/b-v08.pdf', 2] },
+  '#c': { '7.0': ['books/c-v70.pdf', 2], 'v09': ['books/c-v09.pdf', 2] },
+  '#d': { '6.0': ['books/d-v60.pdf', 2], 'v07': ['books/d-v07.pdf', 2] },
+  '#e': { '6.0': ['books/e-v60.pdf', 1], 'v08': ['books/e-v08.pdf', 2] },
+  '#f': { '8.0': ['books/f-v80.pdf', 2], '8.02': ['books/f-v802.pdf', 2] },
+};
+const esc = t => { const d = document.createElement('div'); d.textContent = t; return d.innerHTML; };
+function refHTML(ref) {
+  const map = BOOK_PDF[BOOKS[gradeIdx].hash] || {};
+  return ref.split('·').map(part => {
+    const t = part.trim(), m = t.match(/^έκδ\.\s*(\S+)\s+σελ\.\s*(\d+)/), b = m && map[m[1]];
+    return b ? `<a href="${b[0]}#page=${+m[2] + b[1]}" target="_blank" rel="noopener" title="Άνοιγμα του βιβλίου στη σελίδα ${m[2]}">${esc(t)}</a>` : esc(t);
+  }).join(' · ');
+}
+
 // ---- Λειτουργία δασκάλου: με κωδικό ξεκλειδώνει όλες τις δραστηριότητες (χωρίς χρόνο
 // διαβάσματος, χωρίς ερώτηση, «Επόμενο» πάντα ενεργό) ώστε να πηγαίνουμε όπου θέλουμε.
 const TEACHER_CODE = '0286';
@@ -13037,7 +13058,7 @@ function renderAct() {
   Voice.stop();
   $('sayBtn').hidden = !Voice.has(act.text);
   $('sayBtn').onclick = () => Voice.say([act.text, guide]);
-  $('ref').textContent = act.ref ? '📖 ' + act.ref : '';
+  $('ref').innerHTML = act.ref ? '📖 ' + refHTML(act.ref) : '';
   $('prevBtn').disabled = actIdx === 0;
   $('nextBtn').textContent = actIdx === les.acts.length - 1 ? 'Τέλος 🏁' : 'Επόμενο ▶';
   $('nextBtn').classList.remove('pulse');
