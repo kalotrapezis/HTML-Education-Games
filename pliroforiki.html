@@ -713,6 +713,13 @@
   .val.se, .val.va { color: #fff; }
   .sb select { font-size: 18px; border-radius: 12px; padding: 1px 6px; margin: 0 2px; font-family: inherit; }
   .cell.lamp { background: #29b6f6 !important; } .cell.lamp.lit { background: #fff176 !important; box-shadow: inset 0 0 20px #fbc02d; }
+  .teachbox { position: absolute; left: 50%; top: 50%; transform: translate(-50%, -50%); z-index: 50; background: #1b3a6b; border: 3px solid #ffb347; border-radius: 18px; padding: 28px 34px; text-align: center; box-shadow: 0 16px 40px rgba(0,0,0,0.5); }
+  .teachexit { background: #ffb347 !important; color: #1e3c72 !important; }
+  .teachbox h3 { font-size: 30px; margin-bottom: 8px; }
+  .teachbox p { font-size: 18px; opacity: 0.85; max-width: 420px; margin-bottom: 16px; }
+  .teachbox input { font: inherit; font-size: 28px; text-align: center; letter-spacing: 10px; width: 220px; padding: 8px 12px; border-radius: 12px; border: 2px solid #ffb347; }
+  .teachbox .err { color: #ff8a80; font-size: 18px; min-height: 24px; margin-top: 8px; }
+  .teachbox .controls { display: flex; gap: 12px; justify-content: center; }
 </style>
 </head>
 <body>
@@ -722,6 +729,8 @@
     <div class="home-head">
       <a class="back" href="index.html">← Πίσω</a>
       <h1>💻 Πληροφορική Δημοτικού</h1>
+      <button class="planbtn" id="contBtn" hidden></button>
+      <button class="secondary planbtn" id="teachBtn">🔑 Δάσκαλος</button>
       <button class="secondary planbtn" id="tuxBtn">🐧 Οδηγός Tux Paint</button>
       <button class="secondary planbtn" id="planBtn">📅 Πρόγραμμα</button>
     </div>
@@ -734,6 +743,7 @@
   <div class="screen" id="planScreen">
     <div class="home-head">
       <button class="secondary" id="planBack">← Μαθήματα</button>
+      <button class="secondary teachexit" id="teachExit2" hidden>🔓 Έξοδος δασκάλου</button>
       <h1>📅 Πρόγραμμα διδασκαλίας</h1>
     </div>
     <div class="tabs grades" id="planGrades"></div>
@@ -745,6 +755,7 @@
   <div class="screen" id="actScreen">
     <div class="topbar">
       <button class="secondary" id="homeBtn">← Μαθήματα</button>
+      <button class="secondary teachexit" id="teachExit" hidden>🔓 Έξοδος δασκάλου</button>
       <div class="lesson-title" id="lessonTitle"></div>
       <div class="pips" id="pips"></div>
     </div>
@@ -12736,12 +12747,37 @@ let gradeIdx = Math.max(0, BOOKS.findIndex(b => b.hash === location.hash));
 let chapterIdx = 0, lessonIdx = 0, actIdx = 0;
 const book = () => BOOKS[gradeIdx].chapters;
 let runId = 0; // αλλάζει σε κάθε νέα δραστηριότητα ώστε να σταματούν τα παλιά animations
-const done = new Set(); // 'κεφ-μάθημα-δραστηριότητα' που ολοκληρώθηκαν (μόνο για αυτή τη χρήση)
+// 'τάξη-κεφ-μάθημα-δραστηριότητα' που ολοκληρώθηκαν· μένουν στον υπολογιστή, ώστε ο μαθητής
+// που έκλεισε κατά λάθος τη σελίδα να συνεχίσει από εκεί που έμεινε
+const done = new Set((() => { try { return JSON.parse(localStorage.getItem('pliro-done') || '[]'); } catch (e) { return []; } })());
+const doneSave = () => { try { localStorage.setItem('pliro-done', JSON.stringify([...done])); } catch (e) { /* χωρίς αποθήκευση */ } };
+let lastSpot = null;
+try { lastSpot = JSON.parse(localStorage.getItem('pliro-last') || 'null'); } catch (e) { lastSpot = null; }
+const spotSave = () => {
+  lastSpot = { g: gradeIdx, c: chapterIdx, l: lessonIdx, a: actIdx };
+  try { localStorage.setItem('pliro-last', JSON.stringify(lastSpot)); } catch (e) { /* χωρίς αποθήκευση */ }
+};
+const spotLesson = sp => sp && !BOOKS[sp.g]?.extra && BOOKS[sp.g]?.chapters?.[sp.c]?.lessons?.[sp.l] || null;
 const key = (c, l, a) => `${gradeIdx}-${c}-${l}-${a}`;
+
+// ---- Λειτουργία δασκάλου: με κωδικό ξεκλειδώνει όλες τις δραστηριότητες (χωρίς χρόνο
+// διαβάσματος, χωρίς ερώτηση, «Επόμενο» πάντα ενεργό) ώστε να πηγαίνουμε όπου θέλουμε.
+const TEACHER_CODE = '0286';
+let teacher = sessionStorage.getItem('pliro-teacher') === '1';
+function setTeacher(on) {
+  teacher = on;
+  try { on ? sessionStorage.setItem('pliro-teacher', '1') : sessionStorage.removeItem('pliro-teacher'); } catch (e) {}
+  const b = $('teachBtn');
+  b.textContent = on ? '🔓 Δάσκαλος — έξοδος' : '🔑 Δάσκαλος';
+  b.classList.toggle('on', on);
+  // η έξοδος είναι παντού: ο/η εκπαιδευτικός πάει το παιδί σε μια άσκηση, βγαίνει εκεί και το αφήνει να συνεχίσει
+  for (const id of ['teachExit', 'teachExit2']) $(id).hidden = !on;
+}
 
 function say(text, kind = '') { const m = $('msg'); m.innerHTML = text; m.className = 'msg ' + kind; }
 function complete(text) {
   done.add(key(chapterIdx, lessonIdx, actIdx));
+  doneSave();
   const act = book()[chapterIdx].lessons[lessonIdx].acts[actIdx];
   if (act && act.explain && !$('area').querySelector('.why-box')) {
     const w = el('div', 'why-box', `<span>💡 ${act.explain}</span>`);
@@ -12768,6 +12804,12 @@ function renderHome() {
     t.onclick = () => { gradeIdx = i; chapterIdx = 0; history.replaceState(null, '', b.hash); renderHome(); };
     grades.appendChild(t);
   });
+  const les0 = spotLesson(lastSpot), cont = $('contBtn');
+  cont.hidden = !les0;
+  if (les0) {
+    cont.textContent = `▶ Συνέχισε: ${les0.icon} ${lastSpot.l + 1}. ${les0.title}`;
+    cont.onclick = () => { const sp = lastSpot; gradeIdx = sp.g; chapterIdx = sp.c; lessonIdx = sp.l; actIdx = Math.min(sp.a, les0.acts.length); showScreen('actScreen'); renderAct(); };
+  }
   $('planBtn').style.visibility = BOOKS[gradeIdx].extra ? 'hidden' : '';
   $('tuxBtn').classList.toggle('on', !!BOOKS[gradeIdx].extra);
   const tabs = $('tabs');
@@ -12945,7 +12987,7 @@ function renderPips() {
   pips.innerHTML = '';
   les.acts.forEach((_, a) => {
     // πατήσιμη: όποια έχει ολοκληρωθεί ή η πρώτη που λείπει (για να ξαναγίνει)
-    const ok = les.acts.slice(0, a).every((_, b) => done.has(key(chapterIdx, lessonIdx, b)));
+    const ok = teacher || les.acts.slice(0, a).every((_, b) => done.has(key(chapterIdx, lessonIdx, b)));
     const p = el('div', 'pip' + (done.has(key(chapterIdx, lessonIdx, a)) ? ' done' : '') + (a === actIdx ? ' cur' : '') + (les.acts[a].practice ? ' px' : '') + (ok && a !== actIdx ? ' go' : ''));
     if (ok && a !== actIdx) p.onclick = () => { actIdx = a; renderAct(); };
     pips.appendChild(p);
@@ -12984,10 +13026,9 @@ function renderFinish(les) {
 function renderAct() {
   runId++;
   const les = book()[chapterIdx].lessons[lessonIdx];
-  $('lessonTitle').textContent = `${les.icon} ${lessonIdx + 1}. ${les.title}`;
+  $('lessonTitle').textContent = `${teacher ? '🔑 ' : ''}${les.icon} ${lessonIdx + 1}. ${les.title}`;
   if (actIdx >= les.acts.length) return renderFinish(les);
   const act = les.acts[actIdx];
-  $('lessonTitle').textContent = `${les.icon} ${lessonIdx + 1}. ${les.title}`;
   $('kind').textContent = act.ext ? '🌍 Διαδίκτυο' : (act.practice ? '💪 Εξάσκηση · ' : '') + KIND_NAMES[act.type];
   $('kind').classList.toggle('px', !!act.practice);
   $('instr').textContent = act.text;
@@ -13001,7 +13042,7 @@ function renderAct() {
   $('nextBtn').textContent = actIdx === les.acts.length - 1 ? 'Τέλος 🏁' : 'Επόμενο ▶';
   $('nextBtn').classList.remove('pulse');
   // «Επόμενο» ανοίγει μόνο με τη σωστή απάντηση
-  $('nextBtn').disabled = !done.has(key(chapterIdx, lessonIdx, actIdx));
+  $('nextBtn').disabled = !teacher && !done.has(key(chapterIdx, lessonIdx, actIdx));
   say('');
   const area = $('area');
   area.innerHTML = '';
@@ -13011,6 +13052,7 @@ function renderAct() {
   const h = Math.max(0, ...kids.map(c => c.offsetHeight));
   if (h > area.clientHeight) kids.forEach(c => { c.style.zoom = area.clientHeight / h; });
   renderPips();
+  spotSave();
 }
 
 // ============================================================================
@@ -13152,6 +13194,71 @@ function buildGrid(g, maxW, maxH, opts = {}) {
 // ============================================================================
 const RENDER = {};
 
+// ---- Διάβασμα με χρόνο: 20΄΄ για να διαβαστεί η σελίδα, μετά μία ερώτηση πάνω σε αυτά
+// που διάβασαν. Λάθος απάντηση → γυρνάμε στη θεωρία και ξαναμετράει ο χρόνος.
+const READ_SECS = 20;
+const plainText = h => { const d = document.createElement('div'); d.innerHTML = h; return d.textContent.replace(/\s+/g, ' ').trim(); };
+const shortText = t => t.length > 150 ? t.slice(0, 149).replace(/\s\S*$/, '') + '…' : t;
+
+// αντικείμενα { label, text, type } από μια σελίδα διαβάσματος
+function readItems(act) {
+  if (act.type === 'info') return (act.cards || []).map(([em, html]) => ({ label: plainText(em), text: shortText(plainText(html)), type: 'info' }));
+  if (act.type === 'theory') return (act.sections || []).map(([h, pp]) => ({ label: plainText(h).replace(/[;?:]+$/, ''), text: shortText(plainText(pp)), type: 'theory' }));
+  return [];
+}
+
+function readingGate(act, area) {
+  if (teacher || done.has(key(chapterIdx, lessonIdx, actIdx))) return complete('👍 Πάμε παρακάτω!');
+  const les = book()[chapterIdx].lessons[lessonIdx];
+  const mine = readItems(act).filter(i => i.label && i.text);
+  // επιπλέον λανθασμένες επιλογές από τις υπόλοιπες σελίδες διαβάσματος του μαθήματος
+  const extra = shuffle(les.acts.filter(a => a !== act).flatMap(readItems).filter(i => i.text));
+  const my = runId;
+  let left = READ_SECS;
+  (function tick() {
+    if (my !== runId) return;
+    if (left > 0) { say(`⏳ Διάβασε με την ησυχία σου… <b>${left}″</b>`); left--; return setTimeout(tick, 1000); }
+    readingQuestion(area, mine, extra, my);
+  })();
+}
+
+function readingQuestion(area, mine, extra, my) {
+  // το ερώτημα βγαίνει πάντα από ΑΥΤΗ τη σελίδα· λανθασμένες επιλογές και από αλλού
+  const others = [...mine, ...extra];
+  const ok = i =>
+    i.text.length >= 25 &&                        // η απάντηση να λέει κάτι
+    !/[<>]/.test(i.label) && i.label.length <= 40 &&  // όχι SVG ή ολόκληρη πρόταση
+    /\p{L}|\p{Extended_Pictographic}/u.test(i.label) && // όχι σκέτο σημείο στίξης («.», «|», «΄»)
+    !others.some(o => o !== i && o.text.includes(i.label)) && // να μην προδίδεται η απάντηση
+    !i.text.includes(i.label);
+  const cands = mine.filter(ok);
+  const subject = cands[Math.floor(Math.random() * cands.length)];
+  const wrong = shuffle(others.filter(o => o !== subject && o.text !== (subject || {}).text).map(o => o.text)).slice(0, 3);
+  if (!subject || !wrong.length) return complete('👍 Πάμε παρακάτω!');
+  const opts = shuffle([subject.text, ...wrong]);
+  area.innerHTML = '';
+  const wrap = el('div', 'q-wrap');
+  wrap.appendChild(el('div', 'count', '📖 Ερώτηση πάνω σε αυτά που διάβασες'));
+  wrap.appendChild(el('div', 'q', subject.type === 'theory' ? `Τι έλεγε η ενότητα «${subject.label}»;` : `Τι έλεγε η κάρτα ${subject.label};`));
+  const list = el('div', 'choices');
+  opts.forEach((o, k) => {
+    const b = el('button', 'choice', `<span class="letter">${'ΑΒΓΔ'[k]}</span>`);
+    b.appendChild(document.createTextNode(o));
+    b.onclick = () => {
+      if (list.dataset.locked || my !== runId) return;
+      list.dataset.locked = 1;
+      if (o === subject.text) { b.classList.add('right'); return complete('🎉 Σωστά! Πάμε παρακάτω!'); }
+      b.classList.add('wrong');
+      say('Όχι αυτό — ας το ξαναδιαβάσουμε μαζί!', 'bad');
+      setTimeout(() => { if (my === runId) renderAct(); }, 1400);
+    };
+    list.appendChild(b);
+  });
+  wrap.appendChild(list);
+  area.appendChild(wrap);
+  say('Διάλεξε τη σωστή απάντηση.');
+}
+
 RENDER.info = (act, area) => {
   const box = el('div', 'info');
   for (const [em, html, prog] of act.cards) {
@@ -13163,7 +13270,7 @@ RENDER.info = (act, area) => {
   area.appendChild(box);
   // σελίδα Διαδικτύου: «Επόμενο» μόνο αφού ανοίξει έναν σύνδεσμο
   if (act.ext) box.querySelectorAll('a').forEach(a => a.addEventListener('click', () => complete('👍 Μπράβο! Πάμε παρακάτω!')));
-  else complete('👍 Πάμε παρακάτω!');
+  else readingGate(act, area);
 };
 
 // ---- Θεωρία: sections = [[τίτλος, εξήγηση, [παραδείγματα]], …]
@@ -13175,7 +13282,7 @@ RENDER.theory = (act, area) => {
     box.appendChild(sec);
   }
   area.appendChild(box);
-  complete('👍 Πάμε παρακάτω!');
+  readingGate(act, area);
 };
 
 // ---- Σειρά βημάτων: `before` = ζευγάρια [α, β] όπου το α πρέπει να γίνει πριν από το β
@@ -17255,8 +17362,31 @@ RENDER.scratch = (act, area) => {
 // ============================================================================
 $('homeBtn').onclick = () => { runId++; renderHome(); showScreen('homeScreen'); };
 $('planBtn').onclick = () => { renderPlan(); showScreen('planScreen'); };
+$('teachBtn').onclick = () => {
+  if (teacher) return setTeacher(false);
+  if ($('teachBox')) return;
+  const box = el('div', 'teachbox', '<h3>🔑 Λειτουργία δασκάλου</h3><p>Ξεκλειδώνει όλες τις δραστηριότητες: χωρίς χρόνο διαβάσματος και χωρίς ερώτηση.</p>');
+  box.id = 'teachBox';
+  const inp = document.createElement('input');
+  inp.type = 'password'; inp.inputMode = 'numeric'; inp.placeholder = 'Κωδικός';
+  const err = el('div', 'err', '');
+  const row = el('div', 'controls');
+  const ok = el('button', '', 'Είσοδος');
+  const no = el('button', 'secondary', 'Άκυρο');
+  const close = () => box.remove();
+  const tryIt = () => { if (inp.value === TEACHER_CODE) { close(); setTeacher(true); } else { err.textContent = 'Λάθος κωδικός.'; inp.value = ''; inp.focus(); } };
+  ok.onclick = tryIt;
+  no.onclick = close;
+  inp.onkeydown = e => { if (e.key === 'Enter') tryIt(); if (e.key === 'Escape') close(); };
+  row.append(ok, no);
+  box.append(inp, err, row);
+  $('stage').appendChild(box);
+  inp.focus();
+};
 $('tuxBtn').onclick = () => { gradeIdx = BOOKS.findIndex(b => b.extra); chapterIdx = 0; history.replaceState(null, '', '#tux'); renderHome(); };
 $('planBack').onclick = () => { renderHome(); showScreen('homeScreen'); };
+$('teachExit').onclick = () => { setTeacher(false); renderAct(); };
+$('teachExit2').onclick = () => setTeacher(false);
 $('prevBtn').onclick = () => { if (actIdx > 0) { actIdx--; renderAct(); } };
 $('nextBtn').onclick = () => {
   const les = book()[chapterIdx].lessons[lessonIdx];
@@ -17293,6 +17423,7 @@ for (const ch of BOOKS.flatMap(b => b.chapters)) for (const les of ch.lessons) f
   if (a.type === 'bits') console.assert((a.targets || []).every(t => t < 2 ** a.bits), 'bits: ' + a.text);
 }
 
+setTeacher(teacher);
 renderHome();
 fitStage();
 </script>
