@@ -6,7 +6,7 @@ so nothing may live outside the one file.
 
     python3 build-offline.py [stories folder]   (default ../stories/out/Ιστορίες)
 """
-import base64, html, json, mimetypes, re, sys
+import base64, html, json, mimetypes, re, shutil, sys
 from pathlib import Path
 from urllib.parse import quote
 
@@ -147,6 +147,19 @@ def main():
     tail = (story_cards(stories) if stories else '') + PLAYER.replace('$HOME', json.dumps(dict.fromkeys(HOME, 1))) + blocks
     home = home.replace('</body>', tail + '</body>', 1)
     OUT.write_text(home, encoding='utf-8')
+    # τα σχολικά βιβλία μένουν ξεχωριστά αρχεία (124 MB — δεν μπαίνουν μέσα στο HTML)·
+    # αντιγράφονται δίπλα στο Διαδραστικά.html, ώστε να δουλεύουν οι σύνδεσμοι books/*.pdf#page=N
+    books = ROOT / 'books'
+    if books.is_dir():
+        dst = OUT.parent / 'books'
+        dst.mkdir(exist_ok=True)
+        n = 0
+        for f in books.glob('*.pdf'):
+            t = dst / f.name
+            if not t.exists() or t.stat().st_size != f.stat().st_size:
+                shutil.copy2(f, t)
+            n += 1
+        print(f'{dst}  {sum(f.stat().st_size for f in dst.glob("*.pdf")) / 1e6:.0f} MB  ({n} βιβλία)')
     print(f'{OUT}  {OUT.stat().st_size / 1e6:.1f} MB  ({len(pages) - len(stories)} games, {len(stories)} stories)')
 
 
