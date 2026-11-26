@@ -173,6 +173,8 @@ const SCENES = [
   }],
 ];
 const PICS = SCENES.map(([name, draw], i) => ({ name, canvas: canvasOf(draw, 1000 + i * 77) }));
+// φωτογραφίες 1200×900 στον φάκελο photos/ (το «canvas» τους είναι εικόνα που φορτώνει όταν χρειαστεί)
+'131841 307726 34667 51470 52404 54253 58958 79785 86041 86916 boat-in-a-silent-lake borealis-starlit-sky cities-114063 cities-117384 cities-133008 cities-299068 cities-315893 cities-315942 cities-46316 cities-52175 cities-59456 cities-67882 cities-70679 cities-71165 cities-86384 cities-86446 cities-88700 cities-89586 cities-89652 cities-90779 cities-91283 enchanted-forest flowers-20250313-151833-3 flowers-20250313-151912-2 innvikfjorden iwakuni-cherry-blossom malibu-pier-at-sunset opou-me-bgali opou-me-bgali2 pink-evening pink-sakura-blossom purple-sunset railway thepiramid time-to-breath'.split(' ').forEach(n => PICS.push({ name: n, src: 'photos/' + n + '.jpg' }));
 let selected = [];  // οι επιλεγμένες εικόνες με τη σειρά που πατήθηκαν· άδειο = τυχαία
 let round = 0;     // πόσες εικόνες της λίστας έχουν ήδη παιχτεί
 function renderPics() {
@@ -180,7 +182,7 @@ function renderPics() {
   box.querySelectorAll('.pic').forEach(x => x.remove());
   PICS.forEach((p, i) => {
     const d = document.createElement('div'); const k = selected.indexOf(p); d.className = 'pic' + (k >= 0 ? ' on' : ''); d.dataset.n = k + 1;
-    const img = new Image(); img.src = p.thumb || (p.thumb = p.canvas.toDataURL('image/jpeg', .6));
+    const img = new Image(); img.loading = 'lazy'; img.src = p.src || p.thumb || (p.thumb = p.canvas.toDataURL('image/jpeg', .6));
     d.append(img); if (p.own) d.insertAdjacentHTML('beforeend', '<span class="x">📷 δική σου</span>');
     d.onclick = () => { if (k >= 0) selected.splice(k, 1); else selected.push(p); renderPics(); };
     box.append(d);
@@ -431,7 +433,7 @@ const fmt = s => `${Math.floor(s / 60)}:${String(Math.floor(s % 60)).padStart(2,
 
 /* ---------- ξεκίνημα ---------- */
 let boards = [], raf = 0;
-function start() {
+async function start() {
   try { GameSounds.unlock(); } catch (e) {}
   const two = cfg.players === '2';
   const [cols, rows] = SIZES[cfg.kind][+cfg.size];
@@ -440,6 +442,10 @@ function start() {
   const order = selected.length >= n ? [0, 1].map(p => selected[(round + p) % selected.length])
     : [...selected, ...shuffle(PICS.filter(p => !selected.includes(p)))];
   round += n;
+  for (const p of order.slice(0, n)) if (p.src) {
+    if (!p.canvas) { p.canvas = new Image(); p.canvas.src = p.src; }
+    if (!p.canvas.complete) await new Promise(r => { p.canvas.onload = p.canvas.onerror = r; });
+  }
   const again = selected.length > n ? '▶ Επόμενη εικόνα' : '▶ Νέο παζλ';
   const arena = $('arena'); arena.innerHTML = '';
   $('setup').style.display = 'none'; arena.classList.add('on'); $('toSetup').hidden = false;
@@ -484,7 +490,7 @@ function showPeek(lane, B, on) {
   if (on && !d) {
     d = document.createElement('div'); d.className = 'peek';
     d.style.cssText = 'position:absolute;inset:50px 10px 10px;background:rgba(0,0,0,.85) center/contain no-repeat;border-radius:10px;z-index:4;pointer-events:none';
-    d.style.backgroundImage = `url(${B.pic.toDataURL('image/jpeg', .8)})`;
+    d.style.backgroundImage = `url(${B.pic.src || B.pic.toDataURL('image/jpeg', .8)})`;
     lane.appendChild(d);
   } else if (!on && d) d.remove();
 }
